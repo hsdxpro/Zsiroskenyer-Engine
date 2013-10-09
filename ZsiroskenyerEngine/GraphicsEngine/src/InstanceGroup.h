@@ -18,6 +18,8 @@ class Entity;
 class cInstanceGroup {
 	friend class std::hash<cInstanceGroup>;
 public:
+	cInstanceGroup(cGeometryRef, cMaterialRef);
+
 	cGeometryRef geom;
 	cMaterialRef mtl;
 	std::unordered_set<Entity*> entityList;

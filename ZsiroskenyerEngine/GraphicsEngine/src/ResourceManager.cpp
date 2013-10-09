@@ -20,14 +20,14 @@ using namespace std;
 
 // load/unload geometries
 cGeometryRef cResourceManager::LoadGeometry(string fileName) {
-	return cGeometryRef(*this);
+	return cGeometryRef(this);
 }
 void cResourceManager::UnloadGeometry(const cGeometry* geometry) {
 }
 
 // load/unload materials
 cMaterialRef cResourceManager::LoadMaterial(string fileName) {
-	return cMaterialRef(*this);
+	return cMaterialRef(this);
 }
 void cResourceManager::UnloadMaterial(const cMaterial* material) {
 }
@@ -39,17 +39,22 @@ void cResourceManager::UnloadMaterial(const cMaterial* material) {
 //	References to resources
 
 // geometry reference
-cGeometryRef::cGeometryRef(cResourceManager& rm, cGeometry* ptr)
+cGeometryRef::cGeometryRef(cResourceManager* rm, cGeometry* ptr)
 	:
-	shared_ptr(ptr, [this](cGeometry* g){this->rm.UnloadGeometry(g);} ), 
+	shared_ptr(ptr, [this](cGeometry* g){this->rm->UnloadGeometry(g);} ), 
 	rm(rm)
 {
 }
-
 cGeometryRef::cGeometryRef(const cGeometryRef& other) 
 	:
 	shared_ptr(other),
 	rm(other.rm)
+{
+}
+cGeometryRef::cGeometryRef()
+	:
+	shared_ptr(nullptr),
+	rm(nullptr)
 {
 }
 
@@ -66,17 +71,22 @@ bool cGeometryRef::operator==(const cGeometryRef& other) {
 
 
 // material reference
-cMaterialRef::cMaterialRef(cResourceManager& rm, cMaterial* ptr)
+cMaterialRef::cMaterialRef(cResourceManager* rm, cMaterial* ptr)
 	:
-	shared_ptr(ptr, [this](cMaterial* m){this->rm.UnloadMaterial(m);} ), 
+	shared_ptr(ptr, [this](cMaterial* m){this->rm->UnloadMaterial(m);} ), 
 	rm(rm)
 {
 }
-
 cMaterialRef::cMaterialRef(const cMaterialRef& other) 
 	:
 	shared_ptr(other),
 	rm(other.rm)
+{
+}
+cMaterialRef::cMaterialRef()
+	:
+	shared_ptr(nullptr),
+	rm(nullptr)
 {
 }
 
