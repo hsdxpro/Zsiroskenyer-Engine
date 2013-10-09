@@ -90,6 +90,11 @@
     <ClCompile Include="src\SceneManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\RendererD3D11\src\IRenderer.h" />
+    <ClInclude Include="..\RendererD3D11\src\ITexture.h" />
+    <ClInclude Include="..\RendererD3D11\src\TEMP\i_buffer.h" />
+    <ClInclude Include="..\RendererD3D11\src\TEMP\i_renderer.h" />
+    <ClInclude Include="..\RendererD3D11\src\TEMP\i_texture.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\Geometry.h" />

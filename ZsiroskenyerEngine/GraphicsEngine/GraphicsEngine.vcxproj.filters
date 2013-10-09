@@ -13,6 +13,12 @@
     <Filter Include="Other">
       <UniqueIdentifier>{1fbe3ae8-e20c-4398-9563-68ae2d2fbd14}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interfaces">
+      <UniqueIdentifier>{9b3a76ce-4acf-4659-98a0-7241a406d9f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces\TEMPORARY">
+      <UniqueIdentifier>{a2ac378f-b501-4c16-a50a-0882e9e7ac07}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DllMain.cpp">
@@ -61,6 +67,21 @@
     </ClInclude>
     <ClInclude Include="src\Exception.h">
       <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RendererD3D11\src\IRenderer.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RendererD3D11\src\ITexture.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RendererD3D11\src\TEMP\i_buffer.h">
+      <Filter>Interfaces\TEMPORARY</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RendererD3D11\src\TEMP\i_renderer.h">
+      <Filter>Interfaces\TEMPORARY</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RendererD3D11\src\TEMP\i_texture.h">
+      <Filter>Interfaces\TEMPORARY</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
