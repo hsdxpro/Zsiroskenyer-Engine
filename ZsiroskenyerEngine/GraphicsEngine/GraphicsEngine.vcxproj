@@ -82,6 +82,7 @@
   <ItemGroup>
     <ClCompile Include="src\DllMain.cpp" />
     <ClCompile Include="src\Entity.cpp" />
+    <ClCompile Include="src\Exception.cpp" />
     <ClCompile Include="src\Geometry.cpp" />
     <ClCompile Include="src\InstanceGroup.cpp" />
     <ClCompile Include="src\Material.cpp" />
@@ -90,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Entity.h" />
+    <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\Geometry.h" />
     <ClInclude Include="src\InstanceGroup.h" />
     <ClInclude Include="src\Material.h" />

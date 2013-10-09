@@ -8,5 +8,27 @@
 //	by instancing and/or spatial position.
 ////////////////////////////////////////////////////////////////////////////////
 
+#pragma once
 
 
+#include <unordered_set>
+#include <string>
+
+
+class cInstanceGroup;
+class Entity;
+class cResourceManager;
+
+
+class cSceneManager {
+public:
+	cSceneManager(cResourceManager& rm);
+	~cSceneManager();
+
+	Entity& AddEntity(const std::string& geometry, const std::string& material);
+	void RemoveEntity(const Entity& entity);
+
+private:
+	std::unordered_set<cInstanceGroup*> instanceGroups;
+	cResourceManager& resourceManager;
+};

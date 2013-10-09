@@ -6,6 +6,7 @@
 //	Used for instanced rendering of objects.
 ////////////////////////////////////////////////////////////////////////////////
 
+#pragma once
 
 #include "ResourceManager.h"
 #include <unordered_set>
@@ -18,7 +19,7 @@ class Entity;
 class cInstanceGroup {
 	friend struct std::hash<cInstanceGroup>;
 public:
-	cInstanceGroup();
+	cInstanceGroup() {}
 	cInstanceGroup(cGeometryRef, cMaterialRef);
 
 	cGeometryRef geom;

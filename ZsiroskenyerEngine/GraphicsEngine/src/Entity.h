@@ -5,6 +5,7 @@
 //	A class that represents an entity on the 3D scene.
 ////////////////////////////////////////////////////////////////////////////////
 
+#pragma once
 
 #include <math/math_all.h>
 
@@ -15,9 +16,11 @@ class cInstanceGroup;
 
 class Entity {
 public:
+	Entity();
+
 	Vec3 position;
 	Quat rotation;
 	Vec3 scale;
-
 	cInstanceGroup* instanceGroup;
+	bool isVisible;
 };

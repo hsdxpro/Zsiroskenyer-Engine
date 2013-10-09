@@ -7,3 +7,9 @@
 
 
 #include "InstanceGroup.h"
+
+
+
+cInstanceGroup::cInstanceGroup(cGeometryRef geom, cMaterialRef mtl) : geom(geom), mtl(mtl)
+{
+}

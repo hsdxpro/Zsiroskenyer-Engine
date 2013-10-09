@@ -10,6 +10,9 @@
     <Filter Include="ResourceManager">
       <UniqueIdentifier>{11591b19-679d-4fc1-b926-92f647934afd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Other">
+      <UniqueIdentifier>{1fbe3ae8-e20c-4398-9563-68ae2d2fbd14}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DllMain.cpp">
@@ -33,6 +36,9 @@
     <ClCompile Include="src\Material.cpp">
       <Filter>ResourceManager</Filter>
     </ClCompile>
+    <ClCompile Include="src\Exception.cpp">
+      <Filter>Other</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\SceneManager.h">
@@ -52,6 +58,9 @@
     </ClInclude>
     <ClInclude Include="src\Material.h">
       <Filter>ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Exception.h">
+      <Filter>Other</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
