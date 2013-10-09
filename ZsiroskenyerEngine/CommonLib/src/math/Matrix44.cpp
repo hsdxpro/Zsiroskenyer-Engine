@@ -17,19 +17,117 @@
 //
 // 2012.oct.11, 9:19 -> axis angle matrix rotation doesn't work, fix it
 
-#include "matrix.h"
+#include "Matrix44.h"
 #include "quat.h"
 #include "vec3.h"
 #include <memory>
 
-using namespace std;
+Matrix44::Matrix44() {
+	_11 = 1.f; _12 = 0.f; _13 = 0.f; _14 = 0.f;
+	_21 = 0.f; _22 = 1.f; _23 = 0.f; _24 = 0.f;
+	_31 = 0.f; _32 = 0.f; _33 = 1.f; _34 = 0.f;
+	_41 = 0.f; _42 = 0.f; _43 = 0.f; _44 = 1.f;
+};
+
+Matrix44::Matrix44(	float _11, float _12, float _13, float _14,
+					float _21, float _22, float _23, float _24,
+					float _31, float _32, float _33, float _34,
+					float _41, float _42, float _43, float _44)
+:	_11(_11), _12(_12), _13(_13), _14(_14),
+	_21(_21), _22(_22), _23(_23), _24(_14),
+	_31(_31), _32(_32), _33(_33), _34(_14),
+	_41(_41), _42(_42), _43(_43), _44(_14)
+{ }
 
 
+float& Matrix44::operator() (unsigned row, unsigned col) {
+	return m[row][col];
+}
+const float& Matrix44::operator() (unsigned row, unsigned col) const {
+	return m[row][col];
+};
 
-///////////////////////////////////////////////////////////////////////////
-// matrix functions
+Matrix44& Matrix44::operator *= (const Matrix44 & m2) {
+	*this = Matrix44(	m[0][0] * m2.m[0][0] + m[0][1] * m2.m[1][0] + m[0][2] * m2.m[2][0] + m[0][3] * m2.m[3][0],		m[0][0] * m2.m[0][1] + m[0][1] * m2.m[1][1]  + m[0][2] * m2.m[2][1] + m[0][3] * m2.m[3][1],		m[0][0] * m2.m[0][2] + m[0][1] * m2.m[1][2]  + m[0][2] * m2.m[2][2] + m[0][3] * m2.m[3][2],		m[0][0] * m2.m[0][3] + m[0][1] * m2.m[1][3]  + m[0][2] * m2.m[2][3] + m[0][3] * m2.m[3][3],
+						m[1][0] * m2.m[0][0] + m[1][1] * m2.m[1][0] + m[1][2] * m2.m[2][0] + m[1][3] * m2.m[3][0],		m[1][0] * m2.m[0][1] + m[1][1] * m2.m[1][1]  + m[1][2] * m2.m[2][1] + m[1][3] * m2.m[3][1],		m[1][0] * m2.m[0][2] + m[1][1] * m2.m[1][2]  + m[1][2] * m2.m[2][2] + m[1][3] * m2.m[3][2],		m[1][0] * m2.m[0][3] + m[1][1] * m2.m[1][3]  + m[1][2] * m2.m[2][3] + m[1][3] * m2.m[3][3],
+						m[2][0] * m2.m[0][0] + m[2][1] * m2.m[1][0] + m[2][2] * m2.m[2][0] + m[2][3] * m2.m[3][0],		m[2][0] * m2.m[0][1] + m[2][1] * m2.m[1][1]  + m[2][2] * m2.m[2][1] + m[2][3] * m2.m[3][1],		m[2][0] * m2.m[0][2] + m[2][1] * m2.m[1][2]  + m[2][2] * m2.m[2][2] + m[2][3] * m2.m[3][2],		m[2][0] * m2.m[0][3] + m[2][1] * m2.m[1][3]  + m[2][2] * m2.m[2][3] + m[2][3] * m2.m[3][3],
+						m[3][0] * m2.m[0][0] + m[3][1] * m2.m[1][0] + m[3][2] * m2.m[2][0] + m[3][3] * m2.m[3][0],		m[3][0] * m2.m[0][1] + m[3][1] * m2.m[1][1]  + m[3][2] * m2.m[2][1] + m[3][3] * m2.m[3][1],		m[3][0] * m2.m[0][2] + m[3][1] * m2.m[1][2]  + m[3][2] * m2.m[2][2] + m[3][3] * m2.m[3][2],		m[3][0] * m2.m[0][3] + m[3][1] * m2.m[1][3]  + m[3][2] * m2.m[2][3] + m[3][3] * m2.m[3][3] );
+	return *this;
+};
 
-// set matrix to identity matrix
+Matrix44& Matrix44::operator += (const Matrix44 & m2) {
+	_11 += m2._11;	_12 += m2._12;	_13 += m2._13;	_14 += m2._14;
+	_21 += m2._21;	_22 += m2._22;	_23 += m2._23;	_24 += m2._24;
+	_31 += m2._31;	_32 += m2._32;	_33 += m2._33;	_34 += m2._34;
+	_41 += m2._41;	_42 += m2._42;	_43 += m2._43;	_44 += m2._44;
+	return *this;
+}
+
+Matrix44& Matrix44::operator -= (const Matrix44 & m2) {
+	_11 -= m2._11;	_12 -= m2._12;	_13 -= m2._13;	_14 -= m2._14;
+	_21 -= m2._21;	_22 -= m2._22;	_23 -= m2._23;	_24 -= m2._24;
+	_31 -= m2._31;	_32 -= m2._32;	_33 -= m2._33;	_34 -= m2._34;
+	_41 -= m2._41;	_42 -= m2._42;	_43 -= m2._43;	_44 -= m2._44;
+	return *this;
+}
+
+Matrix44& Matrix44::operator *= (const float& f) {
+	float* p = (float*)m;
+	for (int i=0; i<16; i++) {
+		p[i] *= f;
+	}
+	return *this;
+}
+
+Matrix44& Matrix44::operator /= (const float& f) {
+	return (*this)*=(1.f/f);
+}
+
+Matrix44 Matrix44::operator * (const Matrix44 & m2) {
+	return Matrix44(	m[0][0] * m2.m[0][0] + m[0][1] * m2.m[1][0] + m[0][2] * m2.m[2][0] + m[0][3] * m2.m[3][0],		m[0][0] * m2.m[0][1] + m[0][1] * m2.m[1][1]  + m[0][2] * m2.m[2][1] + m[0][3] * m2.m[3][1],		m[0][0] * m2.m[0][2] + m[0][1] * m2.m[1][2]  + m[0][2] * m2.m[2][2] + m[0][3] * m2.m[3][2],		m[0][0] * m2.m[0][3] + m[0][1] * m2.m[1][3]  + m[0][2] * m2.m[2][3] + m[0][3] * m2.m[3][3],
+						m[1][0] * m2.m[0][0] + m[1][1] * m2.m[1][0] + m[1][2] * m2.m[2][0] + m[1][3] * m2.m[3][0],		m[1][0] * m2.m[0][1] + m[1][1] * m2.m[1][1]  + m[1][2] * m2.m[2][1] + m[1][3] * m2.m[3][1],		m[1][0] * m2.m[0][2] + m[1][1] * m2.m[1][2]  + m[1][2] * m2.m[2][2] + m[1][3] * m2.m[3][2],		m[1][0] * m2.m[0][3] + m[1][1] * m2.m[1][3]  + m[1][2] * m2.m[2][3] + m[1][3] * m2.m[3][3],
+						m[2][0] * m2.m[0][0] + m[2][1] * m2.m[1][0] + m[2][2] * m2.m[2][0] + m[2][3] * m2.m[3][0],		m[2][0] * m2.m[0][1] + m[2][1] * m2.m[1][1]  + m[2][2] * m2.m[2][1] + m[2][3] * m2.m[3][1],		m[2][0] * m2.m[0][2] + m[2][1] * m2.m[1][2]  + m[2][2] * m2.m[2][2] + m[2][3] * m2.m[3][2],		m[2][0] * m2.m[0][3] + m[2][1] * m2.m[1][3]  + m[2][2] * m2.m[2][3] + m[2][3] * m2.m[3][3],
+						m[3][0] * m2.m[0][0] + m[3][1] * m2.m[1][0] + m[3][2] * m2.m[2][0] + m[3][3] * m2.m[3][0],		m[3][0] * m2.m[0][1] + m[3][1] * m2.m[1][1]  + m[3][2] * m2.m[2][1] + m[3][3] * m2.m[3][1],		m[3][0] * m2.m[0][2] + m[3][1] * m2.m[1][2]  + m[3][2] * m2.m[2][2] + m[3][3] * m2.m[3][2],		m[3][0] * m2.m[0][3] + m[3][1] * m2.m[1][3]  + m[3][2] * m2.m[2][3] + m[3][3] * m2.m[3][3] );
+}
+
+Matrix44 Matrix44::operator + (const Matrix44 & m2) {
+	Matrix44 m = *this;
+	m+=m2;
+	return m;
+}
+
+Matrix44 Matrix44::operator - (const Matrix44 & m2) {
+	Matrix44 m = *this;
+	m-=m2;
+	return m;
+}
+
+Matrix44 Matrix44::operator * (const float& f) {
+	Matrix44 m = *this;
+	m*=f;
+	return m;
+}
+
+Matrix44 Matrix44::operator / (const float& f) {
+	Matrix44 m = *this;
+	m/=f;
+	return m;
+}
+
+bool Matrix44::operator==(const Matrix44& m2) const {
+	float *p1 = (float*)m, *p2 = (float*)m2.m;
+	for (int i=0; i<16; i++) {
+		if (p1[i] != p2[i]) {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool Matrix44::operator != (const Matrix44& m2) const {
+	return !(*this == m2);
+}
+
 Matrix44& MatrixIdentity(Matrix44& m) {
 	m._11 = 1.f; m._12 = 0.f; m._13 = 0.f; m._14 = 0.f;
 	m._21 = 0.f; m._22 = 1.f; m._23 = 0.f; m._24 = 0.f;
@@ -37,7 +135,7 @@ Matrix44& MatrixIdentity(Matrix44& m) {
 	m._41 = 0.f; m._42 = 0.f; m._43 = 0.f; m._44 = 1.f;
 	return m;
 }
-// transpose matrix
+
 Matrix44& MatrixTranspose(const Matrix44& in, Matrix44& out) {
 	out._11 = in._11;	out._12 = in._21;	out._13 = in._31;	out._14 = in._41;
 	out._21 = in._12;	out._22 = in._22;	out._23 = in._32;	out._24 = in._42;
@@ -45,6 +143,7 @@ Matrix44& MatrixTranspose(const Matrix44& in, Matrix44& out) {
 	out._41 = in._14;	out._42 = in._24;	out._43 = in._34;	out._44 = in._44;
 	return out;
 }
+
 Matrix44& MatrixTranspose(Matrix44& m) {
 	float t;
 	t=m._12;	m._12 = m._21;	m._21=t;
@@ -57,23 +156,16 @@ Matrix44& MatrixTranspose(Matrix44& m) {
 
 	return m;
 };
-// determinant
+
+
 float MatrixDeterminant(const Matrix44& m) {
-	/*
-	det(m) =
-		+ a( f(kp-ol) - g(jp-nl) + h(jo-nk) )
-		- b( e(kp-ol) - g(ip-ml) + h(io-mk) )
-		+ c( e(jp-nl) - f(ip-ml) + h(in-jm) )
-		- d( e(jo-nk) - f(io-mk) + g(in-jm) )
-	*/
 	return
-		  m._11*( m._22*(m._33*m._44-m._43*m._34) - m._23*(m._32*m._44-m._42*m._34) + m._24*(m._32*m._43-m._42*m._33) )
+		m._11*( m._22*(m._33*m._44-m._43*m._34) - m._23*(m._32*m._44-m._42*m._34) + m._24*(m._32*m._43-m._42*m._33) )
 		- m._12*( m._21*(m._33*m._44-m._43*m._34) - m._23*(m._31*m._44-m._41*m._34) + m._24*(m._31*m._43-m._41*m._33) )
 		+ m._13*( m._21*(m._32*m._44-m._42*m._34) - m._22*(m._31*m._44-m._41*m._34) + m._24*(m._31*m._42-m._41*m._32) )
 		- m._14*( m._21*(m._32*m._43-m._42*m._33) - m._22*(m._31*m._43-m._41*m._33) + m._23*(m._31*m._42-m._32*m._41) );
 }
 
-// inverse matrix
 Matrix44& MatrixInverse(const Matrix44& in, Matrix44& out) {
 	// determinant
 	float det_A;
@@ -108,7 +200,7 @@ Matrix44& MatrixInverse(const Matrix44& in, Matrix44& out) {
 	out._31 = (in._21*B - in._22*D + in._24*F);
 	out._41 = -(in._21*C - in._22*E + in._23*F);
 
-		det_A = 1.f/(in._11*out._11 + in._12*out._21 + in._13*out._31 + in._14*out._41);
+	det_A = 1.f/(in._11*out._11 + in._12*out._21 + in._13*out._31 + in._14*out._41);
 
 	out._12 = -(in._12*A - in._13*B + in._14*C) * det_A;
 	out._22 = (in._11*A - in._13*D + in._14*E) * det_A;
@@ -136,7 +228,6 @@ Matrix44& MatrixInverse(const Matrix44& in, Matrix44& out) {
 	return out;
 }
 
-// scale
 Matrix44& MatrixScale(Matrix44& out, float scX, float scY, float scZ) {
 	MatrixIdentity(out);
 	out._11 = scX;
@@ -144,6 +235,7 @@ Matrix44& MatrixScale(Matrix44& out, float scX, float scY, float scZ) {
 	out._33 = scZ;
 	return out;
 }
+
 Matrix44& MatrixScale(Matrix44& out, Vec3 scale) {
 	MatrixIdentity(out);
 	out._11 = scale.x;
@@ -151,7 +243,7 @@ Matrix44& MatrixScale(Matrix44& out, Vec3 scale) {
 	out._33 = scale.z;
 	return out;
 }
-// translation
+
 Matrix44& MatrixTranslation(Matrix44& out, float vX, float vY, float vZ) {
 	MatrixIdentity(out);
 	out._41 = vX;
@@ -159,6 +251,7 @@ Matrix44& MatrixTranslation(Matrix44& out, float vX, float vY, float vZ) {
 	out._43 = vZ;
 	return out;
 }
+
 Matrix44& MatrixTranslation(Matrix44& out, Vec3 v) {
 	MatrixIdentity(out);
 	out._41 = v.x;
@@ -166,7 +259,7 @@ Matrix44& MatrixTranslation(Matrix44& out, Vec3 v) {
 	out._43 = v.z;
 	return out;
 }
-// rotation matrices
+
 Matrix44& MatrixRotationX (Matrix44& out, float angle) {
 	MatrixIdentity(out);
 	// compute sine and cosine
@@ -210,12 +303,6 @@ Matrix44& MatrixRotationZ (Matrix44& out, float angle) {
 	return out;
 }
 Matrix44& MatrixRotationAxisAngle (Matrix44& out, const Vec3& axis, float angle) {
-	/*
-	cos + x^2(1-cos)		xy(1-cos) -z *sin		xz(1-cos) + y*sin
-	yx(1-cos) + z*sin		cos + y^2(1-cos)		yz(1-cos) - x*sin
-	zx(1-cos) - y*sin		zy(1-cos) + x*sin		cos + z^2(1-cos)
-	*/
-
 	float c = cos(angle);
 	float s = sin(angle);
 	float t = 1.f-c;
@@ -235,6 +322,7 @@ Matrix44& MatrixRotationAxisAngle (Matrix44& out, const Vec3& axis, float angle)
 
 	return out;
 };
+
 Matrix44& MatrixRotationQuat (Matrix44& out, const Quat& q) {
 	out._11 =1.f-2.f*(q.y*q.y + q.z*q.z);		out._12 =2.f*(q.x*q.y + q.z*q.w);		out._13 =2.f*(q.x*q.z - q.y*q.w);		out._14 =0.f;
 	out._21 =2.f*(q.x*q.y - q.z*q.w);			out._22 =1.f-2.f*(q.x*q.x + q.z*q.z);	out._23 =2.f*(q.y*q.z + q.x*q.w);		out._24 =0.f;
@@ -243,179 +331,6 @@ Matrix44& MatrixRotationQuat (Matrix44& out, const Quat& q) {
 
 	return out;
 };
-
-
-
-
-
-
-///////////////////////////////////////////////////////////////////////////
-// Matrix class
-
-
-//////////////////////////////////
-// constructors
-Matrix44::Matrix44() {
-	_11 = 1.f; _12 = 0.f; _13 = 0.f; _14 = 0.f;
-	_21 = 0.f; _22 = 1.f; _23 = 0.f; _24 = 0.f;
-	_31 = 0.f; _32 = 0.f; _33 = 1.f; _34 = 0.f;
-	_41 = 0.f; _42 = 0.f; _43 = 0.f; _44 = 1.f;
-};
-
-Matrix44::Matrix44(	float _11, float _12, float _13, float _14,
-					float _21, float _22, float _23, float _24,
-					float _31, float _32, float _33, float _34,
-					float _41, float _42, float _43, float _44) 
-{
-	this->_11 = _11;	this->_12 = _12;	this->_13 = _13;	this->_14 = _14;
-	this->_21 = _21;	this->_22 = _22;	this->_23 = _23;	this->_24 = _24;
-	this->_31 = _31;	this->_32 = _32;	this->_33 = _33;	this->_34 = _34;
-	this->_41 = _41;	this->_42 = _42;	this->_43 = _43;	this->_44 = _44;
-}
-
-
-///////////////////////////////////
-// element access
-float& Matrix44::operator() (unsigned row, unsigned col) {
-	return m[row][col];
-}
-const float& Matrix44::operator() (unsigned row, unsigned col) const {
-	return m[row][col];
-};
-
-
-///////////////////////////////////
-// arithmetic unary operators
-Matrix44& Matrix44::operator *= (const Matrix44 & m2) {
-	float mNew[4][4];
-	// first row
-	mNew[0][0] = _11*m2._11 + _12*m2._21 + _13*m2._31 + _14*m2._41;
-	mNew[0][1] = _11*m2._12 + _12*m2._22 + _13*m2._32 + _14*m2._42;
-	mNew[0][2] = _11*m2._13 + _12*m2._23 + _13*m2._33 + _14*m2._43;
-	mNew[0][3] = _11*m2._14 + _12*m2._24 + _13*m2._34 + _14*m2._44;
-	// second row
-	mNew[1][0] = _21*m2._11 + _22*m2._21 + _23*m2._31 + _24*m2._41;
-	mNew[1][1] = _21*m2._12 + _22*m2._22 + _23*m2._32 + _24*m2._42;
-	mNew[1][2] = _21*m2._13 + _22*m2._23 + _23*m2._33 + _24*m2._43;
-	mNew[1][3] = _21*m2._14 + _22*m2._24 + _23*m2._34 + _24*m2._44;
-	// third row
-	mNew[2][0] = _31*m2._11 + _32*m2._21 + _33*m2._31 + _34*m2._41;
-	mNew[2][1] = _31*m2._12 + _32*m2._22 + _33*m2._32 + _34*m2._42;
-	mNew[2][2] = _31*m2._13 + _32*m2._23 + _33*m2._33 + _34*m2._43;
-	mNew[2][3] = _31*m2._14 + _32*m2._24 + _33*m2._34 + _34*m2._44;
-	// fourth row
-	mNew[3][0] = _41*m2._11 + _42*m2._21 + _43*m2._31 + _44*m2._41;
-	mNew[3][1] = _41*m2._12 + _42*m2._22 + _43*m2._32 + _44*m2._42;
-	mNew[3][2] = _41*m2._13 + _42*m2._23 + _43*m2._33 + _44*m2._43;
-	mNew[3][3] = _41*m2._14 + _42*m2._24 + _43*m2._34 + _44*m2._44;
-
-	memcpy(this->m, mNew, 64);
-
-	return *this;
-};
-Matrix44& Matrix44::operator += (const Matrix44 & m2) {
-	_11 += m2._11;	_12 += m2._12;	_13 += m2._13;	_14 += m2._14;
-	_21 += m2._21;	_22 += m2._22;	_23 += m2._23;	_24 += m2._24;
-	_31 += m2._31;	_32 += m2._32;	_33 += m2._33;	_34 += m2._34;
-	_41 += m2._41;	_42 += m2._42;	_43 += m2._43;	_44 += m2._44;
-	return *this;
-}
-Matrix44& Matrix44::operator -= (const Matrix44 & m2) {
-	_11 -= m2._11;	_12 -= m2._12;	_13 -= m2._13;	_14 -= m2._14;
-	_21 -= m2._21;	_22 -= m2._22;	_23 -= m2._23;	_24 -= m2._24;
-	_31 -= m2._31;	_32 -= m2._32;	_33 -= m2._33;	_34 -= m2._34;
-	_41 -= m2._41;	_42 -= m2._42;	_43 -= m2._43;	_44 -= m2._44;
-	return *this;
-}
-
-Matrix44& Matrix44::operator *= (const float& f) {
-	float* p = (float*)m;
-	for (int i=0; i<16; i++) {
-		p[i] *= f;
-	}
-	return *this;
-}
-Matrix44& Matrix44::operator /= (const float& f) {
-	return (*this)*=(1.f/f);
-}
-
-// arithmetic binary
-Matrix44 Matrix44::operator * (const Matrix44 & m2) {
-	Matrix44 mNew;
-	// first row
-	mNew(0,0) = _11*m2._11 + _12*m2._21 + _13*m2._31 + _14*m2._41;
-	mNew(0,1) = _11*m2._12 + _12*m2._22 + _13*m2._32 + _14*m2._42;
-	mNew(0,2) = _11*m2._13 + _12*m2._23 + _13*m2._33 + _14*m2._43;
-	mNew(0,3) = _11*m2._14 + _12*m2._24 + _13*m2._34 + _14*m2._44;
-	// second row
-	mNew(1,0) = _21*m2._11 + _22*m2._21 + _23*m2._31 + _24*m2._41;
-	mNew(1,1) = _21*m2._12 + _22*m2._22 + _23*m2._32 + _24*m2._42;
-	mNew(1,2) = _21*m2._13 + _22*m2._23 + _23*m2._33 + _24*m2._43;
-	mNew(1,3) = _21*m2._14 + _22*m2._24 + _23*m2._34 + _24*m2._44;
-	// third row
-	mNew(2,0) = _31*m2._11 + _32*m2._21 + _33*m2._31 + _34*m2._41;
-	mNew(2,1) = _31*m2._12 + _32*m2._22 + _33*m2._32 + _34*m2._42;
-	mNew(2,2) = _31*m2._13 + _32*m2._23 + _33*m2._33 + _34*m2._43;
-	mNew(2,3) = _31*m2._14 + _32*m2._24 + _33*m2._34 + _34*m2._44;
-	// fourth row
-	mNew(3,0) = _41*m2._11 + _42*m2._21 + _43*m2._31 + _44*m2._41;
-	mNew(3,1) = _41*m2._12 + _42*m2._22 + _43*m2._32 + _44*m2._42;
-	mNew(3,2) = _41*m2._13 + _42*m2._23 + _43*m2._33 + _44*m2._43;
-	mNew(3,3) = _41*m2._14 + _42*m2._24 + _43*m2._34 + _44*m2._44;
-
-	return mNew;
-}
-Matrix44 Matrix44::operator + (const Matrix44 & m2) {
-	Matrix44 m = *this;
-	m+=m2;
-	return m;
-}
-Matrix44 Matrix44::operator - (const Matrix44 & m2) {
-	Matrix44 m = *this;
-	m-=m2;
-	return m;
-}
-
-Matrix44 Matrix44::operator * (const float& f) {
-	Matrix44 m = *this;
-	m*=f;
-	return m;
-}
-Matrix44 Matrix44::operator / (const float& f) {
-	Matrix44 m = *this;
-	m/=f;
-	return m;
-}
-
-
-//////////////////////////////////
-// comparison 
-bool Matrix44::operator==(const Matrix44& m2) const {
-	float *p1 = (float*)m, *p2 = (float*)m2.m;
-	for (int i=0; i<16; i++) {
-		if (p1[i] != p2[i]) {
-			return false;
-		}
-	}
-	return true;
-}
-bool Matrix44::operator!=(const Matrix44& m2) const {
-	return !(*this == m2);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
