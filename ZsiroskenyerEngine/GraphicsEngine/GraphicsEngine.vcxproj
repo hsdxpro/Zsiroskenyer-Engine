@@ -41,9 +41,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(SolutionDir)\CommonLib\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(SolutionDir)\CommonLib\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -79,6 +81,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\DllMain.cpp" />
+    <ClCompile Include="src\Entity.cpp" />
+    <ClCompile Include="src\Geometry.cpp" />
+    <ClCompile Include="src\InstanceGroup.cpp" />
+    <ClCompile Include="src\Material.cpp" />
+    <ClCompile Include="src\ResourceManager.cpp" />
+    <ClCompile Include="src\SceneManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Entity.h" />
+    <ClInclude Include="src\Geometry.h" />
+    <ClInclude Include="src\InstanceGroup.h" />
+    <ClInclude Include="src\Material.h" />
+    <ClInclude Include="src\ResourceManager.h" />
+    <ClInclude Include="src\SceneManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
