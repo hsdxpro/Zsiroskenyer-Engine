@@ -68,19 +68,22 @@
     <ClInclude Include="src\Exception.h">
       <Filter>Other</Filter>
     </ClInclude>
-    <ClInclude Include="..\RendererD3D11\src\IRenderer.h">
+    <ClInclude Include="src\IGraphicsApi.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="..\RendererD3D11\src\ITexture.h">
+    <ClInclude Include="src\IRenderer.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="..\RendererD3D11\src\TEMP\i_buffer.h">
+    <ClInclude Include="src\ITexture.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TEMP\i_buffer.h">
       <Filter>Interfaces\TEMPORARY</Filter>
     </ClInclude>
-    <ClInclude Include="..\RendererD3D11\src\TEMP\i_renderer.h">
+    <ClInclude Include="src\TEMP\i_renderer.h">
       <Filter>Interfaces\TEMPORARY</Filter>
     </ClInclude>
-    <ClInclude Include="..\RendererD3D11\src\TEMP\i_texture.h">
+    <ClInclude Include="src\TEMP\i_texture.h">
       <Filter>Interfaces\TEMPORARY</Filter>
     </ClInclude>
   </ItemGroup>
