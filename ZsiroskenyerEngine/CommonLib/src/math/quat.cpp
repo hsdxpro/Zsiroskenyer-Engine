@@ -1,27 +1,21 @@
-/////////////////////////////////////////////////////////
-// source file of quaternion class
-// quat.cpp
-/////////////////////////////////////////////////////////
+// Implementation
 // history:
 // 2012.oct.11, quaternion rotation seems to be perfect
-
 
 #include "Quat.h"
 #include "Matrix44.h"
 
-
-
-//constructors //////////////////////////////////////////
-Quat::Quat() {
-	x=y=z=0.f;
-	w = 1.f;
+Quat::Quat() 
+:x(0.0f), y(0.0f), z(0.0f), w(1.0f) {
 }
+
 Quat::Quat(float w, float x, float y, float z) {
 	this->x=x;
 	this->y=y;
 	this->z=z;
 	this->w=w;
 }
+
 Quat::Quat(const Vec3& v, float angle) {
 	float sin_angle = sin(angle*0.5f);
 	w = cos(angle*0.5f);
@@ -30,11 +24,6 @@ Quat::Quat(const Vec3& v, float angle) {
 	z = v.z*sin_angle;
 }
 
-
-
-
-
-// operators ////////////////////////////////////////////
 Quat& Quat::operator*=(const Quat& q2) {
 	float w1=w, x1=x, y1=y, z1=z;
     x =  x1 * q2.w + y1 * q2.z - z1 * q2.y + w1 * q2.x;
@@ -43,6 +32,7 @@ Quat& Quat::operator*=(const Quat& q2) {
     w = -x1 * q2.x - y1 * q2.y - z1 * q2.z + w1 * q2.w;
 	return *this;
 }
+
 Quat Quat::operator*(const Quat& q2) const {
 	Quat r;
 	r.w = w*q2.w - x*q2.x - y*q2.y - z*q2.z;
@@ -51,7 +41,7 @@ Quat Quat::operator*(const Quat& q2) const {
 	r.z = w*q2.z + x*q2.y - y*q2.x + z*q2.w;
 	return r;
 }
-// conjugate	
+
 const Quat Quat::operator~() const {
 	Quat r;
 	r.w=w;
@@ -61,25 +51,21 @@ const Quat Quat::operator~() const {
 	return r;
 }
 
-// boolean 
 bool Quat::operator==(const Quat& r) const {
 	if (w==r.w && x==r.x && y==r.y && z==r.z)
 		return true;
 	else
 		return false;
 }
+
 bool Quat::operator!=(const Quat& r) const {
 	return !(*this==r);
 }
 
-
-
-
-
-// methods //////////////////////////////////////////////
 float Quat::lenght() const {
 	return sqrt(w*w + x*x + y*y + z*z);
 }
+
 Quat& Quat::normalize() {
 	float d = fabs(1.f-(w*w + x*x + y*y + z*z));
 	if (d>QUAT_NORM_TOLERANCE) {
@@ -92,24 +78,16 @@ Quat& Quat::normalize() {
 	return *this;
 }
 
-
-
-
-// friend functions /////////////////////////////////////
 Quat normalize(const Quat& q) {
 	Quat n=q;
 	n.normalize();
 	return n;
 }
+
 float lenght(const Quat& q) {
 	return q.lenght();
 }
 
-
-
-
-
-// functions ////////////////////////////////////////////
 Vec3 QuatRotateVec3(Vec3 v, Quat q) {
 	Quat qv(0.f,v.x,v.y,v.z);
 
@@ -122,6 +100,7 @@ Vec3 QuatRotateVec3(Vec3 v, Quat q) {
 
 	return vr;
 }
+
 Vec3 QuatRotateVec3_2(Vec3 v, Quat q) {
 	Vec3 vr;
 	float w=q.w, x=-q.x, y=q.y, z=q.z;
@@ -130,14 +109,15 @@ Vec3 QuatRotateVec3_2(Vec3 v, Quat q) {
 	vr.z = 2*x*z*v.x + 2*y*z*v.y + z*z*v.z - 2*w*y*v.x - y*y*v.z + 2*w*x*v.y - x*x*v.z + w*w*v.z;
 	return vr;
 }
+
 Quat& QuatConjugate(Quat& out, const Quat& q) {
 	out = ~q; return out;
 }
+
 float QuatDot(const Quat& q1, const Quat& q2) {
 	return q1.x*q2.x + q1.y*q2.y + q1.z*q2.z + q1.w*q2.w;
 }
 
-// create rotation quaternion
 Quat& QuatRotation(Quat& out, Vec3 axis, float angle) {
 	float sin_angle = sin(angle*0.5f);
 	out.w = cos(angle*0.5f);
@@ -147,8 +127,6 @@ Quat& QuatRotation(Quat& out, Vec3 axis, float angle) {
 	return out;
 }
 
-
-// rotation matrices
 Quat::operator Matrix44() {
 	Matrix44 m (
 		1.f*-2.f*(y*y + z*z),		2.f*(x*y - z*w),		2.f*(x*z + y*w),		0.f,
@@ -159,8 +137,6 @@ Quat::operator Matrix44() {
 	return m;
 };
 
-
-// conversion between quaternions and euler angles
 Quat EulerAnglesToQuat(const Vec3& eulerAngles) {
 	Quat q;
 	float cos_x = cos(eulerAngles.x*0.5f);
@@ -177,6 +153,7 @@ Quat EulerAnglesToQuat(const Vec3& eulerAngles) {
 
 	return q;
 }
+
 Vec3 QuatToEulerAngles(const Quat& q) {
 	Vec3 eulerAngles;
 	eulerAngles.x = atan2(2.f*(q.w*q.x+q.y*q.z), 1-2.f*(q.x*q.x+q.y*q.y));
@@ -185,9 +162,6 @@ Vec3 QuatToEulerAngles(const Quat& q) {
 	return eulerAngles;
 }
 
-
-// utility functions ///////////////////////////////////
-// print quat
 std::ostream& operator<<(std::ostream& os, Quat q) {
 	os << q.w << ':' << q.x << ',' << q.y << ',' << q.z;
 	return os;
