@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="math">
+      <UniqueIdentifier>{06829a86-dc28-4135-b633-3e645d1acabb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="memory">
+      <UniqueIdentifier>{9c5334e1-7b0f-4a1f-92c5-c6618ae1dbeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algorithm">
+      <UniqueIdentifier>{a5eb5c13-e67f-40dd-847c-b8579fa9b105}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="storage">
+      <UniqueIdentifier>{5f9b7b97-81fe-4909-b4a0-7d17d3c1fdf0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\math\color.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\common.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\matrix.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\quat.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\vec3.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\memory\tlsf.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\math\color.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\common.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\math_all.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\matrix.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\quat.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\vec3.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\memory\fixed_size_pool.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\memory\tlsf.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\sort.h">
+      <Filter>algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\statistics.h">
+      <Filter>algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="src\storage\tree.h">
+      <Filter>storage</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
