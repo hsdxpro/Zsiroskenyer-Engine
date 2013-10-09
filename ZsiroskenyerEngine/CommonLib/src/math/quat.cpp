@@ -6,8 +6,8 @@
 // 2012.oct.11, quaternion rotation seems to be perfect
 
 
-#include "quat.h"
-#include "matrix.h"
+#include "Quat.h"
+#include "Matrix44.h"
 
 
 

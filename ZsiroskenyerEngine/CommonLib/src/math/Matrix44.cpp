@@ -17,7 +17,7 @@
 //
 // 2012.oct.11, 9:19 -> axis angle matrix rotation doesn't work, fix it
 
-#include "matrix.h"
+#include "Matrix44.h"
 #include "quat.h"
 #include "vec3.h"
 #include <memory>

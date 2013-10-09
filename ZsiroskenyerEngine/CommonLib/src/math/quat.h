@@ -7,16 +7,13 @@
 #include <math.h>
 #include "vec3.h"
 
-//#include "matrix.h"
-
-
 // defines ///////////////////////////////////////
 #define QUAT_NORM_TOLERANCE 0.00003f
 
 
 /////////////////////////////////////////////////////////
 // forward declare stuff
-union Matrix44;
+class Matrix44;
 
 
 // quaternion class definition ///////////////////

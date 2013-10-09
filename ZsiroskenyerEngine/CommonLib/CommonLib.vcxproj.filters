@@ -15,42 +15,30 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\math\color.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
     <ClCompile Include="src\math\common.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
-    <ClCompile Include="src\math\matrix.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
-    <ClCompile Include="src\math\quat.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
-    <ClCompile Include="src\math\vec3.cpp">
       <Filter>math</Filter>
     </ClCompile>
     <ClCompile Include="src\memory\tlsf.cpp">
       <Filter>memory</Filter>
     </ClCompile>
+    <ClCompile Include="src\math\Vec3.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\Quat.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\Matrix44.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\Color.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\math\color.h">
-      <Filter>math</Filter>
-    </ClInclude>
     <ClInclude Include="src\math\common.h">
       <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="src\math\math_all.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="src\math\matrix.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="src\math\quat.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="src\math\vec3.h">
       <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="src\memory\fixed_size_pool.h">
@@ -67,6 +55,18 @@
     </ClInclude>
     <ClInclude Include="src\storage\tree.h">
       <Filter>storage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\Vec3.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\Quat.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\Matrix44.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\Color.h">
+      <Filter>math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
