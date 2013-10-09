@@ -16,8 +16,9 @@ class Entity;
 
 
 class cInstanceGroup {
-	friend class std::hash<cInstanceGroup>;
+	friend struct std::hash<cInstanceGroup>;
 public:
+	cInstanceGroup();
 	cInstanceGroup(cGeometryRef, cMaterialRef);
 
 	cGeometryRef geom;
@@ -26,8 +27,6 @@ public:
 	bool operator==(const cInstanceGroup& other) {
 		return geom==other.geom && mtl==other.mtl;
 	}
-private:
-
 };
 
 
