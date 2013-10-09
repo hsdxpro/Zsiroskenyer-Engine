@@ -49,25 +49,26 @@ public:
 	static Matrix44& MatrixInverse(const Matrix44& in, Matrix44& out);
 	static Matrix44& MatrixTranspose(const Matrix44& in, Matrix44& out);
 	static Matrix44& MatrixTranspose(Matrix44& m);
+
 	// rotation
 	static Matrix44& MatrixRotationX (Matrix44& out, float angle);
 	static Matrix44& MatrixRotationY (Matrix44& out, float angle);
 	static Matrix44& MatrixRotationZ (Matrix44& out, float angle);
 	static Matrix44& MatrixRotationAxisAngle (Matrix44& out, const Vec3& axis, float angle);
 	static Matrix44& MatrixRotationQuat (Matrix44& out, const Quat&); // typecast ((Matrix44)quaternion) is possibly slower than this shit
+
 	// scale
 	static Matrix44& MatrixScale(Matrix44& out, float scX, float scY, float scZ);
 	static Matrix44& MatrixScale(Matrix44& out, Vec3 scale);
+
 	// translation
 	static Matrix44& MatrixTranslation(Matrix44& out, float vX, float vY, float vZ);
 	static Matrix44& MatrixTranslation(Matrix44& out, Vec3 v);
 
-	// element access
+	// Accessors
 	float& operator() (unsigned row, unsigned col);
 	const float& operator() (unsigned row, unsigned col) const;
 
-
-	// arithmetic unary operators
 	Matrix44& operator *= (const Matrix44 & m2);
 	Matrix44& operator += (const Matrix44 & m2);
 	Matrix44& operator -= (const Matrix44 & m2);
@@ -75,7 +76,6 @@ public:
 	Matrix44& operator *= (const float&);
 	Matrix44& operator /= (const float&);
 
-	// arithmetic binary
 	Matrix44 operator * (const Matrix44 & m2);
 	Matrix44 operator + (const Matrix44 & m2);
 	Matrix44 operator - (const Matrix44 & m2);
@@ -85,7 +85,6 @@ public:
 
 	Vec3 operator * (const Vec3& v);
 
-	// comparison 
 	bool operator==(const Matrix44& m2) const;
 	bool operator!=(const Matrix44& m2) const;
 };
