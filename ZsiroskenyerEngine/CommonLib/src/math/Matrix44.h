@@ -69,16 +69,16 @@ public:
 	float& operator() (unsigned row, unsigned col);
 	const float& operator() (unsigned row, unsigned col) const;
 
-	Matrix44& operator *= (const Matrix44 & m2);
-	Matrix44& operator += (const Matrix44 & m2);
-	Matrix44& operator -= (const Matrix44 & m2);
+	Matrix44& operator *= (const Matrix44& m2);
+	Matrix44& operator += (const Matrix44& m2);
+	Matrix44& operator -= (const Matrix44& m2);
 
 	Matrix44& operator *= (const float&);
 	Matrix44& operator /= (const float&);
 
-	Matrix44 operator * (const Matrix44 & m2);
-	Matrix44 operator + (const Matrix44 & m2);
-	Matrix44 operator - (const Matrix44 & m2);
+	Matrix44 operator * (const Matrix44& m2);
+	Matrix44 operator + (const Matrix44& m2);
+	Matrix44 operator - (const Matrix44& m2);
 
 	Matrix44 operator * (const float&);
 	Matrix44 operator / (const float&);
