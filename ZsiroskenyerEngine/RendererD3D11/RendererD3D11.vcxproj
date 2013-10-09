@@ -85,6 +85,9 @@
   <ItemGroup>
     <ClInclude Include="src\IRenderer.h" />
     <ClInclude Include="src\ITexture.h" />
+    <ClInclude Include="src\TEMP\i_buffer.h" />
+    <ClInclude Include="src\TEMP\i_renderer.h" />
+    <ClInclude Include="src\TEMP\i_texture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

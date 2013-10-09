@@ -1,0 +1,16 @@
+///////////////////////////////////////////////////////////////////////////
+//	Texture Interface
+//	provides texture to clients, renderer independent
+///////////////////////////////////////////////////////////////////////////
+
+
+#pragma once
+
+
+
+class ITexture {
+	// needed methods
+	public:
+		virtual bool LoadFromFile(const char* fileName) = 0;
+		virtual void Release() = 0;
+};

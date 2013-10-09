@@ -7,6 +7,9 @@
     <Filter Include="Interfaces">
       <UniqueIdentifier>{ea0300ca-fc64-41ff-aa47-c956afe6d5d0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TEMPORARY">
+      <UniqueIdentifier>{e9761631-e2b7-4eba-b7f5-910a5324c661}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DllMain.cpp">
@@ -19,6 +22,15 @@
     </ClInclude>
     <ClInclude Include="src\ITexture.h">
       <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TEMP\i_buffer.h">
+      <Filter>TEMPORARY</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TEMP\i_renderer.h">
+      <Filter>TEMPORARY</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TEMP\i_texture.h">
+      <Filter>TEMPORARY</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
