@@ -13,11 +13,23 @@
 
 #include <unordered_set>
 #include <string>
+#include "InstanceGroup.h"
 
-
-class cInstanceGroup;
 class Entity;
 class cResourceManager;
+
+struct cInstGroupPtrHasher {
+	size_t operator()(cInstanceGroup* i) {
+		return i!=nullptr?std::hash<cInstanceGroup>()(*i):0;
+	}
+};
+struct cInstGroupPtrCompare {
+	bool operator()(cInstanceGroup* a, cInstanceGroup* b) {
+		if (a==nullptr || b==nullptr)
+			return false;
+		return *a==*b;
+	}
+};
 
 
 class cSceneManager {
@@ -29,6 +41,6 @@ public:
 	void RemoveEntity(const Entity& entity);
 
 private:
-	std::unordered_set<cInstanceGroup*> instanceGroups;
+	std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare> instanceGroups;
 	cResourceManager& resourceManager;
 };

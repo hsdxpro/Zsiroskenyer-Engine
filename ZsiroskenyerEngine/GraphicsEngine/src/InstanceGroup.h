@@ -33,7 +33,7 @@ public:
 
 
 template <>
-class std::hash<cInstanceGroup> {
+struct std::hash<cInstanceGroup> {
 	typedef cMaterialRef argument_type;
 	typedef std::size_t return_type;
 	std::size_t operator()(const cInstanceGroup i) {
