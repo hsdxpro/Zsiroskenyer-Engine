@@ -68,6 +68,10 @@ bool cGeometryRef::operator==(const cGeometryRef& other) {
 	return ::operator==(*this, other);
 }
 
+cGeometry* cGeometryRef::get() const {
+	return shared_ptr<cGeometry>::get();
+}
+
 
 
 // material reference
@@ -98,4 +102,8 @@ cMaterialRef& cMaterialRef::operator=(const cMaterialRef& other) {
 
 bool cMaterialRef::operator==(const cMaterialRef& other) {
 	return ::operator==(*this, other);
+}
+
+cMaterial* cMaterialRef::get() const {
+	return shared_ptr<cMaterial>::get();
 }

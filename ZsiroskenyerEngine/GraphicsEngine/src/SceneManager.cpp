@@ -34,4 +34,10 @@ Entity& cSceneManager::AddEntity(const std::string& geometry, const std::string&
 	}
 }
 
+void cSceneManager::RemoveEntity(const Entity& entity) {
+
+}
+
+
+
 
