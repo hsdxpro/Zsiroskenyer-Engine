@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-//	File: RendererD3D11/src/DllMain.cpp
+//	File: GraphicsEngine/src/DllMain.cpp
 //	Created:
 //		2013. oct. 09.
 //		by Péter Kardos
