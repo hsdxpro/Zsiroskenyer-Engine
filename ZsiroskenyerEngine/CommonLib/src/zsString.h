@@ -6,53 +6,53 @@
 #include "common.h"
 #include <fstream>
 
-class eiString {
+class zsString {
 public:
-	eiString operator + (const eiString& str) const;
-	eiString operator + (const WCHAR *str) const;
+	zsString operator + (const zsString& str) const;
+	zsString operator + (const WCHAR *str) const;
 
-	eiString& operator += (const WCHAR *str);
-	eiString& operator += (const WCHAR val);
-	eiString& operator += (int val);
-	eiString& operator += (float val);
-	eiString& operator += (const eiString& str);
+	zsString& operator += (const WCHAR *str);
+	zsString& operator += (const WCHAR val);
+	zsString& operator += (int val);
+	zsString& operator += (float val);
+	zsString& operator += (const zsString& str);
 
-	eiString& operator = (const eiString& str);
-	eiString& operator = (const WCHAR *str);
+	zsString& operator = (const zsString& str);
+	zsString& operator = (const WCHAR *str);
 
-	void clear();
-	void resize(uint32 newSize);
+	void Clear();
+	void Resize(uint32 newSize);
 
-	void removeFromStart(uint16 numWCHARs);
-	void addToStart(WCHAR ch);
+	void RemoveFromStart(uint16 numWCHARs);
+	void AddToStart(WCHAR ch);
 
-	bool findStr(const WCHAR *str);
-	bool strStr(const WCHAR *str, bool notCaseSensitive = false);
+	bool FindStr(const WCHAR *str);
+	bool StrStr(const WCHAR *str, bool notCaseSensitive = false);
 
-	void toAnsiChar(char *buffer, uint16 size) const;
+	void ToAnsiChar(char *buffer, uint16 size) const;
 
-	void *getLine(std::wifstream& inStream);
-	const WCHAR *getDataAfterFirstWCHAR(const WCHAR ch) const;
+	void *GetLine(std::wifstream& inStream);
+	const WCHAR *GetDataAfterFirstChar(const WCHAR ch) const;
 
-	bool isEmpty();
+	bool IsEmpty();
 
-	WCHAR *str();
-	const WCHAR *strConst() const;
+	WCHAR *Str();
+	const WCHAR *StrConst() const;
 
 	// @TODO now only check the first WCHARacter
-	bool operator < (const eiString& str) const;
-	bool operator ==(const eiString& str) const;
+	bool operator < (const zsString& str) const;
+	bool operator ==(const zsString& str) const;
 	const WCHAR operator [] (uint32 idx) const;
 	WCHAR& operator [] (uint32 idx);
 
-	eiString(const eiString& str);
-	eiString(const WCHAR *str);
-	eiString(const char *str);
-	eiString(WCHAR ch);
-	eiString(int val);
-	eiString(float val);
-	eiString();
-	~eiString();
+	zsString(const zsString& str);
+	zsString(const WCHAR *str);
+	zsString(const char *str);
+	zsString(WCHAR ch);
+	zsString(int val);
+	zsString(float val);
+	zsString();
+	~zsString();
 protected:
 	// Memory from stack instead of the heap to improve performance
 	WCHAR staticData[ZSSTRING_STACK_SIZE];
@@ -67,7 +67,7 @@ protected:
 	WCHAR *lastCharPtr;
 };
 
-// eiString + "asdasd"  works, but
-// "asdasd" + eiString need to work too
-eiString operator + (const WCHAR *cStr, const eiString& str);
-eiString operator + (const CHAR *cStr, const eiString& str);
+// zsString + "asdasd"  works, but
+// "asdasd" + zsString need to work too
+zsString operator + (const WCHAR *cStr, const zsString& str);
+zsString operator + (const CHAR *cStr, const zsString& str);

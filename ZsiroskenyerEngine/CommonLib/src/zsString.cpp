@@ -2,17 +2,17 @@
 #include "zsString.h"
 #include <sstream>
 
-eiString::eiString()
+zsString::zsString()
 	:firstCharPtr(staticData), lastCharPtr(staticData), dynamicData(NULL) {
 }
 
-eiString::eiString(WCHAR ch)
+zsString::zsString(WCHAR ch)
 	:firstCharPtr(staticData), lastCharPtr(staticData), dynamicData(NULL) {
 		staticData[0] = ch;
 		staticData[1] = '\0';
 }
 
-eiString::eiString(int val)
+zsString::zsString(int val)
 
 	:firstCharPtr(staticData), lastCharPtr(staticData), dynamicData(NULL) {
 		std::wstringstream ss; ss<<val;
@@ -27,7 +27,7 @@ eiString::eiString(int val)
 		lastCharPtr = &(firstCharPtr[idx] = ch);
 }
 
-eiString::eiString(float val)
+zsString::zsString(float val)
 	:firstCharPtr(staticData), lastCharPtr(staticData), dynamicData(NULL) {
 		std::wstringstream ss; ss<<val;
 		std::wstring& str = ss.str();
@@ -41,7 +41,7 @@ eiString::eiString(float val)
 		lastCharPtr = &(firstCharPtr[idx] = ch);
 }
 
-eiString::eiString(const WCHAR *str) 
+zsString::zsString(const WCHAR *str) 
 	:firstCharPtr(staticData), lastCharPtr(staticData), dynamicData(NULL) {
 		uint32 idx = 0;
 		WCHAR ch = '\0';
@@ -52,12 +52,12 @@ eiString::eiString(const WCHAR *str)
 		lastCharPtr = &(firstCharPtr[idx] = ch);
 }
 
-eiString::eiString(const char *str) 
+zsString::zsString(const char *str) 
 	:firstCharPtr(staticData), lastCharPtr(staticData), dynamicData(NULL) {
 		mbstowcs(firstCharPtr, str, ZSSTRING_STACK_SIZE);
 }
 
-eiString::eiString(const eiString& str)
+zsString::zsString(const zsString& str)
 	:firstCharPtr(staticData), lastCharPtr(staticData), dynamicData(NULL) {
 		uint32 idx = 0;
 		WCHAR ch = '\0';
@@ -68,17 +68,17 @@ eiString::eiString(const eiString& str)
 		lastCharPtr = &(firstCharPtr[idx] = ch);
 }
 
-eiString::~eiString() {
+zsString::~zsString() {
 	firstCharPtr = NULL;
 	lastCharPtr = NULL;
 	SAFE_DELETE(dynamicData);
 }
 
-eiString& eiString::operator += (const eiString& str) {
+zsString& zsString::operator += (const zsString& str) {
 	return (*this += str.firstCharPtr);
 }
 
-eiString& eiString::operator += (const WCHAR *str) {
+zsString& zsString::operator += (const WCHAR *str) {
 	uint32 idx = 0;
 	WCHAR ch = '\0';
 	while((ch = str[idx]) != '\0') {
@@ -89,43 +89,43 @@ eiString& eiString::operator += (const WCHAR *str) {
 	return *this;
 }
 
-eiString& eiString::operator += (int val) {
-	*this += eiString(val);
+zsString& zsString::operator += (int val) {
+	*this += zsString(val);
 	return *this;
 }
 
-eiString& eiString::operator += (const WCHAR val) {
+zsString& zsString::operator += (const WCHAR val) {
 	*lastCharPtr = val;
 	lastCharPtr++; 
 	*lastCharPtr = '\0';
 	return *this;
 }
 
-eiString& eiString::operator += (float val) {
-	*this += eiString(val);
+zsString& zsString::operator += (float val) {
+	*this += zsString(val);
 	return *this;
 }
 
-bool eiString::operator < (const eiString& str) const {
+bool zsString::operator < (const zsString& str) const {
 	return wcscmp(firstCharPtr,str.firstCharPtr) < 0;
 }
 
-bool eiString::operator ==(const eiString& str) const {
+bool zsString::operator ==(const zsString& str) const {
 	return wcscmp(firstCharPtr, str.firstCharPtr) == 0;
 }
 
-void *eiString::getLine(std::wifstream& inStream) {
+void *zsString::GetLine(std::wifstream& inStream) {
 	return inStream.getline(firstCharPtr, ZSSTRING_STACK_SIZE);
 }
 
-const WCHAR *eiString::getDataAfterFirstWCHAR(const WCHAR ch) const {
+const WCHAR *zsString::GetDataAfterFirstChar(const WCHAR ch) const {
 	uint32 idx = 0;
 	while(firstCharPtr[idx] != ch)
 		idx++;
 	return &firstCharPtr[idx + 1];
 }
 
-const WCHAR eiString::operator [] (uint32 idx) const {
+const WCHAR zsString::operator [] (uint32 idx) const {
 	if(idx < ZSSTRING_STACK_SIZE) {
 		return firstCharPtr[idx];
 	} else {
@@ -133,7 +133,7 @@ const WCHAR eiString::operator [] (uint32 idx) const {
 	}
 }
 
-WCHAR& eiString::operator [] (uint32 idx) {
+WCHAR& zsString::operator [] (uint32 idx) {
 	if(idx < ZSSTRING_STACK_SIZE) {
 		return firstCharPtr[idx];
 	} else {
@@ -141,41 +141,41 @@ WCHAR& eiString::operator [] (uint32 idx) {
 	}
 }
 
-bool eiString::isEmpty() {
+bool zsString::IsEmpty() {
 	return firstCharPtr[0] == '\0';
 }
 
-WCHAR *eiString::str() {
+WCHAR *zsString::Str() {
 	return firstCharPtr;
 }
 
-const WCHAR *eiString::strConst() const {
+const WCHAR *zsString::StrConst() const {
 	return firstCharPtr;
 }
 
-eiString eiString::operator + (const eiString& str) const{
-	eiString result = *this;
+zsString zsString::operator + (const zsString& str) const{
+	zsString result = *this;
 	result += str;
 	return result;
 }
 
-eiString eiString::operator + (const WCHAR *str) const {
-	eiString result = *this;
+zsString zsString::operator + (const WCHAR *str) const {
+	zsString result = *this;
 	result += str;
 	return result;
 }
 
-void eiString::removeFromStart(uint16 numWCHARs) {
+void zsString::RemoveFromStart(uint16 numWCHARs) {
 	firstCharPtr++;
 }
 
-void eiString::addToStart(WCHAR ch) {
+void zsString::AddToStart(WCHAR ch) {
 	memmove(&firstCharPtr[1], &firstCharPtr[0], sizeof(WCHAR));
 	*firstCharPtr = ch;
 	*(++lastCharPtr) = '\0';
 }
 
-bool eiString::findStr(const WCHAR* str) {
+bool zsString::FindStr(const WCHAR* str) {
 	uint32 mainIndex = 0;
 	WCHAR ch = '\0';
 	while((ch = firstCharPtr[mainIndex]) != '\0') {
@@ -201,7 +201,7 @@ bool eiString::findStr(const WCHAR* str) {
 	return false;
 }
 
-bool eiString::strStr(const WCHAR *str, bool notCaseSensitive) {
+bool zsString::StrStr(const WCHAR *str, bool notCaseSensitive) {
 	uint32 mainIdx = 0;
 	uint32 str1Idx = 0;
 	uint32 str2Idx = 0;
@@ -228,17 +228,17 @@ bool eiString::strStr(const WCHAR *str, bool notCaseSensitive) {
 	return false;
 }
 
-void eiString::toAnsiChar(char *buffer, uint16 size) const {
+void zsString::ToAnsiChar(char *buffer, uint16 size) const {
 	wcstombs(buffer, firstCharPtr, size);
 }
 
 
-eiString& eiString::operator = (const eiString& str) {
+zsString& zsString::operator = (const zsString& str) {
 	*this = str.firstCharPtr;
 	return *this;
 }
 
-eiString& eiString::operator = (const WCHAR *str) {
+zsString& zsString::operator = (const WCHAR *str) {
 	uint32 idx = 0;
 	WCHAR ch = '\0';
 	firstCharPtr = staticData;
@@ -250,20 +250,20 @@ eiString& eiString::operator = (const WCHAR *str) {
 	return *this;
 }
 
-void eiString::resize(uint32 newSize) {
+void zsString::Resize(uint32 newSize) {
 	if(newSize > ZSSTRING_STACK_SIZE) {
 		dynamicData = (WCHAR*)realloc(dynamicData, newSize - ZSSTRING_STACK_SIZE);
 	}
 }
 
-void eiString::clear() {
+void zsString::Clear() {
 	firstCharPtr = lastCharPtr = &(staticData[0] = '\0');
 }
 
-eiString operator + (const WCHAR *cStr, const eiString& str) {
-	return eiString(cStr) + str;
+zsString operator + (const WCHAR *cStr, const zsString& str) {
+	return zsString(cStr) + str;
 }
 
-eiString operator + (const CHAR *cStr, const eiString& str) {
-	return eiString(cStr) + str;
+zsString operator + (const CHAR *cStr, const zsString& str) {
+	return zsString(cStr) + str;
 }

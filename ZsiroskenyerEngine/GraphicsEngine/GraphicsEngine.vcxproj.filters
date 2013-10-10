@@ -45,6 +45,9 @@
     <ClCompile Include="src\Exception.cpp">
       <Filter>Other</Filter>
     </ClCompile>
+    <ClCompile Include="src\WindowWin32.cpp">
+      <Filter>Interfaces\IWindow -nak nem itt a helye</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\SceneManager.h">
@@ -78,6 +81,9 @@
       <Filter>Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="src\IWindow.h">
+      <Filter>Interfaces\IWindow -nak nem itt a helye</Filter>
+    </ClInclude>
+    <ClInclude Include="src\WindowWin32.h">
       <Filter>Interfaces\IWindow -nak nem itt a helye</Filter>
     </ClInclude>
   </ItemGroup>
