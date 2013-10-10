@@ -41,6 +41,8 @@ private:
 	void UnloadGeometry(const cGeometry* geometry);
 	void UnloadMaterial(const cMaterial* material);
 
+	cGeometry *loadGeometryDAE(const zsString& fileName);
+
 	// resource database
 	typedef boost::bimap<boost::bimaps::unordered_set_of<const zsString>, boost::bimaps::unordered_set_of<cGeometry*>> GeometryMapT;
 	typedef boost::bimap<boost::bimaps::unordered_set_of<const zsString>, boost::bimaps::unordered_set_of<cMaterial*>> MaterialMapT;

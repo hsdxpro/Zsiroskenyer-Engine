@@ -7,8 +7,14 @@
 
 
 #include "ResourceManager.h"
+#include "..\..\CommonLib\tipsify.h"
 
+// .DAE loading
+#include "ASSIMP/include/assimp/Importer.hpp"
+#include "ASSIMP/include/assimp/Scene.h"
+#include "ASSIMP/include/assimp/PostProcess.h"
 
+// Vertex cache optimisation
 
 using namespace std;
 
@@ -24,11 +30,17 @@ cGeometryRef cResourceManager::LoadGeometry(const zsString& fileName) {
 	// lookup if already exists
 	auto it = geometries.left.find(fileName);
 	if (it==geometries.left.end()) {
-		geom = new cGeometry;
-		// try to load geometry
 
+		// try to load geometry
 		// TODO: add loading code here!
 		// throw a FileNotFound or an InvalidData exception on failure
+
+		// Create geometry based on file extension
+		zsString fileExtension = fileName.substr(fileName.length() - 3, 3);
+		if(fileExtension == L"dae") {
+			geom = loadDAEGeometry(fileName);
+		}
+		
 
 		// insert into database
 		geometries.insert(GeometryMapT::value_type(fileName, geom));
@@ -43,6 +55,168 @@ void cResourceManager::UnloadGeometry(const cGeometry* geometry) {
 	auto it = geometries.right.find(const_cast<cGeometry*>(geometry));
 	delete it->first;
 	geometries.right.erase(it);
+}
+
+cGeometry* cResourceManager::loadGeometryDAE(const zsString& fileName) {
+	if(!cFileParser::isFileExists(srcFile)) {
+		ManagerReporter.print("Can't load Dae Geometry: " + srcFile);
+		return NULL;
+	}
+	Assimp::Importer importer;
+
+	// read up dae scene
+	char ansiSrcFile[EIString_STACK_SIZE];
+	srcFile.toAnsiChar(ansiSrcFile, EIString_STACK_SIZE);
+	const const aiScene* scene = importer.ReadFile(ansiSrcFile,(aiProcessPreset_TargetRealtime_Quality | aiProcess_MakeLeftHanded | aiProcess_FlipWindingOrder)^aiProcess_FindInvalidData);
+	if(scene == NULL)
+		return 0;
+
+	int nVertex = 0;
+	int nIndex = 0;
+	int nMeshes = scene->mNumMeshes;
+	aiMesh** meshes = scene->mMeshes;
+
+	for(uint32 i = 0; i < nMeshes; i++) {
+		aiMesh *mesh = meshes[i];
+		nVertex += mesh->mNumVertices;
+		nIndex += mesh->mNumFaces * 3;
+	}
+
+	// read up vertex + index
+	//tVertexLayouts::tVertexNro::vertex* vertices = new tVertexLayouts::tVertexNro::vertex[nVertex];
+	eiFloat3 *verticesPos = new eiFloat3[nVertex];
+	uint32 *indices = new uint32[nIndex];
+	int indexI = 0;
+	int vertexI = 0;
+	int vertexOffset = 0;
+	for(uint32 i = 0; i < nMeshes;i++) {
+		aiMesh* mesh = meshes[i];
+		aiVector3D* currVertices	= mesh->mVertices;
+		//aiVector3D* currNormals		= mesh->mNormals;
+		//aiVector3D* currTangents	= mesh->mTangents;
+		//aiVector3D* currTxcoords	= mesh->mTextureCoords[0]; // @TODO not general algorithm, wee need to handle more UV channels
+
+
+		// read indices
+		aiFace* faces = mesh->mFaces;
+		int nFaces = mesh->mNumFaces;
+		for(uint32 j = 0; j < nFaces; indexI += 3, j++) {
+			aiFace& face = faces[j];
+
+			indices[indexI]		= face.mIndices[0] + vertexI; // each mesh start indexing from 0 in .dae r
+			indices[indexI + 1]	= face.mIndices[1] + vertexI;
+			indices[indexI + 2]	= face.mIndices[2] + vertexI;
+		}
+
+		// read vertex transforms
+		aiNode *root = scene->mRootNode;
+		bool meshHaveBakedTrans = true;
+		if(strcmp(root->mName.C_Str(),"RootNode") == 0)
+			meshHaveBakedTrans = false;
+
+		aiVector3D scaling(1.0f, 1.0f, 1.0f);
+		aiQuaternion rotation(1.0f, 0.0f, 0.0f, 0.0f);
+		aiVector3D position(0.0f, 0.0f, 0.0f);
+
+		if(!meshHaveBakedTrans) {
+			aiMatrix4x4 meshTrans;
+			aiNode *meshTransNode = scene->mRootNode->mChildren[i];
+			if(scene->mRootNode->mNumChildren > i) {
+				meshTrans *= meshTransNode->mTransformation;
+				if(meshTransNode->mNumChildren > 0)
+					meshTrans *= meshTransNode->mChildren[0]->mTransformation;
+			}
+			meshTrans.Decompose(scaling, rotation, position);
+			position.y *= -1;
+			//position.z *= -1;
+			eiSwap(position.y, position.z);
+		} else {
+			//-
+			aiNode *rootNode = scene->mRootNode;
+			aiNode *meshTransNode = (scene->mRootNode->mNumChildren > 1) ? rootNode->mChildren[1] : rootNode->mChildren[0];
+
+			aiMatrix4x4 meshTrans = meshTransNode->mTransformation;
+			if(meshTransNode->mNumChildren >0) {
+				meshTrans *= meshTransNode->mChildren[0]->mTransformation;
+				if(meshTransNode->mChildren[0]->mNumChildren > 0)
+					meshTrans *= meshTransNode->mChildren[0]->mChildren[0]->mTransformation;
+			}
+			
+			meshTrans.Decompose(scaling, rotation, position);
+		}
+
+		
+
+		// process transform for vertices, normals, tangents, read them
+		for(uint32 j = 0; j < mesh->mNumVertices; vertexI++, j++) {
+			aiVector3D pos = rotation.Rotate(currVertices[j] + position).SymMul(scaling);
+
+			/*aiVector3D norm	= rotation.Rotate(currNormals[j]);
+			aiVector3D tangent	= rotation.Rotate(currTangents[j]);
+			aiVector3D txcoord	= currTxcoords[j];*/
+			
+			if(meshHaveBakedTrans) {
+				eiSwap(pos.y, pos.z);
+				// x, z, y  stupid assimp
+			}
+
+			if(!meshHaveBakedTrans) {
+				pos.y *= -1; // I really don't know why need that
+			}
+		
+
+			verticesPos[vertexI] = eiFloat3(pos.x, pos.y, pos.z);
+
+			//if(bakedRotation) {
+				//verticesPos[vertexI] = eiFloat3(pos.x, pos.z, pos.y);
+			//} else {
+				//verticesPos[vertexI] = eiFloat3(pos.x, -pos.y, pos.z);
+			//}
+
+			/*verticesPos[vertexI]		= eiFloat3(currVertices[j].x, currVertices[j].y, currVertices[j].z);
+			vertices[vertexI].normalL	= XMFLOAT3(norm.x, -norm.z, norm.y);
+			vertices[vertexI].tangentL	= XMFLOAT3(tangent.x, -tangent.z, tangent.y);
+ 			vertices[vertexI].tex0		= XMFLOAT2(txcoord.x, txcoord.y);*/
+		}
+	}
+	
+	// drop non unique vertices
+	eiFloat3* uniqueVertices = new eiFloat3[nVertex];
+	int nUniqVertices = 0;
+	for(uint32 i = 0; i < nVertex; i++) {
+		eiFloat3& v = verticesPos[i];
+
+		bool uniq = true;
+		int uniqIndex = -1;
+		// check vertex uniquness
+		for(uint32 j = 0; j < nUniqVertices; j++) {
+			if(uniqueVertices[j] == v) {
+				uniq = false;
+				uniqIndex = j;
+				break;
+			}
+		}
+
+		int currIndex = nUniqVertices;
+		if(uniq) {
+			uniqueVertices[nUniqVertices] = v;
+			nUniqVertices++;
+		} else {
+			currIndex = uniqIndex;
+		}
+
+		for(uint32 k = 0; k <nIndex; k++)
+			if(indices[k] == i)
+				indices[k] = currIndex;
+	}
+
+	// Finally Index reordering for optimal post vertex cache
+	uint32* reorderedIndices = new uint32[nIndex];
+	reorderedIndices = tipsify(indices,nIndex/3,nVertex,16);
+	delete[] indices;
+
+	eiDebugPrint(_T("ObjectLoader:: SuccessFully loaded object: ") + srcFile);
+	return new cGeometry(uniqueVertices, reorderedIndices, nUniqVertices, nIndex);
 }
 
 // load/unload materials

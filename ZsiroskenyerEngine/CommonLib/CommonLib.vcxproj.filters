@@ -77,5 +77,6 @@
     <ClInclude Include="src\math\Point.h">
       <Filter>math</Filter>
     </ClInclude>
+    <ClInclude Include="src\tipsify.h" />
   </ItemGroup>
 </Project>

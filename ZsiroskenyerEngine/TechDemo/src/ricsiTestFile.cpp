@@ -23,16 +23,14 @@ int ricsiMain() {
 	// Get function for IGraphicsApi
 	auto CreateGraphicsD3D11 = GetDLLFunction(D3D11Dll, "CreateGraphicsD3D11");
 
-	
 	// Get function for IWindow
-	typedef IWindow* (*func)(const IWindow::tDesc& winDesc);
-	auto CreateWindowWin32 = (func)GetDLLFunction(graphicsEngine, "CreateWindowWin32");
+	auto CreateWindowWin32 =  (IWindow* (*)(const IWindow::tDesc& winDesc))GetDLLFunction(graphicsEngine, "CreateWindowWin32");
 
 	// Create basic window
 	IWindow::tDesc desc;
 		desc.appInstance = (int32*)GetModuleHandle(NULL);
 		desc.brush = IWindow::eBrush::RENDER_;
-		desc.captionName = L"EnerIce Engine [Tech Demo]";
+		desc.captionName = L"Zsíroskenyér Engine [Tech Demo]";
 		desc.clientHeight = 600;
 		desc.clientWidth = 800;
 		//desc.style = IWindow::eStyle::OVERLAPPED;
