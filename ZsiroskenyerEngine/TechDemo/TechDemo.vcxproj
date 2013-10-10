@@ -80,6 +80,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\petiTestFile.cpp" />
     <ClCompile Include="src\zsiroskenyer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -88,7 +89,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\tesztFileForRicsi.h" />
+    <ClInclude Include="src\testFiles.h" />
+    <ClCompile Include="src\tesztFileForRicsi.cpp">
+      <FileType>CppHeader</FileType>
+    </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

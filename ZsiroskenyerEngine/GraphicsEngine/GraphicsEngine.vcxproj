@@ -41,11 +41,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)\CommonLib\src;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\..\Externals\boost_1_54_0;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)\CommonLib\src;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\..\Externals\boost_1_54_0;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -84,6 +84,7 @@
     <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\Exception.cpp" />
     <ClCompile Include="src\Geometry.cpp" />
+    <ClCompile Include="src\GraphicsEngine.cpp" />
     <ClCompile Include="src\InstanceGroup.cpp" />
     <ClCompile Include="src\Material.cpp" />
     <ClCompile Include="src\ResourceManager.cpp" />
@@ -94,9 +95,12 @@
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\Geometry.h" />
+    <ClInclude Include="src\GraphicsEngine.h" />
     <ClInclude Include="src\IGraphicsApi.h" />
+    <ClInclude Include="src\IGraphicsEngine.h" />
     <ClInclude Include="src\InstanceGroup.h" />
     <ClInclude Include="src\IRenderer.h" />
+    <ClInclude Include="src\ISceneManager.h" />
     <ClInclude Include="src\ITexture.h" />
     <ClInclude Include="src\IWindow.h" />
     <ClInclude Include="src\Material.h" />

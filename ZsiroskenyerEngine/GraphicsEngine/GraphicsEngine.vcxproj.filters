@@ -19,6 +19,9 @@
     <Filter Include="Interfaces\IWindow -nak nem itt a helye">
       <UniqueIdentifier>{08dc5b44-8594-41ee-b9ca-a1f1a53d3bc8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GraphicsEngine">
+      <UniqueIdentifier>{85ebeef6-1303-459a-994e-8ad431fb3adf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DllMain.cpp">
@@ -47,6 +50,9 @@
     </ClCompile>
     <ClCompile Include="src\WindowWin32.cpp">
       <Filter>Interfaces\IWindow -nak nem itt a helye</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GraphicsEngine.cpp">
+      <Filter>GraphicsEngine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -85,6 +91,15 @@
     </ClInclude>
     <ClInclude Include="src\WindowWin32.h">
       <Filter>Interfaces\IWindow -nak nem itt a helye</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GraphicsEngine.h">
+      <Filter>GraphicsEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IGraphicsEngine.h">
+      <Filter>GraphicsEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ISceneManager.h">
+      <Filter>GraphicsEngine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

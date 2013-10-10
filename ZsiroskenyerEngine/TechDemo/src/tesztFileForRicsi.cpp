@@ -1,10 +1,14 @@
+#include "testFiles.h"
+
+
 #include "..\..\GraphicsEngine\src\IWindow.h"
 #include "..\..\GraphicsEngine\src\IGraphicsApi.h"
 
-//#define WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <string>
 #include <conio.h>
+
 
 std::string GetExecutablePath();
 HMODULE LoadDLL(const std::string& libName);

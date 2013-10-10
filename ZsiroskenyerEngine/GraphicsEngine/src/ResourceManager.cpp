@@ -14,25 +14,71 @@ using namespace std;
 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //	ResourceManager
 
 // load/unload geometries
 cGeometryRef cResourceManager::LoadGeometry(const zsString& fileName) {
-	return cGeometryRef(this);
+	cGeometry* geom;
+
+	// lookup if already exists
+	auto it = geometries.left.find(fileName);
+	if (it==geometries.left.end()) {
+		geom = new cGeometry;
+		// try to load geometry
+
+		// TODO: add loading code here!
+		// throw a FileNotFound or an InvalidData exception on failure
+
+		// insert into database
+		geometries.insert(GeometryMapT::value_type(fileName, geom));
+	}
+	else {
+		geom = it->second;
+	}
+
+	return cGeometryRef(this, geom);
 }
 void cResourceManager::UnloadGeometry(const cGeometry* geometry) {
+	auto it = geometries.right.find(const_cast<cGeometry*>(geometry));
+	delete it->first;
+	geometries.right.erase(it);
 }
 
 // load/unload materials
 cMaterialRef cResourceManager::LoadMaterial(const zsString& fileName) {
-	return cMaterialRef(this);
+	cMaterial* mtl;
+
+	// lookup if already exists
+	auto it = materials.left.find(fileName);
+	if (it==materials.left.end()) {
+		mtl = new cMaterial;
+		// try to load material
+
+		// TODO: add loading code here!
+		// throw a FileNotFound or an InvalidData exception on failure
+
+		// insert into database
+		materials.insert(MaterialMapT::value_type(fileName, mtl));
+	}
+	else {
+		mtl = it->second;
+	}
+	
+	return cMaterialRef(this, mtl);
 }
 void cResourceManager::UnloadMaterial(const cMaterial* material) {
+	auto it = materials.right.find(const_cast<cMaterial*>(material));
+	delete it->first;
+	materials.right.erase(it);
 }
 
 
+// constructors
+cResourceManager::cResourceManager() {
+}
+cResourceManager::~cResourceManager() {
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////

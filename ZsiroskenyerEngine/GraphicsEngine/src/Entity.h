@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <math/math_all.h>
+#include "..\..\CommonLib\src\math\math_all.h"
 
 
 class cInstanceGroup;

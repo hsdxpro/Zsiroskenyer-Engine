@@ -16,7 +16,8 @@
 #include "Geometry.h"
 #include "Material.h"
 
-
+#include <boost\bimap.hpp>
+#include <boost\bimap\unordered_set_of.hpp>
 
 
 
@@ -41,7 +42,11 @@ private:
 	void UnloadMaterial(const cMaterial* material);
 
 	// resource database
+	typedef boost::bimap<boost::bimaps::unordered_set_of<const zsString>, boost::bimaps::unordered_set_of<cGeometry*>> GeometryMapT;
+	typedef boost::bimap<boost::bimaps::unordered_set_of<const zsString>, boost::bimaps::unordered_set_of<cMaterial*>> MaterialMapT;
 
+	GeometryMapT geometries;
+	MaterialMapT materials;
 };
 
 

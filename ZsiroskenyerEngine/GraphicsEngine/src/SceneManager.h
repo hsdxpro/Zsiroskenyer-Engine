@@ -12,7 +12,9 @@
 
 
 #include "..\..\CommonLib\src\zsString.h"
+
 #include "InstanceGroup.h"
+#include "ISceneManager.h"
 
 #include <unordered_set>
 
@@ -35,7 +37,7 @@ struct cInstGroupPtrCompare {
 };
 
 // scene manager
-class cSceneManager {
+class cSceneManager : public ISceneManager {
 public:
 	cSceneManager(cResourceManager& rm);
 	~cSceneManager();
