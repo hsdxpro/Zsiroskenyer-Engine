@@ -4,8 +4,13 @@
 
 #include "IWindow.h"
 
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 class cWindowWin32 : public IWindow {
 public:
+	cWindowWin32(const IWindow::tDesc& winDesc);
+
 	void MoveCenter();
 	void PeekAllMessages();
 	void Close();
@@ -20,4 +25,16 @@ public:
 	uint32 getClientWidth() const;
 	uint32 getClientHeight() const;
 	float getClientAspectRatio() const;
+
+protected:
+	bool opened;
+	HWND handle;
 };
+
+// DLL accessor
+extern "C"
+	__declspec(dllexport)
+	IWindow* CreateWindowWin32(const IWindow::tDesc& winDesc) {
+		MessageBoxA(0, "lol", "bameg", MB_OK);
+		return new cWindowWin32(winDesc);
+}
