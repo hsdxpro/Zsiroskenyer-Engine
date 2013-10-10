@@ -1,5 +1,6 @@
-#include "..\..\GraphicsEngine\src\WindowWin32.h"
-#include "..\..\GraphicsEngine\src\IGraphicsApi.h"
+/*#include "..\..\GraphicsEngine\src\WindowWin32.h"
+#include "..\..\GraphicsEngine\src\IGraphicsApi.h"*/
+#include "..\..\CommonLib\src\zsString.h"
 
 #define _WIN32_LEAN_AND_MEAN
 #include <Windows.h>
@@ -12,6 +13,12 @@ FARPROC GetDLLFunction(HMODULE dll, const std::string& funcName);
 
 
 int main() {
+	// zsString test
+	
+
+
+
+	/*
 	// Load DLL
 	HMODULE D3D11Dll = LoadDLL("RendererD3D11.dll");
 
@@ -21,11 +28,14 @@ int main() {
 	// Create D3D11 renderer
 	IGraphicsApi * dx11 = (IGraphicsApi*)CreateGraphicsD3D11();
 	dx11->Present();
+	*/
+
 	getch();
+
 	return 0;
 }
 
-
+/*
 std::string GetExecutablePath() {
 	char buf[MAX_PATH];
 	GetModuleFileNameA(NULL, buf, MAX_PATH);
@@ -52,3 +62,4 @@ FARPROC GetDLLFunction(HMODULE dll, const std::string& funcName) {
 	}
 	return function;
 }
+*/
