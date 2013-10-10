@@ -11,7 +11,7 @@
 
 
 #include <memory>
-#include <string>
+#include "..\..\CommonLib\src\zsString.h"
 
 #include "Geometry.h"
 #include "Material.h"
@@ -30,8 +30,8 @@ public:
 	~cResourceManager();
 
 	// resource aquisition
-	cGeometryRef LoadGeometry(std::string fileName);
-	cMaterialRef LoadMaterial(std::string fileName);
+	cGeometryRef LoadGeometry(const zsString& fileName);
+	cMaterialRef LoadMaterial(const zsString& fileName);
 
 private:
 	// automatic resource unloading requested by references

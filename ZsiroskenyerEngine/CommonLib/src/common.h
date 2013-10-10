@@ -24,11 +24,11 @@ typedef unsigned char uchar;
 #endif
 
 #if (defined(_DEBUG) || defined(DEBUG))
-#define ASSERT(condition, errorMsg) std::cout<<errorMsg<<std::endl; assert(condition)
-#define ASSERT(condition) assert(condition)
+#define ZSASSERT(condition) assert(condition)
+#define ZSASSERT(condition, errorMsg) MessageBoxA(0, errorMsg, "ErrorMsg",MB_OK); assert(condition)
 #else
-#define ASSERT(x, y) {}
-#define ASSERT(x) {}
+#define ZSASSERT(x, y) {}
+#define ZSASSERT(x) {}
 #endif
 
 #define SAFE_DELETE(x) if(x != NULL) {delete x; x = NULL;}

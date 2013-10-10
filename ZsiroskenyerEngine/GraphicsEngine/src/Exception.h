@@ -8,13 +8,13 @@
 #pragma once
 
 #include <stdexcept>
-
+#include "..\..\CommonLib\src\zsString.h"
 
 template <int id>
 class BaseException : public std::runtime_error {
 public:
 	BaseException(const char* what_arg="no message") : runtime_error(what_arg) {};
-	explicit BaseException(const std::string& what_arg) : runtime_error(what_arg) {};
+	explicit BaseException(const zsString& what_arg) : runtime_error(what_arg) {};
 };
 
 

@@ -12,7 +12,7 @@
 
 
 #include <unordered_set>
-#include <string>
+#include "..\..\CommonLib\src\zsString.h"
 #include "InstanceGroup.h"
 
 class Entity;
@@ -37,7 +37,7 @@ public:
 	cSceneManager(cResourceManager& rm);
 	~cSceneManager();
 
-	Entity& AddEntity(const std::string& geometry, const std::string& material);
+	Entity& AddEntity(const zsString& geometry, const zsString& material);
 	void RemoveEntity(const Entity& entity);
 
 private:

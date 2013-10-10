@@ -1,11 +1,6 @@
 // Implementation
 #include "GraphicsD3D11.h"
 
-// Main Dx interfaces
-ID3D11DeviceContext *d3dcon = NULL;
-ID3D11Device *d3ddev = NULL;
-IDXGISwapChain *d3dsc = NULL;
-
 cGraphicsD3D11::tDxConfig cGraphicsD3D11::tDxConfig::DEFAULT = cGraphicsD3D11::tDxConfig();
 cGraphicsD3D11::tDxConfig cGraphicsD3D11::tDxConfig::MEDIUM = cGraphicsD3D11::tDxConfig();
 cGraphicsD3D11::tDxConfig cGraphicsD3D11::tDxConfig::HIGH = cGraphicsD3D11::tDxConfig();
@@ -16,12 +11,12 @@ cGraphicsD3D11::tDxConfig::tDxConfig()
 }
 
 cGraphicsD3D11::cGraphicsD3D11()
-	:backBufferRTV(NULL),backBufferDSV(NULL) {
-		// Create d3ddevice, d3dcontext
-		CreateDevice();
+:d3ddev(NULL), d3dcon(NULL), d3dsc(NULL), backBufferRTV(NULL),backBufferDSV(NULL) {
+	// Create d3ddevice, d3dcontext
+	CreateDevice();
 
-		// Create default states
-		CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_BACK,D3D11_FILL_MODE::D3D11_FILL_SOLID);
+	// Create default states
+	CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_BACK,D3D11_FILL_MODE::D3D11_FILL_SOLID);
 }
 
 void cGraphicsD3D11::SetWindow(uint16 swapChainWidth, uint16 swapChainHeight, HWND windowHandle, const tDxConfig& config) {
@@ -102,7 +97,7 @@ void cGraphicsD3D11::CreateDevice() {
 			break;
 	}
 
-	ASSERT( i != ARRAYSIZE(featurelevels), "Can't create DirectX Device");
+	ZSASSERT( i != ARRAYSIZE(featurelevels), "Can't create DirectX Device");
 
 	SAFE_RELEASE(fact);
 	SAFE_RELEASE(mainAdapter);
@@ -319,7 +314,8 @@ void cGraphicsD3D11::Draw(uint32 vertexCount) {
 }
 
 void cGraphicsD3D11::Present() {
-	ASSERT(d3dsc != NULL, "Need to set window for rendering");
+	MessageBoxA(0, "lol", "asd", MB_OK);
+	ZSASSERT(d3dsc != NULL, "Need to set window for rendering");
 	d3dsc->Present(0,0); 
 }
 
