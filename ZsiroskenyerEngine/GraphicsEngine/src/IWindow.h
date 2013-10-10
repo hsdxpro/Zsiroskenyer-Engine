@@ -1,5 +1,6 @@
 // IWindow.h By Zsíroskenyér team 2013.10.10 11:01
 // interface for different O.S specific windows
+#pragma once
 
 #include "..\..\CommonLib\src\common.h"
 #include "..\..\CommonLib\src\math\Point.h"
@@ -8,7 +9,8 @@
 
 class IWindow {
 public:
-	typedef int32* cAppInstance;
+	typedef int32* AppInstance;
+	typedef int32* Handle;
 
 	enum eBrush {
 		WHITE,
@@ -48,31 +50,30 @@ public:
 	struct tDesc {
 		static tDesc defaultRenderWindow;
 
-		//@TODO unresolved external for destruction of zsString
-		//zsString captionName;
-		cAppInstance appInstance;
+		zsString captionName;
+		AppInstance appInstance;
 		uint32 clientWidth;
 		uint32 clientHeight;
 		IWindow::eBrush brush;
 		IWindow::eStyle style;
 
-		tDesc( cAppInstance appInstance = NULL, uint32 clientWidth = 0, uint32 clientHeight = 0, IWindow::eBrush brush = IWindow::eBrush::RENDER_, IWindow::eStyle style = IWindow::eStyle::OVERLAPPED)
-			: appInstance(NULL), clientWidth(clientWidth), clientHeight(clientHeight), brush(brush), style(style) {
+		tDesc(const zsString& captionName = L"default_window_caption", AppInstance appInstance = NULL, uint32 clientWidth = 0, uint32 clientHeight = 0, IWindow::eBrush brush = IWindow::eBrush::RENDER_, IWindow::eStyle style = IWindow::eStyle::OVERLAPPED)
+			:captionName(captionName), appInstance(appInstance), clientWidth(clientWidth), clientHeight(clientHeight), brush(brush), style(style) {
 		}
 	};
 
 	virtual void MoveCenter() = 0;
 	virtual void PeekAllMessages() = 0;
 	virtual void Close() = 0;
-	virtual void setCaptionText(const zsString& str) = 0;
+	virtual void SetCaptionText(const zsString& str) = 0;
 
-	virtual bool isOpened() const = 0;
-	virtual bool isFullscreen() const = 0;
+	virtual bool IsOpened() const = 0;
+	virtual bool IsFullscreen() const = 0;
 
-	virtual zsString getCaptionText() const = 0;
-	virtual Vec2 getCenter() const = 0;
-
-	virtual uint32 getClientWidth() const = 0;
-	virtual uint32 getClientHeight() const = 0;
-	virtual float getClientAspectRatio() const = 0;
+	virtual zsString GetCaptionText() const = 0;
+	virtual Vec2 GetCenter() const = 0;
+	virtual Handle GetHandle() const = 0;
+	virtual uint32 GetClientWidth() const = 0;
+	virtual uint32 GetClientHeight() const = 0;
+	virtual float GetClientAspectRatio() const = 0;
 };

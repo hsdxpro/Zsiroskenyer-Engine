@@ -3,7 +3,6 @@
 #pragma once
 
 #include "IWindow.h"
-
 #include <windows.h>
 
 class cWindowWin32 : public IWindow {
@@ -13,17 +12,17 @@ public:
 	void MoveCenter();
 	void PeekAllMessages();
 	void Close();
-	void setCaptionText(const zsString& str);
+	void SetCaptionText(const zsString& str);
 
-	bool isOpened() const;
-	bool isFullscreen() const;
+	bool IsOpened() const;
+	bool IsFullscreen() const;
 
-	zsString getCaptionText() const;
-	Vec2 getCenter() const;
-
-	uint32 getClientWidth() const;
-	uint32 getClientHeight() const;
-	float getClientAspectRatio() const;
+	zsString GetCaptionText() const;
+	Vec2 GetCenter() const;
+	IWindow::Handle GetHandle() const;
+	uint32 GetClientWidth() const;
+	uint32 GetClientHeight() const;
+	float GetClientAspectRatio() const;
 
 protected:
 	bool opened;
@@ -34,6 +33,5 @@ protected:
 extern "C"
 	__declspec(dllexport)
 	IWindow* CreateWindowWin32(const IWindow::tDesc& winDesc) {
-		MessageBoxA(0, "lol", "bameg", MB_OK);
 		return new cWindowWin32(winDesc);
 }

@@ -8,6 +8,7 @@
 #include "Dx11_SDK/Include/D3DX11.h"
 
 #include "..\..\GraphicsEngine\src\IGraphicsApi.h"
+#include "..\..\GraphicsEngine\src\IWindow.h"
 #include "..\..\CommonLib\src\common.h"
 
 class cGraphicsD3D11 : public IGraphicsApi {
@@ -40,7 +41,7 @@ public:
 	void DrawIndexedInstanced(uint32 indexCount, uint32 instanceCount);
 	void Present();	
 
-	void SetWindow(uint16 swapChainWidth, uint16 swapChainHeight, HWND windowHandle, const tDxConfig& config = swapChainConfig);
+	void SetWindow(IWindow *renderWindow);
 	void SetBBRenderTarget();
 
 	cGraphicsD3D11();

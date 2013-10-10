@@ -12,9 +12,6 @@ FARPROC GetDLLFunction(HMODULE dll, const std::string& funcName);
 
 
 int ricsiMain() {
-	zsString a = L"kakI";
-
-
 	// Load DLLs
 	HMODULE D3D11Dll = LoadDLL("RendererD3D11.dll");
 	HMODULE graphicsEngine = LoadDLL("GraphicsEngine.dll");
@@ -31,17 +28,24 @@ int ricsiMain() {
 	IWindow::tDesc desc;
 		desc.appInstance = (int32*)GetModuleHandle(NULL);
 		desc.brush = IWindow::eBrush::RENDER_;
-		//desc.captionName = zsString("EnerIce Engine [Tech Demo]");
+		desc.captionName = L"EnerIce Engine [Tech Demo]";
 		desc.clientHeight = 600;
 		desc.clientWidth = 800;
-		desc.style = IWindow::eStyle::OVERLAPPED;
+		//desc.style = IWindow::eStyle::OVERLAPPED;
+		desc.style = (IWindow::eStyle)WS_OVERLAPPEDWINDOW;
 	IWindow* myWindow = (IWindow*)CreateWindowWin32(desc);
 
 	// Create Dx11 device
 	IGraphicsApi * dx11 = (IGraphicsApi*)CreateGraphicsD3D11();
 
-	dx11->Present();
+	dx11->SetWindow(myWindow);
 
+	// main loop
+	while(myWindow->IsOpened()) {
+		myWindow->PeekAllMessages();
+		dx11->Present();
+	}
+	
 	getch();
 	return 0;
 }

@@ -78,19 +78,20 @@ cWindowWin32::cWindowWin32(const IWindow::tDesc& winDesc)
 
 		int wWidth = winDesc.clientWidth  - adjustedsize.left  + adjustedsize.right;
 		int wHeight = winDesc.clientHeight - adjustedsize.top	+ adjustedsize.bottom;
-		/*
-		handle = CreateWindow(	_T("windowclass"),
-			winDesc.captionName.strConst(),
-			resultingStyle,
+		
+		handle = CreateWindow(
+			_T("windowclass"),
+			winDesc.captionName.c_str(),
+			winDesc.style,
 			0,
 			0,
 			wWidth,
 			wHeight,
 			GetDesktopWindow(),
 			0,
-			winDesc.appInstance,
+			(HINSTANCE)winDesc.appInstance,
 			0);
-		*/
+		
 		ShowWindow(handle,SW_SHOW);
 		UpdateWindow(handle);
 }
@@ -103,41 +104,52 @@ void cWindowWin32::MoveCenter() {
 }
 
 void cWindowWin32::PeekAllMessages() {
-
+	MSG msg;
+	while(PeekMessage(&msg,0,0,0,PM_REMOVE))
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}	
 }
 
 void cWindowWin32::Close() {
 
 }
 
-void cWindowWin32::setCaptionText(const zsString& str) {
+void cWindowWin32::SetCaptionText(const zsString& str) {
 
 }
 
-bool cWindowWin32::isOpened() const {
+bool cWindowWin32::IsOpened() const {
 	return true;
 }
 
-bool cWindowWin32::isFullscreen() const {
+bool cWindowWin32::IsFullscreen() const {
 	return false;
 }
 
-zsString cWindowWin32::getCaptionText() const {
-	return zsString("bvazdmeg");
+zsString cWindowWin32::GetCaptionText() const {
+	return L"asd";
 }
 
-Vec2 cWindowWin32::getCenter() const {
+Vec2 cWindowWin32::GetCenter() const {
 	return Vec2();
 }
 
-uint32 cWindowWin32::getClientWidth() const {
-	return 0;
+uint32 cWindowWin32::GetClientWidth() const {
+	RECT rect; GetClientRect(handle, &rect);
+	return rect.right - rect.left;
 }
 
-uint32 cWindowWin32::getClientHeight() const {
-	return 0;
+uint32 cWindowWin32::GetClientHeight() const {
+	RECT rect; GetClientRect(handle,&rect);
+	return rect.bottom - rect.top;
 }
 
-float cWindowWin32::getClientAspectRatio() const {
+float cWindowWin32::GetClientAspectRatio() const {
 	return 1.0f;
+}
+
+IWindow::Handle cWindowWin32::GetHandle() const {
+	return (Handle)handle;
 }

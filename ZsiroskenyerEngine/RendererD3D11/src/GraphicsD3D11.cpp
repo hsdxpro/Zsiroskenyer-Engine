@@ -19,24 +19,28 @@ cGraphicsD3D11::cGraphicsD3D11()
 	CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_BACK,D3D11_FILL_MODE::D3D11_FILL_SOLID);
 }
 
-void cGraphicsD3D11::SetWindow(uint16 swapChainWidth, uint16 swapChainHeight, HWND windowHandle, const tDxConfig& config) {
+void cGraphicsD3D11::SetWindow(IWindow *renderWindow) {
+//void cGraphicsD3D11::SetWindow(uint16 swapChainWidth, uint16 swapChainHeight, HWND windowHandle, const tDxConfig& config) {
 
+	uint32 clientWidth = renderWindow->GetClientWidth();
+	uint32 clientHeight = renderWindow->GetClientHeight();
 	// Same window size : don't need new swap chain
-	if(swapChainWidth == bbWidth && swapChainHeight == bbHeight)
+	if(clientWidth == bbWidth && clientHeight == bbHeight)
 		return;
 
-	memcpy(&cGraphicsD3D11::swapChainConfig, &config, sizeof(tDxConfig));
+	// Save new swap chain config
+	//memcpy(&cGraphicsD3D11::swapChainConfig, &config, sizeof(tDxConfig));
 
 	// Create swap chain for device
-	CreateMostAcceptableSwapChain(swapChainWidth, swapChainHeight, windowHandle, cGraphicsD3D11::swapChainConfig);
+	CreateMostAcceptableSwapChain(clientWidth, clientHeight, (HWND)(renderWindow->GetHandle()), cGraphicsD3D11::swapChainConfig);
 
 	// Create main render target (BackBuffer)
 	CreateRenderTargetViewForBB(swapChainConfig);
 
 	// Create viewport for swapChain rendering
 	memset(&backBufferVP,0,sizeof(D3D11_VIEWPORT));
-	backBufferVP.Width = swapChainWidth;
-	backBufferVP.Height = swapChainHeight;
+	backBufferVP.Width = clientWidth;
+	backBufferVP.Height = clientHeight;
 	backBufferVP.MaxDepth = 1.0f;
 	backBufferVP.MinDepth = 0.0f;
 
@@ -130,7 +134,7 @@ void cGraphicsD3D11::CreateMostAcceptableSwapChain(uint16 width, uint16 height, 
 
 	// get those displayModes
 	modeDesc = new DXGI_MODE_DESC[numModes];
-	mainOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM,0,&numModes,modeDesc);
+	mainOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, 0, &numModes, modeDesc);
 
 	// select displayModes that matches our renderWindow params and DirectX Config
 	// worst case sized array
@@ -138,9 +142,9 @@ void cGraphicsD3D11::CreateMostAcceptableSwapChain(uint16 width, uint16 height, 
 
 	UINT displayModeIndex = 0;
 	for(int i = 0; i < numModes; i++) {
-		DXGI_MODE_DESC* currMode =& modeDesc[i];
+		DXGI_MODE_DESC* currMode = &modeDesc[i];
 		// Collect The best resolution that the video card handle
-		if(config.createDeviceAtMaxResolution) {
+ 		if(config.createDeviceAtMaxResolution) {
 			// add to matched videoModes if that VideoMode have full screen resolution
 			if(GetSystemMetrics(SM_CXSCREEN) == currMode->Width && GetSystemMetrics(SM_CYSCREEN) == currMode->Height) {
 				filteredVideoModes[displayModeIndex] = currMode;
