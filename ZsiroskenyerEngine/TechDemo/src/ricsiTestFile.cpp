@@ -72,6 +72,7 @@ std::string GetExecutablePath() {
 HMODULE LoadDLL(const std::string& libName) {
 	HMODULE dll = LoadLibraryA((GetExecutablePath() + libName).c_str());
 	if (!dll) {
+		HRESULT error = GetLastError();
 		MessageBoxA(NULL, "FAILED TO LOAD LIBRARY", "FUCK...", MB_OK|MB_ICONERROR);
 		exit(1);
 	}
