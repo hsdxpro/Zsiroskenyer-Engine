@@ -22,8 +22,7 @@
 #pragma once
 
 #include <vector>
-
-//#define TLSF_DEBUG
+#include <cstdint>
 
 #ifdef _M_X64
 #define TLSF_X64  // define if compiling for x64
@@ -32,50 +31,20 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// defines for class TLSF
-#define MBS 16u		// min block size, bytes - set to 8/16 byte (x86/x64)
-#define LOG_MBS 4u	// log2(MBS)
-
-#define TLSF_BLOCK_OVERHEAD (sizeof(size_t)*2u)
-
-// mask for reading sizes
-#ifndef TLSF_X64
-#define SIZE_MASK 0xFFFFFFFCu
-#else
-#define SIZE_MASK 0xFFFFFFFFFFFFFFFCull
-#endif
-
-#define TLSF_BIT_ISLAST 1
-#define TLSF_BIT_ISFREE 0
-
-// just NULL
-#ifndef NULL
-#define NULL 0
-#endif
-
-// growth properties
-#define TLSF_GROWTHFACTOR_DEFAULT 1.2f	// float/double
-#define TLSF_BASESIZE_DEFAULT 16384		// 16k
-
-
-
-// DEBUG
-void uint2binary(unsigned arg, char* str);
-
-
-
-////////////////////////////////////////////////////////////////////////////////
 // helper functions:
+
+#ifdef WIN32 // WIN32 instrinsics
+
 #include <intrin.h>
 
 // log2 and 2^n 
-inline unsigned log2(unsigned n) {
+inline unsigned log2(uint32_t n) {
 	unsigned long idx;
 	_BitScanReverse(&idx, n);
 	return idx;
 }
 #ifdef TLSF_X64
-inline unsigned log2(unsigned __int64 n) {
+inline unsigned log2(uint64_t n) {
 	unsigned long idx;
 	_BitScanReverse64(&idx, n);
 	return idx;
@@ -92,13 +61,13 @@ inline size_t exp2(unsigned y) {
 #endif
 
 // find first set
-inline unsigned ffs(unsigned int arg) {
+inline unsigned ffs(uint32_t arg) {
 	unsigned long idx;
 	_BitScanForward(&idx, arg);
 	return idx;
 }
 #ifdef TLSF_X64
-inline unsigned ffs(unsigned __int64 arg) {
+inline unsigned ffs(uint64_t arg) {
 	unsigned long idx;
 	_BitScanForward64(&idx, arg);
 	return idx;
@@ -106,7 +75,7 @@ inline unsigned ffs(unsigned __int64 arg) {
 #endif
 
 // set bits
-inline void set_bit(unsigned* arg, unsigned char bit, bool val) {
+inline void set_bit(uint32_t* arg, unsigned char bit, bool val) {
 	if (val) {
 		_bittestandset(reinterpret_cast<long*>(arg), bit);
 	}
@@ -115,7 +84,7 @@ inline void set_bit(unsigned* arg, unsigned char bit, bool val) {
 	}
 }
 #ifdef TLSF_X64
-inline void set_bit(unsigned __int64* arg, unsigned char bit, bool val) {
+inline void set_bit(uint64_t* arg, unsigned char bit, bool val) {
 	if (val) {
 		_bittestandset64(reinterpret_cast<long long*>(arg), bit);
 	}
@@ -124,16 +93,41 @@ inline void set_bit(unsigned __int64* arg, unsigned char bit, bool val) {
 	}
 }
 #endif
-inline bool get_bit(unsigned* arg, unsigned char bit) {
+inline bool get_bit(uint32_t* arg, unsigned char bit) {
 	return _bittest(reinterpret_cast<long*>(arg), bit) != 0;
 }
 #ifdef TLSF_X64
-inline bool get_bit(unsigned __int64* arg, unsigned char bit) {
+inline bool get_bit(uint64_t* arg, unsigned char bit) {
 	return _bittest64(reinterpret_cast<long long*>(arg), bit) != 0;
 }
 #endif
 
+#else // WIN32 not def
+static_assert(false, "TLSF bit functions not implemented for this compiler!");
+#endif // WIN32
 
+
+
+////////////////////////////////////////////////////////////////////////////////
+// defines for class TLSF
+#define MBS (sizeof(size_t)*2u)		// min block size, bytes - set to 8/16 byte (x86/x64)
+#define LOG_MBS (log2(MBS))
+
+#define TLSF_BLOCK_OVERHEAD (sizeof(size_t)*2u)
+
+// mask for reading sizes
+#ifndef TLSF_X64
+#define SIZE_MASK 0xFFFFFFFCu
+#else
+#define SIZE_MASK 0xFFFFFFFFFFFFFFFCull
+#endif
+
+#define TLSF_BIT_ISLAST 1
+#define TLSF_BIT_ISFREE 0
+
+// growth properties
+#define TLSF_GROWTHFACTOR_DEFAULT 1.2f	// float/double
+#define TLSF_BASESIZE_DEFAULT 16384		// 16k
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -143,26 +137,21 @@ inline bool get_bit(unsigned __int64* arg, unsigned char bit) {
 ////////////////////////////////////////////////////////////////////////////////
 class TLSF {
 	public:
-		TLSF();							  // default constructor
-		TLSF(size_t size, unsigned SLI);  // initializing constructor		
-		~TLSF() {clear();}  // destructor
-		
-		bool init(unsigned SLI);	// explicit initialization
-		bool extend(size_t size);	// both implicit and explicit call to allocate more memory from heap
-		void clear();				// explicit de-initialization
+		TLSF(size_t size=256, unsigned SLI=5);  // initializing constructor		
+		~TLSF() {clear();}				  // destructor
 
-		void* malloc(size_t size);	// allocates memory from the pool (min size: 8/16 byte, overhead: 8/16 byte (x86/x64))
-		void free(void* ptr);		// frees memory: some error handling for bad pointers, debug mode only
+		void* allocate(size_t size);	// allocates memory from the pool (min size: 8/16 byte, overhead: 8/16 byte (x86/x64))
+		void deallocate(void* ptr);		// frees memory: some error handling for bad pointers, debug mode only
+
+		void reset(size_t size=256, unsigned SLI=5);
 
 		void set_growth_rate(size_t static_growth, float growth_factor) {baseSize=static_growth; growthFactor=growth_factor;}
-		void set_error_handler(void (*func)(int)) {error_handler = func;}  // sets external error handler function
 	private:
-		// private, internal functions
-		bool grow(size_t smin);		 // implicitly handles pool growing
-
-		// misc
-		void (*error_handler)(int);  // this is called on error
-		bool isFunctional;			 // just a state information
+		// manage pool size and initialization
+		bool init(unsigned SLI);	// initialization
+		bool extend(size_t size);	// both implicit and explicit call to allocate more memory from heap
+		void clear();				// de-initialization -> frees everything! pool won't work
+		bool grow(size_t smin);		// internally handles pool growing
 		
 		// data that describes the memory pool
 		unsigned FLI;		// first level index = log2(max_size), set to 31 or 63

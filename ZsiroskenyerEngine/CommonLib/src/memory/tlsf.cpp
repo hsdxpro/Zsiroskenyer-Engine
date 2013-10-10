@@ -6,50 +6,24 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "tlsf.h"
-#include <memory.h>
-#include <csignal>
-#include <Windows.h>
-#include <iostream>
+#include <stdexcept>
+#include <exception>
 
-using std::cout;
-
-// callback for segmentation faults
-void __cdecl SegFaultThrow(int) {
-	throw 1;
-}
-
-// defintion for debug mode -> nicely calls the error handler on data corruption
-#ifdef TLSF_DEBUG
-#define StartDebug	signal(SIGSEGV, SegFaultThrow); \
-					try {
-#define EndDebug(e)	} \
-					catch (...) { \
-						if (error_handler) \
-							error_handler(e); \
-					} \
-					signal(SIGSEGV, SIG_DFL);
-
-#else
-#define StartDebug
-#define EndDebug(e)
-#endif
+using namespace std;
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // constructor
-TLSF::TLSF() {
-	isFunctional = false;
-	growthFactor = (float)TLSF_GROWTHFACTOR_DEFAULT;
-	error_handler = NULL;
-}
-
 TLSF::TLSF(size_t size, unsigned SLI) {
-	isFunctional = false;
 	growthFactor = (float)TLSF_GROWTHFACTOR_DEFAULT;
-	error_handler = NULL;
 	// initialize and allocate memory
-	init(SLI);
-	extend(size);
+	if (!init(SLI)) {
+		throw runtime_error("TLSF failed to initialize");
+	}
+	if (!extend(size)) {
+		clear();
+		throw runtime_error("TLSF failed to initialize");
+	}
 }
 
 
@@ -57,9 +31,6 @@ TLSF::TLSF(size_t size, unsigned SLI) {
 ////////////////////////////////////////////////////////////////////////////////
 // initialization
 bool TLSF::init(unsigned SLI) {
-	if (isFunctional)
-		return false;
-
 	// truncates SLI to 5 if it's more
 	this->SLI = (SLI>5u ? 5u : SLI);
 	// calculates FLI
@@ -68,17 +39,16 @@ bool TLSF::init(unsigned SLI) {
 #else
 	FLI = 31;
 #endif
-	nFLLists = (FLI-log2(MBS)+1);
+	nFLLists = (FLI-LOG_MBS+1);
 
 	// calculates header size and allocates it
 	headerSize = sizeof(void*) * (nFLLists * exp2(this->SLI)) + nFLLists*sizeof(unsigned);
-	header = new unsigned char[headerSize];
-	if (!header) {
-		isFunctional = false;
+	try {
+		header = new unsigned char[headerSize];
+	}
+	catch (exception&) {
 		return false;
 	}
-	else
-		isFunctional = true;
 
 	// initialize the header
 	bitmap_FL = 0u;
@@ -88,11 +58,11 @@ bool TLSF::init(unsigned SLI) {
 	totalSize = 0u;
 	baseSize = 0u;
 
-	return isFunctional;
+	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// resets the pool, releases all memory
+// deinitializes the pool, releases all memory
 void TLSF::clear() {
 	// delete the header
 	if (header)
@@ -102,24 +72,31 @@ void TLSF::clear() {
 	for (unsigned i=0; i<pMemBlocks.size(); i++)
 		delete[] pMemBlocks[i];
 	pMemBlocks.clear();
+}
 
-	// reset variables
-	isFunctional = false;
+////////////////////////////////////////////////////////////////////////////////
+// re-initializes the pool
+void TLSF::reset(size_t size, unsigned SLI) {
+	clear();
+	if (!init(SLI)) {
+		throw runtime_error("TLSF failed to initialize");
+	}
+	if (!extend(size)) {
+		clear();
+		throw runtime_error("TLSF failed to initialize");
+	}
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // allocating more system memory
 bool TLSF::extend(size_t size) {
-	if (!isFunctional)
-		return false;
-
 	// DWORD-align size
 	set_bit(&size, 0, 0); set_bit(&size, 1, 0);
 	size = size>64 ? size:64;
 
 	// allocate new memory
-	void* newMemBlock = (void*) new char[size];
+	void* newMemBlock = (void*)new char[size];
 	if (!newMemBlock)
 		return false;
 
@@ -135,9 +112,9 @@ bool TLSF::extend(size_t size) {
 	SHeaderFree* block =  (SHeaderFree*)newMemBlock;
 
 	block->_size(size);	block->is_free(true); block->is_last(true);
-	block->previousPhysBlock = NULL;
-	block->nextFreeBlock = NULL;
-	block->previousFreeBlock = NULL;
+	block->previousPhysBlock = nullptr;
+	block->nextFreeBlock = nullptr;
+	block->previousFreeBlock = nullptr;
 
 	register_free_block(block);
 
@@ -145,7 +122,7 @@ bool TLSF::extend(size_t size) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// seamlessly grow the pool (not a client function); used by malloc()
+// seamlessly grow the pool (not a client function); used by allocate()
 bool TLSF::grow(size_t smin=0) {
 	// no size specified
 	if (baseSize==0u)
@@ -169,7 +146,6 @@ bool TLSF::grow(size_t smin=0) {
 
 // registers a free block
 void TLSF::register_free_block(SHeaderFree* block) {
-StartDebug
 	// calculate indices
 	unsigned fl, sl;
 	mapping(block->_size()-TLSF_BLOCK_OVERHEAD, fl, sl);
@@ -186,7 +162,7 @@ StartDebug
 		// link it to the list
 		pHeaderFirst->previousFreeBlock = block;
 		block->nextFreeBlock = pHeaderFirst;
-		block->previousFreeBlock = NULL;
+		block->previousFreeBlock = nullptr;
 		// set the first item as 'block'
 		*ppFirst = block;
 	}
@@ -194,16 +170,14 @@ StartDebug
 	else {
 		*ppFirst = block;
 		// also set block's linkage
-		block->nextFreeBlock = NULL;
-		block->previousFreeBlock = NULL;
+		block->nextFreeBlock = nullptr;
+		block->previousFreeBlock = nullptr;
 	}
 
 	block->is_free(true);
-EndDebug(1)
 }
 // unregisters a free block
 void TLSF::unregister_free_block(SHeaderFree* block) {
-StartDebug
 	// simply remove it from its list if it is not the first of a list
 	if (block->previousFreeBlock) {
 		//cout << "unregister: not first";
@@ -222,7 +196,7 @@ StartDebug
 
 		// set the first item of the list
 		*get_sublist(fl, sl) = block->nextFreeBlock;
-		block->nextFreeBlock->previousFreeBlock = NULL;
+		block->nextFreeBlock->previousFreeBlock = nullptr;
 	}
 	// if it was the only block in this list, set bitmaps and ptr-to-first to NULL
 	else {
@@ -235,12 +209,11 @@ StartDebug
 		if (*bitmap_sl==0)
 			set_bit(&bitmap_FL, fl, 0);
 		// set sublist to NULL
-		*get_sublist(fl, sl) = NULL;
+		*get_sublist(fl, sl) = nullptr;
 		// set the blocks ptr to NULL
-		block->nextFreeBlock = block->previousFreeBlock = NULL;
+		block->nextFreeBlock = block->previousFreeBlock = nullptr;
 	}
 	block->is_free(false);
-EndDebug(2)
 }
 
 
@@ -248,7 +221,6 @@ EndDebug(2)
 ////////////////////////////////////////////////////////////////////////////////
 // concatenate free block to larger free block
 void TLSF::concat_blocks(SHeaderFree* block1, SHeaderFree* block2) {
-StartDebug
 	// find and set the prevPhysBlock of the block after block2
 	if (block2->is_last() == false) {
 		SHeaderUsed* block_after = (SHeaderUsed*)(size_t(block2)+block2->_size()); // we don't care if it's a used block or not
@@ -273,10 +245,8 @@ StartDebug
 
 	// register block1 again as the new, bigger concatenated block
 	register_free_block(block1);
-EndDebug(3)
 }
 void TLSF::concat_blocks(SHeaderFree* block1, SHeaderFree* block2, SHeaderFree* block3) {
-StartDebug
 	// find and set the prevPhysBlock of the block after block3
 	if (block3->is_last() == false) {
 		SHeaderUsed* block_after = (SHeaderUsed*)(size_t(block3)+block3->_size()); // we don't care if it's a used block or not
@@ -304,7 +274,6 @@ StartDebug
 
 	// register block1 as the concatenated block
 	register_free_block(block1);
-EndDebug(4)
 }
 
 
@@ -314,7 +283,6 @@ EndDebug(4)
 // truncate block: creates a used block of the requested size, and a free block from the remaining
 //					if not enough space for the free block, it marks the whole as used
 TLSF::SHeaderUsed* TLSF::truncate_block(SHeaderFree* block, size_t reqSize) {
-StartDebug
 	size_t remainingSize = block->_size() - (reqSize+TLSF_BLOCK_OVERHEAD);
 	// truncation not possible, just return this block as is
 	if (remainingSize < TLSF_BLOCK_OVERHEAD+MBS) {
@@ -331,7 +299,7 @@ StartDebug
 		//set its parameters
 		newFreeBlock->_size(remainingSize);
 		newFreeBlock->previousPhysBlock = (SHeaderUsed*)block;
-		newFreeBlock->nextFreeBlock = newFreeBlock->previousFreeBlock = NULL;
+		newFreeBlock->nextFreeBlock = newFreeBlock->previousFreeBlock = nullptr;
 		newFreeBlock->is_last(block->is_last());
 		newFreeBlock->is_free(true);
 
@@ -352,8 +320,7 @@ StartDebug
 
 		return reinterpret_cast<SHeaderUsed*>(block);
 	}
-EndDebug(5)
-	return NULL;
+	return nullptr;
 }
 
 
@@ -364,17 +331,9 @@ EndDebug(5)
 
 ////////////////////////////////////////////////////////////////////////////////
 // malloc and free
-#ifdef TLSF_DEBUG
-#define DEBUG_FAILURE_MSG	{MessageBoxA(NULL, "Memory allocation failure!", "TLSF::malloc()", MB_OK | MB_ICONERROR); \
-							cout<<"fl="<<fl<<"  sl="<<sl; \
-							DebugBreak();}
 
-#else
-#define DEBUG_FAILURE_MSG
-#endif
-////////////////////////////////////////////////////////////////////////////////
-// malloc
-void* TLSF::malloc(size_t size) {
+
+void* TLSF::allocate(size_t size) {
 	// if size is too small, set it to bigger
 	if (size < MBS)
 		size = MBS;
@@ -395,10 +354,9 @@ void* TLSF::malloc(size_t size) {
 
 	bm_fl >>= fl_min;
 	if (!bm_fl) {
-		DEBUG_FAILURE_MSG
 		if (grow(size))
-			return malloc(size);
-		return NULL;
+			return allocate(size);
+		return nullptr;
 	}
 
 	fl = fl_min+ffs(bm_fl);
@@ -416,10 +374,9 @@ void* TLSF::malloc(size_t size) {
 			fl = fl_min+1;
 			bm_fl >>= fl;
 			if (!bm_fl) {
-				DEBUG_FAILURE_MSG
 				if (grow(size))
-					return malloc(size);
-				return NULL;
+					return allocate(size);
+				return nullptr;
 			}
 			bm_fl <<= fl;
 			fl = ffs(bm_fl);
@@ -436,10 +393,9 @@ void* TLSF::malloc(size_t size) {
 				fl = fl_min+1;
 				bm_fl >>= fl;
 				if (!bm_fl) {
-					DEBUG_FAILURE_MSG
 					if (grow(size))
-						return malloc(size);
-					return NULL;
+						return allocate(size);
+					return nullptr;
 				}
 				bm_fl <<= fl;
 				fl = ffs(bm_fl);
@@ -458,8 +414,8 @@ void* TLSF::malloc(size_t size) {
 					}
 					if (!bitmap_FL>>fl) {
 						if (grow(size))
-							return malloc(size);
-						return NULL;
+							return allocate(size);
+						return nullptr;
 					}
 					bm_sl = *_bitmap(fl);
 					bm_sl >>= sl;
@@ -469,10 +425,9 @@ void* TLSF::malloc(size_t size) {
 						bm_fl = bitmap_FL;
 						bm_fl >>= fl;
 						if (!bm_fl) {
-							DEBUG_FAILURE_MSG
 							if (grow(size))
-								return malloc(size);
-							return NULL;
+								return allocate(size);
+							return nullptr;
 						}
 						fl += ffs(bm_fl);
 						bm_sl = *_bitmap(fl);
@@ -488,16 +443,9 @@ void* TLSF::malloc(size_t size) {
 
 	// find and truncate this block
 	block = *get_sublist(fl, sl);
-#ifdef TLSF_DEBUG
-	if (block==NULL) {
-		DEBUG_FAILURE_MSG
-	}
-#endif
+
 	if (block->_size() < size+TLSF_BLOCK_OVERHEAD) {
-#ifdef TLSF_DEBUG
-		DEBUG_FAILURE_MSG
-#endif
-		return NULL;
+		return nullptr;
 	}
 	SHeaderUsed* allocatedBlock = truncate_block(block, size);
 
@@ -512,9 +460,9 @@ void* TLSF::malloc(size_t size) {
 // free
 // note: the user might free a "wrong" location, but this case cannot be checked
 //		 valid header could be generated anywhere in the allocated memory, and then freed, which causes an error
-void TLSF::free(void* ptr) {
+void TLSF::deallocate(void* ptr) {
 
-	if (ptr == NULL) {
+	if (ptr == nullptr) {
 		return;
 	}
 	// this must be a used block, get the pointer to the block structure
@@ -531,7 +479,7 @@ void TLSF::free(void* ptr) {
 		if (!block->is_last())
 			nextBlock = (SHeaderUsed*)(size_t(block)+block->_size());
 		else
-			nextBlock = NULL; 
+			nextBlock = nullptr; 
 #ifdef TLSF_DEBUG
 		// a little validation check
 		if (nextBlock && nextBlock->previousPhysBlock != block) {
