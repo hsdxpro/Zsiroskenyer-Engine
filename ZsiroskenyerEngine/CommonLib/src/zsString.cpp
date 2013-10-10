@@ -278,9 +278,7 @@ zsString operator + (const CHAR *cStr, const zsString& str) {
 
 #else // STATIC_SIZE
 
-
-
-
+#include "zsString.h"
 
 
 #endif // STATIC_SIZE
