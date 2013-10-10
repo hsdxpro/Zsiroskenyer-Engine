@@ -7,7 +7,6 @@
 
 
 #include "ResourceManager.h"
-#include "..\..\CommonLib\tipsify.h"
 
 // .DAE loading
 #include "ASSIMP/include/assimp/Importer.hpp"
@@ -15,6 +14,11 @@
 #include "ASSIMP/include/assimp/PostProcess.h"
 
 // Vertex cache optimisation
+#include "..\..\CommonLib\src\tipsify.h"
+
+// Common and math
+#include "..\..\CommonLib\src\common.h"
+#include "..\..\CommonLib\src\math\vec3.h"
 
 using namespace std;
 
@@ -38,7 +42,7 @@ cGeometryRef cResourceManager::LoadGeometry(const zsString& fileName) {
 		// Create geometry based on file extension
 		zsString fileExtension = fileName.substr(fileName.length() - 3, 3);
 		if(fileExtension == L"dae") {
-			geom = loadDAEGeometry(fileName);
+			geom = LoadGeometryDAE(fileName);
 		}
 		
 
@@ -57,19 +61,15 @@ void cResourceManager::UnloadGeometry(const cGeometry* geometry) {
 	geometries.right.erase(it);
 }
 
-cGeometry* cResourceManager::loadGeometryDAE(const zsString& fileName) {
-	if(!cFileParser::isFileExists(srcFile)) {
-		ManagerReporter.print("Can't load Dae Geometry: " + srcFile);
-		return NULL;
-	}
+cGeometry* cResourceManager::LoadGeometryDAE(const zsString& fileName) {
 	Assimp::Importer importer;
 
 	// read up dae scene
-	char ansiSrcFile[EIString_STACK_SIZE];
-	srcFile.toAnsiChar(ansiSrcFile, EIString_STACK_SIZE);
-	const const aiScene* scene = importer.ReadFile(ansiSrcFile,(aiProcessPreset_TargetRealtime_Quality | aiProcess_MakeLeftHanded | aiProcess_FlipWindingOrder)^aiProcess_FindInvalidData);
+	char ansiFileName[256];
+	wcstombs(ansiFileName, fileName.c_str(), 256);
+	const const aiScene* scene = importer.ReadFile(ansiFileName, (aiProcessPreset_TargetRealtime_Quality | aiProcess_MakeLeftHanded | aiProcess_FlipWindingOrder)^aiProcess_FindInvalidData);
 	if(scene == NULL)
-		return 0;
+		return NULL;
 
 	int nVertex = 0;
 	int nIndex = 0;
@@ -84,7 +84,7 @@ cGeometry* cResourceManager::loadGeometryDAE(const zsString& fileName) {
 
 	// read up vertex + index
 	//tVertexLayouts::tVertexNro::vertex* vertices = new tVertexLayouts::tVertexNro::vertex[nVertex];
-	eiFloat3 *verticesPos = new eiFloat3[nVertex];
+	Vec3 *verticesPos = new Vec3[nVertex];
 	uint32 *indices = new uint32[nIndex];
 	int indexI = 0;
 	int vertexI = 0;
@@ -103,7 +103,7 @@ cGeometry* cResourceManager::loadGeometryDAE(const zsString& fileName) {
 		for(uint32 j = 0; j < nFaces; indexI += 3, j++) {
 			aiFace& face = faces[j];
 
-			indices[indexI]		= face.mIndices[0] + vertexI; // each mesh start indexing from 0 in .dae r
+			indices[indexI]		= face.mIndices[0] + vertexI; // each mesh start indexing from 0 in .dae
 			indices[indexI + 1]	= face.mIndices[1] + vertexI;
 			indices[indexI + 2]	= face.mIndices[2] + vertexI;
 		}
@@ -128,10 +128,8 @@ cGeometry* cResourceManager::loadGeometryDAE(const zsString& fileName) {
 			}
 			meshTrans.Decompose(scaling, rotation, position);
 			position.y *= -1;
-			//position.z *= -1;
-			eiSwap(position.y, position.z);
+			swap(position.y, position.z);
 		} else {
-			//-
 			aiNode *rootNode = scene->mRootNode;
 			aiNode *meshTransNode = (scene->mRootNode->mNumChildren > 1) ? rootNode->mChildren[1] : rootNode->mChildren[0];
 
@@ -156,7 +154,7 @@ cGeometry* cResourceManager::loadGeometryDAE(const zsString& fileName) {
 			aiVector3D txcoord	= currTxcoords[j];*/
 			
 			if(meshHaveBakedTrans) {
-				eiSwap(pos.y, pos.z);
+				swap(pos.y, pos.z);
 				// x, z, y  stupid assimp
 			}
 
@@ -165,7 +163,7 @@ cGeometry* cResourceManager::loadGeometryDAE(const zsString& fileName) {
 			}
 		
 
-			verticesPos[vertexI] = eiFloat3(pos.x, pos.y, pos.z);
+			verticesPos[vertexI] = Vec3(pos.x, pos.y, pos.z);
 
 			//if(bakedRotation) {
 				//verticesPos[vertexI] = eiFloat3(pos.x, pos.z, pos.y);
@@ -181,10 +179,10 @@ cGeometry* cResourceManager::loadGeometryDAE(const zsString& fileName) {
 	}
 	
 	// drop non unique vertices
-	eiFloat3* uniqueVertices = new eiFloat3[nVertex];
+	Vec3* uniqueVertices = new Vec3[nVertex];
 	int nUniqVertices = 0;
 	for(uint32 i = 0; i < nVertex; i++) {
-		eiFloat3& v = verticesPos[i];
+		Vec3& v = verticesPos[i];
 
 		bool uniq = true;
 		int uniqIndex = -1;
@@ -215,7 +213,6 @@ cGeometry* cResourceManager::loadGeometryDAE(const zsString& fileName) {
 	reorderedIndices = tipsify(indices,nIndex/3,nVertex,16);
 	delete[] indices;
 
-	eiDebugPrint(_T("ObjectLoader:: SuccessFully loaded object: ") + srcFile);
 	return new cGeometry(uniqueVertices, reorderedIndices, nUniqVertices, nIndex);
 }
 

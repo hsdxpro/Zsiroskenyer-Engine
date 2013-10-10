@@ -9,10 +9,22 @@
 
 #pragma once
 
+#include "..\..\CommonLib\src\common.h"
+#include "..\..\CommonLib\src\math\vec3.h"
+
 class cGeometry {
 public:
+	cGeometry(Vec3 *verticesPos, uint32 *indices,  uint32 nVertex, uint32 nIndex);
 
-private:
+	Vec3 *getVerticesPos() const;
+	uint32 *getIndices() const;
 
+	uint32 getNVertex() const;
+	uint32 getNIndex() const;
+protected:
+	Vec3	*verticesPos;
+	uint32		nVertex;
 
+	uint32		*indices;
+	uint32		nIndex;
 };

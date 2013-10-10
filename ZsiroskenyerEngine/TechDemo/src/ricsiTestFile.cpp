@@ -1,8 +1,8 @@
 #include "testFiles.h"
 
-
 #include "..\..\GraphicsEngine\src\IWindow.h"
 #include "..\..\GraphicsEngine\src\IGraphicsApi.h"
+#include "..\..\GraphicsEngine\src\IGraphicsEngine.h"
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
@@ -17,14 +17,18 @@ FARPROC GetDLLFunction(HMODULE dll, const std::string& funcName);
 
 int ricsiMain() {
 	// Load DLLs
-	HMODULE D3D11Dll = LoadDLL("RendererD3D11.dll");
-	HMODULE graphicsEngine = LoadDLL("GraphicsEngine.dll");
+	HMODULE hDllD3D11Dll = LoadDLL("RendererD3D11.dll");
+	HMODULE hDllGraphicsEngine = LoadDLL("GraphicsEngine.dll");
 
-	// Get function for IGraphicsApi
-	auto CreateGraphicsD3D11 = GetDLLFunction(D3D11Dll, "CreateGraphicsD3D11");
+	// Get function for IGraphicsApi, IGraphicsEngine, IWindow
+	auto CreateGraphicsD3D11 = (IGraphicsApi*)GetDLLFunction(hDllD3D11Dll, "CreateGraphicsD3D11");
+	auto CreateGraphicsEngine = (IGraphicsEngine*)GetDLLFunction(hDllGraphicsEngine, "CreateGraphicsEngine");
+	auto CreateWindowWin32 = (IWindow* (*)(const IWindow::tDesc& winDesc))GetDLLFunction(hDllGraphicsEngine, "CreateWindowWin32");
 
-	// Get function for IWindow
-	auto CreateWindowWin32 =  (IWindow* (*)(const IWindow::tDesc& winDesc))GetDLLFunction(graphicsEngine, "CreateWindowWin32");
+	// Create interfaces
+	IGraphicsEngine* mgrGEngine = CreateGraphicsEngine;
+	ISceneManager* mgrScene = mgrGEngine->GetSceneManager();
+	IGraphicsApi *dx11 = CreateGraphicsD3D11;
 
 	// Create basic window
 	IWindow::tDesc desc;
@@ -37,10 +41,14 @@ int ricsiMain() {
 		desc.style = (IWindow::eStyle)WS_OVERLAPPEDWINDOW;
 	IWindow* myWindow = (IWindow*)CreateWindowWin32(desc);
 
-	// Create Dx11 device
-	IGraphicsApi * dx11 = (IGraphicsApi*)CreateGraphicsD3D11();
-
+	// Set Render Window
 	dx11->SetWindow(myWindow);
+
+	// Create 3D objects
+	cEntity& entity = mgrScene->AddEntity(L"box.dae", L"material");
+
+	entity.position = Vec3(1,1,1);
+	entity.isVisible = true;
 
 	// main loop
 	while(myWindow->IsOpened()) {

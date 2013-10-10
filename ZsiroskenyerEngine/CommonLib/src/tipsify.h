@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef ENERICE_ENGINE_VERTCACHEOPT_TIPSIFY_H
+#define ENERICE_ENGINE_VERTCACHEOPT_TIPSIFY_H
 
 #define __STDC_LIMIT_MACROS
 #include <stdint.h>
@@ -47,7 +48,7 @@ int skipDeadEnd(const AdjacencyType* liveTriangles, const VertexIndexType* deadE
 
 		// Check for live triangles
 		if (liveTriangles[i] > 0)
-			return i ;
+			return i;
 	}
 
 	// We are done !
@@ -83,8 +84,8 @@ int getNextVertex ( int nVertices, int& i, int k, const VertexIndexType* nextCan
 			// Keep best candidate
 			if (p > m) 
 			{
-				m = p ;
-				n = v ;
+				m = p;
+				n = v;
 			}
 		}
 	}
@@ -105,8 +106,8 @@ VertexIndexType* tipsify (const VertexIndexType* indices, int nTriangles, int nV
 	// Vertex−triangle adjacency
 
 	// Count the occur rances o f each vertex
-	AdjacencyType* numOccurrances = new AdjacencyType [nVertices] ;
-	memset ( numOccurrances , 0 , sizeof (AdjacencyType ) * nVertices ) ;
+	AdjacencyType* numOccurrances = new AdjacencyType [nVertices];
+	memset ( numOccurrances , 0 , sizeof (AdjacencyType ) * nVertices );
 	for ( int i = 0 ; i < 3 * nTriangles ; i++) 
 	{
 		int v = indices[i];
@@ -114,7 +115,7 @@ VertexIndexType* tipsify (const VertexIndexType* indices, int nTriangles, int nV
 		{
 			// Unsupported mesh ,
 			// vertex shared by too many triangles
-			delete [ ] numOccurrances ;
+			delete [ ] numOccurrances;
 			return NULL;
 		}
 
@@ -122,19 +123,19 @@ VertexIndexType* tipsify (const VertexIndexType* indices, int nTriangles, int nV
 	}
 
 	// Find the offsets into the adjacency array for each vertex
-	int sum = 0 ; 
-	ArrayIndexType* offsets = new ArrayIndexType [nVertices + 1] ;
+	int sum = 0; 
+	ArrayIndexType* offsets = new ArrayIndexType [nVertices + 1];
 
 	int maxAdjacency = 0 ;
 	for ( int i = 0 ; i < nVertices ; i++)
 	{
 		offsets[i] = sum;
-		sum += numOccurrances [i] ;
+		sum += numOccurrances [i];
 
 		if( numOccurrances [i] > maxAdjacency )
-			maxAdjacency = numOccurrances[i] ;
+			maxAdjacency = numOccurrances[i];
 
-		numOccurrances [i] = 0 ;
+		numOccurrances [i] = 0;
 	}
 
 	offsets[nVertices] = sum;
@@ -161,52 +162,52 @@ VertexIndexType* tipsify (const VertexIndexType* indices, int nTriangles, int nV
 
 	// Per−vertex caching time stamps
 	ArrayIndexType* cacheTime = new ArrayIndexType [nVertices];
-	memset(cacheTime,0,sizeof(ArrayIndexType) * nVertices) ;
+	memset(cacheTime,0,sizeof(ArrayIndexType) * nVertices);
 
 	// Dead−end vertex stack
-	VertexIndexType* deadEndStack = new VertexIndexType [DEAD_END_STACK_SIZE] ;
-	memset(deadEndStack,0, sizeof(VertexIndexType) * DEAD_END_STACK_SIZE) ;
+	VertexIndexType* deadEndStack = new VertexIndexType [DEAD_END_STACK_SIZE];
+	memset(deadEndStack,0, sizeof(VertexIndexType) * DEAD_END_STACK_SIZE);
 	int deadEndStackPos = 0 ;
 	int deadEndStackStart = 0 ;
 
 	// Per triangle emitted flag
-	uint8_t* emitted = new uint8_t[ ( nTriangles + 7) / 8 ] ;
-	memset(emitted,0,sizeof (uint8_t) * ( ( nTriangles + 7) /8) ) ;
+	uint8_t* emitted = new uint8_t[ ( nTriangles + 7) / 8 ];
+	memset(emitted,0,sizeof (uint8_t) * ( ( nTriangles + 7) /8) );
 
 	// Empty output buffer
-	TriangleIndexType* outputTriangles = new TriangleIndexType[nTriangles] ;
+	TriangleIndexType* outputTriangles = new TriangleIndexType[nTriangles];
 
-	int outputPos = 0 ;
+	int outputPos = 0;
 
 	// Arbitrary starting vertex
-	int f = 0 ;
+	int f = 0;
 	// Time stamp and cursor
-	int s = k + 1 ;
-	int i = 0 ;
+	int s = k + 1;
+	int i = 0;
 
-	VertexIndexType* nextCandidates = new VertexIndexType [3 * maxAdjacency] ;
+	VertexIndexType* nextCandidates = new VertexIndexType [3 * maxAdjacency];
 
 	// For allvalid fanning vertices
 	while ( f >= 0) 
 	{
 		// 1−r ing of next candidates
 		int numNextCandidates = 0 ;
-		int startOffset = offsets[f] ;
-		int endOffset = offsets[f+1] ;
+		int startOffset = offsets[f];
+		int endOffset = offsets[f+1];
 
 		for (int offset = startOffset; offset < endOffset; offset++)
 		{
 			int t = adjacency[offset];
-			if ( ! ISEMITTED( t ) ) 
+			if (!ISEMITTED(t)) 
 			{
-				const VertexIndexType* vptr =& indices[3 * t];
+				const VertexIndexType* vptr= &indices[3 * t];
 				// Output triangle
 
-				outputTriangles[outputPos++] = t ;
+				outputTriangles[outputPos++] = t;
 
-				for ( int j = 0 ; j < 3 ; j++)
+				for( int j = 0 ; j < 3 ; j++)
 				{
-					int v = vptr[j] ;
+					int v = vptr[j];
 
 					// Add to dead−end stack
 					deadEndStack[ ( deadEndStackPos++)&  DEAD_END_STACK_MASK] = v ;
@@ -232,7 +233,7 @@ VertexIndexType* tipsify (const VertexIndexType* indices, int nTriangles, int nV
 				}
 
 				// Flag triangle as emitted
-				SETEMITTED( t );
+				SETEMITTED(t);
 			}
 		}
 
@@ -253,15 +254,17 @@ VertexIndexType* tipsify (const VertexIndexType* indices, int nTriangles, int nV
 	VertexIndexType* outputIndices = new VertexIndexType [3 * nTriangles];
 	outputPos = 0 ;
 
-	for ( int i = 0 ; i < nTriangles; i++) 
+	for( int i = 0 ; i < nTriangles; i++) 
 	{
 		int t = outputTriangles [i] ;
 		for ( int j = 0 ; j < 3 ; j++)
 		{
 			int v = indices[3 * t + j ] ;
-			outputIndices[outputPos++] = v ;
+			outputIndices[outputPos++] = v;
 		}
 	}
-	delete [ ] outputTriangles ;
+	delete [ ] outputTriangles;
 	return outputIndices;
 }
+
+#endif
