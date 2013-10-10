@@ -10,9 +10,8 @@
 #include "..\..\GraphicsEngine\src\IGraphicsApi.h"
 #include "..\..\CommonLib\src\common.h"
 
-class cGraphicsD3D11 : public IGraphicsApi {
+class _declspec( dllexport ) cGraphicsD3D11 : public IGraphicsApi {
 public:
-
 	// Configuration to construct with
 	struct tDxConfig {
 		tDxConfig();
@@ -61,3 +60,12 @@ protected:
 
 	static tDxConfig swapChainConfig;
 };
+
+// DLL accessor
+#ifdef __cplusplus
+extern "C"
+	__declspec(dllexport)
+	IGraphicsApi* CreateGraphicsD3D11() {
+		return new cGraphicsD3D11();
+#endif
+}

@@ -16,6 +16,7 @@
     <ClCompile Include="src\math\Quat.cpp" />
     <ClCompile Include="src\math\Vec3.cpp" />
     <ClCompile Include="src\memory\tlsf.cpp" />
+    <ClCompile Include="src\zsString.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\algorithms\sort.h" />
@@ -29,6 +30,7 @@
     <ClInclude Include="src\memory\fixed_size_pool.h" />
     <ClInclude Include="src\memory\tlsf.h" />
     <ClInclude Include="src\storage\tree.h" />
+    <ClInclude Include="src\zsString.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4A9A62C0-5B13-4453-B6A9-464DFFBE864F}</ProjectGuid>

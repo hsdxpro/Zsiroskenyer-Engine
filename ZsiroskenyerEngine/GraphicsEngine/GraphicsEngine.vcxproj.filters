@@ -16,6 +16,9 @@
     <Filter Include="Interfaces">
       <UniqueIdentifier>{9b3a76ce-4acf-4659-98a0-7241a406d9f7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interfaces\IWindow -nak nem itt a helye">
+      <UniqueIdentifier>{08dc5b44-8594-41ee-b9ca-a1f1a53d3bc8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DllMain.cpp">
@@ -73,6 +76,9 @@
     </ClInclude>
     <ClInclude Include="src\ITexture.h">
       <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IWindow.h">
+      <Filter>Interfaces\IWindow -nak nem itt a helye</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

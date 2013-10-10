@@ -30,6 +30,7 @@
     <ClCompile Include="src\math\Color.cpp">
       <Filter>math</Filter>
     </ClCompile>
+    <ClCompile Include="src\zsString.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\math\math_all.h">
@@ -63,5 +64,6 @@
       <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="src\common.h" />
+    <ClInclude Include="src\zsString.h" />
   </ItemGroup>
 </Project>

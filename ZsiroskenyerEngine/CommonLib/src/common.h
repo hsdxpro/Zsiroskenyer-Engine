@@ -13,6 +13,8 @@ typedef unsigned short uint16;
 typedef signed short int16;
 typedef unsigned char uint8;
 typedef signed char int8;
+typedef wchar_t WCHAR;
+typedef char CHAR;
 
 typedef unsigned short ushort;
 typedef unsigned char uchar;

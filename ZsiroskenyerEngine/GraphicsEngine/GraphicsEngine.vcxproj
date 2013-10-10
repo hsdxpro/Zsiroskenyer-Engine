@@ -97,6 +97,7 @@
     <ClInclude Include="src\InstanceGroup.h" />
     <ClInclude Include="src\IRenderer.h" />
     <ClInclude Include="src\ITexture.h" />
+    <ClInclude Include="src\IWindow.h" />
     <ClInclude Include="src\Material.h" />
     <ClInclude Include="src\ResourceManager.h" />
     <ClInclude Include="src\SceneManager.h" />
