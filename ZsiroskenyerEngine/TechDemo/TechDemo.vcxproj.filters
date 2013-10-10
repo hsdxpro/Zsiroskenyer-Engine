@@ -6,6 +6,6 @@
   <ItemGroup>
     <ClCompile Include="src\zsiroskenyer.cpp" />
     <ClCompile Include="src\petiTestFile.cpp" />
-    <ClCompile Include="src\tesztFileForRicsi.cpp" />
+    <ClCompile Include="src\ricsiTestFile.cpp" />
   </ItemGroup>
 </Project>

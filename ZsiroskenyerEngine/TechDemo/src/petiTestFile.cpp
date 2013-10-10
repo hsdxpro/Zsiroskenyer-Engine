@@ -2,6 +2,9 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <Windows.h>
+#include <iostream>
+
+using namespace std;
 
 
 #include "..\..\GraphicsEngine\src\IGraphicsEngine.h"
@@ -52,7 +55,6 @@ int petiMain() {
 
 	entity.position = Vec3(1,1,1);
 	entity.isVisible = true;
-	entity;
 
 
 	return 0;
