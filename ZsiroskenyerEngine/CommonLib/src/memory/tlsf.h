@@ -23,6 +23,7 @@
 
 #include <vector>
 
+#define TLSF_DEBUG
 
 #ifdef _M_X64
 #define TLSF_X64  // define if compiling for x64

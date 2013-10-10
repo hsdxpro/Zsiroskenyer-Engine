@@ -12,6 +12,9 @@ FARPROC GetDLLFunction(HMODULE dll, const std::string& funcName);
 
 
 int ricsiMain() {
+	zsString a = L"kakI";
+
+
 	// Load DLLs
 	HMODULE D3D11Dll = LoadDLL("RendererD3D11.dll");
 	HMODULE graphicsEngine = LoadDLL("GraphicsEngine.dll");
