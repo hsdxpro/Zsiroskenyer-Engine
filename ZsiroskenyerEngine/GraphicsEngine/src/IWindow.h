@@ -2,6 +2,7 @@
 // interface for different O.S specific windows
 
 #include "..\..\CommonLib\src\common.h"
+#include "..\..\CommonLib\src\zsString.h"
 
 interface IWindow {
 public:
@@ -43,14 +44,14 @@ public:
 	struct tDesc {
 		static tDesc defaultRenderWindow;
 
-		eiString captionName;
+		zsString captionName;
 		HINSTANCE appInstance;
 		uint32 clientWidth;
 		uint32 clientHeight;
 		IWindow::eBrush brush;
 		IWindow::eStyle style;
 
-		tDesc(const eiString& captionName = _T("default_window_name"), HINSTANCE appInstance = NULL, uint32 clientWidth = 0, uint32 clientHeight = 0, cWindow::eBrush brush = cWindow::eBrush::RENDER_, cWindow::eStyle style = cWindow::eStyle::OVERLAPPED)
+		tDesc(const zsString& captionName = _T("default_window_name"), HINSTANCE appInstance = NULL, uint32 clientWidth = 0, uint32 clientHeight = 0, cWindow::eBrush brush = cWindow::eBrush::RENDER_, cWindow::eStyle style = cWindow::eStyle::OVERLAPPED)
 			:captionName(captionName), appInstance(appInstance = NULL), clientWidth(clientWidth), clientHeight(clientHeight), brush(brush), style(style) {
 		}
 	};
@@ -64,7 +65,7 @@ public:
 
 	static void moveToBottomRight(const HWND& windowHandle);
 
-	void setCaptionText(const eiString& str);
+	void setCaptionText(const zsString& str);
 
 	bool isOpened() const;
 	bool isFullscreen() const;
@@ -79,7 +80,7 @@ public:
 	const HWND& getHandle() const;
 	const HDC getDC() const;
 
-	static eiPoint getSize(const HWND& windowHandle);
+	static Point getSize(const HWND& windowHandle);
 	static uint32 getClientWidth(const HWND& windowHandle);
 	static uint32 getClientHeight(const HWND& windowHandle);
 	static const HDC getDC(const HWND& windowHandle);

@@ -13,7 +13,9 @@
   <ItemGroup>
     <ClCompile Include="src\math\Color.cpp" />
     <ClCompile Include="src\math\Matrix44.cpp" />
+    <ClCompile Include="src\math\Point.cpp" />
     <ClCompile Include="src\math\Quat.cpp" />
+    <ClCompile Include="src\math\Vec2.cpp" />
     <ClCompile Include="src\math\Vec3.cpp" />
     <ClCompile Include="src\memory\tlsf.cpp" />
     <ClCompile Include="src\zsString.cpp" />
@@ -25,7 +27,9 @@
     <ClInclude Include="src\math\Color.h" />
     <ClInclude Include="src\math\math_all.h" />
     <ClInclude Include="src\math\Matrix44.h" />
+    <ClInclude Include="src\math\Point.h" />
     <ClInclude Include="src\math\Quat.h" />
+    <ClInclude Include="src\math\Vec2.h" />
     <ClInclude Include="src\math\Vec3.h" />
     <ClInclude Include="src\memory\fixed_size_pool.h" />
     <ClInclude Include="src\memory\tlsf.h" />
