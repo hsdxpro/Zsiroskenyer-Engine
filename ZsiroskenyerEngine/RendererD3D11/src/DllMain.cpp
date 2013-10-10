@@ -14,7 +14,7 @@
 
 #define _WIN32_LEAN_AND_MEAN
 #include <Windows.h>
-
+#include "GraphicsD3D11.h"
 
 BOOL WINAPI DllMain(HINSTANCE hInstDll, DWORD reason, void* reserved) {
 	switch (reason) {

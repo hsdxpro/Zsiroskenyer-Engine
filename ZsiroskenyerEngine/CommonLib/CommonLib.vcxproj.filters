@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\math\common.cpp">
-      <Filter>math</Filter>
-    </ClCompile>
     <ClCompile Include="src\memory\tlsf.cpp">
       <Filter>memory</Filter>
     </ClCompile>
@@ -35,9 +32,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\math\common.h">
-      <Filter>math</Filter>
-    </ClInclude>
     <ClInclude Include="src\math\math_all.h">
       <Filter>math</Filter>
     </ClInclude>
@@ -68,5 +62,6 @@
     <ClInclude Include="src\math\Color.h">
       <Filter>math</Filter>
     </ClInclude>
+    <ClInclude Include="src\common.h" />
   </ItemGroup>
 </Project>

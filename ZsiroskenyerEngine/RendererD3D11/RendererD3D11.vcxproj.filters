@@ -9,5 +9,9 @@
     <ClCompile Include="src\DllMain.cpp">
       <Filter>DllMain</Filter>
     </ClCompile>
+    <ClCompile Include="src\GraphicsD3D11.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\GraphicsD3D11.h" />
   </ItemGroup>
 </Project>
