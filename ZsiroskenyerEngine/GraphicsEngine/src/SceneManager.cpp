@@ -21,7 +21,7 @@ cSceneManager::~cSceneManager() {
 
 
 // entities
-Entity& cSceneManager::AddEntity(const std::string& geometry, const std::string& material) {
+Entity& cSceneManager::AddEntity(const zsString& geometry, const zsString& material) {
 	cInstanceGroup* instGroup = nullptr;
 	try {
 		cGeometryRef g = resourceManager.LoadGeometry(geometry);

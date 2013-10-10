@@ -19,14 +19,14 @@ using namespace std;
 //	ResourceManager
 
 // load/unload geometries
-cGeometryRef cResourceManager::LoadGeometry(string fileName) {
+cGeometryRef cResourceManager::LoadGeometry(const zsString& fileName) {
 	return cGeometryRef(this);
 }
 void cResourceManager::UnloadGeometry(const cGeometry* geometry) {
 }
 
 // load/unload materials
-cMaterialRef cResourceManager::LoadMaterial(string fileName) {
+cMaterialRef cResourceManager::LoadMaterial(const zsString& fileName) {
 	return cMaterialRef(this);
 }
 void cResourceManager::UnloadMaterial(const cMaterial* material) {
