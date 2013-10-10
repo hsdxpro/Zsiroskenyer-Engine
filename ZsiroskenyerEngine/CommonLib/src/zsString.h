@@ -1,16 +1,13 @@
 // zsString.h By Zsíroskenyér Team 2013.10.10 11:07
 #pragma once
 
-
+#define STATIC_SIZE
 
 #ifdef STATIC_SIZE 
 #define ZSSTRING_STACK_SIZE 256
 
 #include "common.h"
 #include <fstream>
-
-
-
 
 class zsString {
 public:

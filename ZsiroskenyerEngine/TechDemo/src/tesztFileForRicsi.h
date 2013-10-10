@@ -22,19 +22,17 @@ int ricsiMain() {
 	
 	// Get function for IWindow
 	typedef IWindow* (*func)(const IWindow::tDesc& winDesc);
-	auto createWindowWin32 = (func)GetDLLFunction(graphicsEngine, "CreateWindowWin32");
+	auto CreateWindowWin32 = (func)GetDLLFunction(graphicsEngine, "CreateWindowWin32");
 
 	// Create basic window
 	IWindow::tDesc desc;
-	/*
 		desc.appInstance = (int32*)GetModuleHandle(NULL);
 		desc.brush = IWindow::eBrush::RENDER_;
-		desc.captionName = zsString("EnerIce Engine [Tech Demo]");
+		//desc.captionName = zsString("EnerIce Engine [Tech Demo]");
 		desc.clientHeight = 600;
 		desc.clientWidth = 800;
 		desc.style = IWindow::eStyle::OVERLAPPED;
-		*/
-	IWindow* myWindow = (IWindow*)createWindowWin32(desc);
+	IWindow* myWindow = (IWindow*)CreateWindowWin32(desc);
 
 	// Create Dx11 device
 	IGraphicsApi * dx11 = (IGraphicsApi*)CreateGraphicsD3D11();
@@ -55,7 +53,7 @@ std::string GetExecutablePath() {
 }
 
 HMODULE LoadDLL(const std::string& libName) {
-	HMODULE dll = LoadLibraryA((GetExecutablePath() + "RendererD3D11.dll").c_str());
+	HMODULE dll = LoadLibraryA((GetExecutablePath() + libName).c_str());
 	if (!dll) {
 		MessageBoxA(NULL, "FAILED TO LOAD LIBRARY", "FUCK...", MB_OK|MB_ICONERROR);
 		exit(1);

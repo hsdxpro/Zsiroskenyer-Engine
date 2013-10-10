@@ -1,6 +1,5 @@
 
 
-
 #ifdef STATIC_SIZE
 
 // Implementation
