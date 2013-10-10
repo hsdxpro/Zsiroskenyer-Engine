@@ -24,8 +24,11 @@ typedef unsigned char uchar;
 #endif
 
 #if (defined(_DEBUG) || defined(DEBUG))
-#define ZSASSERT(condition) assert(condition)
-#define ZSASSERT(condition, errorMsg) MessageBoxA(0, errorMsg, "ErrorMsg",MB_OK); assert(condition)
+#define ZSASSERT(condition, errorMsg) \
+	if (condition != true) { \
+		MessageBoxA(0, errorMsg, "ErrorMsg", MB_OK); \
+		assert(condition); \
+	}
 #else
 #define ZSASSERT(x, y) {}
 #define ZSASSERT(x) {}

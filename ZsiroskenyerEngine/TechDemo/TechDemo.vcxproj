@@ -87,6 +87,9 @@
       <Project>{6edd9407-84d4-42fa-a763-6a3f11c1aff6}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\tesztFileForRicsi.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

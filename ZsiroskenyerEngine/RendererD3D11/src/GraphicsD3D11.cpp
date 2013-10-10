@@ -83,7 +83,7 @@ void cGraphicsD3D11::CreateDevice() {
 	// Dx debug Mode if needed
 	UINT flags = 0;
 #if defined(DEBUG) || defined(_DEBUG)
-	//flags |= D3D11_CREATE_DEVICE_DEBUG;
+	flags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
 	// go from high feature level to lower, try to create device with each
@@ -92,6 +92,8 @@ void cGraphicsD3D11::CreateDevice() {
 	const int nFeatureLevels = ARRAYSIZE(featurelevels);
 	for(; i < nFeatureLevels; i++, featurelevel = featurelevels[i]) {
 		HRESULT hr = D3D11CreateDevice(mainAdapter, D3D_DRIVER_TYPE_UNKNOWN , 0, flags, featurelevels, nFeatureLevels, D3D11_SDK_VERSION, &d3ddev, &featurelevel, &d3dcon);
+
+		// Wrap mode...
 		//HRESULT hr = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_WARP , 0, flags, featurelevels, nFeatureLevels, D3D11_SDK_VERSION, &d3ddev, &featurelevel, &d3dcon); // For dx9 machines
 		if(!FAILED(hr))
 			break;
@@ -242,7 +244,6 @@ void cGraphicsD3D11::CreateRenderTargetViewForBB(const tDxConfig& config) {
 
 
 void cGraphicsD3D11::CreateDefaultStates(const D3D11_CULL_MODE& cullMode, const D3D11_FILL_MODE& fillMode) {
-
 	// default geometry topology!!
 	d3dcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -300,7 +301,6 @@ void cGraphicsD3D11::CreateIndexBuffer(uint32 indexStride, uint32 nIndex, void *
 }
 
 void cGraphicsD3D11::ClearBB(bool clearOnlyDSV) {
-	//static const FLOAT defaultClearColor[4] = { 0.1f, 0.3f, 0.7f, 0.0f };
 	static const FLOAT defaultClearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
 	d3dcon->ClearDepthStencilView(backBufferDSV,D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,1.0,0);
@@ -314,7 +314,6 @@ void cGraphicsD3D11::Draw(uint32 vertexCount) {
 }
 
 void cGraphicsD3D11::Present() {
-	MessageBoxA(0, "lol", "asd", MB_OK);
 	ZSASSERT(d3dsc != NULL, "Need to set window for rendering");
 	d3dsc->Present(0,0); 
 }
