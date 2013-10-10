@@ -1,3 +1,8 @@
+
+
+
+#ifdef STATIC_SIZE
+
 // Implementation
 #include "zsString.h"
 #include <sstream>
@@ -267,3 +272,15 @@ zsString operator + (const WCHAR *cStr, const zsString& str) {
 zsString operator + (const CHAR *cStr, const zsString& str) {
 	return zsString(cStr) + str;
 }
+
+
+
+
+#else // STATIC_SIZE
+
+
+
+
+
+
+#endif // STATIC_SIZE
