@@ -7,69 +7,68 @@
 #include <sstream>
 
 zsString::zsString()
-	:firstCharPtr(staticData), lastCharPtr(staticData), dynamicData(NULL) {
+:firstCharPtr(staticData), lastCharPtr(staticData), dynamicData(NULL) {
 }
 
 zsString::zsString(WCHAR ch)
-	:firstCharPtr(staticData), lastCharPtr(staticData), dynamicData(NULL) {
-		staticData[0] = ch;
-		staticData[1] = '\0';
+:firstCharPtr(staticData), lastCharPtr(staticData), dynamicData(NULL) {
+	staticData[0] = ch;
+	staticData[1] = '\0';
 }
 
 zsString::zsString(int val)
-
-	:firstCharPtr(staticData), lastCharPtr(staticData), dynamicData(NULL) {
-		std::wstringstream ss; ss<<val;
-		std::wstring& str = ss.str();
-		const WCHAR *dataToCopy = str.c_str();
-		uint32 idx = 0;
-		WCHAR ch = '\0';
-		while((ch = dataToCopy[idx]) != '\0') {
-			firstCharPtr[idx] = ch;
-			idx++;
-		}
-		lastCharPtr = &(firstCharPtr[idx] = ch);
+:firstCharPtr(staticData), lastCharPtr(staticData), dynamicData(NULL) {
+	std::wstringstream ss; ss<<val;
+	std::wstring& str = ss.str();
+	const WCHAR *dataToCopy = str.c_str();
+	uint32 idx = 0;
+	WCHAR ch = '\0';
+	while((ch = dataToCopy[idx]) != '\0') {
+		firstCharPtr[idx] = ch;
+		idx++;
+	}
+	lastCharPtr = &(firstCharPtr[idx] = ch);
 }
 
 zsString::zsString(float val)
-	:firstCharPtr(staticData), lastCharPtr(staticData), dynamicData(NULL) {
-		std::wstringstream ss; ss<<val;
-		std::wstring& str = ss.str();
-		const WCHAR *dataToCopy = str.c_str();
-		uint32 idx = 0;
-		WCHAR ch = '\0';
-		while((ch = dataToCopy[idx]) != '\0') {
-			firstCharPtr[idx] = ch;
-			idx++;
-		}
-		lastCharPtr = &(firstCharPtr[idx] = ch);
+:firstCharPtr(staticData), lastCharPtr(staticData), dynamicData(NULL) {
+	std::wstringstream ss; ss<<val;
+	std::wstring& str = ss.str();
+	const WCHAR *dataToCopy = str.c_str();
+	uint32 idx = 0;
+	WCHAR ch = '\0';
+	while((ch = dataToCopy[idx]) != '\0') {
+		firstCharPtr[idx] = ch;
+		idx++;
+	}
+	lastCharPtr = &(firstCharPtr[idx] = ch);
 }
 
 zsString::zsString(const WCHAR *str) 
-	:firstCharPtr(staticData), lastCharPtr(staticData), dynamicData(NULL) {
-		uint32 idx = 0;
-		WCHAR ch = '\0';
-		while((ch = str[idx]) != '\0') {
-			firstCharPtr[idx] = ch;
-			idx++;
-		}
-		lastCharPtr = &(firstCharPtr[idx] = ch);
+:firstCharPtr(staticData), lastCharPtr(staticData), dynamicData(NULL) {
+	uint32 idx = 0;
+	WCHAR ch = '\0';
+	while((ch = str[idx]) != '\0') {
+		firstCharPtr[idx] = ch;
+		idx++;
+	}
+	lastCharPtr = &(firstCharPtr[idx] = ch);
 }
 
 zsString::zsString(const char *str) 
-	:firstCharPtr(staticData), lastCharPtr(staticData), dynamicData(NULL) {
-		mbstowcs(firstCharPtr, str, ZSSTRING_STACK_SIZE);
+:firstCharPtr(staticData), lastCharPtr(staticData), dynamicData(NULL) {
+	mbstowcs(firstCharPtr, str, ZSSTRING_STACK_SIZE);
 }
 
 zsString::zsString(const zsString& str)
-	:firstCharPtr(staticData), lastCharPtr(staticData), dynamicData(NULL) {
-		uint32 idx = 0;
-		WCHAR ch = '\0';
-		while((ch = str[idx]) != '\0') {
-			firstCharPtr[idx] = ch;
-			idx++;
-		} 
-		lastCharPtr = &(firstCharPtr[idx] = ch);
+:firstCharPtr(staticData), lastCharPtr(staticData), dynamicData(NULL) {
+	uint32 idx = 0;
+	WCHAR ch = '\0';
+	while((ch = str[idx]) != '\0') {
+		firstCharPtr[idx] = ch;
+		idx++;
+	} 
+	lastCharPtr = &(firstCharPtr[idx] = ch);
 }
 
 zsString::~zsString() {
