@@ -131,14 +131,14 @@ bool TLSFAllocator<T>::operator!=(const TLSFAllocator& other) {
 // alloc
 template <class T>
 typename TLSFAllocator<T>::pointer TLSFAllocator<T>::allocate(size_t n) {
-	pointer p = (pointer)memPool.malloc(sizeof(value_type)*n);
+	pointer p = (pointer)memPool.allocate(sizeof(value_type)*n);
 	if (p==nullptr)
 		throw std::runtime_error("TLSF failure");
 	return p;
 }
 template <class T>
 void TLSFAllocator<T>::deallocate(pointer ptr, size_t n) {
-	memPool.free((void*)ptr);
+	memPool.deallocate((void*)ptr);
 }
 
 template <class T>
