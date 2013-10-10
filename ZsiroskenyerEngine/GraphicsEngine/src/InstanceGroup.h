@@ -12,7 +12,7 @@
 #include <unordered_set>
 
 
-class Entity;
+class cEntity;
 
 
 
@@ -24,7 +24,7 @@ public:
 
 	cGeometryRef geom;
 	cMaterialRef mtl;
-	std::unordered_set<Entity*> entityList;
+	std::unordered_set<cEntity*> entities;
 	bool operator==(const cInstanceGroup& other) {
 		return geom==other.geom && mtl==other.mtl;
 	}

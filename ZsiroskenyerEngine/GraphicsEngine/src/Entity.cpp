@@ -9,7 +9,7 @@
 #include "Entity.h"
 
 
-Entity::Entity() : 
+cEntity::cEntity() : 
 		position(0,0,0),
 		rotation(Vec3(0,0,0), 0),
 		scale(1,1,1),

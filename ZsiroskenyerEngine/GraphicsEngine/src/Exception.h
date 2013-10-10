@@ -10,14 +10,15 @@
 #include <stdexcept>
 #include "..\..\CommonLib\src\zsString.h"
 
+class GraphicsEngineException {
+};
+
 template <int id>
-class BaseException : public std::runtime_error {
+class BaseException : public std::runtime_error, public GraphicsEngineException {
 public:
 	BaseException(const char* what_arg="no message") : runtime_error(what_arg) {};
 	explicit BaseException(const zsString& what_arg) : runtime_error(what_arg) {};
 };
-
-
 
 
 typedef BaseException<1> FileNotFoundException;

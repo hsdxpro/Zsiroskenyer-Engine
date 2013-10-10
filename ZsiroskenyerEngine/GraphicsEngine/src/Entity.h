@@ -14,9 +14,9 @@ class cInstanceGroup;
 
 
 
-class Entity {
+class cEntity {
 public:
-	Entity();
+	cEntity();
 
 	Vec3 position;
 	Quat rotation;

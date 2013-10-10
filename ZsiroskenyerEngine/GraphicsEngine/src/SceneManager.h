@@ -11,13 +11,16 @@
 #pragma once
 
 
-#include <unordered_set>
 #include "..\..\CommonLib\src\zsString.h"
 #include "InstanceGroup.h"
 
-class Entity;
+#include <unordered_set>
+
+
+class cEntity;
 class cResourceManager;
 
+// helpers for storing cInstanceGroups by pointer
 struct cInstGroupPtrHasher {
 	size_t operator()(cInstanceGroup* i) {
 		return i!=nullptr?std::hash<cInstanceGroup>()(*i):0;
@@ -31,14 +34,14 @@ struct cInstGroupPtrCompare {
 	}
 };
 
-
+// scene manager
 class cSceneManager {
 public:
 	cSceneManager(cResourceManager& rm);
 	~cSceneManager();
 
-	Entity& AddEntity(const zsString& geometry, const zsString& material);
-	void RemoveEntity(const Entity& entity);
+	cEntity& AddEntity(const zsString& geometry, const zsString& material);
+	void RemoveEntity(const cEntity& entity);
 
 private:
 	std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare> instanceGroups;

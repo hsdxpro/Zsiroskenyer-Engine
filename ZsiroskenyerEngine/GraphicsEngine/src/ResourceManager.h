@@ -11,10 +11,12 @@
 
 
 #include <memory>
-#include "..\..\CommonLib\src\zsString.h"
 
+#include "..\..\CommonLib\src\zsString.h"
 #include "Geometry.h"
 #include "Material.h"
+
+
 
 
 
@@ -37,6 +39,9 @@ private:
 	// automatic resource unloading requested by references
 	void UnloadGeometry(const cGeometry* geometry);
 	void UnloadMaterial(const cMaterial* material);
+
+	// resource database
+
 };
 
 
