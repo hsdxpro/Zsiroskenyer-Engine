@@ -8,7 +8,10 @@
 #include "tlsf.h"
 #include <memory.h>
 #include <csignal>
+#include <Windows.h>
+#include <iostream>
 
+using std::cout;
 
 // callback for segmentation faults
 void __cdecl SegFaultThrow(int) {
