@@ -12,7 +12,7 @@ FARPROC GetDLLFunction(HMODULE dll, const std::string& funcName);
 
 
 int ricsiMain() {
-	zsString a = L"kakI";
+	zsString a;
 
 
 	// Load DLLs

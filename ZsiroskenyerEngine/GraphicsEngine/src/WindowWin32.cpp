@@ -1,6 +1,7 @@
 // Implementation
 #include "WindowWin32.h"
 #include <tchar.h>
+#include "..\..\CommonLib\src\zsString.h"
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	switch(msg) {
