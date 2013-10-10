@@ -123,7 +123,7 @@ bool cWindowWin32::isFullscreen() const {
 }
 
 zsString cWindowWin32::getCaptionText() const {
-	return zsString();
+	return zsString("bvazdmeg");
 }
 
 Vec2 cWindowWin32::getCenter() const {
