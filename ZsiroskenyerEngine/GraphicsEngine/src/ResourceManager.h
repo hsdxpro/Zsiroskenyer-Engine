@@ -41,6 +41,7 @@ private:
 	void UnloadGeometry(const cGeometry* geometry);
 	void UnloadMaterial(const cMaterial* material);
 
+	// Loading .DAE geometry with Assimp 3d library
 	cGeometry *LoadGeometryDAE(const zsString& fileName);
 
 	// resource database
