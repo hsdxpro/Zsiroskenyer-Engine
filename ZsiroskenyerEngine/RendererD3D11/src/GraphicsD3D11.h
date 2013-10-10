@@ -58,7 +58,12 @@ protected:
 	uint32 bbWidth;
 	uint32 bbHeight;
 
+	// Main Dx interfaces
+	ID3D11DeviceContext *d3dcon;
+	ID3D11Device *d3ddev;
+	IDXGISwapChain *d3dsc;
 	static tDxConfig swapChainConfig;
+
 };
 
 // DLL accessor
