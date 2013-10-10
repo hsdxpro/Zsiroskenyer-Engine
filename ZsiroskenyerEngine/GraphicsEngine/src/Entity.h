@@ -15,12 +15,14 @@ class cInstanceGroup;
 
 
 class cEntity {
+	friend class cSceneManager;
 public:
 	cEntity();
 
 	Vec3 position;
 	Quat rotation;
 	Vec3 scale;
-	cInstanceGroup* instanceGroup;
 	bool isVisible;
+private:
+	cInstanceGroup* instanceGroup;
 };

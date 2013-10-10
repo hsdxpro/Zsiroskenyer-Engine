@@ -78,7 +78,7 @@ zsString operator + (const CHAR *cStr, const zsString& str);
 
 #else // STATIC_SIZE
 
-#include "memory\tlsf.h"
+#include "memory/tlsf.h"
 #include <string>
 #include <cstdint>
 #include <stdexcept>

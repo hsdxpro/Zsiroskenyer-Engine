@@ -1,10 +1,12 @@
 #include "testFiles.h"
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
 #include <Windows.h>
 
 
 #include "..\..\GraphicsEngine\src\IGraphicsEngine.h"
 
-
+namespace peti_test {
 
 std::string GetExecutablePath() {
 	char buf[MAX_PATH];
@@ -33,7 +35,9 @@ FARPROC GetDLLFunction(HMODULE dll, const std::string& funcName) {
 	return function;
 }
 
+} // namespace pet_test
 
+using namespace peti_test;
 
 int petiMain() {
 	// load dll
@@ -45,6 +49,10 @@ int petiMain() {
 	ISceneManager* sceneManager = engine->GetSceneManager();
 
 	cEntity& entity = sceneManager->AddEntity(L"geometry", L"material");
+
+	entity.position = Vec3(1,1,1);
+	entity.isVisible = true;
+	entity;
 
 
 	return 0;

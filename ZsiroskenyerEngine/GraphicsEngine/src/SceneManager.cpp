@@ -27,17 +27,22 @@ cSceneManager::~cSceneManager() {
 // entities
 cEntity& cSceneManager::AddEntity(const zsString& geometry, const zsString& material) {
 	cInstanceGroup* instGroup = nullptr;
+	cInstanceGroup searchDummy;
 	cEntity* entity;
 
 	try {
 		cGeometryRef g = resourceManager.LoadGeometry(geometry);
 		cMaterialRef m = resourceManager.LoadMaterial(material);
-		instGroup = new cInstanceGroup(g,m);
-		auto insertResult = instanceGroups.insert(instGroup);
-		if (insertResult.second==true) {
-			delete instGroup;
+		searchDummy.geom = g; searchDummy.mtl = m;
+
+		auto it = instanceGroups.find(&searchDummy);
+		if (it==instanceGroups.end()) {
+			instGroup = new cInstanceGroup(g,m);
+			instanceGroups.insert(instGroup);
 		}
-		instGroup = *insertResult.first;
+		else {
+			instGroup = *it;
+		}
 
 		entity = new cEntity();
 		entity->instanceGroup = instGroup;
