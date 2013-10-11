@@ -1,4 +1,4 @@
-// Matrix44.h By Zsíroskenyér Engine 2013.10.09 23:17
+// Matrix44.h By Zsï¿½roskenyï¿½r Engine 2013.10.09 23:17
 // Homogeneous matrix 4x4
 #pragma once
 
@@ -66,7 +66,7 @@ public:
 	static Matrix44& MatrixTranslation(Matrix44& out, Vec3 v);
 
 	// Accessors
-	float& operator() (unsigned row, unsigned col);
+	float& operator() (unsigned row, unsigned col) const;
 	const float& operator() (unsigned row, unsigned col) const;
 
 	Matrix44& operator *= (const Matrix44& m2);
@@ -80,8 +80,8 @@ public:
 	Matrix44 operator + (const Matrix44& m2);
 	Matrix44 operator - (const Matrix44& m2);
 
-	Matrix44 operator * (const float&);
-	Matrix44 operator / (const float&);
+	Matrix44 operator * (const float&) const;
+	Matrix44 operator / (const float&) const;
 
 	Vec3 operator * (const Vec3& v);
 
