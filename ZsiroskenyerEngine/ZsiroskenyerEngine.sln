@@ -1,18 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GraphicsEngine", "GraphicsEngine\GraphicsEngine.vcxproj", "{593438BA-D952-4A17-AD30-7C261AB425EC}"
+# Visual Studio Express 2012 for Windows Desktop
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GraphicsCore", "GraphicsCore\GraphicsCore.vcxproj", "{593438BA-D952-4A17-AD30-7C261AB425EC}"
 	ProjectSection(ProjectDependencies) = postProject
 		{884FE606-070E-48D2-A0A8-98B5536F432A} = {884FE606-070E-48D2-A0A8-98B5536F432A}
 		{6EDD9407-84D4-42FA-A763-6A3F11C1AFF6} = {6EDD9407-84D4-42FA-A763-6A3F11C1AFF6}
 		{4A9A62C0-5B13-4453-B6A9-464DFFBE864F} = {4A9A62C0-5B13-4453-B6A9-464DFFBE864F}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GraphicsD3D11", "RendererD3D11\RendererD3D11.vcxproj", "{6EDD9407-84D4-42FA-A763-6A3F11C1AFF6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GraphicsD3D11", "GraphicsD3D11\GraphicsD3D11.vcxproj", "{6EDD9407-84D4-42FA-A763-6A3F11C1AFF6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CommonLib", "CommonLib\CommonLib.vcxproj", "{4A9A62C0-5B13-4453-B6A9-464DFFBE864F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GraphicsGL", "RendererGL\RendererGL.vcxproj", "{884FE606-070E-48D2-A0A8-98B5536F432A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GraphicsGL", "GraphicsGL\GraphicsGL.vcxproj", "{884FE606-070E-48D2-A0A8-98B5536F432A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TechDemo", "TechDemo\TechDemo.vcxproj", "{4E32D6FD-0510-4A22-921C-ED41F2B5F394}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -20,6 +20,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TechDemo", "TechDemo\TechDe
 		{593438BA-D952-4A17-AD30-7C261AB425EC} = {593438BA-D952-4A17-AD30-7C261AB425EC}
 		{4A9A62C0-5B13-4453-B6A9-464DFFBE864F} = {4A9A62C0-5B13-4453-B6A9-464DFFBE864F}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GraphicsEngine", "GraphicsEngine\GraphicsEngine.vcxproj", "{19538A5F-B776-41C7-B386-8F02421E245D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +49,10 @@ Global
 		{4E32D6FD-0510-4A22-921C-ED41F2B5F394}.Debug|Win32.Build.0 = Debug|Win32
 		{4E32D6FD-0510-4A22-921C-ED41F2B5F394}.Release|Win32.ActiveCfg = Release|Win32
 		{4E32D6FD-0510-4A22-921C-ED41F2B5F394}.Release|Win32.Build.0 = Release|Win32
+		{19538A5F-B776-41C7-B386-8F02421E245D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{19538A5F-B776-41C7-B386-8F02421E245D}.Debug|Win32.Build.0 = Debug|Win32
+		{19538A5F-B776-41C7-B386-8F02421E245D}.Release|Win32.ActiveCfg = Release|Win32
+		{19538A5F-B776-41C7-B386-8F02421E245D}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
