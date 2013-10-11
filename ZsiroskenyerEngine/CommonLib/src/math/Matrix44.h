@@ -24,7 +24,6 @@ useful combinations of the above:
 
 class Matrix44 {
 public:
-
 	// data, accessible in two ways
 	union {
 		struct {
@@ -42,7 +41,6 @@ public:
 				float _21, float _22, float _23, float _24,
 				float _31, float _32, float _33, float _34,
 				float _41, float _42, float _43, float _44);
-
 
 	static Matrix44& MatrixIdentity(Matrix44& m);
 	static float MatrixDeterminant(const Matrix44& m);
