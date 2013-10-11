@@ -10,7 +10,6 @@
 // Dll function pointers...
 typedef IGraphicsApi* (*funcGraphicsApi)();
 typedef IGraphicsEngine* (*funcEngineGraphics)();
-typedef IWindow* (*funcWindow)(const IWindow::tDesc& winDesc);
 
 class cFactory {
 public:
@@ -24,7 +23,6 @@ protected:
 	funcEngineGraphics ptrCreateEngineGraphics;
 	funcGraphicsApi  ptrCreateGraphicsD3D11;
 	funcGraphicsApi  ptrCreateGraphicsGL;
-	funcWindow		 ptrCreateWindowWin32;
 };
 
 extern cFactory Factory;

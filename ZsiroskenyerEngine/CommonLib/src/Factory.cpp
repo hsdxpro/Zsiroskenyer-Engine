@@ -6,6 +6,17 @@ cFactory Factory;
 // Win32 DLL loader
 #include "DLLLoaderWin32.h"
 
+// Include headers based on O.S.
+#ifdef WIN32
+#include "..\..\GraphicsEngine\src\WindowWin32.h"
+#undef CreateWindow
+#define WINDOW_IMPLEMENTATION cWindowWin32
+#else
+#include "..\..\GraphicsEngine\src\WindowWin32.h"
+#undef CreateWindow
+#define WINDOW_IMPLEMENTATION cWindowWin32
+#endif
+
 cFactory::cFactory() {
 	cDLLLoaderWin32 loader;
 
@@ -16,7 +27,6 @@ cFactory::cFactory() {
 
 	ptrCreateGraphicsD3D11 = (funcGraphicsApi)loader.GetDLLFunction(hGraphicsD3D11, L"CreateGraphicsD3D11");
 	ptrCreateGraphicsGL = (funcGraphicsApi)loader.GetDLLFunction(hGraphicsGL, L"CreateGraphicsGL");
-	ptrCreateWindowWin32 = (funcWindow)loader.GetDLLFunction(hEngineGraphics, L"CreateWindowWin32");
 	ptrCreateEngineGraphics = (funcEngineGraphics)loader.GetDLLFunction(hEngineGraphics, L"CreateGraphicsEngine");
 }
 
@@ -25,7 +35,7 @@ IGraphicsApi* cFactory::CreateGraphics() {
 }
 
 IWindow* cFactory::CreateWindow(const IWindow::tDesc& winDesc) {
-	return ptrCreateWindowWin32(winDesc);
+	return new WINDOW_IMPLEMENTATION(winDesc);
 }
 
 
