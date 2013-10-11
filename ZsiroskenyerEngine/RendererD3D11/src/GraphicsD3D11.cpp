@@ -103,7 +103,7 @@ void cGraphicsD3D11::CreateDevice() {
 			break;
 	}
 
-	ZSASSERT( i != ARRAYSIZE(featurelevels), "Can't create DirectX Device");
+	ZSASSERT_MSG( i != ARRAYSIZE(featurelevels), "Can't create DirectX Device");
 
 	SAFE_RELEASE(fact);
 	SAFE_RELEASE(mainAdapter);
@@ -318,7 +318,7 @@ void cGraphicsD3D11::Draw(uint32 vertexCount) {
 }
 
 void cGraphicsD3D11::Present() {
-	ZSASSERT(d3dsc != NULL, "Need to set window for rendering");
+	ZSASSERT_MSG(d3dsc != NULL, "Need to set window for rendering");
 	d3dsc->Present(0,0); 
 }
 

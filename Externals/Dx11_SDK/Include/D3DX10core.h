@@ -327,7 +327,7 @@ DECLARE_INTERFACE_(ID3DX10Font, IUnknown)
     STDMETHOD_(BOOL, GetTextMetricsW)(THIS_ TEXTMETRICW *pTextMetrics) PURE;
 
     STDMETHOD_(HDC, GetDC)(THIS) PURE;
-    STDMETHOD(GetGlyphData)(THIS_ UINT Glyph, ID3D10ShaderResourceView** ppTexture, RECT *pBlackBox, tagPOINT *pCellInc) PURE;
+    STDMETHOD(GetGlyphData)(THIS_ UINT Glyph, ID3D10ShaderResourceView** ppTexture, RECT *pBlackBox, POINT *pCellInc) PURE;
 
     STDMETHOD(PreloadCharacters)(THIS_ UINT First, UINT Last) PURE;
     STDMETHOD(PreloadGlyphs)(THIS_ UINT First, UINT Last) PURE;

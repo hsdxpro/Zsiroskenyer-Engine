@@ -22,8 +22,8 @@ typedef unsigned char uchar;
 #define NULL 0
 
 #if (defined(_DEBUG) || defined(DEBUG))
-#define ZSASSERT(condition) assert(condition);
-#define ZSASSERT(condition, errorMsg) \
+#define ZSASSERT(condition) assert(condition)
+#define ZSASSERT_MSG(condition, errorMsg) \
 	if (condition != true) { \
 		MessageBoxA(0, errorMsg, "ErrorMsg", MB_OK); \
 		assert(condition); \

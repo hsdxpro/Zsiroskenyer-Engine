@@ -29,11 +29,11 @@ Abstract:
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Assignment operations
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Return a vector with all elements equaling zero
 XMFINLINE XMVECTOR XMVectorZero()
 {
@@ -46,7 +46,7 @@ XMFINLINE XMVECTOR XMVectorZero()
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Initialize a vector with four floating point values
 XMFINLINE XMVECTOR XMVectorSet
 (
@@ -65,7 +65,7 @@ XMFINLINE XMVECTOR XMVectorSet
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Initialize a vector with four integer values
 XMFINLINE XMVECTOR XMVectorSetInt
 (
@@ -85,7 +85,7 @@ XMFINLINE XMVECTOR XMVectorSetInt
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Initialize a vector with a replicated floating point value
 XMFINLINE XMVECTOR XMVectorReplicate
 (
@@ -101,7 +101,7 @@ XMFINLINE XMVECTOR XMVectorReplicate
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Initialize a vector with a replicated floating point value passed by pointer
 XMFINLINE XMVECTOR XMVectorReplicatePtr
 (
@@ -118,7 +118,7 @@ XMFINLINE XMVECTOR XMVectorReplicatePtr
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Initialize a vector with a replicated integer value
 XMFINLINE XMVECTOR XMVectorReplicateInt
 (
@@ -135,7 +135,7 @@ XMFINLINE XMVECTOR XMVectorReplicateInt
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Initialize a vector with a replicated integer value passed by pointer
 XMFINLINE XMVECTOR XMVectorReplicateIntPtr
 (
@@ -152,7 +152,7 @@ XMFINLINE XMVECTOR XMVectorReplicateIntPtr
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Initialize a vector with all bits set (true mask)
 XMFINLINE XMVECTOR XMVectorTrueInt()
 {
@@ -166,7 +166,7 @@ XMFINLINE XMVECTOR XMVectorTrueInt()
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Initialize a vector with all bits clear (false mask)
 XMFINLINE XMVECTOR XMVectorFalseInt()
 {
@@ -179,7 +179,7 @@ XMFINLINE XMVECTOR XMVectorFalseInt()
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Replicate the x component of the vector
 XMFINLINE XMVECTOR XMVectorSplatX
 (
@@ -199,7 +199,7 @@ XMFINLINE XMVECTOR XMVectorSplatX
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Replicate the y component of the vector
 XMFINLINE XMVECTOR XMVectorSplatY
 (
@@ -219,7 +219,7 @@ XMFINLINE XMVECTOR XMVectorSplatY
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Replicate the z component of the vector
 XMFINLINE XMVECTOR XMVectorSplatZ
 (
@@ -239,7 +239,7 @@ XMFINLINE XMVECTOR XMVectorSplatZ
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Replicate the w component of the vector
 XMFINLINE XMVECTOR XMVectorSplatW
 (
@@ -259,7 +259,7 @@ XMFINLINE XMVECTOR XMVectorSplatW
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Return a vector of 1.0f,1.0f,1.0f,1.0f
 XMFINLINE XMVECTOR XMVectorSplatOne()
 {
@@ -276,7 +276,7 @@ XMFINLINE XMVECTOR XMVectorSplatOne()
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Return a vector of INF,INF,INF,INF
 XMFINLINE XMVECTOR XMVectorSplatInfinity()
 {
@@ -293,7 +293,7 @@ XMFINLINE XMVECTOR XMVectorSplatInfinity()
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Return a vector of Q_NAN,Q_NAN,Q_NAN,Q_NAN
 XMFINLINE XMVECTOR XMVectorSplatQNaN()
 {
@@ -310,7 +310,7 @@ XMFINLINE XMVECTOR XMVectorSplatQNaN()
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Return a vector of 1.192092896e-7f,1.192092896e-7f,1.192092896e-7f,1.192092896e-7f
 XMFINLINE XMVECTOR XMVectorSplatEpsilon()
 {
@@ -327,7 +327,7 @@ XMFINLINE XMVECTOR XMVectorSplatEpsilon()
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Return a vector of -0.0f (0x80000000),-0.0f,-0.0f,-0.0f
 XMFINLINE XMVECTOR XMVectorSplatSignMask()
 {
@@ -345,7 +345,7 @@ XMFINLINE XMVECTOR XMVectorSplatSignMask()
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Return a floating point value via an index. This is not a recommended
 // function to use due to performance loss.
 XMFINLINE FLOAT XMVectorGetByIndex(FXMVECTOR V,UINT i)
@@ -359,7 +359,7 @@ XMFINLINE FLOAT XMVectorGetByIndex(FXMVECTOR V,UINT i)
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Return the X component in an FPU register. 
 // This causes Load/Hit/Store on VMX targets
 XMFINLINE FLOAT XMVectorGetX(FXMVECTOR V)
@@ -427,7 +427,7 @@ XMFINLINE FLOAT XMVectorGetW(FXMVECTOR V)
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 // Store a component indexed by i into a 32 bit float location in memory.
 // This causes Load/Hit/Store on VMX targets
@@ -443,7 +443,7 @@ XMFINLINE VOID XMVectorGetByIndexPtr(FLOAT *f,FXMVECTOR V,UINT i)
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 // Store the X component into a 32 bit float location in memory.
 XMFINLINE VOID XMVectorGetXPtr(FLOAT *x,FXMVECTOR V)
@@ -496,7 +496,7 @@ XMFINLINE VOID XMVectorGetWPtr(FLOAT *w,FXMVECTOR V)
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 // Return an integer value via an index. This is not a recommended
 // function to use due to performance loss.
@@ -517,7 +517,7 @@ XMFINLINE UINT XMVectorGetIntByIndex(FXMVECTOR V, UINT i)
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 // Return the X component in an integer register. 
 // This causes Load/Hit/Store on VMX targets
@@ -570,7 +570,7 @@ XMFINLINE UINT XMVectorGetIntW(FXMVECTOR V)
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 // Store a component indexed by i into a 32 bit integer location in memory.
 // This causes Load/Hit/Store on VMX targets
@@ -592,7 +592,7 @@ XMFINLINE VOID XMVectorGetIntByIndexPtr(UINT *x,FXMVECTOR V,UINT i)
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 // Store the X component into a 32 bit integer location in memory.
 XMFINLINE VOID XMVectorGetIntXPtr(UINT *x,FXMVECTOR V)
@@ -645,7 +645,7 @@ XMFINLINE VOID XMVectorGetIntWPtr(UINT *w,FXMVECTOR V)
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 // Set a single indexed floating point component
 // This causes Load/Hit/Store on VMX targets
@@ -666,7 +666,7 @@ XMFINLINE XMVECTOR XMVectorSetByIndex(FXMVECTOR V, FLOAT f,UINT i)
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 // Sets the X component of a vector to a passed floating point value
 // This causes Load/Hit/Store on VMX targets
@@ -785,7 +785,7 @@ XMFINLINE XMVECTOR XMVectorSetW(FXMVECTOR V, FLOAT w)
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 // Sets a component of a vector to a floating point value passed by pointer
 // This causes Load/Hit/Store on VMX targets
@@ -808,7 +808,7 @@ XMFINLINE XMVECTOR XMVectorSetByIndexPtr(FXMVECTOR V,CONST FLOAT *f,UINT i)
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 // Sets the X component of a vector to a floating point value passed by pointer
 XMFINLINE XMVECTOR XMVectorSetXPtr(FXMVECTOR V,CONST FLOAT *x)
@@ -908,7 +908,7 @@ XMFINLINE XMVECTOR XMVectorSetWPtr(FXMVECTOR V,CONST FLOAT *w)
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 // Sets a component of a vector to an integer passed by value
 // This causes Load/Hit/Store on VMX targets
@@ -930,7 +930,7 @@ XMFINLINE XMVECTOR XMVectorSetIntByIndex(FXMVECTOR V, UINT x, UINT i)
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 // Sets the X component of a vector to an integer passed by value
 // This causes Load/Hit/Store on VMX targets
@@ -1049,7 +1049,7 @@ XMFINLINE XMVECTOR XMVectorSetIntW(FXMVECTOR V, UINT w)
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 // Sets a component of a vector to an integer value passed by pointer
 // This causes Load/Hit/Store on VMX targets
@@ -1073,7 +1073,7 @@ XMFINLINE XMVECTOR XMVectorSetIntByIndexPtr(FXMVECTOR V, CONST UINT *x,UINT i)
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 // Sets the X component of a vector to an integer value passed by pointer
 XMFINLINE XMVECTOR XMVectorSetIntXPtr(FXMVECTOR V,CONST UINT *x)
@@ -1173,7 +1173,7 @@ XMFINLINE XMVECTOR XMVectorSetIntWPtr(FXMVECTOR V,CONST UINT *w)
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Define a control vector to be used in XMVectorPermute
 // operations.  Visualize the two vectors V1 and V2 given
 // in a permute as arranged back to back in a linear fashion,
@@ -1219,7 +1219,7 @@ XMFINLINE XMVECTOR XMVectorPermuteControl
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 // Using a control vector made up of 16 bytes from 0-31, remap V1 and V2's byte
 // entries into a single 16 byte vector and return it. Index 0-15 = V1,
@@ -1294,7 +1294,7 @@ XMFINLINE XMVECTOR XMVectorPermute
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Define a control vector to be used in XMVectorSelect 
 // operations.  The four integers specified in XMVectorSelectControl
 // serve as indices to select between components in two vectors.
@@ -1342,7 +1342,7 @@ XMFINLINE XMVECTOR XMVectorSelectControl
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorSelect
 (
@@ -1370,7 +1370,7 @@ XMFINLINE XMVECTOR XMVectorSelect
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorMergeXY
 (
@@ -1395,7 +1395,7 @@ XMFINLINE XMVECTOR XMVectorMergeXY
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorMergeZW
 (
@@ -1420,11 +1420,11 @@ XMFINLINE XMVECTOR XMVectorMergeZW
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Comparison operations
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorEqual
 (
@@ -1449,7 +1449,7 @@ XMFINLINE XMVECTOR XMVectorEqual
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorEqualR
 (
@@ -1506,7 +1506,7 @@ XMFINLINE XMVECTOR XMVectorEqualR
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Treat the components of the vectors as unsigned integers and
 // compare individual bits between the two.  This is useful for
 // comparing control vectors and result vectors returned from
@@ -1536,7 +1536,7 @@ XMFINLINE XMVECTOR XMVectorEqualInt
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorEqualIntR
 (
@@ -1587,7 +1587,7 @@ XMFINLINE XMVECTOR XMVectorEqualIntR
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorNearEqual
 (
@@ -1631,7 +1631,7 @@ XMFINLINE XMVECTOR XMVectorNearEqual
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorNotEqual
 (
@@ -1654,7 +1654,7 @@ XMFINLINE XMVECTOR XMVectorNotEqual
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorNotEqualInt
 (
@@ -1678,7 +1678,7 @@ XMFINLINE XMVECTOR XMVectorNotEqualInt
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorGreater
 (
@@ -1701,7 +1701,7 @@ XMFINLINE XMVECTOR XMVectorGreater
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorGreaterR
 (
@@ -1758,7 +1758,7 @@ XMFINLINE XMVECTOR XMVectorGreaterR
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorGreaterOrEqual
 (
@@ -1781,7 +1781,7 @@ XMFINLINE XMVECTOR XMVectorGreaterOrEqual
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorGreaterOrEqualR
 (
@@ -1838,7 +1838,7 @@ XMFINLINE XMVECTOR XMVectorGreaterOrEqualR
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorLess
 (
@@ -1861,7 +1861,7 @@ XMFINLINE XMVECTOR XMVectorLess
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorLessOrEqual
 (
@@ -1884,7 +1884,7 @@ XMFINLINE XMVECTOR XMVectorLessOrEqual
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorInBounds
 (
@@ -1915,7 +1915,7 @@ XMFINLINE XMVECTOR XMVectorInBounds
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorInBoundsR
 (
@@ -1971,7 +1971,7 @@ XMFINLINE XMVECTOR XMVectorInBoundsR
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorIsNaN
 (
@@ -2004,7 +2004,7 @@ XMFINLINE XMVECTOR XMVectorIsNaN
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorIsInfinite
 (
@@ -2031,11 +2031,11 @@ XMFINLINE XMVECTOR XMVectorIsInfinite
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Rounding and clamping operations
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorMin
 (
@@ -2058,7 +2058,7 @@ XMFINLINE XMVECTOR XMVectorMin
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorMax
 (
@@ -2081,7 +2081,7 @@ XMFINLINE XMVECTOR XMVectorMax
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorRound
 (
@@ -2123,7 +2123,7 @@ XMFINLINE XMVECTOR XMVectorRound
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorTruncate
 (
@@ -2174,7 +2174,7 @@ XMFINLINE XMVECTOR XMVectorTruncate
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorFloor
 (
@@ -2200,7 +2200,7 @@ XMFINLINE XMVECTOR XMVectorFloor
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorCeiling
 (
@@ -2225,7 +2225,7 @@ XMFINLINE XMVECTOR XMVectorCeiling
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorClamp
 (
@@ -2255,7 +2255,7 @@ XMFINLINE XMVECTOR XMVectorClamp
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorSaturate
 (
@@ -2277,9 +2277,9 @@ XMFINLINE XMVECTOR XMVectorSaturate
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Bitwise logical operations
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorAndInt
 (
@@ -2303,7 +2303,7 @@ XMFINLINE XMVECTOR XMVectorAndInt
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorAndCInt
 (
@@ -2329,7 +2329,7 @@ XMFINLINE XMVECTOR XMVectorAndCInt
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorOrInt
 (
@@ -2355,7 +2355,7 @@ XMFINLINE XMVECTOR XMVectorOrInt
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorNorInt
 (
@@ -2383,7 +2383,7 @@ XMFINLINE XMVECTOR XMVectorNorInt
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorXorInt
 (
@@ -2409,11 +2409,11 @@ XMFINLINE XMVECTOR XMVectorXorInt
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Computation operations
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorNegate
 (
@@ -2441,7 +2441,7 @@ XMFINLINE XMVECTOR XMVectorNegate
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorAdd
 (
@@ -2466,7 +2466,7 @@ XMFINLINE XMVECTOR XMVectorAdd
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorAddAngles
 (
@@ -2515,7 +2515,7 @@ XMFINLINE XMVECTOR XMVectorAddAngles
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorSubtract
 (
@@ -2540,7 +2540,7 @@ XMFINLINE XMVECTOR XMVectorSubtract
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorSubtractAngles
 (
@@ -2589,7 +2589,7 @@ XMFINLINE XMVECTOR XMVectorSubtractAngles
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorMultiply
 (
@@ -2611,7 +2611,7 @@ XMFINLINE XMVECTOR XMVectorMultiply
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorMultiplyAdd
 (
@@ -2636,7 +2636,7 @@ XMFINLINE XMVECTOR XMVectorMultiplyAdd
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorDivide
 (
@@ -2657,7 +2657,7 @@ XMFINLINE XMVECTOR XMVectorDivide
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorNegativeMultiplySubtract
 (
@@ -2683,7 +2683,7 @@ XMFINLINE XMVECTOR XMVectorNegativeMultiplySubtract
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorScale
 (
@@ -2707,7 +2707,7 @@ XMFINLINE XMVECTOR XMVectorScale
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorReciprocalEst
 (
@@ -2744,7 +2744,7 @@ XMFINLINE XMVECTOR XMVectorReciprocalEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorReciprocal
 (
@@ -2760,7 +2760,7 @@ XMFINLINE XMVECTOR XMVectorReciprocal
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Return an estimated square root
 XMFINLINE XMVECTOR XMVectorSqrtEst
 (
@@ -2790,7 +2790,7 @@ XMFINLINE XMVECTOR XMVectorSqrtEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorSqrt
 (
@@ -2825,7 +2825,7 @@ XMFINLINE XMVECTOR XMVectorSqrt
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorReciprocalSqrtEst
 (
@@ -2877,7 +2877,7 @@ XMFINLINE XMVECTOR XMVectorReciprocalSqrtEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorReciprocalSqrt
 (
@@ -2896,7 +2896,7 @@ XMFINLINE XMVECTOR XMVectorReciprocalSqrt
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorExpEst
 (
@@ -2923,7 +2923,7 @@ XMFINLINE XMVECTOR XMVectorExpEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE XMVECTOR XMVectorExp
 (
@@ -3019,7 +3019,7 @@ XMINLINE XMVECTOR XMVectorExp
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorLogEst
 (
@@ -3050,7 +3050,7 @@ XMFINLINE XMVECTOR XMVectorLogEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE XMVECTOR XMVectorLog
 (
@@ -3080,7 +3080,7 @@ XMINLINE XMVECTOR XMVectorLog
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorPowEst
 (
@@ -3110,7 +3110,7 @@ XMFINLINE XMVECTOR XMVectorPowEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorPow
 (
@@ -3126,7 +3126,7 @@ XMFINLINE XMVECTOR XMVectorPow
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorAbs
 (
@@ -3151,7 +3151,7 @@ XMFINLINE XMVECTOR XMVectorAbs
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorMod
 (
@@ -3183,7 +3183,7 @@ XMFINLINE XMVECTOR XMVectorMod
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorModAngles
 (
@@ -3214,7 +3214,7 @@ XMFINLINE XMVECTOR XMVectorModAngles
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE XMVECTOR XMVectorSin
 (
@@ -3347,7 +3347,7 @@ XMINLINE XMVECTOR XMVectorSin
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE XMVECTOR XMVectorCos
 (
@@ -3477,7 +3477,7 @@ XMINLINE XMVECTOR XMVectorCos
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE VOID XMVectorSinCos
 (
@@ -3673,7 +3673,7 @@ XMINLINE VOID XMVectorSinCos
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE XMVECTOR XMVectorTan
 (
@@ -3837,7 +3837,7 @@ XMINLINE XMVECTOR XMVectorTan
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE XMVECTOR XMVectorSinH
 (
@@ -3881,7 +3881,7 @@ XMINLINE XMVECTOR XMVectorSinH
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE XMVECTOR XMVectorCosH
 (
@@ -3923,7 +3923,7 @@ XMINLINE XMVECTOR XMVectorCosH
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE XMVECTOR XMVectorTanH
 (
@@ -3959,7 +3959,7 @@ XMINLINE XMVECTOR XMVectorTanH
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE XMVECTOR XMVectorASin
 (
@@ -4099,7 +4099,7 @@ XMINLINE XMVECTOR XMVectorASin
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE XMVECTOR XMVectorACos
 (
@@ -4238,7 +4238,7 @@ XMINLINE XMVECTOR XMVectorACos
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE XMVECTOR XMVectorATan
 (
@@ -4438,7 +4438,7 @@ XMINLINE XMVECTOR XMVectorATan
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE XMVECTOR XMVectorATan2
 (
@@ -4567,7 +4567,7 @@ XMINLINE XMVECTOR XMVectorATan2
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorSinEst
 (
@@ -4618,7 +4618,7 @@ XMFINLINE XMVECTOR XMVectorSinEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorCosEst
 (
@@ -4668,7 +4668,7 @@ XMFINLINE XMVECTOR XMVectorCosEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE VOID XMVectorSinCosEst
 (
@@ -4756,7 +4756,7 @@ XMFINLINE VOID XMVectorSinCosEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorTanEst
 (
@@ -4827,7 +4827,7 @@ XMFINLINE XMVECTOR XMVectorTanEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorSinHEst
 (
@@ -4869,7 +4869,7 @@ XMFINLINE XMVECTOR XMVectorSinHEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorCosHEst
 (
@@ -4911,7 +4911,7 @@ XMFINLINE XMVECTOR XMVectorCosHEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorTanHEst
 (
@@ -4947,7 +4947,7 @@ XMFINLINE XMVECTOR XMVectorTanHEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorASinEst
 (
@@ -5023,7 +5023,7 @@ XMFINLINE XMVECTOR XMVectorASinEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorACosEst
 (
@@ -5108,7 +5108,7 @@ XMFINLINE XMVECTOR XMVectorACosEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorATanEst
 (
@@ -5163,7 +5163,7 @@ XMFINLINE XMVECTOR XMVectorATanEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorATan2Est
 (
@@ -5281,7 +5281,7 @@ XMFINLINE XMVECTOR XMVectorATan2Est
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorLerp
 (
@@ -5318,7 +5318,7 @@ XMFINLINE XMVECTOR XMVectorLerp
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorLerpV
 (
@@ -5351,7 +5351,7 @@ XMFINLINE XMVECTOR XMVectorLerpV
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorHermite
 (
@@ -5412,7 +5412,7 @@ XMFINLINE XMVECTOR XMVectorHermite
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorHermiteV
 (
@@ -5494,7 +5494,7 @@ XMFINLINE XMVECTOR XMVectorHermiteV
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorCatmullRom
 (
@@ -5555,7 +5555,7 @@ XMFINLINE XMVECTOR XMVectorCatmullRom
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorCatmullRomV
 (
@@ -5628,7 +5628,7 @@ XMFINLINE XMVECTOR XMVectorCatmullRomV
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorBaryCentric
 (
@@ -5673,7 +5673,7 @@ XMFINLINE XMVECTOR XMVectorBaryCentric
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVectorBaryCentricV
 (
@@ -5717,11 +5717,11 @@ XMFINLINE XMVECTOR XMVectorBaryCentricV
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Comparison operations
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector2Equal
 (
@@ -5741,7 +5741,7 @@ XMFINLINE BOOL XMVector2Equal
 }
 
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE UINT XMVector2EqualR
 (
@@ -5782,7 +5782,7 @@ XMFINLINE UINT XMVector2EqualR
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector2EqualInt
 (
@@ -5800,7 +5800,7 @@ XMFINLINE BOOL XMVector2EqualInt
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE UINT XMVector2EqualIntR
 (
@@ -5840,7 +5840,7 @@ XMFINLINE UINT XMVector2EqualIntR
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector2NearEqual
 (
@@ -5869,7 +5869,7 @@ XMFINLINE BOOL XMVector2NearEqual
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector2NotEqual
 (
@@ -5888,7 +5888,7 @@ XMFINLINE BOOL XMVector2NotEqual
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector2NotEqualInt
 (
@@ -5906,7 +5906,7 @@ XMFINLINE BOOL XMVector2NotEqualInt
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector2Greater
 (
@@ -5926,7 +5926,7 @@ XMFINLINE BOOL XMVector2Greater
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE UINT XMVector2GreaterR
 (
@@ -5965,7 +5965,7 @@ XMFINLINE UINT XMVector2GreaterR
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector2GreaterOrEqual
 (
@@ -5983,7 +5983,7 @@ XMFINLINE BOOL XMVector2GreaterOrEqual
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE UINT XMVector2GreaterOrEqualR
 (
@@ -6022,7 +6022,7 @@ XMFINLINE UINT XMVector2GreaterOrEqualR
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector2Less
 (
@@ -6040,7 +6040,7 @@ XMFINLINE BOOL XMVector2Less
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector2LessOrEqual
 (
@@ -6058,7 +6058,7 @@ XMFINLINE BOOL XMVector2LessOrEqual
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector2InBounds
 (
@@ -6085,7 +6085,7 @@ XMFINLINE BOOL XMVector2InBounds
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE UINT XMVector2InBoundsR
 (
@@ -6117,7 +6117,7 @@ XMFINLINE UINT XMVector2InBoundsR
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector2IsNaN
 (
@@ -6144,7 +6144,7 @@ XMFINLINE BOOL XMVector2IsNaN
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector2IsInfinite
 (
@@ -6166,11 +6166,11 @@ XMFINLINE BOOL XMVector2IsInfinite
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Computation operations
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector2Dot
 (
@@ -6202,7 +6202,7 @@ XMFINLINE XMVECTOR XMVector2Dot
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector2Cross
 (
@@ -6235,7 +6235,7 @@ XMFINLINE XMVECTOR XMVector2Cross
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector2LengthSq
 (
@@ -6258,7 +6258,7 @@ XMFINLINE XMVECTOR XMVector2LengthSq
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector2ReciprocalLengthEst
 (
@@ -6288,7 +6288,7 @@ XMFINLINE XMVECTOR XMVector2ReciprocalLengthEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector2ReciprocalLength
 (
@@ -6319,7 +6319,7 @@ XMFINLINE XMVECTOR XMVector2ReciprocalLength
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector2LengthEst
 (
@@ -6345,7 +6345,7 @@ XMFINLINE XMVECTOR XMVector2LengthEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector2Length
 (
@@ -6373,7 +6373,7 @@ XMFINLINE XMVECTOR XMVector2Length
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // XMVector2NormalizeEst uses a reciprocal estimate and
 // returns QNaN on zero and infinite vectors.
 
@@ -6404,7 +6404,7 @@ XMFINLINE XMVECTOR XMVector2NormalizeEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector2Normalize
 (
@@ -6457,7 +6457,7 @@ XMFINLINE XMVECTOR XMVector2Normalize
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector2ClampLength
 (
@@ -6484,7 +6484,7 @@ XMFINLINE XMVECTOR XMVector2ClampLength
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector2ClampLengthV
 (
@@ -6587,7 +6587,7 @@ XMFINLINE XMVECTOR XMVector2ClampLengthV
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector2Reflect
 (
@@ -6617,7 +6617,7 @@ XMFINLINE XMVECTOR XMVector2Reflect
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector2Refract
 (
@@ -6638,7 +6638,7 @@ XMFINLINE XMVECTOR XMVector2Refract
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 // Return the refraction of a 2D vector
 XMFINLINE XMVECTOR XMVector2RefractV
@@ -6704,7 +6704,7 @@ XMFINLINE XMVECTOR XMVector2RefractV
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector2Orthogonal
 (
@@ -6728,7 +6728,7 @@ XMFINLINE XMVECTOR XMVector2Orthogonal
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector2AngleBetweenNormalsEst
 (
@@ -6761,7 +6761,7 @@ XMFINLINE XMVECTOR XMVector2AngleBetweenNormalsEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector2AngleBetweenNormals
 (
@@ -6794,7 +6794,7 @@ XMFINLINE XMVECTOR XMVector2AngleBetweenNormals
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector2AngleBetweenVectors
 (
@@ -6846,7 +6846,7 @@ XMFINLINE XMVECTOR XMVector2AngleBetweenVectors
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector2LinePointDistance
 (
@@ -6868,7 +6868,7 @@ XMFINLINE XMVECTOR XMVector2LinePointDistance
     // LineVector from LinePoint1 to LinePoint2, the scaled distance 
     // PointProjectionScale from LinePoint1 to the perpendicular projection
     // of PointVector onto the line is defined as:
-    // 
+    //
     //     PointProjectionScale = dot(PointVector, LineVector) / LengthSq(LineVector)
 
     PointVector = XMVectorSubtract(Point, LinePoint1);
@@ -6901,7 +6901,7 @@ XMFINLINE XMVECTOR XMVector2LinePointDistance
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector2IntersectLine
 (
@@ -6987,7 +6987,7 @@ XMFINLINE XMVECTOR XMVector2IntersectLine
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector2Transform
 (
@@ -7021,7 +7021,7 @@ XMFINLINE XMVECTOR XMVector2Transform
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE XMFLOAT4* XMVector2TransformStream
 (
@@ -7089,7 +7089,7 @@ XMINLINE XMFLOAT4* XMVector2TransformStream
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE XMFLOAT4* XMVector2TransformStreamNC
 (
@@ -7107,7 +7107,7 @@ XMINLINE XMFLOAT4* XMVector2TransformStreamNC
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector2TransformCoord
 (
@@ -7149,7 +7149,7 @@ XMFINLINE XMVECTOR XMVector2TransformCoord
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE XMFLOAT2* XMVector2TransformCoordStream
 (
@@ -7225,7 +7225,7 @@ XMINLINE XMFLOAT2* XMVector2TransformCoordStream
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector2TransformNormal
 (
@@ -7258,7 +7258,7 @@ XMFINLINE XMVECTOR XMVector2TransformNormal
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE XMFLOAT2* XMVector2TransformNormalStream
 (
@@ -7332,11 +7332,11 @@ XMINLINE XMFLOAT2* XMVector2TransformNormalStream
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Comparison operations
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector3Equal
 (
@@ -7354,7 +7354,7 @@ XMFINLINE BOOL XMVector3Equal
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE UINT XMVector3EqualR
 (
@@ -7394,7 +7394,7 @@ XMFINLINE UINT XMVector3EqualR
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector3EqualInt
 (
@@ -7412,7 +7412,7 @@ XMFINLINE BOOL XMVector3EqualInt
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE UINT XMVector3EqualIntR
 (
@@ -7452,7 +7452,7 @@ XMFINLINE UINT XMVector3EqualIntR
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector3NearEqual
 (
@@ -7484,7 +7484,7 @@ XMFINLINE BOOL XMVector3NearEqual
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector3NotEqual
 (
@@ -7502,7 +7502,7 @@ XMFINLINE BOOL XMVector3NotEqual
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector3NotEqualInt
 (
@@ -7520,7 +7520,7 @@ XMFINLINE BOOL XMVector3NotEqualInt
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector3Greater
 (
@@ -7538,7 +7538,7 @@ XMFINLINE BOOL XMVector3Greater
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE UINT XMVector3GreaterR
 (
@@ -7579,7 +7579,7 @@ XMFINLINE UINT XMVector3GreaterR
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector3GreaterOrEqual
 (
@@ -7597,7 +7597,7 @@ XMFINLINE BOOL XMVector3GreaterOrEqual
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE UINT XMVector3GreaterOrEqualR
 (
@@ -7639,7 +7639,7 @@ XMFINLINE UINT XMVector3GreaterOrEqualR
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector3Less
 (
@@ -7657,7 +7657,7 @@ XMFINLINE BOOL XMVector3Less
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector3LessOrEqual
 (
@@ -7675,7 +7675,7 @@ XMFINLINE BOOL XMVector3LessOrEqual
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector3InBounds
 (
@@ -7703,7 +7703,7 @@ XMFINLINE BOOL XMVector3InBounds
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE UINT XMVector3InBoundsR
 (
@@ -7736,7 +7736,7 @@ XMFINLINE UINT XMVector3InBoundsR
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector3IsNaN
 (
@@ -7766,7 +7766,7 @@ XMFINLINE BOOL XMVector3IsNaN
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector3IsInfinite
 (
@@ -7788,11 +7788,11 @@ XMFINLINE BOOL XMVector3IsInfinite
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Computation operations
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector3Dot
 (
@@ -7827,7 +7827,7 @@ XMFINLINE XMVECTOR XMVector3Dot
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector3Cross
 (
@@ -7865,7 +7865,7 @@ XMFINLINE XMVECTOR XMVector3Cross
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector3LengthSq
 (
@@ -7875,7 +7875,7 @@ XMFINLINE XMVECTOR XMVector3LengthSq
     return XMVector3Dot(V, V);
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector3ReciprocalLengthEst
 (
@@ -7911,7 +7911,7 @@ XMFINLINE XMVECTOR XMVector3ReciprocalLengthEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector3ReciprocalLength
 (
@@ -7949,7 +7949,7 @@ XMFINLINE XMVECTOR XMVector3ReciprocalLength
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector3LengthEst
 (
@@ -7985,7 +7985,7 @@ XMFINLINE XMVECTOR XMVector3LengthEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector3Length
 (
@@ -8021,7 +8021,7 @@ XMFINLINE XMVECTOR XMVector3Length
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // XMVector3NormalizeEst uses a reciprocal estimate and
 // returns QNaN on zero and infinite vectors.
 
@@ -8059,7 +8059,7 @@ XMFINLINE XMVECTOR XMVector3NormalizeEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector3Normalize
 (
@@ -8114,7 +8114,7 @@ XMFINLINE XMVECTOR XMVector3Normalize
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector3ClampLength
 (
@@ -8141,7 +8141,7 @@ XMFINLINE XMVECTOR XMVector3ClampLength
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector3ClampLengthV
 (
@@ -8245,7 +8245,7 @@ XMFINLINE XMVECTOR XMVector3ClampLengthV
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector3Reflect
 (
@@ -8275,7 +8275,7 @@ XMFINLINE XMVECTOR XMVector3Reflect
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector3Refract
 (
@@ -8297,7 +8297,7 @@ XMFINLINE XMVECTOR XMVector3Refract
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector3RefractV
 (
@@ -8375,7 +8375,7 @@ XMFINLINE XMVECTOR XMVector3RefractV
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector3Orthogonal
 (
@@ -8450,7 +8450,7 @@ XMFINLINE XMVECTOR XMVector3Orthogonal
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector3AngleBetweenNormalsEst
 (
@@ -8483,7 +8483,7 @@ XMFINLINE XMVECTOR XMVector3AngleBetweenNormalsEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector3AngleBetweenNormals
 (
@@ -8516,7 +8516,7 @@ XMFINLINE XMVECTOR XMVector3AngleBetweenNormals
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector3AngleBetweenVectors
 (
@@ -8571,7 +8571,7 @@ XMFINLINE XMVECTOR XMVector3AngleBetweenVectors
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector3LinePointDistance
 (
@@ -8593,7 +8593,7 @@ XMFINLINE XMVECTOR XMVector3LinePointDistance
     // LineVector from LinePoint1 to LinePoint2, the scaled distance 
     // PointProjectionScale from LinePoint1 to the perpendicular projection
     // of PointVector onto the line is defined as:
-    // 
+    //
     //     PointProjectionScale = dot(PointVector, LineVector) / LengthSq(LineVector)
 
     PointVector = XMVectorSubtract(Point, LinePoint1);
@@ -8626,7 +8626,7 @@ XMFINLINE XMVECTOR XMVector3LinePointDistance
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE VOID XMVector3ComponentsFromNormal
 (
@@ -8662,7 +8662,7 @@ XMFINLINE VOID XMVector3ComponentsFromNormal
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Transform a vector using a rotation expressed as a unit quaternion
 
 XMFINLINE XMVECTOR XMVector3Rotate
@@ -8698,7 +8698,7 @@ XMFINLINE XMVECTOR XMVector3Rotate
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Transform a vector using the inverse of a rotation expressed as a unit quaternion
 
 XMFINLINE XMVECTOR XMVector3InverseRotate
@@ -8733,7 +8733,7 @@ XMFINLINE XMVECTOR XMVector3InverseRotate
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector3Transform
 (
@@ -8773,7 +8773,7 @@ XMFINLINE XMVECTOR XMVector3Transform
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE XMFLOAT4* XMVector3TransformStream
 (
@@ -8846,7 +8846,7 @@ XMINLINE XMFLOAT4* XMVector3TransformStream
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE XMFLOAT4* XMVector3TransformStreamNC
 (
@@ -8864,7 +8864,7 @@ XMINLINE XMFLOAT4* XMVector3TransformStreamNC
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector3TransformCoord
 (
@@ -8912,7 +8912,7 @@ XMFINLINE XMVECTOR XMVector3TransformCoord
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE XMFLOAT3* XMVector3TransformCoordStream
 (
@@ -9002,7 +9002,7 @@ XMINLINE XMFLOAT3* XMVector3TransformCoordStream
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector3TransformNormal
 (
@@ -9041,7 +9041,7 @@ XMFINLINE XMVECTOR XMVector3TransformNormal
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE XMFLOAT3* XMVector3TransformNormalStream
 (
@@ -9121,7 +9121,7 @@ XMINLINE XMFLOAT3* XMVector3TransformNormalStream
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE XMVECTOR XMVector3Project
 (
@@ -9192,7 +9192,7 @@ XMINLINE XMVECTOR XMVector3Project
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE XMFLOAT3* XMVector3ProjectStream
 (
@@ -9302,7 +9302,7 @@ XMINLINE XMFLOAT3* XMVector3ProjectStream
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector3Unproject
 (
@@ -9384,7 +9384,7 @@ XMFINLINE XMVECTOR XMVector3Unproject
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE XMFLOAT3* XMVector3UnprojectStream
 (
@@ -9507,11 +9507,11 @@ XMINLINE XMFLOAT3* XMVector3UnprojectStream
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Comparison operations
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector4Equal
 (
@@ -9529,7 +9529,7 @@ XMFINLINE BOOL XMVector4Equal
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE UINT XMVector4EqualR
 (
@@ -9574,7 +9574,7 @@ XMFINLINE UINT XMVector4EqualR
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector4EqualInt
 (
@@ -9592,7 +9592,7 @@ XMFINLINE BOOL XMVector4EqualInt
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE UINT XMVector4EqualIntR
 (
@@ -9666,7 +9666,7 @@ XMFINLINE BOOL XMVector4NearEqual
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector4NotEqual
 (
@@ -9684,7 +9684,7 @@ XMFINLINE BOOL XMVector4NotEqual
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector4NotEqualInt
 (
@@ -9702,7 +9702,7 @@ XMFINLINE BOOL XMVector4NotEqualInt
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector4Greater
 (
@@ -9720,7 +9720,7 @@ XMFINLINE BOOL XMVector4Greater
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE UINT XMVector4GreaterR
 (
@@ -9762,7 +9762,7 @@ XMFINLINE UINT XMVector4GreaterR
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector4GreaterOrEqual
 (
@@ -9780,7 +9780,7 @@ XMFINLINE BOOL XMVector4GreaterOrEqual
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE UINT XMVector4GreaterOrEqualR
 (
@@ -9823,7 +9823,7 @@ XMFINLINE UINT XMVector4GreaterOrEqualR
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector4Less
 (
@@ -9841,7 +9841,7 @@ XMFINLINE BOOL XMVector4Less
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector4LessOrEqual
 (
@@ -9859,7 +9859,7 @@ XMFINLINE BOOL XMVector4LessOrEqual
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector4InBounds
 (
@@ -9888,7 +9888,7 @@ XMFINLINE BOOL XMVector4InBounds
 #endif
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE UINT XMVector4InBoundsR
 (
@@ -9923,7 +9923,7 @@ XMFINLINE UINT XMVector4InBoundsR
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector4IsNaN
 (
@@ -9944,7 +9944,7 @@ XMFINLINE BOOL XMVector4IsNaN
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE BOOL XMVector4IsInfinite
 (
@@ -9969,11 +9969,11 @@ XMFINLINE BOOL XMVector4IsInfinite
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Computation operations
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector4Dot
 (
@@ -10004,7 +10004,7 @@ XMFINLINE XMVECTOR XMVector4Dot
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector4Cross
 (
@@ -10068,7 +10068,7 @@ XMFINLINE XMVECTOR XMVector4Cross
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector4LengthSq
 (
@@ -10078,7 +10078,7 @@ XMFINLINE XMVECTOR XMVector4LengthSq
     return XMVector4Dot(V, V);
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector4ReciprocalLengthEst
 (
@@ -10116,7 +10116,7 @@ XMFINLINE XMVECTOR XMVector4ReciprocalLengthEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector4ReciprocalLength
 (
@@ -10156,7 +10156,7 @@ XMFINLINE XMVECTOR XMVector4ReciprocalLength
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector4LengthEst
 (
@@ -10194,7 +10194,7 @@ XMFINLINE XMVECTOR XMVector4LengthEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector4Length
 (
@@ -10232,7 +10232,7 @@ XMFINLINE XMVECTOR XMVector4Length
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // XMVector4NormalizeEst uses a reciprocal estimate and
 // returns QNaN on zero and infinite vectors.
 
@@ -10272,7 +10272,7 @@ XMFINLINE XMVECTOR XMVector4NormalizeEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector4Normalize
 (
@@ -10334,7 +10334,7 @@ XMFINLINE XMVECTOR XMVector4Normalize
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector4ClampLength
 (
@@ -10361,7 +10361,7 @@ XMFINLINE XMVECTOR XMVector4ClampLength
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector4ClampLengthV
 (
@@ -10468,7 +10468,7 @@ XMFINLINE XMVECTOR XMVector4ClampLengthV
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector4Reflect
 (
@@ -10498,7 +10498,7 @@ XMFINLINE XMVECTOR XMVector4Reflect
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector4Refract
 (
@@ -10520,7 +10520,7 @@ XMFINLINE XMVECTOR XMVector4Refract
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector4RefractV
 (
@@ -10600,7 +10600,7 @@ XMFINLINE XMVECTOR XMVector4RefractV
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector4Orthogonal
 (
@@ -10625,7 +10625,7 @@ XMFINLINE XMVECTOR XMVector4Orthogonal
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector4AngleBetweenNormalsEst
 (
@@ -10658,7 +10658,7 @@ XMFINLINE XMVECTOR XMVector4AngleBetweenNormalsEst
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector4AngleBetweenNormals
 (
@@ -10691,7 +10691,7 @@ XMFINLINE XMVECTOR XMVector4AngleBetweenNormals
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector4AngleBetweenVectors
 (
@@ -10745,7 +10745,7 @@ XMFINLINE XMVECTOR XMVector4AngleBetweenVectors
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR XMVector4Transform
 (
@@ -10786,7 +10786,7 @@ XMFINLINE XMVECTOR XMVector4Transform
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMINLINE XMFLOAT4* XMVector4TransformStream
 (
@@ -10882,21 +10882,21 @@ XMINLINE XMFLOAT4* XMVector4TransformStream
 
 #ifndef XM_NO_OPERATOR_OVERLOADS
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR operator+ (FXMVECTOR V)
 {
     return V;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR operator- (FXMVECTOR V)
 {
     return XMVectorNegate(V);
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR& operator+=
 (
@@ -10908,7 +10908,7 @@ XMFINLINE XMVECTOR& operator+=
     return V1;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR& operator-=
 (
@@ -10920,7 +10920,7 @@ XMFINLINE XMVECTOR& operator-=
     return V1;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR& operator*=
 (
@@ -10932,7 +10932,7 @@ XMFINLINE XMVECTOR& operator*=
     return V1;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR& operator/=
 (
@@ -10944,7 +10944,7 @@ XMFINLINE XMVECTOR& operator/=
     return V1;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR& operator*=
 (
@@ -10956,7 +10956,7 @@ XMFINLINE XMVECTOR& operator*=
     return V;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR& operator/=
 (
@@ -10968,7 +10968,7 @@ XMFINLINE XMVECTOR& operator/=
     return V;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR operator+
 (
@@ -10979,7 +10979,7 @@ XMFINLINE XMVECTOR operator+
     return XMVectorAdd(V1, V2);
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR operator-
 (
@@ -10990,7 +10990,7 @@ XMFINLINE XMVECTOR operator-
     return XMVectorSubtract(V1, V2);
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR operator*
 (
@@ -11001,7 +11001,7 @@ XMFINLINE XMVECTOR operator*
     return XMVectorMultiply(V1, V2);
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR operator/
 (
@@ -11012,7 +11012,7 @@ XMFINLINE XMVECTOR operator/
     return XMVectorDivide(V1,V2);
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR operator*
 (
@@ -11023,7 +11023,7 @@ XMFINLINE XMVECTOR operator*
     return XMVectorScale(V, S);
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR operator/
 (
@@ -11034,7 +11034,7 @@ XMFINLINE XMVECTOR operator/
     return XMVectorScale(V, 1.0f / S);
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMVECTOR operator*
 (
@@ -11053,7 +11053,7 @@ XMFINLINE XMVECTOR operator*
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMFLOAT2::_XMFLOAT2
 (
@@ -11064,7 +11064,7 @@ XMFINLINE _XMFLOAT2::_XMFLOAT2
     y = pArray[1];
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMFLOAT2& _XMFLOAT2::operator=
 (
@@ -11076,7 +11076,7 @@ XMFINLINE _XMFLOAT2& _XMFLOAT2::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMFLOAT2A& XMFLOAT2A::operator=
 (
@@ -11094,7 +11094,7 @@ XMFINLINE XMFLOAT2A& XMFLOAT2A::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMHALF2::_XMHALF2
 (
@@ -11105,7 +11105,7 @@ XMFINLINE _XMHALF2::_XMHALF2
     y = pArray[1];
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMHALF2::_XMHALF2
 (
@@ -11117,7 +11117,7 @@ XMFINLINE _XMHALF2::_XMHALF2
     y = XMConvertFloatToHalf(_y);
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMHALF2::_XMHALF2
 (
@@ -11128,7 +11128,7 @@ XMFINLINE _XMHALF2::_XMHALF2
     y = XMConvertFloatToHalf(pArray[1]);
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMHALF2& _XMHALF2::operator=
 (
@@ -11146,7 +11146,7 @@ XMFINLINE _XMHALF2& _XMHALF2::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMSHORTN2::_XMSHORTN2
 (
@@ -11157,7 +11157,7 @@ XMFINLINE _XMSHORTN2::_XMSHORTN2
     y = pArray[1];
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMSHORTN2::_XMSHORTN2
 (
@@ -11168,7 +11168,7 @@ XMFINLINE _XMSHORTN2::_XMSHORTN2
     XMStoreShortN2(this, XMVectorSet(_x, _y, 0.0f, 0.0f));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMSHORTN2::_XMSHORTN2
 (
@@ -11178,7 +11178,7 @@ XMFINLINE _XMSHORTN2::_XMSHORTN2
     XMStoreShortN2(this, XMLoadFloat2((XMFLOAT2*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMSHORTN2& _XMSHORTN2::operator=
 (
@@ -11196,7 +11196,7 @@ XMFINLINE _XMSHORTN2& _XMSHORTN2::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMSHORT2::_XMSHORT2
 (
@@ -11207,7 +11207,7 @@ XMFINLINE _XMSHORT2::_XMSHORT2
     y = pArray[1];
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMSHORT2::_XMSHORT2
 (
@@ -11218,7 +11218,7 @@ XMFINLINE _XMSHORT2::_XMSHORT2
     XMStoreShort2(this, XMVectorSet(_x, _y, 0.0f, 0.0f));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMSHORT2::_XMSHORT2
 (
@@ -11228,7 +11228,7 @@ XMFINLINE _XMSHORT2::_XMSHORT2
     XMStoreShort2(this, XMLoadFloat2((XMFLOAT2*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMSHORT2& _XMSHORT2::operator=
 (
@@ -11246,7 +11246,7 @@ XMFINLINE _XMSHORT2& _XMSHORT2::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUSHORTN2::_XMUSHORTN2
 (
@@ -11257,7 +11257,7 @@ XMFINLINE _XMUSHORTN2::_XMUSHORTN2
     y = pArray[1];
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUSHORTN2::_XMUSHORTN2
 (
@@ -11268,7 +11268,7 @@ XMFINLINE _XMUSHORTN2::_XMUSHORTN2
     XMStoreUShortN2(this, XMVectorSet(_x, _y, 0.0f, 0.0f));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUSHORTN2::_XMUSHORTN2
 (
@@ -11278,7 +11278,7 @@ XMFINLINE _XMUSHORTN2::_XMUSHORTN2
     XMStoreUShortN2(this, XMLoadFloat2((XMFLOAT2*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUSHORTN2& _XMUSHORTN2::operator=
 (
@@ -11296,7 +11296,7 @@ XMFINLINE _XMUSHORTN2& _XMUSHORTN2::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUSHORT2::_XMUSHORT2
 (
@@ -11307,7 +11307,7 @@ XMFINLINE _XMUSHORT2::_XMUSHORT2
     y = pArray[1];
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUSHORT2::_XMUSHORT2
 (
@@ -11318,7 +11318,7 @@ XMFINLINE _XMUSHORT2::_XMUSHORT2
     XMStoreUShort2(this, XMVectorSet(_x, _y, 0.0f, 0.0f));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUSHORT2::_XMUSHORT2
 (
@@ -11328,7 +11328,7 @@ XMFINLINE _XMUSHORT2::_XMUSHORT2
     XMStoreUShort2(this, XMLoadFloat2((XMFLOAT2*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUSHORT2& _XMUSHORT2::operator=
 (
@@ -11346,7 +11346,7 @@ XMFINLINE _XMUSHORT2& _XMUSHORT2::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMFLOAT3::_XMFLOAT3
 (
@@ -11358,7 +11358,7 @@ XMFINLINE _XMFLOAT3::_XMFLOAT3
     z = pArray[2];
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMFLOAT3& _XMFLOAT3::operator=
 (
@@ -11371,7 +11371,7 @@ XMFINLINE _XMFLOAT3& _XMFLOAT3::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMFLOAT3A& XMFLOAT3A::operator=
 (
@@ -11390,7 +11390,7 @@ XMFINLINE XMFLOAT3A& XMFLOAT3A::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMHENDN3::_XMHENDN3
 (
@@ -11402,7 +11402,7 @@ XMFINLINE _XMHENDN3::_XMHENDN3
     XMStoreHenDN3(this, XMVectorSet(_x, _y, _z, 0.0f));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMHENDN3::_XMHENDN3
 (
@@ -11412,7 +11412,7 @@ XMFINLINE _XMHENDN3::_XMHENDN3
     XMStoreHenDN3(this, XMLoadFloat3((XMFLOAT3*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMHENDN3& _XMHENDN3::operator=
 (
@@ -11423,7 +11423,7 @@ XMFINLINE _XMHENDN3& _XMHENDN3::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMHENDN3& _XMHENDN3::operator=
 (
@@ -11440,7 +11440,7 @@ XMFINLINE _XMHENDN3& _XMHENDN3::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMHEND3::_XMHEND3
 (
@@ -11452,7 +11452,7 @@ XMFINLINE _XMHEND3::_XMHEND3
     XMStoreHenD3(this, XMVectorSet(_x, _y, _z, 0.0f));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMHEND3::_XMHEND3
 (
@@ -11462,7 +11462,7 @@ XMFINLINE _XMHEND3::_XMHEND3
     XMStoreHenD3(this, XMLoadFloat3((XMFLOAT3*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMHEND3& _XMHEND3::operator=
 (
@@ -11473,7 +11473,7 @@ XMFINLINE _XMHEND3& _XMHEND3::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMHEND3& _XMHEND3::operator=
 (
@@ -11490,7 +11490,7 @@ XMFINLINE _XMHEND3& _XMHEND3::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUHENDN3::_XMUHENDN3
 (
@@ -11502,7 +11502,7 @@ XMFINLINE _XMUHENDN3::_XMUHENDN3
     XMStoreUHenDN3(this, XMVectorSet(_x, _y, _z, 0.0f));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUHENDN3::_XMUHENDN3
 (
@@ -11512,7 +11512,7 @@ XMFINLINE _XMUHENDN3::_XMUHENDN3
     XMStoreUHenDN3(this, XMLoadFloat3((XMFLOAT3*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUHENDN3& _XMUHENDN3::operator=
 (
@@ -11523,7 +11523,7 @@ XMFINLINE _XMUHENDN3& _XMUHENDN3::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUHENDN3& _XMUHENDN3::operator=
 (
@@ -11540,7 +11540,7 @@ XMFINLINE _XMUHENDN3& _XMUHENDN3::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUHEND3::_XMUHEND3
 (
@@ -11552,7 +11552,7 @@ XMFINLINE _XMUHEND3::_XMUHEND3
     XMStoreUHenD3(this, XMVectorSet(_x, _y, _z, 0.0f));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUHEND3::_XMUHEND3
 (
@@ -11562,7 +11562,7 @@ XMFINLINE _XMUHEND3::_XMUHEND3
     XMStoreUHenD3(this, XMLoadFloat3((XMFLOAT3*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUHEND3& _XMUHEND3::operator=
 (
@@ -11573,7 +11573,7 @@ XMFINLINE _XMUHEND3& _XMUHEND3::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUHEND3& _XMUHEND3::operator=
 (
@@ -11590,7 +11590,7 @@ XMFINLINE _XMUHEND3& _XMUHEND3::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMDHENN3::_XMDHENN3
 (
@@ -11602,7 +11602,7 @@ XMFINLINE _XMDHENN3::_XMDHENN3
     XMStoreDHenN3(this, XMVectorSet(_x, _y, _z, 0.0f));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMDHENN3::_XMDHENN3
 (
@@ -11612,7 +11612,7 @@ XMFINLINE _XMDHENN3::_XMDHENN3
     XMStoreDHenN3(this, XMLoadFloat3((XMFLOAT3*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMDHENN3& _XMDHENN3::operator=
 (
@@ -11623,7 +11623,7 @@ XMFINLINE _XMDHENN3& _XMDHENN3::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMDHENN3& _XMDHENN3::operator=
 (
@@ -11640,7 +11640,7 @@ XMFINLINE _XMDHENN3& _XMDHENN3::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMDHEN3::_XMDHEN3
 (
@@ -11652,7 +11652,7 @@ XMFINLINE _XMDHEN3::_XMDHEN3
     XMStoreDHen3(this, XMVectorSet(_x, _y, _z, 0.0f));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMDHEN3::_XMDHEN3
 (
@@ -11662,7 +11662,7 @@ XMFINLINE _XMDHEN3::_XMDHEN3
     XMStoreDHen3(this, XMLoadFloat3((XMFLOAT3*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMDHEN3& _XMDHEN3::operator=
 (
@@ -11673,7 +11673,7 @@ XMFINLINE _XMDHEN3& _XMDHEN3::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMDHEN3& _XMDHEN3::operator=
 (
@@ -11690,7 +11690,7 @@ XMFINLINE _XMDHEN3& _XMDHEN3::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUDHENN3::_XMUDHENN3
 (
@@ -11702,7 +11702,7 @@ XMFINLINE _XMUDHENN3::_XMUDHENN3
     XMStoreUDHenN3(this, XMVectorSet(_x, _y, _z, 0.0f));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUDHENN3::_XMUDHENN3
 (
@@ -11712,7 +11712,7 @@ XMFINLINE _XMUDHENN3::_XMUDHENN3
     XMStoreUDHenN3(this, XMLoadFloat3((XMFLOAT3*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUDHENN3& _XMUDHENN3::operator=
 (
@@ -11723,7 +11723,7 @@ XMFINLINE _XMUDHENN3& _XMUDHENN3::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUDHENN3& _XMUDHENN3::operator=
 (
@@ -11740,7 +11740,7 @@ XMFINLINE _XMUDHENN3& _XMUDHENN3::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUDHEN3::_XMUDHEN3
 (
@@ -11752,7 +11752,7 @@ XMFINLINE _XMUDHEN3::_XMUDHEN3
     XMStoreUDHen3(this, XMVectorSet(_x, _y, _z, 0.0f));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUDHEN3::_XMUDHEN3
 (
@@ -11762,7 +11762,7 @@ XMFINLINE _XMUDHEN3::_XMUDHEN3
     XMStoreUDHen3(this, XMLoadFloat3((XMFLOAT3*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUDHEN3& _XMUDHEN3::operator=
 (
@@ -11773,7 +11773,7 @@ XMFINLINE _XMUDHEN3& _XMUDHEN3::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUDHEN3& _XMUDHEN3::operator=
 (
@@ -11926,7 +11926,7 @@ XMFINLINE _XMFLOAT3SE& _XMFLOAT3SE::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMFLOAT4::_XMFLOAT4
 (
@@ -11939,7 +11939,7 @@ XMFINLINE _XMFLOAT4::_XMFLOAT4
     w = pArray[3];
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMFLOAT4& _XMFLOAT4::operator=
 (
@@ -11953,7 +11953,7 @@ XMFINLINE _XMFLOAT4& _XMFLOAT4::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE XMFLOAT4A& XMFLOAT4A::operator=
 (
@@ -11973,7 +11973,7 @@ XMFINLINE XMFLOAT4A& XMFLOAT4A::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMHALF4::_XMHALF4
 (
@@ -11986,7 +11986,7 @@ XMFINLINE _XMHALF4::_XMHALF4
     w = pArray[3];
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMHALF4::_XMHALF4
 (
@@ -12002,7 +12002,7 @@ XMFINLINE _XMHALF4::_XMHALF4
     w = XMConvertFloatToHalf(_w);
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMHALF4::_XMHALF4
 (
@@ -12012,7 +12012,7 @@ XMFINLINE _XMHALF4::_XMHALF4
     XMConvertFloatToHalfStream(&x, sizeof(HALF), pArray, sizeof(FLOAT), 4);
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMHALF4& _XMHALF4::operator=
 (
@@ -12032,7 +12032,7 @@ XMFINLINE _XMHALF4& _XMHALF4::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMSHORTN4::_XMSHORTN4
 (
@@ -12045,7 +12045,7 @@ XMFINLINE _XMSHORTN4::_XMSHORTN4
     w = pArray[3];
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMSHORTN4::_XMSHORTN4
 (
@@ -12058,7 +12058,7 @@ XMFINLINE _XMSHORTN4::_XMSHORTN4
     XMStoreShortN4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMSHORTN4::_XMSHORTN4
 (
@@ -12068,7 +12068,7 @@ XMFINLINE _XMSHORTN4::_XMSHORTN4
     XMStoreShortN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMSHORTN4& _XMSHORTN4::operator=
 (
@@ -12088,7 +12088,7 @@ XMFINLINE _XMSHORTN4& _XMSHORTN4::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMSHORT4::_XMSHORT4
 (
@@ -12101,7 +12101,7 @@ XMFINLINE _XMSHORT4::_XMSHORT4
     w = pArray[3];
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMSHORT4::_XMSHORT4
 (
@@ -12114,7 +12114,7 @@ XMFINLINE _XMSHORT4::_XMSHORT4
     XMStoreShort4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMSHORT4::_XMSHORT4
 (
@@ -12124,7 +12124,7 @@ XMFINLINE _XMSHORT4::_XMSHORT4
     XMStoreShort4(this, XMLoadFloat4((XMFLOAT4*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMSHORT4& _XMSHORT4::operator=
 (
@@ -12144,7 +12144,7 @@ XMFINLINE _XMSHORT4& _XMSHORT4::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUSHORTN4::_XMUSHORTN4
 (
@@ -12157,7 +12157,7 @@ XMFINLINE _XMUSHORTN4::_XMUSHORTN4
     w = pArray[3];
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUSHORTN4::_XMUSHORTN4
 (
@@ -12170,7 +12170,7 @@ XMFINLINE _XMUSHORTN4::_XMUSHORTN4
     XMStoreUShortN4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUSHORTN4::_XMUSHORTN4
 (
@@ -12180,7 +12180,7 @@ XMFINLINE _XMUSHORTN4::_XMUSHORTN4
     XMStoreUShortN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUSHORTN4& _XMUSHORTN4::operator=
 (
@@ -12200,7 +12200,7 @@ XMFINLINE _XMUSHORTN4& _XMUSHORTN4::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUSHORT4::_XMUSHORT4
 (
@@ -12213,7 +12213,7 @@ XMFINLINE _XMUSHORT4::_XMUSHORT4
     w = pArray[3];
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUSHORT4::_XMUSHORT4
 (
@@ -12226,7 +12226,7 @@ XMFINLINE _XMUSHORT4::_XMUSHORT4
     XMStoreUShort4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUSHORT4::_XMUSHORT4
 (
@@ -12236,7 +12236,7 @@ XMFINLINE _XMUSHORT4::_XMUSHORT4
     XMStoreUShort4(this, XMLoadFloat4((XMFLOAT4*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUSHORT4& _XMUSHORT4::operator=
 (
@@ -12256,7 +12256,7 @@ XMFINLINE _XMUSHORT4& _XMUSHORT4::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMXDECN4::_XMXDECN4
 (
@@ -12269,7 +12269,7 @@ XMFINLINE _XMXDECN4::_XMXDECN4
     XMStoreXDecN4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMXDECN4::_XMXDECN4
 (
@@ -12279,7 +12279,7 @@ XMFINLINE _XMXDECN4::_XMXDECN4
     XMStoreXDecN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMXDECN4& _XMXDECN4::operator=
 (
@@ -12290,7 +12290,7 @@ XMFINLINE _XMXDECN4& _XMXDECN4::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMXDECN4& _XMXDECN4::operator=
 (
@@ -12307,7 +12307,7 @@ XMFINLINE _XMXDECN4& _XMXDECN4::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMXDEC4::_XMXDEC4
 (
@@ -12320,7 +12320,7 @@ XMFINLINE _XMXDEC4::_XMXDEC4
     XMStoreXDec4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMXDEC4::_XMXDEC4
 (
@@ -12330,7 +12330,7 @@ XMFINLINE _XMXDEC4::_XMXDEC4
     XMStoreXDec4(this, XMLoadFloat4((XMFLOAT4*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMXDEC4& _XMXDEC4::operator=
 (
@@ -12341,7 +12341,7 @@ XMFINLINE _XMXDEC4& _XMXDEC4::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMXDEC4& _XMXDEC4::operator=
 (
@@ -12358,7 +12358,7 @@ XMFINLINE _XMXDEC4& _XMXDEC4::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMDECN4::_XMDECN4
 (
@@ -12371,7 +12371,7 @@ XMFINLINE _XMDECN4::_XMDECN4
     XMStoreDecN4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMDECN4::_XMDECN4
 (
@@ -12381,7 +12381,7 @@ XMFINLINE _XMDECN4::_XMDECN4
     XMStoreDecN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMDECN4& _XMDECN4::operator=
 (
@@ -12392,7 +12392,7 @@ XMFINLINE _XMDECN4& _XMDECN4::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMDECN4& _XMDECN4::operator=
 (
@@ -12409,7 +12409,7 @@ XMFINLINE _XMDECN4& _XMDECN4::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMDEC4::_XMDEC4
 (
@@ -12422,7 +12422,7 @@ XMFINLINE _XMDEC4::_XMDEC4
     XMStoreDec4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMDEC4::_XMDEC4
 (
@@ -12432,7 +12432,7 @@ XMFINLINE _XMDEC4::_XMDEC4
     XMStoreDec4(this, XMLoadFloat4((XMFLOAT4*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMDEC4& _XMDEC4::operator=
 (
@@ -12443,7 +12443,7 @@ XMFINLINE _XMDEC4& _XMDEC4::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMDEC4& _XMDEC4::operator=
 (
@@ -12460,7 +12460,7 @@ XMFINLINE _XMDEC4& _XMDEC4::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUDECN4::_XMUDECN4
 (
@@ -12473,7 +12473,7 @@ XMFINLINE _XMUDECN4::_XMUDECN4
     XMStoreUDecN4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUDECN4::_XMUDECN4
 (
@@ -12483,7 +12483,7 @@ XMFINLINE _XMUDECN4::_XMUDECN4
     XMStoreUDecN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUDECN4& _XMUDECN4::operator=
 (
@@ -12494,7 +12494,7 @@ XMFINLINE _XMUDECN4& _XMUDECN4::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUDECN4& _XMUDECN4::operator=
 (
@@ -12511,7 +12511,7 @@ XMFINLINE _XMUDECN4& _XMUDECN4::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUDEC4::_XMUDEC4
 (
@@ -12524,7 +12524,7 @@ XMFINLINE _XMUDEC4::_XMUDEC4
     XMStoreUDec4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUDEC4::_XMUDEC4
 (
@@ -12534,7 +12534,7 @@ XMFINLINE _XMUDEC4::_XMUDEC4
     XMStoreUDec4(this, XMLoadFloat4((XMFLOAT4*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUDEC4& _XMUDEC4::operator=
 (
@@ -12545,7 +12545,7 @@ XMFINLINE _XMUDEC4& _XMUDEC4::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUDEC4& _XMUDEC4::operator=
 (
@@ -12562,7 +12562,7 @@ XMFINLINE _XMUDEC4& _XMUDEC4::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMXICON4::_XMXICON4
 (
@@ -12575,7 +12575,7 @@ XMFINLINE _XMXICON4::_XMXICON4
     XMStoreXIcoN4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMXICON4::_XMXICON4
 (
@@ -12585,7 +12585,7 @@ XMFINLINE _XMXICON4::_XMXICON4
     XMStoreXIcoN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMXICON4& _XMXICON4::operator=
 (
@@ -12596,7 +12596,7 @@ XMFINLINE _XMXICON4& _XMXICON4::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMXICON4& _XMXICON4::operator=
 (
@@ -12613,7 +12613,7 @@ XMFINLINE _XMXICON4& _XMXICON4::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMXICO4::_XMXICO4
 (
@@ -12626,7 +12626,7 @@ XMFINLINE _XMXICO4::_XMXICO4
     XMStoreXIco4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMXICO4::_XMXICO4
 (
@@ -12636,7 +12636,7 @@ XMFINLINE _XMXICO4::_XMXICO4
     XMStoreXIco4(this, XMLoadFloat4((XMFLOAT4*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMXICO4& _XMXICO4::operator=
 (
@@ -12647,7 +12647,7 @@ XMFINLINE _XMXICO4& _XMXICO4::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMXICO4& _XMXICO4::operator=
 (
@@ -12664,7 +12664,7 @@ XMFINLINE _XMXICO4& _XMXICO4::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMICON4::_XMICON4
 (
@@ -12677,7 +12677,7 @@ XMFINLINE _XMICON4::_XMICON4
     XMStoreIcoN4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMICON4::_XMICON4
 (
@@ -12687,7 +12687,7 @@ XMFINLINE _XMICON4::_XMICON4
     XMStoreIcoN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMICON4& _XMICON4::operator=
 (
@@ -12698,7 +12698,7 @@ XMFINLINE _XMICON4& _XMICON4::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMICON4& _XMICON4::operator=
 (
@@ -12715,7 +12715,7 @@ XMFINLINE _XMICON4& _XMICON4::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMICO4::_XMICO4
 (
@@ -12728,7 +12728,7 @@ XMFINLINE _XMICO4::_XMICO4
     XMStoreIco4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMICO4::_XMICO4
 (
@@ -12738,7 +12738,7 @@ XMFINLINE _XMICO4::_XMICO4
     XMStoreIco4(this, XMLoadFloat4((XMFLOAT4*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMICO4& _XMICO4::operator=
 (
@@ -12749,7 +12749,7 @@ XMFINLINE _XMICO4& _XMICO4::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMICO4& _XMICO4::operator=
 (
@@ -12766,7 +12766,7 @@ XMFINLINE _XMICO4& _XMICO4::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUICON4::_XMUICON4
 (
@@ -12779,7 +12779,7 @@ XMFINLINE _XMUICON4::_XMUICON4
     XMStoreUIcoN4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUICON4::_XMUICON4
 (
@@ -12789,7 +12789,7 @@ XMFINLINE _XMUICON4::_XMUICON4
     XMStoreUIcoN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUICON4& _XMUICON4::operator=
 (
@@ -12800,7 +12800,7 @@ XMFINLINE _XMUICON4& _XMUICON4::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUICON4& _XMUICON4::operator=
 (
@@ -12817,7 +12817,7 @@ XMFINLINE _XMUICON4& _XMUICON4::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUICO4::_XMUICO4
 (
@@ -12830,7 +12830,7 @@ XMFINLINE _XMUICO4::_XMUICO4
     XMStoreUIco4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUICO4::_XMUICO4
 (
@@ -12840,7 +12840,7 @@ XMFINLINE _XMUICO4::_XMUICO4
     XMStoreUIco4(this, XMLoadFloat4((XMFLOAT4*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUICO4& _XMUICO4::operator=
 (
@@ -12851,7 +12851,7 @@ XMFINLINE _XMUICO4& _XMUICO4::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUICO4& _XMUICO4::operator=
 (
@@ -12868,7 +12868,7 @@ XMFINLINE _XMUICO4& _XMUICO4::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMCOLOR::_XMCOLOR
 (
@@ -12881,7 +12881,7 @@ XMFINLINE _XMCOLOR::_XMCOLOR
     XMStoreColor(this, XMVectorSet(_r, _g, _b, _a));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMCOLOR::_XMCOLOR
 (
@@ -12891,7 +12891,7 @@ XMFINLINE _XMCOLOR::_XMCOLOR
     XMStoreColor(this, XMLoadFloat4((XMFLOAT4*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMCOLOR& _XMCOLOR::operator=
 (
@@ -12902,7 +12902,7 @@ XMFINLINE _XMCOLOR& _XMCOLOR::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMCOLOR& _XMCOLOR::operator=
 (
@@ -12919,7 +12919,7 @@ XMFINLINE _XMCOLOR& _XMCOLOR::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMBYTEN4::_XMBYTEN4
 (
@@ -12932,7 +12932,7 @@ XMFINLINE _XMBYTEN4::_XMBYTEN4
     w = pArray[3];
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMBYTEN4::_XMBYTEN4
 (
@@ -12945,7 +12945,7 @@ XMFINLINE _XMBYTEN4::_XMBYTEN4
     XMStoreByteN4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMBYTEN4::_XMBYTEN4
 (
@@ -12955,7 +12955,7 @@ XMFINLINE _XMBYTEN4::_XMBYTEN4
     XMStoreByteN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMBYTEN4& _XMBYTEN4::operator=
 (
@@ -12975,7 +12975,7 @@ XMFINLINE _XMBYTEN4& _XMBYTEN4::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMBYTE4::_XMBYTE4
 (
@@ -12988,7 +12988,7 @@ XMFINLINE _XMBYTE4::_XMBYTE4
     w = pArray[3];
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMBYTE4::_XMBYTE4
 (
@@ -13001,7 +13001,7 @@ XMFINLINE _XMBYTE4::_XMBYTE4
     XMStoreByte4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMBYTE4::_XMBYTE4
 (
@@ -13011,7 +13011,7 @@ XMFINLINE _XMBYTE4::_XMBYTE4
     XMStoreByte4(this, XMLoadFloat4((XMFLOAT4*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMBYTE4& _XMBYTE4::operator=
 (
@@ -13031,7 +13031,7 @@ XMFINLINE _XMBYTE4& _XMBYTE4::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUBYTEN4::_XMUBYTEN4
 (
@@ -13044,7 +13044,7 @@ XMFINLINE _XMUBYTEN4::_XMUBYTEN4
     w = pArray[3];
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUBYTEN4::_XMUBYTEN4
 (
@@ -13057,7 +13057,7 @@ XMFINLINE _XMUBYTEN4::_XMUBYTEN4
     XMStoreUByteN4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUBYTEN4::_XMUBYTEN4
 (
@@ -13067,7 +13067,7 @@ XMFINLINE _XMUBYTEN4::_XMUBYTEN4
     XMStoreUByteN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUBYTEN4& _XMUBYTEN4::operator=
 (
@@ -13087,7 +13087,7 @@ XMFINLINE _XMUBYTEN4& _XMUBYTEN4::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUBYTE4::_XMUBYTE4
 (
@@ -13100,7 +13100,7 @@ XMFINLINE _XMUBYTE4::_XMUBYTE4
     w = pArray[3];
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUBYTE4::_XMUBYTE4
 (
@@ -13113,7 +13113,7 @@ XMFINLINE _XMUBYTE4::_XMUBYTE4
     XMStoreUByte4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUBYTE4::_XMUBYTE4
 (
@@ -13123,7 +13123,7 @@ XMFINLINE _XMUBYTE4::_XMUBYTE4
     XMStoreUByte4(this, XMLoadFloat4((XMFLOAT4*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUBYTE4& _XMUBYTE4::operator=
 (
@@ -13143,7 +13143,7 @@ XMFINLINE _XMUBYTE4& _XMUBYTE4::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUNIBBLE4::_XMUNIBBLE4
 (
@@ -13156,7 +13156,7 @@ XMFINLINE _XMUNIBBLE4::_XMUNIBBLE4
     w = pArray[3];
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUNIBBLE4::_XMUNIBBLE4
 (
@@ -13169,7 +13169,7 @@ XMFINLINE _XMUNIBBLE4::_XMUNIBBLE4
     XMStoreUNibble4(this, XMVectorSet( _x, _y, _z, _w ));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUNIBBLE4::_XMUNIBBLE4
 (
@@ -13179,7 +13179,7 @@ XMFINLINE _XMUNIBBLE4::_XMUNIBBLE4
     XMStoreUNibble4(this, XMLoadFloat4((XMFLOAT4*)pArray));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUNIBBLE4& _XMUNIBBLE4::operator=
 (
@@ -13190,7 +13190,7 @@ XMFINLINE _XMUNIBBLE4& _XMUNIBBLE4::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMUNIBBLE4& _XMUNIBBLE4::operator=
 (
@@ -13207,7 +13207,7 @@ XMFINLINE _XMUNIBBLE4& _XMUNIBBLE4::operator=
  *
  ****************************************************************************/
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMU555::_XMU555
 (
@@ -13221,7 +13221,7 @@ XMFINLINE _XMU555::_XMU555
     w = _w;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMU555::_XMU555
 (
@@ -13234,7 +13234,7 @@ XMFINLINE _XMU555::_XMU555
     XMStoreU555(this, XMVectorSet(_x, _y, _z, ((_w) ? 1.0f : 0.0f) ));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMU555::_XMU555
 (
@@ -13246,7 +13246,7 @@ XMFINLINE _XMU555::_XMU555
     XMStoreU555(this, XMVectorSetW(V, ((_w) ? 1.0f : 0.0f) ));
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMU555& _XMU555::operator=
 (
@@ -13257,7 +13257,7 @@ XMFINLINE _XMU555& _XMU555::operator=
     return *this;
 }
 
-// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 XMFINLINE _XMU555& _XMU555::operator=
 (
