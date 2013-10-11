@@ -26,7 +26,7 @@ int ricsiMain() {
 	auto CreateWindowWin32 = (IWindow* (*)(const IWindow::tDesc& winDesc))GetDLLFunction(hDllGraphicsEngine, "CreateWindowWin32");
 
 	// Create interfaces
-	IGraphicsEngine* mgrGEngine = CreateGraphicsEngine;
+	IGraphicsEngine* mgrGEngine = CreateGraphicsEngine();
 	ISceneManager* mgrScene = mgrGEngine->GetSceneManager();
 	IGraphicsApi *dx11 = CreateGraphicsD3D11;
 
