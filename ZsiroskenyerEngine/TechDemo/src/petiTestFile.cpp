@@ -49,7 +49,7 @@ int petiMain() {
 	auto CreateGraphicsEngine = (IGraphicsEngine*(*)())GetDLLFunction(hDll, "CreateGraphicsEngine");
 
 	IGraphicsEngine* engine = CreateGraphicsEngine();
-	ISceneManager* sceneManager = engine->GetSceneManager();
+	IManagerScene* sceneManager = engine->GetSceneManager();
 
 	cEntity& entity = sceneManager->AddEntity(L"geometry", L"material");
 
