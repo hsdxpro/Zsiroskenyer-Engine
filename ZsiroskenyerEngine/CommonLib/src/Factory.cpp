@@ -1,8 +1,10 @@
 // Factor.cpp implementation
 #include "Factory.h"
 
+cFactory Factory;
+
 // Win32 DLL loader
-//#include "DLLLoaderWin32.h"
+#include "DLLLoaderWin32.h"
 
 cFactory::cFactory() 
 :dllLoader(NULL) {
@@ -10,6 +12,7 @@ cFactory::cFactory()
 #if ZS_WIN32
 	//dllLoader = CreateDLLLoaderWin32();
 #endif
+	dllLoader = new cDLLLoaderWin32();
 
 	// Load DLL's and assign function PTR's to make Factory work after init
 	IDLLLoader::DLLMODULE hGraphicsD3D11 = dllLoader->LoadDLL("GraphicsD3D11.dll");

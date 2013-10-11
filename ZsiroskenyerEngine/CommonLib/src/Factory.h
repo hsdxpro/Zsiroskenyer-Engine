@@ -36,4 +36,6 @@ protected:
 	funcGraphicsApi  ptrCreateGraphicsD3D11;
 	funcGraphicsApi  ptrCreateGraphicsGL;
 	funcWindow		 ptrCreateWindowWin32;
-}Factory;
+};
+
+extern cFactory Factory;

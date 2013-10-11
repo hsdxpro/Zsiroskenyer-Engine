@@ -12,11 +12,3 @@ public:
 protected:
 	std::string GetExecutablePath() const;
 };
-
-
-// DLL accessor
-extern "C"
-	__declspec(dllexport)
-	IDLLLoader* CreateDLLLoaderWin32() {
-		return new cDLLLoaderWin32();
-}

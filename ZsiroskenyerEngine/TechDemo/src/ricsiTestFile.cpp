@@ -3,13 +3,13 @@
 #include "..\..\GraphicsEngine\src\IWindow.h"
 #include "..\..\GraphicsEngine\src\IGraphicsApi.h"
 #include "..\..\GraphicsEngine\src\IGraphicsEngine.h"
-//#include "..\..\CommonLib\src\Factory.h"
+#include "..\..\CommonLib\src\Factory.h"
 
 int ricsiMain() {
-	/*
+	
 	// Create interfaces
 	IGraphicsEngine* mgrGEngine = Factory.CreateEngineGraphics();
-	ISceneManager* mgrScene = mgrGEngine->GetSceneManager();
+	IManagerScene* mgrScene = mgrGEngine->GetSceneManager();
 	IGraphicsApi *dx11 = Factory.CreateGraphics();
 
 	// Create basic window
@@ -38,7 +38,7 @@ int ricsiMain() {
 	// Free up
 	SAFE_DELETE(mgrGEngine);
 	SAFE_DELETE(mgrScene);
-	SAFE_DELETE(dx11);*/
+	SAFE_DELETE(dx11);
 
 	return 0;
 }
