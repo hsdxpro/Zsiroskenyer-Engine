@@ -67,7 +67,7 @@ cGeometry* cManagerResource::LoadGeometryDAE(const zsString& fileName) {
 	// read up dae scene
 	char ansiFileName[256];
 	wcstombs(ansiFileName, fileName.c_str(), 256);
-	const const aiScene* scene = importer.ReadFile(ansiFileName, (aiProcessPreset_TargetRealtime_Quality | aiProcess_MakeLeftHanded | aiProcess_FlipWindingOrder)^aiProcess_FindInvalidData);
+	const aiScene* scene = importer.ReadFile(ansiFileName, (aiProcessPreset_TargetRealtime_Quality | aiProcess_MakeLeftHanded | aiProcess_FlipWindingOrder)^aiProcess_FindInvalidData);
 	if(scene == NULL)
 		return NULL;
 

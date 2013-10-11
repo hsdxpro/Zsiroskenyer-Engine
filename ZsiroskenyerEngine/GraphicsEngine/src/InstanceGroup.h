@@ -36,7 +36,7 @@ template <>
 struct std::hash<cInstanceGroup> {
 	typedef cMaterialRef argument_type;
 	typedef std::size_t return_type;
-	std::size_t operator()(const cInstanceGroup i) {
+	std::size_t operator()(const cInstanceGroup i) const {
 		return std::hash<cGeometryRef>()(i.geom)^std::hash<cMaterialRef>()(i.mtl);
 	}
 };

@@ -81,11 +81,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="GeometryBuilder.cpp" />
     <ClCompile Include="src\DllMain.cpp" />
     <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\Exception.cpp" />
     <ClCompile Include="src\Geometry.cpp" />
+    <ClCompile Include="src\GeometryBuilder.cpp" />
     <ClCompile Include="src\GraphicsEngine.cpp" />
     <ClCompile Include="src\InstanceGroup.cpp" />
     <ClCompile Include="src\Material.cpp" />
@@ -94,10 +94,10 @@
     <ClCompile Include="src\WindowWin32.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GeometryBuilder.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\Geometry.h" />
+    <ClInclude Include="src\GeometryBuilder.h" />
     <ClInclude Include="src\GraphicsEngine.h" />
     <ClInclude Include="src\IGraphicsApi.h" />
     <ClInclude Include="src\IGraphicsEngine.h" />
@@ -111,6 +111,7 @@
     <ClInclude Include="src\Material.h" />
     <ClInclude Include="src\ManagerResource.h" />
     <ClInclude Include="src\ManagerScene.h" />
+    <ClInclude Include="src\Node.h" />
     <ClInclude Include="src\WindowWin32.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

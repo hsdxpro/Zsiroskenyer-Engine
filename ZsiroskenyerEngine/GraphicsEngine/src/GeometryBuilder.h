@@ -5,3 +5,14 @@
 //	This is a helper class that is responsible for building and manipulating
 //	cGeometries on the run.
 ////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+class cGeometryBuilder {
+public:
+	cGeometryBuilder();
+private:
+
+};
