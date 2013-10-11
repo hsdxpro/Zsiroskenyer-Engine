@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="math">
+      <UniqueIdentifier>{06829a86-dc28-4135-b633-3e645d1acabb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="memory">
+      <UniqueIdentifier>{9c5334e1-7b0f-4a1f-92c5-c6618ae1dbeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="algorithm">
+      <UniqueIdentifier>{a5eb5c13-e67f-40dd-847c-b8579fa9b105}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="storage">
+      <UniqueIdentifier>{5f9b7b97-81fe-4909-b4a0-7d17d3c1fdf0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\memory\tlsf.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\Vec3.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\Quat.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\Matrix44.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\Color.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\zsString.cpp" />
+    <ClCompile Include="src\math\Vec2.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\Point.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Factory.cpp" />
+    <ClCompile Include="src\DLLLoaderWin32.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\math\math_all.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\memory\fixed_size_pool.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\memory\tlsf.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\sort.h">
+      <Filter>algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="src\algorithms\statistics.h">
+      <Filter>algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="src\storage\tree.h">
+      <Filter>storage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\Vec3.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\Quat.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\Matrix44.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\Color.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common.h" />
+    <ClInclude Include="src\zsString.h" />
+    <ClInclude Include="src\math\Vec2.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\Point.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tipsify.h" />
+    <ClInclude Include="src\Factory.h" />
+    <ClInclude Include="src\IDLLLoader.h" />
+    <ClInclude Include="src\DLLLoaderWin32.h" />
+  </ItemGroup>
+</Project>
