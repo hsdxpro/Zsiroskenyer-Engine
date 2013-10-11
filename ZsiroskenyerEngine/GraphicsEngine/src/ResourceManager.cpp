@@ -213,7 +213,9 @@ cGeometry* cResourceManager::LoadGeometryDAE(const zsString& fileName) {
 	reorderedIndices = tipsify(indices,nIndex/3,nVertex,16);
 	delete[] indices;
 
-	return new cGeometry(uniqueVertices, reorderedIndices, nUniqVertices, nIndex);
+	//return new cGeometry(uniqueVertices, reorderedIndices, nUniqVertices, nIndex);
+	//return new cGeometry(new IVertexBuffer(uniqueVertices, reorderedIndices, nUniqVertices, nIndex);
+	return NULL;
 }
 
 // load/unload materials

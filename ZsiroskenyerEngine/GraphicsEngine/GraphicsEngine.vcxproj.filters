@@ -101,5 +101,7 @@
     <ClInclude Include="src\ISceneManager.h">
       <Filter>GraphicsEngine</Filter>
     </ClInclude>
+    <ClInclude Include="src\IVertexBuffer.h" />
+    <ClInclude Include="src\IIndexBuffer.h" />
   </ItemGroup>
 </Project>

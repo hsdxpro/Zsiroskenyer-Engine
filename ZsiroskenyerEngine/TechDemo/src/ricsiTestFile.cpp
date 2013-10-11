@@ -44,13 +44,12 @@ int ricsiMain() {
 	// Set Render Window
 	dx11->SetWindow(myWindow);
 
-	// Create 3D objects
+	// Create 3D object for testing
 	cEntity& entity = mgrScene->AddEntity(L"box.dae", L"material");
+		entity.position = Vec3(1,1,1);
+		entity.isVisible = true;
 
-	entity.position = Vec3(1,1,1);
-	entity.isVisible = true;
-
-	// main loop
+	// Main loop
 	while(myWindow->IsOpened()) {
 		myWindow->PeekAllMessages();
 		dx11->Present();
