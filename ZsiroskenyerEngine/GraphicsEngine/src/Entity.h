@@ -15,7 +15,7 @@ class cInstanceGroup;
 
 
 class cEntity {
-	friend class cSceneManager;
+	friend class cManagerScene;
 public:
 	cEntity();
 

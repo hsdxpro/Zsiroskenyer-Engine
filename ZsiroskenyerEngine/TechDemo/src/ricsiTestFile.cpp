@@ -17,7 +17,7 @@ FARPROC GetDLLFunction(HMODULE dll, const std::string& funcName);
 
 int ricsiMain() {
 	// Load DLLs
-	HMODULE hDllD3D11Dll = LoadDLL("RendererD3D11.dll");
+	HMODULE hDllD3D11Dll = LoadDLL("GraphicsD3D11.dll");
 	HMODULE hDllGraphicsEngine = LoadDLL("GraphicsEngine.dll");
 
 	// Get function for IGraphicsApi, IGraphicsEngine, IWindow
@@ -37,8 +37,7 @@ int ricsiMain() {
 		desc.captionName = L"Zsíroskenyér Engine [Tech Demo]";
 		desc.clientHeight = 600;
 		desc.clientWidth = 800;
-		//desc.style = IWindow::eStyle::OVERLAPPED;
-		desc.style = (IWindow::eStyle)WS_OVERLAPPEDWINDOW;
+		desc.style = IWindow::eStyle::OVERLAPPED;
 	IWindow* myWindow = (IWindow*)CreateWindowWin32(desc);
 
 	// Set Render Window

@@ -20,7 +20,7 @@
 
 
 class cEntity;
-class cResourceManager;
+class cManagerResource;
 
 // helpers for storing cInstanceGroups by pointer
 struct cInstGroupPtrHasher {
@@ -37,15 +37,15 @@ struct cInstGroupPtrCompare {
 };
 
 // scene manager
-class cSceneManager : public ISceneManager {
+class cManagerScene : public ISceneManager {
 public:
-	cSceneManager(cResourceManager& rm);
-	~cSceneManager();
+	cManagerScene(cManagerResource& rm);
+	~cManagerScene();
 
 	cEntity& AddEntity(const zsString& geometry, const zsString& material);
 	void RemoveEntity(const cEntity& entity);
 
 private:
 	std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare> instanceGroups;
-	cResourceManager& resourceManager;
+	cManagerResource& resourceManager;
 };

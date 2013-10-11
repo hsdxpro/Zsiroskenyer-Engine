@@ -17,6 +17,7 @@
     <ProjectGuid>{884FE606-070E-48D2-A0A8-98B5536F432A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>RendererGL</RootNamespace>
+    <ProjectName>GraphicsGL</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

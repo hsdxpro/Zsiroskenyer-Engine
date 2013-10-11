@@ -18,14 +18,14 @@ using namespace std;
 
 
 // constructor and destructor
-cSceneManager::cSceneManager(cResourceManager& rm) : resourceManager(rm) {
+cManagerScene::cManagerScene(cManagerResource& rm) : resourceManager(rm) {
 }
-cSceneManager::~cSceneManager() {
+cManagerScene::~cManagerScene() {
 }
 
 
 // entities
-cEntity& cSceneManager::AddEntity(const zsString& geometry, const zsString& material) {
+cEntity& cManagerScene::AddEntity(const zsString& geometry, const zsString& material) {
 	cInstanceGroup* instGroup = nullptr;
 	cInstanceGroup searchDummy;
 	cEntity* entity;
@@ -55,7 +55,7 @@ cEntity& cSceneManager::AddEntity(const zsString& geometry, const zsString& mate
 	}
 }
 
-void cSceneManager::RemoveEntity(const cEntity& entity) {
+void cManagerScene::RemoveEntity(const cEntity& entity) {
 	cInstanceGroup* instGroup = entity.instanceGroup;
 
 	auto it = instanceGroups.find(instGroup);

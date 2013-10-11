@@ -19,20 +19,23 @@ typedef char CHAR;
 typedef unsigned short ushort;
 typedef unsigned char uchar;
 
-#ifndef NULL
 #define NULL 0
-#endif
 
 #if (defined(_DEBUG) || defined(DEBUG))
+#define ZSASSERT(condition) assert(condition);
 #define ZSASSERT(condition, errorMsg) \
 	if (condition != true) { \
 		MessageBoxA(0, errorMsg, "ErrorMsg", MB_OK); \
 		assert(condition); \
 	}
+#define zsDebugPrint(msg) std::wcerr<<msg<<std::endl;
 #else
 #define ZSASSERT(x, y) {}
 #define ZSASSERT(x) {}
+#define zsDebugPrint(msg) {}
 #endif
+
+
 
 #define SAFE_DELETE(x) if(x != NULL) {delete x; x = NULL;}
 #define SAFE_DELETE_ARRAY(x) if(x != NULL) {delete[] x; x = NULL;}

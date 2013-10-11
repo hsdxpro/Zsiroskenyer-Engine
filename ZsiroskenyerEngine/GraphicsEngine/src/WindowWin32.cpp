@@ -57,44 +57,53 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 cWindowWin32::cWindowWin32(const IWindow::tDesc& winDesc)
 :opened(true) {
-		// register our new window class
-		WNDCLASSEX wC;
-		memset(&wC,0,sizeof(WNDCLASSEX));
-		wC.cbSize = sizeof(WNDCLASSEX);
-		wC.cbClsExtra = 0;
-		wC.cbWndExtra = 0;
-		wC.hbrBackground = (HBRUSH)GetStockObject(winDesc.brush);
-		wC.hCursor = LoadCursor(NULL, IDC_ARROW);
-		wC.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-		wC.hIconSm = NULL;
-		wC.lpszClassName = _T("windowclass");
-		wC.lpszMenuName = NULL;
-		wC.hInstance = (HINSTANCE)winDesc.appInstance;
-		wC.lpfnWndProc = wndProc;
-		wC.style = CS_HREDRAW | CS_VREDRAW;
-		RegisterClassEx(&wC);
+	
+	// Description holds OS independent style code, so interpret it to win32
+	IWindow::eStyle interpretedStyle;
+	switch(winDesc.style) {
+		case IWindow::eStyle::OVERLAPPED:
+				interpretedStyle = (IWindow::eStyle)WS_OVERLAPPEDWINDOW;
+				break;
+	}
 
-		RECT adjustedsize = {0};
-		AdjustWindowRect(&adjustedsize, winDesc.style, 0);
+	// register our new window class
+	WNDCLASSEX wC;
+	memset(&wC,0,sizeof(WNDCLASSEX));
+	wC.cbSize = sizeof(WNDCLASSEX);
+	wC.cbClsExtra = 0;
+	wC.cbWndExtra = 0;
+	wC.hbrBackground = (HBRUSH)GetStockObject(winDesc.brush);
+	wC.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wC.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+	wC.hIconSm = NULL;
+	wC.lpszClassName = _T("windowclass");
+	wC.lpszMenuName = NULL;
+	wC.hInstance = (HINSTANCE)winDesc.appInstance;
+	wC.lpfnWndProc = wndProc;
+	wC.style = CS_HREDRAW | CS_VREDRAW;
+	RegisterClassEx(&wC);
 
-		int wWidth = winDesc.clientWidth  - adjustedsize.left  + adjustedsize.right;
-		int wHeight = winDesc.clientHeight - adjustedsize.top	+ adjustedsize.bottom;
+	RECT adjustedsize = {0};
+	AdjustWindowRect(&adjustedsize, interpretedStyle, 0);
+
+	int wWidth = winDesc.clientWidth  - adjustedsize.left  + adjustedsize.right;
+	int wHeight = winDesc.clientHeight - adjustedsize.top	+ adjustedsize.bottom;
 		
-		handle = CreateWindow(
-			_T("windowclass"),
-			winDesc.captionName.c_str(),
-			winDesc.style,
-			0,
-			0,
-			wWidth,
-			wHeight,
-			GetDesktopWindow(),
-			0,
-			(HINSTANCE)winDesc.appInstance,
-			0);
+	handle = CreateWindow(
+		_T("windowclass"),
+		winDesc.captionName.c_str(),
+		interpretedStyle,
+		0,
+		0,
+		wWidth,
+		wHeight,
+		GetDesktopWindow(),
+		0,
+		(HINSTANCE)winDesc.appInstance,
+		0);
 		
-		ShowWindow(handle,SW_SHOW);
-		UpdateWindow(handle);
+	ShowWindow(handle,SW_SHOW);
+	UpdateWindow(handle);
 }
 
 void cWindowWin32::MoveCenter() {

@@ -28,7 +28,7 @@ using namespace std;
 //	ResourceManager
 
 // load/unload geometries
-cGeometryRef cResourceManager::LoadGeometry(const zsString& fileName) {
+cGeometryRef cManagerResource::LoadGeometry(const zsString& fileName) {
 	cGeometry* geom;
 
 	// lookup if already exists
@@ -55,13 +55,13 @@ cGeometryRef cResourceManager::LoadGeometry(const zsString& fileName) {
 
 	return cGeometryRef(this, geom);
 }
-void cResourceManager::UnloadGeometry(const cGeometry* geometry) {
+void cManagerResource::UnloadGeometry(const cGeometry* geometry) {
 	auto it = geometries.right.find(const_cast<cGeometry*>(geometry));
 	delete it->first;
 	geometries.right.erase(it);
 }
 
-cGeometry* cResourceManager::LoadGeometryDAE(const zsString& fileName) {
+cGeometry* cManagerResource::LoadGeometryDAE(const zsString& fileName) {
 	Assimp::Importer importer;
 
 	// read up dae scene
@@ -213,13 +213,14 @@ cGeometry* cResourceManager::LoadGeometryDAE(const zsString& fileName) {
 	reorderedIndices = tipsify(indices,nIndex/3,nVertex,16);
 	delete[] indices;
 
+	zsDebugPrint(L"ManagerResource::LoadGeometry -> " + fileName);
 	//return new cGeometry(uniqueVertices, reorderedIndices, nUniqVertices, nIndex);
 	//return new cGeometry(new IVertexBuffer(uniqueVertices, reorderedIndices, nUniqVertices, nIndex);
 	return NULL;
 }
 
 // load/unload materials
-cMaterialRef cResourceManager::LoadMaterial(const zsString& fileName) {
+cMaterialRef cManagerResource::LoadMaterial(const zsString& fileName) {
 	cMaterial* mtl;
 
 	// lookup if already exists
@@ -240,7 +241,7 @@ cMaterialRef cResourceManager::LoadMaterial(const zsString& fileName) {
 	
 	return cMaterialRef(this, mtl);
 }
-void cResourceManager::UnloadMaterial(const cMaterial* material) {
+void cManagerResource::UnloadMaterial(const cMaterial* material) {
 	auto it = materials.right.find(const_cast<cMaterial*>(material));
 	delete it->first;
 	materials.right.erase(it);
@@ -248,9 +249,9 @@ void cResourceManager::UnloadMaterial(const cMaterial* material) {
 
 
 // constructors
-cResourceManager::cResourceManager() {
+cManagerResource::cManagerResource() {
 }
-cResourceManager::~cResourceManager() {
+cManagerResource::~cManagerResource() {
 }
 
 
@@ -258,7 +259,7 @@ cResourceManager::~cResourceManager() {
 //	References to resources
 
 // geometry reference
-cGeometryRef::cGeometryRef(cResourceManager* rm, cGeometry* ptr)
+cGeometryRef::cGeometryRef(cManagerResource* rm, cGeometry* ptr)
 	:
 	shared_ptr(ptr, [this](cGeometry* g){this->rm->UnloadGeometry(g);} ), 
 	rm(rm)
@@ -294,7 +295,7 @@ cGeometry* cGeometryRef::get() const {
 
 
 // material reference
-cMaterialRef::cMaterialRef(cResourceManager* rm, cMaterial* ptr)
+cMaterialRef::cMaterialRef(cManagerResource* rm, cMaterial* ptr)
 	:
 	shared_ptr(ptr, [this](cMaterial* m){this->rm->UnloadMaterial(m);} ), 
 	rm(rm)

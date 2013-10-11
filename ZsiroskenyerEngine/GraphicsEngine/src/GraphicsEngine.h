@@ -22,8 +22,8 @@ public:
 
 	ISceneManager* GetSceneManager();
 private:	
-	cResourceManager resourceManager;
-	cSceneManager sceneManager;
+	cManagerResource resourceManager;
+	cManagerScene sceneManager;
 };
 
 
