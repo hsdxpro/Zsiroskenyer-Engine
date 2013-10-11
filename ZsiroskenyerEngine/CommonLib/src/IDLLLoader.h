@@ -2,13 +2,13 @@
 // Interface for DLL loading
 #pragma once
 
-#include <string>
+#include "zsString.h"
 
 class IDLLLoader {
 public:
 	typedef void* DLLMODULE;
 	typedef int (*DLLFUNCTION)();
 
-	virtual DLLMODULE LoadDLL(const std::string& libName) const = 0;
-	virtual DLLFUNCTION GetDLLFunction(DLLMODULE dll, const std::string& funcName) const = 0;
+	virtual DLLMODULE LoadDLL(const zsString& libName) const = 0;
+	virtual DLLFUNCTION GetDLLFunction(DLLMODULE dll, const zsString& funcName) const = 0;
 };

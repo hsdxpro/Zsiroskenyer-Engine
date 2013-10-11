@@ -1,6 +1,10 @@
 #include "GraphicsGL.h"
 
-void cGraphicsGL::Present() {
+void cGraphicsGL::BBClear(bool clearOnlyDepth) {
+
+}
+
+void cGraphicsGL::BBPresent() {
 
 }
 

@@ -6,6 +6,7 @@
 
 class IGraphicsApi {
 public:
-	virtual void Present() = 0;
+	virtual void BBClear(bool clearOnlyDepth = false) = 0;
+	virtual void BBPresent() = 0;
 	virtual void SetWindow(IWindow *renderWindow) = 0;
 };

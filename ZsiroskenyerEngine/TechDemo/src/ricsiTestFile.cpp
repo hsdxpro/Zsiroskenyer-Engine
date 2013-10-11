@@ -6,6 +6,11 @@
 #include "..\..\CommonLib\src\Factory.h"
 #include "..\..\CommonLib\src\DLLLoaderWin32.h"
 
+//@TODO REMOVE THIS FUCKING SHIT OR I KILL MYSELF
+// NEED SOME INTERFACE, TO DETERMINE APPLICATION HANDLE
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 int ricsiMain() {
 	
 	// Create interfaces
@@ -16,13 +21,19 @@ int ricsiMain() {
 	
 	// Create basic window
 	IWindow::tDesc desc;
+		desc.appInstance = (IWindow::AppInstance)GetModuleHandle(NULL);
 		desc.brush = IWindow::eBrush::RENDER_;
 		desc.captionName = L"Zsíroskenyér Engine [Tech Demo]";
 		desc.clientHeight = 600;
 		desc.clientWidth = 800;
 		desc.style = IWindow::eStyle::OVERLAPPED;
+
+//@TODO I KILL MYSELF
+#undef CreateWindow
+
 	IWindow* myWindow = Factory.CreateWindow(desc);
 
+//@TODO NEM FUT LE LOL
 	// Set Render Window
 	dx11->SetWindow(myWindow);
 
@@ -34,7 +45,8 @@ int ricsiMain() {
 	// Main loop
 	while(myWindow->IsOpened()) {
 		myWindow->PeekAllMessages();
-		dx11->Present();
+		dx11->BBClear();
+		dx11->BBPresent();
 	}
 	
 	// Free up

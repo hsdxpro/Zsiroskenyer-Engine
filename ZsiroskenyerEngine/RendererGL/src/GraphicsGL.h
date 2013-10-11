@@ -7,8 +7,9 @@
 
 class cGraphicsGL : public IGraphicsApi {
 public:
-	void Present();
-	void SetWindow(IWindow *renderWindow);
+	void BBClear(bool clearOnlyDepth = false) override;
+	void BBPresent() override;
+	void SetWindow(IWindow *renderWindow) override;
 protected:
 };
 

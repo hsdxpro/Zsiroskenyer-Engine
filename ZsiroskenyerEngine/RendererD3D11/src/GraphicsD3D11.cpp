@@ -3,6 +3,7 @@
 
 #ifdef WIN32
 #pragma warning(disable: 4244)
+#pragma warning(disable: 4005)
 #endif
 
 cGraphicsD3D11::tDxConfig cGraphicsD3D11::tDxConfig::DEFAULT = cGraphicsD3D11::tDxConfig();
@@ -24,8 +25,6 @@ cGraphicsD3D11::cGraphicsD3D11()
 }
 
 void cGraphicsD3D11::SetWindow(IWindow *renderWindow) {
-//void cGraphicsD3D11::SetWindow(uint16 swapChainWidth, uint16 swapChainHeight, HWND windowHandle, const tDxConfig& config) {
-
 	uint32 clientWidth = renderWindow->GetClientWidth();
 	uint32 clientHeight = renderWindow->GetClientHeight();
 	// Same window size : don't need new swap chain
@@ -308,11 +307,11 @@ void cGraphicsD3D11::CreateIndexBuffer(uint32 indexStride, uint32 nIndex, void *
 	}
 }
 
-void cGraphicsD3D11::ClearBB(bool clearOnlyDSV) {
+void cGraphicsD3D11::BBClear(bool clearOnlyDepth) {
 	static const FLOAT defaultClearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
 	d3dcon->ClearDepthStencilView(backBufferDSV,D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,1.0,0);
-	if(!clearOnlyDSV) {
+	if(!clearOnlyDepth) {
 		d3dcon->ClearRenderTargetView(backBufferRTV,defaultClearColor);
 	}
 }
@@ -321,7 +320,7 @@ void cGraphicsD3D11::Draw(uint32 vertexCount) {
 	d3dcon->Draw(vertexCount,0);
 }
 
-void cGraphicsD3D11::Present() {
+void cGraphicsD3D11::BBPresent() {
 	ZSASSERT_MSG(d3dsc != NULL, "Need to set window for rendering");
 	d3dsc->Present(0,0); 
 }

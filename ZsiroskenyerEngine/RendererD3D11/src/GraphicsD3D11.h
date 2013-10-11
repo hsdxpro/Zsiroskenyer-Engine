@@ -35,13 +35,13 @@ public:
 	void CreateVertexBuffer(uint32 vertexStride, uint32 nVertex, void *vertices, ID3D11Buffer **vb);
 	void CreateIndexBuffer(uint32 indexStride, uint32 nIndex, void *indices, ID3D11Buffer **ib);
 
-	void ClearBB(bool clearOnlyDSV);
+	void BBClear(bool clearOnlyDepth = false) override;
 	void Draw(uint32 vertexCount);
 	void DrawIndexed(uint32 indexCount);
 	void DrawIndexedInstanced(uint32 indexCount, uint32 instanceCount);
-	void Present();	
+	void BBPresent() override;	
 
-	void SetWindow(IWindow *renderWindow);
+	void SetWindow(IWindow *renderWindow) override;
 	void SetBBRenderTarget();
 
 	cGraphicsD3D11();
