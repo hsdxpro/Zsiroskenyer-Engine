@@ -4,12 +4,6 @@
     <Filter Include="DllMain">
       <UniqueIdentifier>{9a6dec54-de8c-47d6-b89a-a8f08db756c8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="SceneManager">
-      <UniqueIdentifier>{cf118672-aa65-42ef-86b2-58177e361283}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ResourceManager">
-      <UniqueIdentifier>{11591b19-679d-4fc1-b926-92f647934afd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Other">
       <UniqueIdentifier>{1fbe3ae8-e20c-4398-9563-68ae2d2fbd14}</UniqueIdentifier>
     </Filter>
@@ -22,22 +16,28 @@
     <Filter Include="GraphicsEngine">
       <UniqueIdentifier>{85ebeef6-1303-459a-994e-8ad431fb3adf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ManagerResource">
+      <UniqueIdentifier>{11591b19-679d-4fc1-b926-92f647934afd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ManagerScene">
+      <UniqueIdentifier>{cf118672-aa65-42ef-86b2-58177e361283}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DllMain.cpp">
       <Filter>DllMain</Filter>
     </ClCompile>
     <ClCompile Include="src\Entity.cpp">
-      <Filter>SceneManager</Filter>
+      <Filter>ManagerScene</Filter>
     </ClCompile>
     <ClCompile Include="src\InstanceGroup.cpp">
-      <Filter>SceneManager</Filter>
+      <Filter>ManagerScene</Filter>
     </ClCompile>
     <ClCompile Include="src\Geometry.cpp">
-      <Filter>ResourceManager</Filter>
+      <Filter>ManagerResource</Filter>
     </ClCompile>
     <ClCompile Include="src\Material.cpp">
-      <Filter>ResourceManager</Filter>
+      <Filter>ManagerResource</Filter>
     </ClCompile>
     <ClCompile Include="src\Exception.cpp">
       <Filter>Other</Filter>
@@ -49,27 +49,27 @@
       <Filter>GraphicsEngine</Filter>
     </ClCompile>
     <ClCompile Include="GeometryBuilder.cpp">
-      <Filter>ResourceManager</Filter>
+      <Filter>ManagerResource</Filter>
     </ClCompile>
     <ClCompile Include="src\ManagerResource.cpp">
-      <Filter>ResourceManager</Filter>
+      <Filter>ManagerResource</Filter>
     </ClCompile>
     <ClCompile Include="src\ManagerScene.cpp">
-      <Filter>SceneManager</Filter>
+      <Filter>ManagerScene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Entity.h">
-      <Filter>SceneManager</Filter>
+      <Filter>ManagerScene</Filter>
     </ClInclude>
     <ClInclude Include="src\InstanceGroup.h">
-      <Filter>SceneManager</Filter>
+      <Filter>ManagerScene</Filter>
     </ClInclude>
     <ClInclude Include="src\Geometry.h">
-      <Filter>ResourceManager</Filter>
+      <Filter>ManagerResource</Filter>
     </ClInclude>
     <ClInclude Include="src\Material.h">
-      <Filter>ResourceManager</Filter>
+      <Filter>ManagerResource</Filter>
     </ClInclude>
     <ClInclude Include="src\Exception.h">
       <Filter>Other</Filter>
@@ -98,13 +98,13 @@
     <ClInclude Include="src\IVertexBuffer.h" />
     <ClInclude Include="src\IIndexBuffer.h" />
     <ClInclude Include="GeometryBuilder.h">
-      <Filter>ResourceManager</Filter>
+      <Filter>ManagerResource</Filter>
     </ClInclude>
     <ClInclude Include="src\ManagerResource.h">
-      <Filter>ResourceManager</Filter>
+      <Filter>ManagerResource</Filter>
     </ClInclude>
     <ClInclude Include="src\ManagerScene.h">
-      <Filter>SceneManager</Filter>
+      <Filter>ManagerScene</Filter>
     </ClInclude>
     <ClInclude Include="src\IManagerScene.h">
       <Filter>GraphicsEngine</Filter>
