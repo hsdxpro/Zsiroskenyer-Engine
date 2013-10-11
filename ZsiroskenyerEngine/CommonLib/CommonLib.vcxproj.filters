@@ -37,6 +37,9 @@
     <ClCompile Include="src\math\Point.cpp">
       <Filter>math</Filter>
     </ClCompile>
+    <ClCompile Include="src\Factory.cpp" />
+    <ClCompile Include="src\DLLLoaderWin32.h" />
+    <ClCompile Include="src\DLLLoaderWin32.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\math\math_all.h">
@@ -78,5 +81,7 @@
       <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="src\tipsify.h" />
+    <ClInclude Include="src\Factory.h" />
+    <ClInclude Include="src\IDLLLoader.h" />
   </ItemGroup>
 </Project>

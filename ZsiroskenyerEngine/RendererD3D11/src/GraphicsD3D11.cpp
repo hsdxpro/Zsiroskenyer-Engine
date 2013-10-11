@@ -175,7 +175,7 @@ void cGraphicsD3D11::CreateMostAcceptableSwapChain(uint16 width, uint16 height, 
 	if(selectedVideoMode != NULL) {
 		sdesc.BufferDesc = *selectedVideoMode; // Copy DisplayMode Data
 	} else {
-		zsErrorMsg("Using non standard resolution, this may slow down the DirectX application");
+		zsPrintError("Using non standard resolution, this may slow down the DirectX application");
 		sdesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		sdesc.BufferDesc.Width = width;
 		sdesc.BufferDesc.Height = height;
@@ -194,7 +194,7 @@ void cGraphicsD3D11::CreateMostAcceptableSwapChain(uint16 width, uint16 height, 
 		sdesc.Windowed = true;
 
 	HRESULT hr = fact->CreateSwapChain(d3ddev,&sdesc,&d3dsc);
-	if(FAILED(hr)) zsErrorMsg("Can't create DirectX's Swap Chain");
+	if(FAILED(hr)) zsPrintError("Can't create DirectX's Swap Chain");
 
 	// free up everything
 	SAFE_RELEASE(fact);
@@ -283,7 +283,7 @@ void cGraphicsD3D11::CreateVertexBuffer(uint32 vertexStride, uint32 nVertex, voi
 	initData.pSysMem = vertices;
 	HRESULT hr = d3ddev->CreateBuffer(&vbDesc, &initData, vb);
 	if(FAILED(hr)) {
-		zsErrorMsg("Can't create vertex buffer");
+		zsPrintError("Can't create vertex buffer");
 	}
 }
 
@@ -300,7 +300,7 @@ void cGraphicsD3D11::CreateIndexBuffer(uint32 indexStride, uint32 nIndex, void *
 	initData.pSysMem = indices;
 	HRESULT hr = d3ddev->CreateBuffer(&ibDesc, &initData, ib);
 	if(FAILED(hr)) {
-		zsErrorMsg("Can't create index buffer");
+		zsPrintError("Can't create index buffer");
 	}
 }
 

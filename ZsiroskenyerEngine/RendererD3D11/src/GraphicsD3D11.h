@@ -68,10 +68,8 @@ protected:
 };
 
 // DLL accessor
-#ifdef __cplusplus
 extern "C"
 	__declspec(dllexport)
 	IGraphicsApi* CreateGraphicsD3D11() {
 		return new cGraphicsD3D11();
-#endif
 }

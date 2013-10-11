@@ -5,7 +5,7 @@
 #include <iostream>
 
 //@TODO need ILog, cLogWin32, etc....
-#define zsErrorMsg(x) (x)
+#define zsPrintError(x) (x)
 
 typedef unsigned int uint32;
 typedef signed int int32;
@@ -28,11 +28,11 @@ typedef unsigned char uchar;
 		MessageBoxA(0, errorMsg, "ErrorMsg", MB_OK); \
 		assert(condition); \
 	}
-#define zsDebugPrint(msg) std::wcerr<<msg<<std::endl;
+#define zsPrintDebug(msg) std::wcerr<<msg<<std::endl;
 #else
 #define ZSASSERT(x, y) {}
 #define ZSASSERT(x) {}
-#define zsDebugPrint(msg) {}
+#define zsPrintDebug(msg) {}
 #endif
 
 

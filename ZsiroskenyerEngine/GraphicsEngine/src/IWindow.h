@@ -9,7 +9,6 @@
 
 class IWindow {
 public:
-	typedef int32* AppInstance;
 	typedef int32* Handle;
 
 	enum eBrush {
@@ -51,14 +50,13 @@ public:
 		static tDesc defaultRenderWindow;
 
 		zsString captionName;
-		AppInstance appInstance;
 		uint32 clientWidth;
 		uint32 clientHeight;
 		IWindow::eBrush brush;
 		IWindow::eStyle style;
 
-		tDesc(const zsString& captionName = L"default_window_caption", AppInstance appInstance = NULL, uint32 clientWidth = 0, uint32 clientHeight = 0, IWindow::eBrush brush = IWindow::eBrush::RENDER_, IWindow::eStyle style = IWindow::eStyle::OVERLAPPED)
-			:captionName(captionName), appInstance(appInstance), clientWidth(clientWidth), clientHeight(clientHeight), brush(brush), style(style) {
+		tDesc(const zsString& captionName = L"default_window_caption", uint32 clientWidth = 0, uint32 clientHeight = 0, IWindow::eBrush brush = IWindow::eBrush::RENDER_, IWindow::eStyle style = IWindow::eStyle::OVERLAPPED)
+			:captionName(captionName), clientWidth(clientWidth), clientHeight(clientHeight), brush(brush), style(style) {
 		}
 	};
 

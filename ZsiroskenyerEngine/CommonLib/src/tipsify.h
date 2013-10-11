@@ -1,5 +1,4 @@
-﻿#ifndef ENERICE_ENGINE_VERTCACHEOPT_TIPSIFY_H
-#define ENERICE_ENGINE_VERTCACHEOPT_TIPSIFY_H
+﻿#pragma once
 
 #define __STDC_LIMIT_MACROS
 #include <stdint.h>
@@ -266,5 +265,3 @@ VertexIndexType* tipsify (const VertexIndexType* indices, int nTriangles, int nV
 	delete [ ] outputTriangles;
 	return outputIndices;
 }
-
-#endif

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "IWindow.h"
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
 class cWindowWin32 : public IWindow {

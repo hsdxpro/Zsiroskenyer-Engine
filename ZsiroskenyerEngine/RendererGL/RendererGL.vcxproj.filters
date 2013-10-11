@@ -10,5 +10,9 @@
     <ClCompile Include="src\DllMain.cpp">
       <Filter>DllMain</Filter>
     </ClCompile>
+    <ClCompile Include="src\GraphicsGL.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\GraphicsGL.h" />
   </ItemGroup>
 </Project>

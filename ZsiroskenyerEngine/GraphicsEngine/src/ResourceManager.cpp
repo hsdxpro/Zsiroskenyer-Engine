@@ -213,7 +213,7 @@ cGeometry* cManagerResource::LoadGeometryDAE(const zsString& fileName) {
 	reorderedIndices = tipsify(indices,nIndex/3,nVertex,16);
 	delete[] indices;
 
-	zsDebugPrint(L"ManagerResource::LoadGeometry -> " + fileName);
+	zsPrintDebug(L"ManagerResource::LoadGeometry -> " + fileName);
 	//return new cGeometry(uniqueVertices, reorderedIndices, nUniqVertices, nIndex);
 	//return new cGeometry(new IVertexBuffer(uniqueVertices, reorderedIndices, nUniqVertices, nIndex);
 	return NULL;
