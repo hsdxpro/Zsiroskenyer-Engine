@@ -66,7 +66,7 @@ public:
 	static Matrix44& MatrixTranslation(Matrix44& out, Vec3 v);
 
 	// Accessors
-	float& operator() (unsigned row, unsigned col) const;
+	float& operator() (unsigned row, unsigned col);
 	const float& operator() (unsigned row, unsigned col) const;
 
 	Matrix44& operator *= (const Matrix44& m2);

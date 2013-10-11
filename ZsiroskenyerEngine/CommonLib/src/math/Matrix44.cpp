@@ -39,7 +39,7 @@ Matrix44::Matrix44(	float _11, float _12, float _13, float _14,
 	_41(_41), _42(_42), _43(_43), _44(_14)
 {}
 
-float& Matrix44::operator() (unsigned row, unsigned col) const {
+float& Matrix44::operator() (unsigned row, unsigned col) {
 	return m[row][col];
 }
 
