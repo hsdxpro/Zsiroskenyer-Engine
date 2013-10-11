@@ -21,14 +21,14 @@ int ricsiMain() {
 	HMODULE hDllGraphicsEngine = LoadDLL("GraphicsEngine.dll");
 
 	// Get function for IGraphicsApi, IGraphicsEngine, IWindow
-	auto CreateGraphicsD3D11 = (IGraphicsApi*)GetDLLFunction(hDllD3D11Dll, "CreateGraphicsD3D11");
-	auto CreateGraphicsEngine = (IGraphicsEngine*)GetDLLFunction(hDllGraphicsEngine, "CreateGraphicsEngine");
+	auto CreateGraphicsD3D11 = (IGraphicsApi*(*)())GetDLLFunction(hDllD3D11Dll, "CreateGraphicsD3D11");
+	auto CreateGraphicsEngine = (IGraphicsEngine*(*)())GetDLLFunction(hDllGraphicsEngine, "CreateGraphicsEngine");
 	auto CreateWindowWin32 = (IWindow* (*)(const IWindow::tDesc& winDesc))GetDLLFunction(hDllGraphicsEngine, "CreateWindowWin32");
 
 	// Create interfaces
-	IGraphicsEngine* mgrGEngine = CreateGraphicsEngine;
+	IGraphicsEngine* mgrGEngine = (IGraphicsEngine*)CreateGraphicsEngine();
 	ISceneManager* mgrScene = mgrGEngine->GetSceneManager();
-	IGraphicsApi *dx11 = CreateGraphicsD3D11;
+	IGraphicsApi *dx11 = (IGraphicsApi*)CreateGraphicsD3D11();
 
 	// Create basic window
 	IWindow::tDesc desc;
