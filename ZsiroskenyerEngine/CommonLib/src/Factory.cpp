@@ -42,6 +42,7 @@ IWindow* cFactory::CreateWindow(const IWindow::tDesc& winDesc) {
 	return NULL;
 }
 
+
 IGraphicsEngine* cFactory::CreateEngineGraphics() {
 	return ptrCreateEngineGraphics();
 }

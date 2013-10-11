@@ -4,14 +4,16 @@
 #include "..\..\GraphicsEngine\src\IGraphicsApi.h"
 #include "..\..\GraphicsEngine\src\IGraphicsEngine.h"
 #include "..\..\CommonLib\src\Factory.h"
+#include "..\..\CommonLib\src\DLLLoaderWin32.h"
 
 int ricsiMain() {
 	
 	// Create interfaces
 	IGraphicsEngine* mgrGEngine = Factory.CreateEngineGraphics();
 	IManagerScene* mgrScene = mgrGEngine->GetSceneManager();
-	IGraphicsApi *dx11 = Factory.CreateGraphics();
+	IGraphicsApi* dx11 = Factory.CreateGraphics();
 
+	
 	// Create basic window
 	IWindow::tDesc desc;
 		desc.brush = IWindow::eBrush::RENDER_;
@@ -39,6 +41,6 @@ int ricsiMain() {
 	SAFE_DELETE(mgrGEngine);
 	SAFE_DELETE(mgrScene);
 	SAFE_DELETE(dx11);
-
+	
 	return 0;
 }

@@ -6,8 +6,8 @@
 
 class cDLLLoaderWin32 : public IDLLLoader {
 public:
-	IDLLLoader::DLLMODULE LoadDLL(const std::string& libName) const;
-	IDLLLoader::DLLFUNCTION GetDLLFunction(IDLLLoader::DLLMODULE dll, const std::string& funcName) const;
+	IDLLLoader::DLLMODULE LoadDLL(const std::string& libName) const override;
+	IDLLLoader::DLLFUNCTION GetDLLFunction(IDLLLoader::DLLMODULE dll, const std::string& funcName) const override;
 
 protected:
 	std::string GetExecutablePath() const;

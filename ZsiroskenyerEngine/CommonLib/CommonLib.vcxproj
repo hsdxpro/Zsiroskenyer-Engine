@@ -12,7 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DLLLoaderWin32.cpp" />
-    <ClCompile Include="src\DLLLoaderWin32.h" />
+    <ClInclude Include="src\DLLLoaderWin32.h" />
     <ClCompile Include="src\Factory.cpp" />
     <ClCompile Include="src\math\Color.cpp" />
     <ClCompile Include="src\math\Matrix44.cpp" />
