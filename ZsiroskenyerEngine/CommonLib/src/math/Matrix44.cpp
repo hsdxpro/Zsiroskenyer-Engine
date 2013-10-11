@@ -22,12 +22,12 @@
 #include "vec3.h"
 #include <memory>
 
-Matrix44::Matrix44() {
-	_11 = 1.f; _12 = 0.f; _13 = 0.f; _14 = 0.f;
-	_21 = 0.f; _22 = 1.f; _23 = 0.f; _24 = 0.f;
-	_31 = 0.f; _32 = 0.f; _33 = 1.f; _34 = 0.f;
-	_41 = 0.f; _42 = 0.f; _43 = 0.f; _44 = 1.f;
-};
+Matrix44::Matrix44() 
+:_11(1.0f), _12(0.0f), _13(0.0f), _14(0.0f),
+ _21(0.0f), _22(1.0f), _23(0.0f), _24(0.0f),
+ _31(0.0f), _32(0.0f), _33(1.0f), _34(0.0f),
+ _41(0.0f), _42(0.0f), _43(0.0f), _44(1.0f)
+ {}
 
 Matrix44::Matrix44(	float _11, float _12, float _13, float _14,
 					float _21, float _22, float _23, float _24,
@@ -37,12 +37,12 @@ Matrix44::Matrix44(	float _11, float _12, float _13, float _14,
 	_21(_21), _22(_22), _23(_23), _24(_14),
 	_31(_31), _32(_32), _33(_33), _34(_14),
 	_41(_41), _42(_42), _43(_43), _44(_14)
-{ }
+{}
 
-
-float& Matrix44::operator() (unsigned row, unsigned col) {
+float& Matrix44::operator() (unsigned row, unsigned col) const {
 	return m[row][col];
 }
+
 const float& Matrix44::operator() (unsigned row, unsigned col) const {
 	return m[row][col];
 };
@@ -80,7 +80,11 @@ Matrix44& Matrix44::operator *= (const float& f) {
 }
 
 Matrix44& Matrix44::operator /= (const float& f) {
-	return (*this)*=(1.f/f);
+	float* p = (float*)m;
+	for (int i=0; i<16; i++) {
+		p[i] /= f;
+	}
+	return *this;
 }
 
 Matrix44 Matrix44::operator * (const Matrix44 & m2) {
@@ -92,29 +96,29 @@ Matrix44 Matrix44::operator * (const Matrix44 & m2) {
 
 Matrix44 Matrix44::operator + (const Matrix44 & m2) {
 	Matrix44 m = *this;
-	m+=m2;
+	m += m2;
 	return m;
 }
 
 Matrix44 Matrix44::operator - (const Matrix44 & m2) {
 	Matrix44 m = *this;
-	m-=m2;
+	m -= m2;
 	return m;
 }
 
-Matrix44 Matrix44::operator * (const float& f) {
+Matrix44 Matrix44::operator * (const float& f) const {
 	Matrix44 m = *this;
-	m*=f;
+	m *= f;
 	return m;
 }
 
-Matrix44 Matrix44::operator / (const float& f) {
+Matrix44 Matrix44::operator / (const float& f) const {
 	Matrix44 m = *this;
-	m/=f;
+	m /= f;
 	return m;
 }
 
-bool Matrix44::operator==(const Matrix44& m2) const {
+bool Matrix44::operator == (const Matrix44& m2) const {
 	float *p1 = (float*)m, *p2 = (float*)m2.m;
 	for (int i=0; i<16; i++) {
 		if (p1[i] != p2[i]) {
