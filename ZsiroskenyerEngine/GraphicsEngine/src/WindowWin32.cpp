@@ -69,7 +69,7 @@ cWindowWin32::cWindowWin32(const IWindow::tDesc& winDesc)
 	// Description holds OS independent brush code, so interpret it to win32
 	IWindow::eBrush interpretedBrush = (IWindow::eBrush)NULL_BRUSH;
 	switch(winDesc.brush) {
-		case IWindow::eBrush::_RENDER:
+		case IWindow::eBrush::RENDER_:
 			interpretedBrush = (IWindow::eBrush)NULL_BRUSH;
 			break;
 	}
