@@ -1,6 +1,10 @@
 // Implementation
 #include "GraphicsD3D11.h"
 
+#ifdef WIN32
+#pragma warning(disable: 4244)
+#endif
+
 cGraphicsD3D11::tDxConfig cGraphicsD3D11::tDxConfig::DEFAULT = cGraphicsD3D11::tDxConfig();
 cGraphicsD3D11::tDxConfig cGraphicsD3D11::tDxConfig::MEDIUM = cGraphicsD3D11::tDxConfig();
 cGraphicsD3D11::tDxConfig cGraphicsD3D11::tDxConfig::HIGH = cGraphicsD3D11::tDxConfig();
@@ -141,7 +145,7 @@ void cGraphicsD3D11::CreateMostAcceptableSwapChain(uint16 width, uint16 height, 
 	DXGI_MODE_DESC** filteredVideoModes = new DXGI_MODE_DESC*[numModes];
 
 	UINT displayModeIndex = 0;
-	for(int i = 0; i < numModes; i++) {
+	for(size_t i = 0; i < numModes; i++) {
 		DXGI_MODE_DESC* currMode = &modeDesc[i];
 		// Collect The best resolution that the video card handle
  		if(config.createDeviceAtMaxResolution) {
@@ -160,7 +164,7 @@ void cGraphicsD3D11::CreateMostAcceptableSwapChain(uint16 width, uint16 height, 
 	// select highest HZ videoMode
 	DXGI_MODE_DESC* selectedVideoMode = 0;
 	UINT maxHz = 0;
-	for(int i = 0; i < displayModeIndex;i++) {
+	for(size_t i = 0; i < displayModeIndex;i++) {
 		DXGI_MODE_DESC* curr = filteredVideoModes[i];
 		if(maxHz < curr->RefreshRate.Numerator) {
 			maxHz = curr->RefreshRate.Numerator;
