@@ -9,14 +9,14 @@
 // construction of the graphics engine
 cGraphicsEngine::cGraphicsEngine()
 	:
-	resourceManager(),
-	sceneManager(resourceManager)
+	managerResource(),
+	managerScene(managerResource)
 {
 }
 
 
 
 // interface
-ISceneManager* cGraphicsEngine::GetSceneManager() {
-	return (ISceneManager*)&sceneManager;
+IManagerScene* cGraphicsEngine::GetSceneManager() {
+	return (IManagerScene*)&managerScene;
 }

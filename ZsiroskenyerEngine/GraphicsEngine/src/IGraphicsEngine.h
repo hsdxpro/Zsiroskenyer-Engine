@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include "ISceneManager.h"
+#include "IManagerScene.h"
 
 class IGraphicsEngine {
 public:
-	virtual ISceneManager* GetSceneManager() = 0;
+	virtual IManagerScene* GetSceneManager() = 0;
 };

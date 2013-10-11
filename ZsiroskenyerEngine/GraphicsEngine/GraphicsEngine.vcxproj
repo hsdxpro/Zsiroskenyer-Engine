@@ -81,6 +81,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GeometryBuilder.cpp" />
     <ClCompile Include="src\DllMain.cpp" />
     <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\Exception.cpp" />
@@ -88,11 +89,12 @@
     <ClCompile Include="src\GraphicsEngine.cpp" />
     <ClCompile Include="src\InstanceGroup.cpp" />
     <ClCompile Include="src\Material.cpp" />
-    <ClCompile Include="src\ResourceManager.cpp" />
-    <ClCompile Include="src\SceneManager.cpp" />
+    <ClCompile Include="src\ManagerResource.cpp" />
+    <ClCompile Include="src\ManagerScene.cpp" />
     <ClCompile Include="src\WindowWin32.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GeometryBuilder.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\Geometry.h" />
@@ -102,13 +104,13 @@
     <ClInclude Include="src\IIndexBuffer.h" />
     <ClInclude Include="src\InstanceGroup.h" />
     <ClInclude Include="src\IRenderer.h" />
-    <ClInclude Include="src\ISceneManager.h" />
+    <ClInclude Include="src\IManagerScene.h" />
     <ClInclude Include="src\ITexture.h" />
     <ClInclude Include="src\IVertexBuffer.h" />
     <ClInclude Include="src\IWindow.h" />
     <ClInclude Include="src\Material.h" />
-    <ClInclude Include="src\ResourceManager.h" />
-    <ClInclude Include="src\SceneManager.h" />
+    <ClInclude Include="src\ManagerResource.h" />
+    <ClInclude Include="src\ManagerScene.h" />
     <ClInclude Include="src\WindowWin32.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

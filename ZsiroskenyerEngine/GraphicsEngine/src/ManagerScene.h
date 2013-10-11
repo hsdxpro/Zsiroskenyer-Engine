@@ -14,7 +14,7 @@
 #include "..\..\CommonLib\src\zsString.h"
 
 #include "InstanceGroup.h"
-#include "ISceneManager.h"
+#include "IManagerScene.h"
 
 #include <unordered_set>
 
@@ -37,7 +37,7 @@ struct cInstGroupPtrCompare {
 };
 
 // scene manager
-class cManagerScene : public ISceneManager {
+class cManagerScene : public IManagerScene {
 public:
 	cManagerScene(cManagerResource& rm);
 	~cManagerScene();
@@ -47,5 +47,5 @@ public:
 
 private:
 	std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare> instanceGroups;
-	cManagerResource& resourceManager;
+	cManagerResource& managerResource;
 };

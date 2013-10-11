@@ -7,8 +7,13 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "IVertexBuffer.h"
-#include "IIndexBuffer.h"
+
+
+
+
+class IVertexBuffer;
+class IIndexBuffer;
+
 
 class cGeometry {
 public:

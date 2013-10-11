@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "ResourceManager.h"
+#include "ManagerResource.h"
 #include <unordered_set>
 
 

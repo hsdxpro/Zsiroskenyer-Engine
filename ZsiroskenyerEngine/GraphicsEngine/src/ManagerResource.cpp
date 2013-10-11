@@ -6,7 +6,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#include "ResourceManager.h"
+#include "ManagerResource.h"
 
 // .DAE loading
 #include "ASSIMP/include/assimp/Importer.hpp"

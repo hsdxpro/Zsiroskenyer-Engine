@@ -12,18 +12,18 @@
 
 #include "IGraphicsEngine.h"
 
-#include "SceneManager.h"
-#include "ResourceManager.h"
+#include "ManagerScene.h"
+#include "ManagerResource.h"
 
 
 class cGraphicsEngine : public IGraphicsEngine {
 public:
 	cGraphicsEngine();
 
-	ISceneManager* GetSceneManager();
+	IManagerScene* GetSceneManager();
 private:	
-	cManagerResource resourceManager;
-	cManagerScene sceneManager;
+	cManagerResource managerResource;
+	cManagerScene managerScene;
 };
 
 

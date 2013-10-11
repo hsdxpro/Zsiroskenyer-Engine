@@ -27,17 +27,11 @@
     <ClCompile Include="src\DllMain.cpp">
       <Filter>DllMain</Filter>
     </ClCompile>
-    <ClCompile Include="src\SceneManager.cpp">
-      <Filter>SceneManager</Filter>
-    </ClCompile>
     <ClCompile Include="src\Entity.cpp">
       <Filter>SceneManager</Filter>
     </ClCompile>
     <ClCompile Include="src\InstanceGroup.cpp">
       <Filter>SceneManager</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ResourceManager.cpp">
-      <Filter>ResourceManager</Filter>
     </ClCompile>
     <ClCompile Include="src\Geometry.cpp">
       <Filter>ResourceManager</Filter>
@@ -54,19 +48,22 @@
     <ClCompile Include="src\GraphicsEngine.cpp">
       <Filter>GraphicsEngine</Filter>
     </ClCompile>
+    <ClCompile Include="GeometryBuilder.cpp">
+      <Filter>ResourceManager</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ManagerResource.cpp">
+      <Filter>ResourceManager</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ManagerScene.cpp">
+      <Filter>SceneManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\SceneManager.h">
-      <Filter>SceneManager</Filter>
-    </ClInclude>
     <ClInclude Include="src\Entity.h">
       <Filter>SceneManager</Filter>
     </ClInclude>
     <ClInclude Include="src\InstanceGroup.h">
       <Filter>SceneManager</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ResourceManager.h">
-      <Filter>ResourceManager</Filter>
     </ClInclude>
     <ClInclude Include="src\Geometry.h">
       <Filter>ResourceManager</Filter>
@@ -98,10 +95,19 @@
     <ClInclude Include="src\IGraphicsEngine.h">
       <Filter>GraphicsEngine</Filter>
     </ClInclude>
-    <ClInclude Include="src\ISceneManager.h">
-      <Filter>GraphicsEngine</Filter>
-    </ClInclude>
     <ClInclude Include="src\IVertexBuffer.h" />
     <ClInclude Include="src\IIndexBuffer.h" />
+    <ClInclude Include="GeometryBuilder.h">
+      <Filter>ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ManagerResource.h">
+      <Filter>ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ManagerScene.h">
+      <Filter>SceneManager</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IManagerScene.h">
+      <Filter>GraphicsEngine</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

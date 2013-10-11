@@ -6,8 +6,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#include "SceneManager.h"
-#include "ResourceManager.h"
+#include "ManagerScene.h"
+#include "ManagerResource.h"
 #include "InstanceGroup.h"
 #include "Entity.h"
 #include "Exception.h"
@@ -18,7 +18,7 @@ using namespace std;
 
 
 // constructor and destructor
-cManagerScene::cManagerScene(cManagerResource& rm) : resourceManager(rm) {
+cManagerScene::cManagerScene(cManagerResource& rm) : managerResource(rm) {
 }
 cManagerScene::~cManagerScene() {
 }
@@ -31,8 +31,8 @@ cEntity& cManagerScene::AddEntity(const zsString& geometry, const zsString& mate
 	cEntity* entity;
 
 	try {
-		cGeometryRef g = resourceManager.LoadGeometry(geometry);
-		cMaterialRef m = resourceManager.LoadMaterial(material);
+		cGeometryRef g = managerResource.LoadGeometry(geometry);
+		cMaterialRef m = managerResource.LoadMaterial(material);
 		searchDummy.geom = g; searchDummy.mtl = m;
 
 		auto it = instanceGroups.find(&searchDummy);

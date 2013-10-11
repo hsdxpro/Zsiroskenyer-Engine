@@ -11,7 +11,7 @@
 #include "Entity.h"
 #include "..\..\CommonLib\src\zsString.h"
 
-class ISceneManager {
+class IManagerScene {
 public:
 	virtual cEntity& AddEntity(const zsString& geometry, const zsString& material) = 0;
 	virtual void RemoveEntity(const cEntity& entity) = 0;
