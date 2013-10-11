@@ -59,20 +59,28 @@ cWindowWin32::cWindowWin32(const IWindow::tDesc& winDesc)
 :opened(true) {
 	
 	// Description holds OS independent style code, so interpret it to win32
-	IWindow::eStyle interpretedStyle;
+	IWindow::eStyle interpretedStyle = (IWindow::eStyle)WS_OVERLAPPEDWINDOW;
 	switch(winDesc.style) {
 		case IWindow::eStyle::OVERLAPPED:
 				interpretedStyle = (IWindow::eStyle)WS_OVERLAPPEDWINDOW;
 				break;
 	}
-
+	
+	// Description holds OS independent brush code, so interpret it to win32
+	IWindow::eBrush interpretedBrush = (IWindow::eBrush)NULL_BRUSH;
+	switch(winDesc.brush) {
+		case IWindow::eBrush::_RENDER:
+			interpretedBrush = (IWindow::eBrush)NULL_BRUSH;
+			break;
+	}
+	
 	// register our new window class
 	WNDCLASSEX wC;
 	memset(&wC,0,sizeof(WNDCLASSEX));
 	wC.cbSize = sizeof(WNDCLASSEX);
 	wC.cbClsExtra = 0;
 	wC.cbWndExtra = 0;
-	wC.hbrBackground = (HBRUSH)GetStockObject(winDesc.brush);
+	wC.hbrBackground = (HBRUSH)GetStockObject(interpretedBrush);
 	wC.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wC.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	wC.hIconSm = NULL;
