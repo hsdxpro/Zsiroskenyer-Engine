@@ -1,12 +1,14 @@
 ////////////////////////////////////////////////////////////////////////////////
-//	File: GraphicsEngine/src/Geometry.cpp
-//	2013.oct.09, Zsiroskenyer Team, Péter Kardos
+//	GraphicsEngine/src/BufferCommon.h
+//	2012.oct.12, zsiroskenyer team, Péter Kardos
 ////////////////////////////////////////////////////////////////////////////////
-//	See header "Geometry.h" for more information.
+//	Common stuff applicable to all buffers
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "Geometry.h"
 
-cGeometry::cGeometry(IVertexBuffer *VB, IIndexBuffer *IB) 
-:VB(VB), IB(IB) {
-}
+
+enum class eBufferUsage {
+	IMMUTABLE = 1,
+	DYNAMIC,
+	STAGING
+};

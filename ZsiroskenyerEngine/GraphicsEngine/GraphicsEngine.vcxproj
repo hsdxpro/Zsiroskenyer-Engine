@@ -11,10 +11,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\BufferCommon.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\Exception.h" />
+    <ClInclude Include="src\IGraphicsApi.h" />
     <ClInclude Include="src\IGraphicsEngine.h" />
+    <ClInclude Include="src\IIndexBuffer.h" />
     <ClInclude Include="src\IManagerScene.h" />
+    <ClInclude Include="src\IRenderer.h" />
+    <ClInclude Include="src\ITexture.h" />
+    <ClInclude Include="src\IVertexBuffer.h" />
+    <ClInclude Include="src\IWindow.h" />
     <ClInclude Include="src\Node.h" />
   </ItemGroup>
   <ItemGroup>

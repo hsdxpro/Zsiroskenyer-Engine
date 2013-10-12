@@ -1,8 +1,8 @@
 // GraphicsGL.h By Zsíroskenyér team
 #pragma once
 
-#include "..\..\GraphicsCore\src\IGraphicsApi.h"
-#include "..\..\GraphicsCore\src\IWindow.h"
+#include "..\..\GraphicsEngine\src\IGraphicsApi.h"
+#include "..\..\GraphicsEngine\src\IWindow.h"
 #include "..\..\CommonLib\src\common.h"
 
 class cGraphicsGL : public IGraphicsApi {

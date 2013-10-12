@@ -10,8 +10,14 @@
       <Filter>DllMain</Filter>
     </ClCompile>
     <ClCompile Include="src\GraphicsD3D11.cpp" />
+    <ClCompile Include="src\VertexBufferD3D11.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GraphicsD3D11.h" />
+    <ClInclude Include="src\IndexBufferD3D11.h" />
+    <ClInclude Include="src\VertexBufferD3D11.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\IndexBufferD3D11.cpp" />
   </ItemGroup>
 </Project>

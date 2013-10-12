@@ -20,11 +20,32 @@
     <ClInclude Include="src\Node.h">
       <Filter>Common Stuff</Filter>
     </ClInclude>
+    <ClInclude Include="src\IGraphicsApi.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
     <ClInclude Include="src\IGraphicsEngine.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IIndexBuffer.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="src\IManagerScene.h">
       <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IRenderer.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ITexture.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IVertexBuffer.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IWindow.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BufferCommon.h">
+      <Filter>Common Stuff</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

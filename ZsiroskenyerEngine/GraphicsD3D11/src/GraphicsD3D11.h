@@ -7,8 +7,8 @@
 #include "Dx11_SDK/Include/D3Dcompiler.h"
 #include "Dx11_SDK/Include/D3DX11.h"
 
-#include "..\..\GraphicsCore\src\IGraphicsApi.h"
-#include "..\..\GraphicsCore\src\IWindow.h"
+#include "..\..\GraphicsEngine\src\IGraphicsApi.h"
+#include "..\..\GraphicsEngine\src\IWindow.h"
 #include "..\..\CommonLib\src\common.h"
 
 class cGraphicsD3D11 : public IGraphicsApi {

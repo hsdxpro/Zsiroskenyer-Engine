@@ -1,7 +1,7 @@
 #include "testFiles.h"
 
-#include "..\..\GraphicsCore\src\IWindow.h"
-#include "..\..\GraphicsCore\src\IGraphicsApi.h"
+#include "..\..\GraphicsEngine\src\IWindow.h"
+#include "..\..\GraphicsEngine\src\IGraphicsApi.h"
 #include "..\..\GraphicsEngine\src\IGraphicsEngine.h"
 #include "..\..\CommonLib\src\Factory.h"
 #include "..\..\CommonLib\src\DLLLoaderWin32.h"

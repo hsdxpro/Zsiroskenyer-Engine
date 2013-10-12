@@ -59,23 +59,9 @@
     <ClInclude Include="src\Material.h">
       <Filter>ManagerResource</Filter>
     </ClInclude>
-    <ClInclude Include="src\IGraphicsApi.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="src\IRenderer.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ITexture.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="src\IWindow.h">
-      <Filter>Interfaces\IWindow -nak nem itt a helye</Filter>
-    </ClInclude>
     <ClInclude Include="src\WindowWin32.h">
       <Filter>Interfaces\IWindow -nak nem itt a helye</Filter>
     </ClInclude>
-    <ClInclude Include="src\IVertexBuffer.h" />
-    <ClInclude Include="src\IIndexBuffer.h" />
     <ClInclude Include="src\ManagerResource.h">
       <Filter>ManagerResource</Filter>
     </ClInclude>
