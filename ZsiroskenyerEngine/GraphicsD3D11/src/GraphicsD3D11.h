@@ -32,9 +32,6 @@ public:
 
 	};
 
-	void CreateVertexBuffer(uint32 vertexStride, uint32 nVertex, void *vertices, ID3D11Buffer **vb);
-	void CreateIndexBuffer(uint32 indexStride, uint32 nIndex, void *indices, ID3D11Buffer **ib);
-
 	void BBClear(bool clearOnlyDepth = false) override;
 	void Draw(uint32 vertexCount);
 	void DrawIndexed(uint32 indexCount);

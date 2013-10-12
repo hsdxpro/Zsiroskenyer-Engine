@@ -273,40 +273,6 @@ void cGraphicsD3D11::CreateDefaultStates(const D3D11_CULL_MODE& cullMode, const 
 	rState->Release();
 }
 
-void cGraphicsD3D11::CreateVertexBuffer(uint32 vertexStride, uint32 nVertex, void *vertices, ID3D11Buffer **vb) {
-	D3D11_BUFFER_DESC vbDesc;
-	memset(&vbDesc, 0, sizeof(vbDesc));
-	vbDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vbDesc.ByteWidth = vertexStride * nVertex;
-	vbDesc.StructureByteStride = vertexStride;
-	vbDesc.Usage = D3D11_USAGE_DEFAULT;
-	vbDesc.CPUAccessFlags = 0;
-	vbDesc.MiscFlags = 0;
-	D3D11_SUBRESOURCE_DATA initData;
-	initData.pSysMem = vertices;
-	HRESULT hr = d3ddev->CreateBuffer(&vbDesc, &initData, vb);
-	if(FAILED(hr)) {
-		zsPrintError("Can't create vertex buffer");
-	}
-}
-
-void cGraphicsD3D11::CreateIndexBuffer(uint32 indexStride, uint32 nIndex, void *indices, ID3D11Buffer **ib) {
-	D3D11_BUFFER_DESC ibDesc;
-	memset(&ibDesc, 0, sizeof(ibDesc));
-	ibDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	ibDesc.ByteWidth = indexStride * nIndex;
-	ibDesc.StructureByteStride = indexStride;
-	ibDesc.Usage = D3D11_USAGE_DEFAULT;
-	ibDesc.CPUAccessFlags = 0;
-	ibDesc.MiscFlags = 0;
-	D3D11_SUBRESOURCE_DATA initData;
-	initData.pSysMem = indices;
-	HRESULT hr = d3ddev->CreateBuffer(&ibDesc, &initData, ib);
-	if(FAILED(hr)) {
-		zsPrintError("Can't create index buffer");
-	}
-}
-
 void cGraphicsD3D11::BBClear(bool clearOnlyDepth) {
 	static const FLOAT defaultClearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
