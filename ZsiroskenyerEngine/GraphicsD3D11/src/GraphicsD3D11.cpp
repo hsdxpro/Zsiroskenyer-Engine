@@ -304,3 +304,31 @@ void cGraphicsD3D11::SetBBRenderTarget() {
 	d3dcon->OMSetRenderTargets(1, &backBufferRTV, backBufferDSV);
 }
 
+
+
+
+// buffer interface
+IVertexBuffer* cGraphicsD3D11::CreateVertexBuffer(size_t size, eBufferUsage usage, void* data) {
+	ID3D11Buffer* buffer=nullptr;
+	D3D11_BUFFER_DESC desc;
+	D3D11_SUBRESOURCE_DATA resData;
+	desc.ByteWidth = size;
+	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	desc.MiscFlags = 0;
+	desc.CPUAccessFlags = 0;
+	desc.StructureByteStride = 0;
+	desc.Usage = [&]{eBufferUsage ret; switch(usage){}
+	d3ddev->CreateBuffer(&desc, data, &buffer);
+}
+IIndexBuffer* cGraphicsD3D11::CreateIndexBuffer(size_t size, eBufferUsage usage, void* data) {
+
+}
+bool cGraphicsD3D11::Write(IIndexBuffer* buffer, void* source, size_t size, size_t offset) {
+}
+bool cGraphicsD3D11::Read(IIndexBuffer* buffer, void* dest, size_t size, size_t offset) {
+}
+bool cGraphicsD3D11::Write(IVertexBuffer* buffer, void* source, size_t size, size_t offset) {
+
+}
+bool cGraphicsD3D11::Read(IVertexBuffer* buffer, void* dest, size_t size, size_t offset) {
+}
