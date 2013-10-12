@@ -10,25 +10,28 @@ Vec3& Vec3::operator*=(const Vec3& v2) {
 	z*=v2.z;
 	return *this;
 }
+
 Vec3& Vec3::operator/=(const Vec3& v2) {
 	x/=v2.x;
 	y/=v2.y;
 	z/=v2.z;
 	return *this;
 }
+
 Vec3& Vec3::operator += (const Vec3& v2) {
 	x+=v2.x;
 	y+=v2.y;
 	z+=v2.z;
 	return *this;
 }
+
 Vec3& Vec3::operator -= (const Vec3& v2) {
 	x-=v2.x;
 	y-=v2.y;
 	z-=v2.z;
 	return *this;
 }
-// simple arithmetic
+
 Vec3 Vec3::operator * (const Vec3& v2) const {
 	Vec3 vr=*this;
 	vr*=v2;
@@ -98,38 +101,38 @@ bool Vec3::operator != (const Vec3& w) const {
 	return !(*this==w);
 }
 
-Vec3& Vec3::normalize() {
+Vec3& Vec3::Normalize() {
 	float d = fabs(1.f-(x*x + y*y + z*z));
 	if (d > VEC3_NORM_TOLERANCE) {
-		float scale = 1.0f / (this->lenght());
+		float scale = 1.0f / (this->Lenght());
 		(*this) *= scale;
 	}
 	return *this;
 }
 
-float Vec3::lenght() const {
+float Vec3::Lenght() const {
 	return sqrt(x*x + y*y + z*z);
 }
 
 Vec3 normalize(const Vec3& v) {
 	Vec3 n=v;
-	n.normalize();
+	n.Normalize();
 	return n;
 }
 
-float dot(const Vec3& v1, const Vec3& v2) {
+float Dot(const Vec3& v1, const Vec3& v2) {
 	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
-Vec3 cross(const Vec3& v1, const Vec3& v2) {
+Vec3 Cross(const Vec3& v1, const Vec3& v2) {
 	Vec3 ret(	v1.y*v2.z - v1.z*v2.y,
 				v1.z*v2.x - v1.x*v2.z,
 				v1.x*v2.y - v1.y*v2.x );
 	return ret;
 }
 
-float lenght(const Vec3& v) {
-	return v.lenght();
+float Lenght(const Vec3& v) {
+	return v.Lenght();
 }
 
 

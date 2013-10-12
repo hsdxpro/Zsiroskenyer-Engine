@@ -14,14 +14,14 @@ class Vec3 {
 		Vec3(float v[3]) {x = v[0]; y=v[1]; z=v[2];}
 
 
-		Vec3& normalize();
+		Vec3& Normalize();
 
-		static Vec3 normalize(const Vec3& v);
-		static float dot(const Vec3& v1, const Vec3& v2);
-		static Vec3 cross(const Vec3& v1, const Vec3& v2);
-		static float lenght(const Vec3& v);
+		static Vec3 Normalize(const Vec3& v);
+		static float Dot(const Vec3& v1, const Vec3& v2);
+		static Vec3 Cross(const Vec3& v1, const Vec3& v2);
+		static float Lenght(const Vec3& v);
 
-		float lenght() const;
+		float Lenght() const;
 
 		Vec3& operator *= (const Vec3& v2);
 		Vec3& operator /= (const Vec3& v2);
