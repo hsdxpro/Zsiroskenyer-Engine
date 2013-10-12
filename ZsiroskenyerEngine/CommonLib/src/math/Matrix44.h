@@ -42,30 +42,37 @@ public:
 				float _31, float _32, float _33, float _34,
 				float _41, float _42, float _43, float _44);
 
-	static Matrix44& MatrixIdentity(Matrix44& m);
-	static float MatrixDeterminant(const Matrix44& m);
-	static Matrix44& MatrixInverse(const Matrix44& in, Matrix44& out);
-	static Matrix44& MatrixTranspose(const Matrix44& in, Matrix44& out);
-	static Matrix44& MatrixTranspose(Matrix44& m);
+	Matrix44& Identity();
+	float Determinant(const Matrix44& m);
+	Matrix44& Inverse(Matrix44& out);
+	Matrix44& Inverse();
+	Matrix44& Transpose(const Matrix44& in);
+	Matrix44& Transpose();
 
 	// rotation
-	static Matrix44& MatrixRotationX (Matrix44& out, float angle);
-	static Matrix44& MatrixRotationY (Matrix44& out, float angle);
-	static Matrix44& MatrixRotationZ (Matrix44& out, float angle);
-	static Matrix44& MatrixRotationAxisAngle (Matrix44& out, const Vec3& axis, float angle);
-	static Matrix44& MatrixRotationQuat (Matrix44& out, const Quat&); // typecast ((Matrix44)quaternion) is possibly slower than this shit
+	Matrix44& MatrixRotationX (float angle);
+	Matrix44& MatrixRotationY (float angle);
+	Matrix44& MatrixRotationZ (float angle);
+	Matrix44& MatrixRotationAxisAngle (const Vec3& axis, float angle);
+	Matrix44& MatrixRotationQuat (const Quat&); // typecast ((Matrix44)quaternion) is possibly slower than this shit
 
 	// scale
-	static Matrix44& MatrixScale(Matrix44& out, float scX, float scY, float scZ);
-	static Matrix44& MatrixScale(Matrix44& out, Vec3 scale);
+	Matrix44& MatrixScale(float scX, float scY, float scZ);
+	Matrix44& MatrixScale(Vec3 scale);
 
 	// translation
-	static Matrix44& MatrixTranslation(Matrix44& out, float vX, float vY, float vZ);
-	static Matrix44& MatrixTranslation(Matrix44& out, Vec3 v);
+	Matrix44& Translation(Matrix44& out, float vX, float vY, float vZ);
+	Matrix44& Translation(Matrix44& out, Vec3 v);
+
+	static Matrix44 MatrixViewRH(const Vec3& eye, const Vec3& target, const Vec3& up);
+	static Matrix44 MatrixProjPerspective(float nearPlane, float farPlane, float fovRad);
 
 	// Accessors
 	float& operator() (unsigned row, unsigned col);
 	const float& operator() (unsigned row, unsigned col) const;
+	
+	float& operator[] (unsigned index);
+	const float& operator[] (unsigned index) const;
 
 	Matrix44& operator *= (const Matrix44& m2);
 	Matrix44& operator += (const Matrix44& m2);

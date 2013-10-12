@@ -47,12 +47,18 @@
     <ClInclude Include="src\BufferCommon.h">
       <Filter>Common Stuff</Filter>
     </ClInclude>
+    <ClInclude Include="src\Camera.h">
+      <Filter>Common Stuff</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Entity.cpp">
       <Filter>Common Stuff</Filter>
     </ClCompile>
     <ClCompile Include="src\Exception.cpp">
+      <Filter>Common Stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Camera.cpp">
       <Filter>Common Stuff</Filter>
     </ClCompile>
   </ItemGroup>

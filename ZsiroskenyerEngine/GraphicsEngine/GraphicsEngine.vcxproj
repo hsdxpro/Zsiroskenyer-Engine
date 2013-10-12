@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\BufferCommon.h" />
+    <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\IGraphicsApi.h" />
@@ -25,6 +26,7 @@
     <ClInclude Include="src\Node.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\Exception.cpp" />
   </ItemGroup>
