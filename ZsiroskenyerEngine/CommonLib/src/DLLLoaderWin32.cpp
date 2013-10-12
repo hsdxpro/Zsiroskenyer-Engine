@@ -28,6 +28,7 @@ IDLLLoader::DLLMODULE cDLLLoaderWin32::LoadDLL(const zsString& libName) const {
 
 IDLLLoader::DLLFUNCTION cDLLLoaderWin32::GetDLLFunction(IDLLLoader::DLLMODULE dll, const zsString& funcName) const {
 	char ansiChars[256];
+
 	wcstombs(ansiChars, funcName.c_str(), 256);
 
 	auto function =  GetProcAddress((HMODULE)dll, ansiChars);
