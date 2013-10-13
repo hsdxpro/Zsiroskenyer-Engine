@@ -83,6 +83,8 @@ zsString operator + (const CHAR *cStr, const zsString& str);
 #include <cstdint>
 #include <stdexcept>
 
+#undef max
+
 // allocator class
 template <class T>
 class TLSFAllocator {
