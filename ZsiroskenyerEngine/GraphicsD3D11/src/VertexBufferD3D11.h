@@ -19,6 +19,8 @@ public:
 	size_t GetSize();
 	eBufferUsage GetUsage();
 
+	operator ID3D11Buffer*();
+
 	ID3D11Buffer* const buffer;
 private:
 	size_t size;

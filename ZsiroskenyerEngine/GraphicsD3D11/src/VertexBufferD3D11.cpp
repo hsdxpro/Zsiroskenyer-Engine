@@ -44,3 +44,7 @@ size_t cVertexBufferD3D11::GetSize() {
 eBufferUsage cVertexBufferD3D11::GetUsage() {
 	return usage;
 }
+
+cVertexBufferD3D11::operator ID3D11Buffer*() {
+	return buffer;
+}

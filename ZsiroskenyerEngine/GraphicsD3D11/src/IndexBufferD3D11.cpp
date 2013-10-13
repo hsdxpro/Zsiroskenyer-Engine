@@ -37,3 +37,8 @@ size_t cIndexBufferD3D11::GetSize() {
 eBufferUsage cIndexBufferD3D11::GetUsage() {
 	return usage;
 }
+
+
+cIndexBufferD3D11::operator ID3D11Buffer*() {
+	return buffer;
+}

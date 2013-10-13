@@ -47,16 +47,16 @@ public:
 	void SetBBRenderTarget();
 
 	// Creating Buffers
-	IVertexBuffer* CreateVertexBuffer(size_t size, eBufferUsage usage, void* data = NULL);
-	IIndexBuffer* CreateIndexBuffer(size_t size  , eBufferUsage usage, void* data = NULL);
+	IVertexBuffer* CreateVertexBuffer(size_t size, eBufferUsage usage, void* data = NULL) override;
+	IIndexBuffer* CreateIndexBuffer(size_t size  , eBufferUsage usage, void* data = NULL) override;
 
 	// Write to buffers
-	bool Write(IIndexBuffer* buffer , void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset = 0);
-	bool Write(IVertexBuffer* buffer, void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset = 0);
+	bool WriteBuffer(IIndexBuffer* buffer , void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset = 0) override;
+	bool WriteBuffer(IVertexBuffer* buffer, void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset = 0) override;
 
 	// Read from buffers
-	bool Read(IIndexBuffer* buffer , void* dest, size_t size, size_t offset = 0);
-	bool Read(IVertexBuffer* buffer, void* dest, size_t size, size_t offset = 0);
+	bool ReadBuffer(IIndexBuffer* buffer , void* dest, size_t size, size_t offset = 0) override;
+	bool ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset = 0) override;
 
 	cGraphicsD3D11();
 	~cGraphicsD3D11();
