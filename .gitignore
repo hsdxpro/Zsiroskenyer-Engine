@@ -8,8 +8,8 @@
 
 # Build results
 
-Debug_/
-Release_/
+[Dd]ebug_/
+[Rr]elease_/
 x64/
 build/
 [Bb]in/
