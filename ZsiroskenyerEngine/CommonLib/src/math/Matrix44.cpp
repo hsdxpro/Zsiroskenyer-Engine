@@ -18,8 +18,8 @@
 // 2012.oct.11, 9:19 -> axis angle matrix rotation doesn't work, fix it
 
 #include "Matrix44.h"
-#include "quat.h"
-#include "vec3.h"
+#include "Quat.h"
+#include "Vec3.h"
 #include <memory>
 
 Matrix44::Matrix44() 

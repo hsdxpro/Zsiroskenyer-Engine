@@ -11,6 +11,7 @@
 #include "Dx11_SDK/Include/D3D11.h"
 #include "Dx11_SDK/Include/D3DX11.h"
 
+
 class cVertexBufferD3D11 : public IVertexBuffer {
 public:
 	cVertexBufferD3D11(ID3D11Buffer* buffer);

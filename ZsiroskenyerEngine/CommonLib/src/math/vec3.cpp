@@ -114,24 +114,24 @@ float Vec3::Lenght() const {
 	return sqrt(x*x + y*y + z*z);
 }
 
-Vec3 normalize(const Vec3& v) {
+Vec3 Vec3::Normalize(const Vec3& v) {
 	Vec3 n=v;
 	n.Normalize();
 	return n;
 }
 
-float Dot(const Vec3& v1, const Vec3& v2) {
+float Vec3::Dot(const Vec3& v1, const Vec3& v2) {
 	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
-Vec3 Cross(const Vec3& v1, const Vec3& v2) {
+Vec3 Vec3::Cross(const Vec3& v1, const Vec3& v2) {
 	Vec3 ret(	v1.y*v2.z - v1.z*v2.y,
 				v1.z*v2.x - v1.x*v2.z,
 				v1.x*v2.y - v1.y*v2.x );
 	return ret;
 }
 
-float Lenght(const Vec3& v) {
+float Vec3::Lenght(const Vec3& v) {
 	return v.Lenght();
 }
 

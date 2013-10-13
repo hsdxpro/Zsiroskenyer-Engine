@@ -344,19 +344,10 @@ IIndexBuffer* cGraphicsD3D11::CreateIndexBuffer(size_t size  , eBufferUsage usag
 	desc.MiscFlags = 0;
 	desc.CPUAccessFlags = 0;
 	desc.StructureByteStride = 0;
-	//desc.Usage = [&]{eBufferUsage ret; switch(usage){} // Majd fejezd be peti :D
-	switch(usage)
-	{
-	case eBufferUsage::IMMUTABLE:
-		desc.Usage = D3D11_USAGE_IMMUTABLE;
-		break;
-	case eBufferUsage::DYNAMIC:
-		desc.Usage = D3D11_USAGE_DYNAMIC;
-		break;
-	case eBufferUsage::STAGING:
-		desc.Usage = D3D11_USAGE_STAGING;
-		break;
-	}
+	desc.Usage = [&]()->D3D11_USAGE{D3D11_USAGE ret; switch(usage){
+										case eBufferUsage::IMMUTABLE: return D3D11_USAGE_IMMUTABLE;
+										case eBufferUsage::DYNAMIC: return D3D11_USAGE_DYNAMIC;
+										case eBufferUsage::STAGING: return D3D11_USAGE_STAGING;}};
 
 	D3D11_SUBRESOURCE_DATA resData;
 	resData.pSysMem = data;
