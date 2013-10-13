@@ -6,6 +6,16 @@ cCamera::cCamera(float fovRad, float aspectRatio, float nearPlane, float farPlan
 :fovRad(fovRad), aspectRatio(aspectRatio), nearPlane(nearPlane), farPlane(farPlane) {
 }
 
+void cCamera::Update(Vec3 pos, Vec3 target) {
+	this->pos = pos;
+	this->target = target;
+}
+
+void cCamera::Update(Vec3 pos, Quat rotation) {
+	this->pos = pos;
+	this->target = pos + Vec3(0.0f, 0.0f, 1.0f) * rotation;
+}
+
 void cCamera::SetFOV(float fovRad) {
 	this->fovRad = fovRad;
 }

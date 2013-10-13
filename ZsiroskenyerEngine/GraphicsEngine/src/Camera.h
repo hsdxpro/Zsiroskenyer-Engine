@@ -7,6 +7,10 @@
 
 class cCamera {
 public:
+
+	void Update(Vec3 pos, Vec3 target);
+	void Update(Vec3 pos, Quat rotation);
+
 	void SetFOV(float radFOV);
 	void SetAspectRatio(float aspectRatio);
 	void SetNearPlane(float nearPlane);
