@@ -21,18 +21,18 @@ public:
 	Matrix44 GetProjMatrix() const;
 
 
-	Vec3 GetDirFront(){return Vec3(1,0,0);}
-	Vec3 GetDirBack(){return Vec3(1,0,0);}
-	Vec3 GetDirUp(){return Vec3(1,0,0);}
-	Vec3 GetDirDown(){return Vec3(1,0,0);}
-	Vec3 GetDirRight(){return Vec3(1,0,0);}
-	Vec3 GetDirLeft(){return Vec3(1,0,0);}
+	Vec3 GetDirFront() const;
+	Vec3 GetDirBack() const;
+	Vec3 GetDirUp() const;
+	Vec3 GetDirDown() const;
+	Vec3 GetDirRight() const;
+	Vec3 GetDirLeft() const;
 
 	cCamera(float radFOV, float aspectRatio, float nearPlane, float farPlane);
 private:
 	// Pos, Rot
 	Vec3 pos;
-	Quat rot;
+	Vec3 target;
 
 	// Camera params
 	float fovRad;

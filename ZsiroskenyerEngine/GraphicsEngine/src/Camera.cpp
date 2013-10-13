@@ -41,9 +41,33 @@ float cCamera::GetFarPlane() const {
 Matrix44 cCamera::GetViewMatrix() const {
 	const Vec3 up(0.0f, 0.0f, 1.0f);
 	//@TODO fuck dummy bruteforce target
-	return Matrix44::MatrixViewRH(pos, Vec3(0.0f, 10.0f, 0.0f), up);
+	return Matrix44::MatrixViewRH(pos, target, up);
 }
 
 Matrix44 cCamera::GetProjMatrix() const {
 	return Matrix44::MatrixProjPerspective(nearPlane, farPlane, fovRad);
+}
+
+Vec3 cCamera::GetDirFront() const {
+	return target - pos;
+}
+
+Vec3 cCamera::GetDirBack() const {
+	return pos - target;
+}
+
+Vec3 cCamera::GetDirUp() const {
+	return Vec3::Cross(GetDirFront(), GetDirRight());
+}
+
+Vec3 cCamera::GetDirDown() const {
+	return Vec3::Cross(GetDirFront(), GetDirLeft());
+}
+
+Vec3 cCamera::GetDirRight() const {
+	return Vec3::Cross(GetDirRight(), Vec3(0.0f, 0.0f, 1.0f));
+}
+
+Vec3 cCamera::GetDirLeft() const {
+	return Vec3::Cross(Vec3(0.0f, 0.0f, 1.0f), GetDirRight());
 }
