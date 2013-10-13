@@ -347,7 +347,7 @@ IIndexBuffer* cGraphicsD3D11::CreateIndexBuffer(size_t size  , eBufferUsage usag
 	desc.Usage = [&]()->D3D11_USAGE{D3D11_USAGE ret; switch(usage){
 										case eBufferUsage::IMMUTABLE: return D3D11_USAGE_IMMUTABLE;
 										case eBufferUsage::DYNAMIC: return D3D11_USAGE_DYNAMIC;
-										case eBufferUsage::STAGING: return D3D11_USAGE_STAGING;}};
+										case eBufferUsage::STAGING: return D3D11_USAGE_STAGING;}}();
 
 	D3D11_SUBRESOURCE_DATA resData;
 	resData.pSysMem = data;
