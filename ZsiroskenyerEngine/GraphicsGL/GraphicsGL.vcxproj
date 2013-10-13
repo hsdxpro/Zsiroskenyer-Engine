@@ -50,6 +50,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(SolutionDir)\Debug\;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)$(Configuration)_\</OutDir>
+    <IntDir>$(Configuration)_\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
