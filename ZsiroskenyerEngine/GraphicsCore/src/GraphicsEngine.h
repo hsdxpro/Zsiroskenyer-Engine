@@ -14,16 +14,19 @@
 
 #include "ManagerScene.h"
 #include "ManagerResource.h"
-
+#include "../../GraphicsEngine/src/IGraphicsApi.h"
 
 class cGraphicsEngine : public IGraphicsEngine {
 public:
 	cGraphicsEngine();
 
+	void RenderSceneForward();
+
 	IManagerScene* GetSceneManager();
 private:	
 	cManagerResource managerResource;
 	cManagerScene managerScene;
+	IGraphicsApi* gApi;
 };
 
 

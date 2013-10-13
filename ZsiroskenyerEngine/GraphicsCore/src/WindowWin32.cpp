@@ -74,7 +74,10 @@ cWindowWin32::cWindowWin32(const IWindow::tDesc& winDesc)
 			break;
 	}
 	
-	// register our new window class
+	// Application ID for window class registration, and window creation
+	HINSTANCE appID = GetModuleHandle(NULL);
+
+	// Register our new window class
 	WNDCLASSEX wC;
 	memset(&wC,0,sizeof(WNDCLASSEX));
 	wC.cbSize = sizeof(WNDCLASSEX);
@@ -86,7 +89,7 @@ cWindowWin32::cWindowWin32(const IWindow::tDesc& winDesc)
 	wC.hIconSm = NULL;
 	wC.lpszClassName = _T("windowclass");
 	wC.lpszMenuName = NULL;
-	wC.hInstance = (HMODULE)winDesc.appInstance;
+	wC.hInstance = appID;
 	wC.lpfnWndProc = wndProc;
 	wC.style = CS_HREDRAW | CS_VREDRAW;
 	RegisterClassEx(&wC);
@@ -107,7 +110,7 @@ cWindowWin32::cWindowWin32(const IWindow::tDesc& winDesc)
 		wHeight,
 		GetDesktopWindow(),
 		0,
-		(HMODULE)winDesc.appInstance,
+		appID,
 		0);
 		
 	ShowWindow(handle,SW_SHOW);

@@ -70,6 +70,6 @@ void cManagerScene::RemoveEntity(const cEntity& entity) {
 	}
 }
 
-
-
-
+instanceGroupSet& cManagerScene::GetInstanceGroups() {
+	return instanceGroups;
+}

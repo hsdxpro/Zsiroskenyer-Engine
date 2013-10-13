@@ -17,11 +17,9 @@ int ricsiMain() {
 	IGraphicsEngine* mgrGEngine = Factory.CreateEngineGraphics();
 	IManagerScene* mgrScene = mgrGEngine->GetSceneManager();
 	IGraphicsApi* dx11 = Factory.CreateGraphics();
-
 	
 	// Create basic window
 	IWindow::tDesc desc;
-		desc.appInstance = (IWindow::AppInstance)GetModuleHandle(NULL);
 		desc.brush = IWindow::eBrush::RENDER_;
 		desc.captionName = L"Zsíroskenyér Engine [Tech Demo]";
 		desc.clientHeight = 600;
@@ -46,6 +44,7 @@ int ricsiMain() {
 	while(myWindow->IsOpened()) {
 		myWindow->PeekAllMessages();
 		dx11->Clear();
+		mgrGEngine->RenderSceneForward();
 		dx11->Present();
 	}
 	

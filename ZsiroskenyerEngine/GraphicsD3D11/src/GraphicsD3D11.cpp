@@ -280,7 +280,7 @@ void cGraphicsD3D11::CreateDefaultStates(const D3D11_CULL_MODE& cullMode, const 
 	rState->Release();
 }
 
-void cGraphicsD3D11::SetBBRenderTarget() {
+void cGraphicsD3D11::SetRenderTargetDefault() {
 	d3dcon->RSSetViewports(1, &backBufferVP);
 	d3dcon->OMSetRenderTargets(1, &backBufferRTV, backBufferDSV);
 }

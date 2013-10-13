@@ -37,6 +37,7 @@ struct cInstGroupPtrCompare {
 };
 
 // scene manager
+typedef std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare> instanceGroupSet;
 class cManagerScene : public IManagerScene {
 public:
 	cManagerScene(cManagerResource& rm);
@@ -45,7 +46,8 @@ public:
 	cEntity& AddEntity(const zsString& geometry, const zsString& material);
 	void RemoveEntity(const cEntity& entity);
 
+	instanceGroupSet& GetInstanceGroups();
 private:
-	std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare> instanceGroups;
+	instanceGroupSet instanceGroups;
 	cManagerResource& managerResource;
 };

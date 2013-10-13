@@ -54,13 +54,13 @@ public:
 	void DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex = 0, size_t idxStartInstance = 0) override;
 	void DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex = 0, size_t idxStartInstance = 0) override;
 
+	void SetRenderTargetDefault() override;
+
 	void SetVertexData(IVertexBuffer* vertexBuffer) override;
 	void SetIndexData(IIndexBuffer* indexBuffer) override;
 	void SetInstanceData(/*whatever*/) override;
 
 	void SetWindow(IWindow *renderWindow) override;
-
-	void SetBBRenderTarget();
 
 	cGraphicsD3D11();
 	~cGraphicsD3D11();

@@ -34,6 +34,8 @@ public:
 	virtual void DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex = 0, size_t idxStartInstance = 0) = 0;
 	virtual void DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex = 0, size_t idxStartInstance = 0) = 0;
 
+	virtual void SetRenderTargetDefault() = 0;
+
 
 	virtual void SetVertexData(IVertexBuffer* vertexBuffer) = 0;
 	virtual void SetIndexData(IIndexBuffer* indexBuffer) = 0;
