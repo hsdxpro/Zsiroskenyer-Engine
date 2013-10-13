@@ -55,7 +55,8 @@ void cGraphicsD3D11::SetWindow(IWindow *renderWindow) {
 	backBufferVP.MinDepth = 0.0f;
 
 	// BackBuffer will be the render target in default
-	SetBBRenderTarget();
+#pragma message("+++++ +++++ Function SetBBRenderTarget not found! +++++ +++++")
+	//SetBBRenderTarget();
 }
 
 cGraphicsD3D11::~cGraphicsD3D11() {

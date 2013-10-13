@@ -9,8 +9,8 @@
 #include "ManagerScene.h"
 #include "ManagerResource.h"
 #include "InstanceGroup.h"
-#include "../../GraphicsEngine/src/Entity.h"
-#include "../../GraphicsEngine/src/Exception.h"
+#include "../../GraphicsCommon/src/Entity.h"
+#include "../../GraphicsCommon/src/Exception.h"
 
 #include <cassert>
 

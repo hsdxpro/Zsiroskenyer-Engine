@@ -1,65 +1,78 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="DllMain">
+      <UniqueIdentifier>{9a6dec54-de8c-47d6-b89a-a8f08db756c8}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Interfaces">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+      <UniqueIdentifier>{9b3a76ce-4acf-4659-98a0-7241a406d9f7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Common Stuff">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Interfaces\IWindow -nak nem itt a helye">
+      <UniqueIdentifier>{08dc5b44-8594-41ee-b9ca-a1f1a53d3bc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GraphicsEngine">
+      <UniqueIdentifier>{85ebeef6-1303-459a-994e-8ad431fb3adf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ManagerResource">
+      <UniqueIdentifier>{11591b19-679d-4fc1-b926-92f647934afd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ManagerScene">
+      <UniqueIdentifier>{cf118672-aa65-42ef-86b2-58177e361283}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Entity.h">
-      <Filter>Common Stuff</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Exception.h">
-      <Filter>Common Stuff</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Node.h">
-      <Filter>Common Stuff</Filter>
-    </ClInclude>
-    <ClInclude Include="src\IGraphicsApi.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="src\IGraphicsEngine.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="src\IIndexBuffer.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="src\IManagerScene.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="src\IRenderer.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ITexture.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="src\IVertexBuffer.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="src\IWindow.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="src\BufferCommon.h">
-      <Filter>Common Stuff</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Camera.h">
-      <Filter>Common Stuff</Filter>
-    </ClInclude>
+    <ClCompile Include="src\DllMain.cpp">
+      <Filter>DllMain</Filter>
+    </ClCompile>
+    <ClCompile Include="src\InstanceGroup.cpp">
+      <Filter>ManagerScene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Geometry.cpp">
+      <Filter>ManagerResource</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Material.cpp">
+      <Filter>ManagerResource</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WindowWin32.cpp">
+      <Filter>Interfaces\IWindow -nak nem itt a helye</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GraphicsEngine.cpp">
+      <Filter>GraphicsEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ManagerResource.cpp">
+      <Filter>ManagerResource</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ManagerScene.cpp">
+      <Filter>ManagerScene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GeometryBuilder.cpp">
+      <Filter>ManagerResource</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Entity.cpp">
-      <Filter>Common Stuff</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Exception.cpp">
-      <Filter>Common Stuff</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Camera.cpp">
-      <Filter>Common Stuff</Filter>
-    </ClCompile>
+    <ClInclude Include="src\InstanceGroup.h">
+      <Filter>ManagerScene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Geometry.h">
+      <Filter>ManagerResource</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Material.h">
+      <Filter>ManagerResource</Filter>
+    </ClInclude>
+    <ClInclude Include="src\WindowWin32.h">
+      <Filter>Interfaces\IWindow -nak nem itt a helye</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ManagerResource.h">
+      <Filter>ManagerResource</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ManagerScene.h">
+      <Filter>ManagerScene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GeometryBuilder.h">
+      <Filter>ManagerResource</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GraphicsEngine.h">
+      <Filter>GraphicsEngine</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

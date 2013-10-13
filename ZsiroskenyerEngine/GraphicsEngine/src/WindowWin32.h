@@ -2,7 +2,7 @@
 // Win32 implementation of the IWindow interface
 #pragma once
 
-#include "../../GraphicsEngine/src/IWindow.h"
+#include "../../GraphicsCommon/src/IWindow.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 

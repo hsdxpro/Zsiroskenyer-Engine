@@ -14,7 +14,7 @@
 #include "..\..\CommonLib\src\zsString.h"
 
 #include "InstanceGroup.h"
-#include "../../GraphicsEngine/src/IManagerScene.h"
+#include "../../GraphicsCommon/src/IManagerScene.h"
 
 #include <unordered_set>
 

@@ -1,8 +1,8 @@
 // GraphicsGL.h By Zsíroskenyér team
 #pragma once
 
-#include "..\..\GraphicsEngine\src\IGraphicsApi.h"
-#include "..\..\GraphicsEngine\src\IWindow.h"
+#include "../../GraphicsCommon\src\IGraphicsApi.h"
+#include "../../GraphicsCommon\src\IWindow.h"
 #include "..\..\CommonLib\src\common.h"
 
 class cGraphicsGL : public IGraphicsApi {
@@ -37,5 +37,7 @@ protected:
 extern "C"
 	__declspec(dllexport)
 	IGraphicsApi* CreateGraphicsGL() {
-		return new cGraphicsGL();
+#pragma message("+++++ +++++ Implement opengl class, abstract methots not implemented yet! +++++ +++++")
+		//return new cGraphicsGL();
+		return NULL;
 }

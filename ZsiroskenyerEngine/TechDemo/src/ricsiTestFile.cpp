@@ -1,8 +1,8 @@
 #include "testFiles.h"
 
-#include "..\..\GraphicsEngine\src\IWindow.h"
-#include "..\..\GraphicsEngine\src\IGraphicsApi.h"
-#include "..\..\GraphicsEngine\src\IGraphicsEngine.h"
+#include "../../GraphicsCommon\src\IWindow.h"
+#include "../../GraphicsCommon\src\IGraphicsApi.h"
+#include "../../GraphicsCommon\src\IGraphicsEngine.h"
 #include "..\..\CommonLib\src\Factory.h"
 #include "..\..\CommonLib\src\DLLLoaderWin32.h"
 
@@ -44,7 +44,9 @@ int ricsiMain() {
 	while(myWindow->IsOpened()) {
 		myWindow->PeekAllMessages();
 		dx11->Clear();
-		mgrGEngine->RenderSceneForward();
+#pragma message("+++++ +++++ Line commented because function was not found! +++++ +++++")
+		//
+		/* mgrGEngine->RenderSceneForward(); */
 		dx11->Present();
 	}
 	

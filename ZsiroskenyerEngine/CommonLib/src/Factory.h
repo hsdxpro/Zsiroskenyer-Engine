@@ -11,9 +11,9 @@
 // etc
 #pragma once
 
-#include "..\..\GraphicsEngine\src\IGraphicsApi.h"
-#include "..\..\GraphicsEngine\src\IGraphicsEngine.h"
-#include "..\..\GraphicsEngine\src\IWindow.h"
+#include "../../GraphicsCommon\src\IGraphicsApi.h"
+#include "../../GraphicsCommon\src\IGraphicsEngine.h"
+#include "../../GraphicsCommon\src\IWindow.h"
 #include "IDLLLoader.h"
 
 // Dll function pointers...

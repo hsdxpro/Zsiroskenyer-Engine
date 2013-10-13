@@ -10,11 +10,11 @@
 #pragma once
 
 
-#include "../../GraphicsEngine/src/IGraphicsEngine.h"
+#include "../../GraphicsCommon/src/IGraphicsEngine.h"
 
 #include "ManagerScene.h"
 #include "ManagerResource.h"
-#include "../../GraphicsEngine/src/IGraphicsApi.h"
+#include "../../GraphicsCommon/src/IGraphicsApi.h"
 
 class cGraphicsEngine : public IGraphicsEngine {
 public:

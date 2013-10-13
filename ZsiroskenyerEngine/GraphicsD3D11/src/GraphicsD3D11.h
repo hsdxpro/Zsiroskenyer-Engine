@@ -7,12 +7,12 @@
 #include "Dx11_SDK/Include/D3Dcompiler.h"
 #include "Dx11_SDK/Include/D3DX11.h"
 
-#include "../../GraphicsEngine/src/IGraphicsApi.h"
-#include "../../GraphicsEngine/src/IWindow.h"
+#include "../../GraphicsCommon/src/IGraphicsApi.h"
+#include "../../GraphicsCommon/src/IWindow.h"
 #include "../../CommonLib/src/common.h"
 
-#include "../../GraphicsEngine/src/IVertexBuffer.h"
-#include "../../GraphicsEngine/src/IIndexBuffer.h"
+#include "../../GraphicsCommon/src/IVertexBuffer.h"
+#include "../../GraphicsCommon/src/IIndexBuffer.h"
 
 #undef max
 

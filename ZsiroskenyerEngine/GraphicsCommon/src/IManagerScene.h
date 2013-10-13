@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../../GraphicsEngine/src/Entity.h"
+#include "../../GraphicsCommon/src/Entity.h"
 #include "../../CommonLib/src/zsString.h"
 
 class IManagerScene {
