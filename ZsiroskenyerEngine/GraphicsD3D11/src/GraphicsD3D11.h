@@ -37,6 +37,7 @@ public:
 
 	};
 
+	// Old interface
 	void BBClear(bool clearOnlyDepth = false) override;
 	void Draw(uint32 vertexCount);
 	void DrawIndexed(uint32 indexCount);
@@ -46,14 +47,27 @@ public:
 	void SetWindow(IWindow *renderWindow) override;
 	void SetBBRenderTarget();
 
+	// New interface
+	// !written by Peti!
+	void Clear(bool target=true, bool depth=false, bool stencil=false);
+	void Preset();
+
+	void Draw(size_t nVertices, size_t idxStartVertex=0);
+	void DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex=0, size_t idxStartInstance=0);
+	void DrawIndexed(size_t nIndices, size_t idxStartIndex=0);
+	void DrawIndexedInstanced(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex=0, size_t idxStartInstance=0);
+
+	void SetVertexData(IVertexBuffer* vertexBuffer);
+	void SetIndexData(IIndexBuffer* indexBuffer);
+	void SetInstanceData(/*whatever*/);
+	
+
 	// Creating Buffers
 	IVertexBuffer* CreateVertexBuffer(size_t size, eBufferUsage usage, void* data = NULL) override;
 	IIndexBuffer* CreateIndexBuffer(size_t size  , eBufferUsage usage, void* data = NULL) override;
-
 	// Write to buffers
 	bool WriteBuffer(IIndexBuffer* buffer , void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset = 0) override;
 	bool WriteBuffer(IVertexBuffer* buffer, void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset = 0) override;
-
 	// Read from buffers
 	bool ReadBuffer(IIndexBuffer* buffer , void* dest, size_t size, size_t offset = 0) override;
 	bool ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset = 0) override;
