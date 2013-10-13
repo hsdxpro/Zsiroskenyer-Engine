@@ -5,6 +5,7 @@
 #include "BufferCommon.h"
 
 class IIndexBuffer {
+public:
 	virtual size_t GetSize() = 0;
 	virtual eBufferUsage GetUsage() = 0;
 };

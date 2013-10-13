@@ -4,6 +4,9 @@
 #include "VertexBufferD3D11.h"
 #include "IndexBufferD3D11.h"
 
+#include <cassert>
+#define ASSERT assert
+
 #ifdef WIN32
 #pragma warning(disable: 4244)
 #pragma warning(disable: 4005)
@@ -316,12 +319,12 @@ IVertexBuffer* cGraphicsD3D11::CreateVertexBuffer(size_t size, eBufferUsage usag
 	desc.ByteWidth = size;
 	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	desc.MiscFlags = 0;
-	desc.CPUAccessFlags = 0;
 	desc.StructureByteStride = 0;
-	desc.Usage = [&]()->D3D11_USAGE{D3D11_USAGE ret; switch(usage){
-										case eBufferUsage::IMMUTABLE: return D3D11_USAGE_IMMUTABLE;
-										case eBufferUsage::DYNAMIC: return D3D11_USAGE_DYNAMIC;
-										case eBufferUsage::STAGING: return D3D11_USAGE_STAGING;}}();
+	switch(usage){
+	case eBufferUsage::IMMUTABLE:	desc.Usage = D3D11_USAGE_IMMUTABLE;		desc.CPUAccessFlags=0;												break;
+	case eBufferUsage::DYNAMIC:		desc.Usage = D3D11_USAGE_DYNAMIC;		desc.CPUAccessFlags=D3D11_CPU_ACCESS_WRITE;							break;
+	case eBufferUsage::STAGING:		desc.Usage = D3D11_USAGE_STAGING;		desc.CPUAccessFlags=D3D11_CPU_ACCESS_READ|D3D11_CPU_ACCESS_WRITE;	break;
+	}
 
 	D3D11_SUBRESOURCE_DATA resData;
 	memset(&resData, 0, sizeof(resData));
@@ -343,12 +346,12 @@ IIndexBuffer* cGraphicsD3D11::CreateIndexBuffer(size_t size  , eBufferUsage usag
 	desc.ByteWidth = size;
 	desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	desc.MiscFlags = 0;
-	desc.CPUAccessFlags = 0;
 	desc.StructureByteStride = 0;
-	desc.Usage = [&]()->D3D11_USAGE{D3D11_USAGE ret; switch(usage){
-										case eBufferUsage::IMMUTABLE: return D3D11_USAGE_IMMUTABLE;
-										case eBufferUsage::DYNAMIC: return D3D11_USAGE_DYNAMIC;
-										case eBufferUsage::STAGING: return D3D11_USAGE_STAGING;}}();
+	switch(usage){
+	case eBufferUsage::IMMUTABLE:	desc.Usage = D3D11_USAGE_IMMUTABLE;		desc.CPUAccessFlags=0;												break;
+	case eBufferUsage::DYNAMIC:		desc.Usage = D3D11_USAGE_DYNAMIC;		desc.CPUAccessFlags=D3D11_CPU_ACCESS_WRITE;							break;
+	case eBufferUsage::STAGING:		desc.Usage = D3D11_USAGE_STAGING;		desc.CPUAccessFlags=D3D11_CPU_ACCESS_READ|D3D11_CPU_ACCESS_WRITE;	break;
+	}
 
 	D3D11_SUBRESOURCE_DATA resData;
 	memset(&resData, 0, sizeof(resData));
@@ -364,20 +367,89 @@ IIndexBuffer* cGraphicsD3D11::CreateIndexBuffer(size_t size  , eBufferUsage usag
 }
 
 bool cGraphicsD3D11::WriteBuffer(IIndexBuffer* buffer , void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
+	ASSERT(buffer!=NULL);
+
+	if (buffer->GetSize()<size+offset)
+		return false;
+
 	HRESULT hr = S_OK;
-	ID3D11Buffer* buffer = (ID3D11Buffer*)buffer;
+	ID3D11Buffer* d3dBuffer = (ID3D11Buffer*)buffer;
+	D3D11_MAPPED_SUBRESOURCE mappedRes;
 
+	hr = d3dcon->Map(d3dBuffer, 0, D3D11_MAP_WRITE, 0, &mappedRes);
+	if (hr!=S_OK) {
+		return false;
+	}
 
+	memcpy((void*)(size_t(mappedRes.pData)+offset), source, size);
+
+	d3dcon->Unmap(d3dBuffer, 0);
+
+	return true;
 }
 
 bool cGraphicsD3D11::WriteBuffer(IVertexBuffer* buffer, void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
-	return false;
+	ASSERT(buffer!=NULL);
+
+	if (buffer->GetSize()<size+offset)
+		return false;
+
+	HRESULT hr = S_OK;
+	ID3D11Buffer* d3dBuffer = (ID3D11Buffer*)buffer;
+	D3D11_MAPPED_SUBRESOURCE mappedRes;
+
+	hr = d3dcon->Map(d3dBuffer, 0, D3D11_MAP_WRITE, 0, &mappedRes);
+	if (hr!=S_OK) {
+		return false;
+	}
+
+	memcpy((void*)(size_t(mappedRes.pData)+offset), source, size);
+
+	d3dcon->Unmap(d3dBuffer, 0);
+
+	return true;
 }
 
 bool cGraphicsD3D11::ReadBuffer(IIndexBuffer* buffer , void* dest, size_t size, size_t offset /*= 0*/) {
-	return false;
+	ASSERT(buffer!=NULL);
+
+	if (buffer->GetSize()<size+offset)
+		return false;
+
+	HRESULT hr = S_OK;
+	ID3D11Buffer* d3dBuffer = (ID3D11Buffer*)buffer;
+	D3D11_MAPPED_SUBRESOURCE mappedRes;
+
+	hr = d3dcon->Map(d3dBuffer, 0, D3D11_MAP_READ, 0, &mappedRes);
+	if (hr!=S_OK) {
+		return false;
+	}
+
+	memcpy(dest, (void*)(size_t(mappedRes.pData)+offset), size);
+
+	d3dcon->Unmap(d3dBuffer, 0);
+
+	return true;
 }
 
 bool cGraphicsD3D11::ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset /*= 0*/) {
-	return false;
+	ASSERT(buffer!=NULL);
+
+	if (buffer->GetSize()<size+offset)
+		return false;
+
+	HRESULT hr = S_OK;
+	ID3D11Buffer* d3dBuffer = (ID3D11Buffer*)buffer;
+	D3D11_MAPPED_SUBRESOURCE mappedRes;
+
+	hr = d3dcon->Map(d3dBuffer, 0, D3D11_MAP_READ, 0, &mappedRes);
+	if (hr!=S_OK) {
+		return false;
+	}
+
+	memcpy(dest, (void*)(size_t(mappedRes.pData)+offset), size);
+
+	d3dcon->Unmap(d3dBuffer, 0);
+
+	return true;
 }

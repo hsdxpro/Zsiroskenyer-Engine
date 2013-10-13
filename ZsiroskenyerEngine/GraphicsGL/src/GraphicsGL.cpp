@@ -21,18 +21,18 @@ IIndexBuffer* cGraphicsGL::CreateIndexBuffer(size_t size, eBufferUsage usage, vo
 	return NULL;
 }
 
-bool cGraphicsGL::Write(IIndexBuffer* buffer , void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
+bool cGraphicsGL::WriteBuffer(IIndexBuffer* buffer , void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
 	return false;
 }
 
-bool cGraphicsGL::Write(IVertexBuffer* buffer, void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
+bool cGraphicsGL::WriteBuffer(IVertexBuffer* buffer, void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
 	return false;
 }
 
-bool cGraphicsGL::Read(IIndexBuffer* buffer , void* dest, size_t size, size_t offset /*= 0*/) {
+bool cGraphicsGL::ReadBuffer(IIndexBuffer* buffer , void* dest, size_t size, size_t offset /*= 0*/) {
 	return false;
 }
 
-bool cGraphicsGL::Read(IVertexBuffer* buffer, void* dest, size_t size, size_t offset /*= 0*/) {
+bool cGraphicsGL::ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset /*= 0*/) {
 	return false;
 }
