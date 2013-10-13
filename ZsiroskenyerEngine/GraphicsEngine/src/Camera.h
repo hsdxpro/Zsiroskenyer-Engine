@@ -7,18 +7,26 @@
 
 class cCamera {
 public:
-	void setFOV(float radFOV);
-	void setAspectRatio(float aspectRatio);
-	void setNearPlane(float nearPlane);
-	void setFarPlane(float farPlane);
+	void SetFOV(float radFOV);
+	void SetAspectRatio(float aspectRatio);
+	void SetNearPlane(float nearPlane);
+	void SetFarPlane(float farPlane);
 
-	float getFOV() const;
-	float getAspectRatio() const;
-	float getNearPlane() const;
-	float getFarPlane() const;
+	float GetFOV() const;
+	float GetAspectRatio() const;
+	float GetNearPlane() const;
+	float GetFarPlane() const;
 
-	Matrix44 getViewMatrix() const;
-	Matrix44 getProjMatrix() const;
+	Matrix44 GetViewMatrix() const;
+	Matrix44 GetProjMatrix() const;
+
+
+	Vec3 GetDirFront(){return Vec3(1,0,0);}
+	Vec3 GetDirBack(){return Vec3(1,0,0);
+	Vec3 GetDirUp(){return Vec3(1,0,0);}
+	Vec3 GetDirDown(){return Vec3(1,0,0);}
+	Vec3 GetDirRight(){return Vec3(1,0,0);}
+	Vec3 GetDirLeft(){return Vec3(1,0,0);}
 
 	cCamera(float radFOV, float aspectRatio, float nearPlane, float farPlane);
 private:

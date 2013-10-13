@@ -6,44 +6,44 @@ cCamera::cCamera(float fovRad, float aspectRatio, float nearPlane, float farPlan
 :fovRad(fovRad), aspectRatio(aspectRatio), nearPlane(nearPlane), farPlane(farPlane) {
 }
 
-void cCamera::setFOV(float fovRad) {
+void cCamera::SetFOV(float fovRad) {
 	this->fovRad = fovRad;
 }
 
-void cCamera::setAspectRatio(float aspectRatio) {
+void cCamera::SetAspectRatio(float aspectRatio) {
 	this->aspectRatio = aspectRatio;
 }
 
-void cCamera::setNearPlane(float nearPlane) {
+void cCamera::SetNearPlane(float nearPlane) {
 	this->nearPlane = nearPlane;
 }
 
-void cCamera::setFarPlane(float farPlane) {
+void cCamera::SetFarPlane(float farPlane) {
 	this->farPlane = farPlane;
 }
 
-float cCamera::getFOV() const {
+float cCamera::GetFOV() const {
 	return fovRad;
 }
 
-float cCamera::getAspectRatio() const {
+float cCamera::GetAspectRatio() const {
 	return aspectRatio;
 }
 
-float cCamera::getNearPlane() const {
+float cCamera::GetNearPlane() const {
 	return nearPlane;
 }
 
-float cCamera::getFarPlane() const {
+float cCamera::GetFarPlane() const {
 	return farPlane;
 }
 
-Matrix44 cCamera::getViewMatrix() const {
+Matrix44 cCamera::GetViewMatrix() const {
 	const Vec3 up(0.0f, 0.0f, 1.0f);
 	//@TODO fuck dummy bruteforce target
 	return Matrix44::MatrixViewRH(pos, Vec3(0.0f, 10.0f, 0.0f), up);
 }
 
-Matrix44 cCamera::getProjMatrix() const {
+Matrix44 cCamera::GetProjMatrix() const {
 	return Matrix44::MatrixProjPerspective(nearPlane, farPlane, fovRad);
 }
