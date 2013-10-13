@@ -2,7 +2,6 @@
 // Responsibility: Holding Indices for Mesh points of the 3D object
 #pragma once
 
-
 #include "BufferCommon.h"
 
 class IIndexBuffer {

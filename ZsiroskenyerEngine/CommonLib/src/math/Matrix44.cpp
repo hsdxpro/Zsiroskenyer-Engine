@@ -244,7 +244,7 @@ Matrix44& Matrix44::Inverse() {
 	return Inverse(*this);
 }
 
-Matrix44& Matrix44::MatrixScale(float scX, float scY, float scZ) {
+Matrix44& Matrix44::Scale(float scX, float scY, float scZ) {
 	Identity();
 	_41 = scX;
 	_42 = scY;
@@ -252,7 +252,7 @@ Matrix44& Matrix44::MatrixScale(float scX, float scY, float scZ) {
 	return *this;
 }
 
-Matrix44& Matrix44::MatrixScale(Vec3 scale) {
+Matrix44& Matrix44::Scale(Vec3 scale) {
 	Identity();
 	_41 = scale.x;
 	_42 = scale.y;
@@ -276,7 +276,7 @@ Matrix44& Matrix44::Translation(Vec3 v) {
 	return *this;
 }
 
-Matrix44& Matrix44::MatrixRotationX ( float angle) {
+Matrix44& Matrix44::RotationX (float angle) {
 	Identity();
 	// compute sine and cosine
 	float sin_a, cos_a;
@@ -291,7 +291,7 @@ Matrix44& Matrix44::MatrixRotationX ( float angle) {
 	return *this;
 }
 
-Matrix44& Matrix44::MatrixRotationY(float angle) {
+Matrix44& Matrix44::RotationY(float angle) {
 	Identity();
 	// compute sine and cosine
 	float sin_a, cos_a;
@@ -306,7 +306,7 @@ Matrix44& Matrix44::MatrixRotationY(float angle) {
 	return *this;
 }
 
-Matrix44& Matrix44::MatrixRotationZ(float angle) {
+Matrix44& Matrix44::RotationZ(float angle) {
 	Identity();
 	// compute sine and cosine
 	float sin_a, cos_a;
@@ -321,7 +321,7 @@ Matrix44& Matrix44::MatrixRotationZ(float angle) {
 	return *this;
 }
 
-Matrix44& Matrix44::MatrixRotationAxisAngle(const Vec3& axis, float angle) {
+Matrix44& Matrix44::RotationAxisAngle(const Vec3& axis, float angle) {
 	float c = cos(angle);
 	float s = sin(angle);
 	float t = 1.f-c;
@@ -342,7 +342,7 @@ Matrix44& Matrix44::MatrixRotationAxisAngle(const Vec3& axis, float angle) {
 	return *this;
 };
 
-Matrix44& Matrix44::MatrixRotationQuat ( const Quat& q) {
+Matrix44& Matrix44::RotationQuat ( const Quat& q) {
 	_11 =1.f-2.f*(q.y*q.y + q.z*q.z);		_12 =2.f*(q.x*q.y + q.z*q.w);		_13 =2.f*(q.x*q.z - q.y*q.w);		_14 =0.f;
 	_21 =2.f*(q.x*q.y - q.z*q.w);			_22 =1.f-2.f*(q.x*q.x + q.z*q.z);	_23 =2.f*(q.y*q.z + q.x*q.w);		_24 =0.f;
 	_31 =2.f*(q.x*q.z + q.y*q.w);			_32 =2.f*(q.y*q.z - q.x*q.w);		_33 =1.f-2.f*(q.x*q.x + q.y*q.y);	_34 =0.f;
@@ -374,13 +374,14 @@ Matrix44 Matrix44::MatrixViewRH(const Vec3& eye, const Vec3& target, const Vec3&
 }
 
 Matrix44 Matrix44::MatrixProjPerspective(float nearPlane, float farPlane, float fovRad) {
-		Matrix44 mat;
+	Matrix44 mat;
 		float scale = 1.0f / tan(fovRad * 0.5f);
-		mat[0][0] = mat[1][1] = scale;
-		mat[2][2] = - farPlane / (farPlane - nearPlane);
-		mat[3][2] = - farPlane * nearPlane / (farPlane - nearPlane);
-		mat[2][3] = - 1.0f;
-		mat[3][3] = 0.0f;
+		mat.m[0][0] = mat.m[1][1] = scale;
+		mat.m[2][2] = - farPlane / (farPlane - nearPlane);
+		mat.m[3][2] = - farPlane * nearPlane / (farPlane - nearPlane);
+		mat.m[2][3] = - 1.0f;
+		mat.m[3][3] = 0.0f;
+	return mat;
 }
 ///////////////////////////////////////////////////////////////////////////
 // utility functions
@@ -392,6 +393,7 @@ void MatrixPrint (const Matrix44& m, std::ostream& os/*=std::cout*/) {
 		os << "\n";
 	}
 }
+
 std::ostream& operator << (std::ostream& os, const Matrix44& m) {
 	MatrixPrint(m, os);
 	return os;

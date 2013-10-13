@@ -4,11 +4,13 @@
 ////////////////////////////////////////////////////////////////////////////////
 //	Direct3D 11 index buffer implementation
 ////////////////////////////////////////////////////////////////////////////////
+#pragma once
 
 #define NOMINMAX
 #include "../../GraphicsEngine/src/IIndexBuffer.h"
 #include "../../GraphicsEngine/src/BufferCommon.h"
-#include "GraphicsD3D11.h"
+#include "Dx11_SDK/Include/D3D11.h"
+#include "Dx11_SDK/Include/D3DX11.h"
 #include <climits>
 
 class cIndexBufferD3D11 : public IIndexBuffer {

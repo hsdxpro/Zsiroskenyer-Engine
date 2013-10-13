@@ -1,6 +1,9 @@
 // Implementation
 #include "GraphicsD3D11.h"
 
+#include "VertexBufferD3D11.h"
+#include "IndexBufferD3D11.h"
+
 #ifdef WIN32
 #pragma warning(disable: 4244)
 #pragma warning(disable: 4005)
@@ -100,7 +103,7 @@ void cGraphicsD3D11::CreateDevice() {
 	for(; i < nFeatureLevels; i++, featurelevel = featurelevels[i]) {
 		HRESULT hr = D3D11CreateDevice(mainAdapter, D3D_DRIVER_TYPE_UNKNOWN , 0, flags, featurelevels, nFeatureLevels, D3D11_SDK_VERSION, &d3ddev, &featurelevel, &d3dcon);
 
-		// Wrap mode...
+		// Wrap mode... for gpu's not supporting hardware accelerated D3D11
 		//HRESULT hr = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_WARP , 0, flags, featurelevels, nFeatureLevels, D3D11_SDK_VERSION, &d3ddev, &featurelevel, &d3dcon); // For dx9 machines
 		if(!FAILED(hr))
 			break;
@@ -304,31 +307,76 @@ void cGraphicsD3D11::SetBBRenderTarget() {
 	d3dcon->OMSetRenderTargets(1, &backBufferRTV, backBufferDSV);
 }
 
-
-
-
-// buffer interface
-IVertexBuffer* cGraphicsD3D11::CreateVertexBuffer(size_t size, eBufferUsage usage, void* data) {
-	ID3D11Buffer* buffer=nullptr;
+IVertexBuffer* cGraphicsD3D11::CreateVertexBuffer(size_t size, eBufferUsage usage, void* data /*= NULL*/) {
+	ID3D11Buffer* buffer = NULL;
 	D3D11_BUFFER_DESC desc;
-	D3D11_SUBRESOURCE_DATA resData;
 	desc.ByteWidth = size;
 	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	desc.MiscFlags = 0;
 	desc.CPUAccessFlags = 0;
 	desc.StructureByteStride = 0;
-	desc.Usage = [&]{eBufferUsage ret; switch(usage){}
-	d3ddev->CreateBuffer(&desc, data, &buffer);
-}
-IIndexBuffer* cGraphicsD3D11::CreateIndexBuffer(size_t size, eBufferUsage usage, void* data) {
+	//desc.Usage = [&]{eBufferUsage ret; switch(usage){} // Majd fejezd be peti :D
+	switch(usage)
+	{
+	case eBufferUsage::IMMUTABLE:
+		desc.Usage = D3D11_USAGE_IMMUTABLE;
+		break;
+	case eBufferUsage::DYNAMIC:
+		desc.Usage = D3D11_USAGE_DYNAMIC;
+		break;
+	case eBufferUsage::STAGING:
+		desc.Usage = D3D11_USAGE_STAGING;
+		break;
+	}
 
-}
-bool cGraphicsD3D11::Write(IIndexBuffer* buffer, void* source, size_t size, size_t offset) {
-}
-bool cGraphicsD3D11::Read(IIndexBuffer* buffer, void* dest, size_t size, size_t offset) {
-}
-bool cGraphicsD3D11::Write(IVertexBuffer* buffer, void* source, size_t size, size_t offset) {
+	D3D11_SUBRESOURCE_DATA resData;
+	resData.pSysMem = data;
 
+	d3ddev->CreateBuffer(&desc, &resData, &buffer);
+	return new cVertexBufferD3D11(buffer);
 }
-bool cGraphicsD3D11::Read(IVertexBuffer* buffer, void* dest, size_t size, size_t offset) {
+
+IIndexBuffer* cGraphicsD3D11::CreateIndexBuffer(size_t size  , eBufferUsage usage, void* data /*= NULL*/) {
+	ID3D11Buffer* buffer = NULL;
+	D3D11_BUFFER_DESC desc;
+	desc.ByteWidth = size;
+	desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	desc.MiscFlags = 0;
+	desc.CPUAccessFlags = 0;
+	desc.StructureByteStride = 0;
+	//desc.Usage = [&]{eBufferUsage ret; switch(usage){} // Majd fejezd be peti :D
+	switch(usage)
+	{
+	case eBufferUsage::IMMUTABLE:
+		desc.Usage = D3D11_USAGE_IMMUTABLE;
+		break;
+	case eBufferUsage::DYNAMIC:
+		desc.Usage = D3D11_USAGE_DYNAMIC;
+		break;
+	case eBufferUsage::STAGING:
+		desc.Usage = D3D11_USAGE_STAGING;
+		break;
+	}
+
+	D3D11_SUBRESOURCE_DATA resData;
+	resData.pSysMem = data;
+
+	d3ddev->CreateBuffer(&desc, &resData, &buffer);
+	return new cIndexBufferD3D11(buffer);
+}
+
+bool cGraphicsD3D11::Write(IIndexBuffer* buffer , void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
+	return false;
+}
+
+bool cGraphicsD3D11::Write(IVertexBuffer* buffer, void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
+	return false;
+}
+
+bool cGraphicsD3D11::Read(IIndexBuffer* buffer , void* dest, size_t size, size_t offset /*= 0*/) {
+	return false;
+}
+
+bool cGraphicsD3D11::Read(IVertexBuffer* buffer, void* dest, size_t size, size_t offset /*= 0*/) {
+	return false;
 }

@@ -5,6 +5,7 @@
 #include "IWindow.h"
 #include "BufferCommon.h"
 #include <climits>
+#include "../../CommonLib/src/common.h"
 
 #ifdef max
 #define _377995BD_F40A_4067_A633_46AAA084AC7F
@@ -17,12 +18,13 @@ class IIndexBuffer;
 class IGraphicsApi {
 public:
 	// buffers
-	virtual IVertexBuffer* CreateVertexBuffer(size_t size, eBufferUsage usage, void* data=nullptr) = 0;
-	virtual IIndexBuffer* CreateIndexBuffer(size_t size, eBufferUsage usage, void* data=nullptr) = 0;
-	virtual bool Write(IIndexBuffer* buffer, void* source, size_t size=std::numeric_limits<size_t>::max(), size_t offset=0) = 0;
-	virtual bool Read(IIndexBuffer* buffer, void* dest, size_t size, size_t offset=0) = 0;
-	virtual bool Write(IVertexBuffer* buffer, void* source, size_t size=std::numeric_limits<size_t>::max(), size_t offset=0) = 0;
-	virtual bool Read(IVertexBuffer* buffer, void* dest, size_t size, size_t offset=0) = 0;
+	virtual IVertexBuffer* CreateVertexBuffer(size_t size, eBufferUsage usage, void* data = NULL) = 0;
+	virtual IIndexBuffer* CreateIndexBuffer(size_t size, eBufferUsage usage, void* data = NULL) = 0;
+	virtual bool Write(IIndexBuffer* buffer , void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset = 0) = 0;
+	virtual bool Write(IVertexBuffer* buffer, void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset=0) = 0;
+
+	virtual bool Read(IIndexBuffer* buffer , void* dest, size_t size, size_t offset = 0) = 0;
+	virtual bool Read(IVertexBuffer* buffer, void* dest, size_t size, size_t offset = 0) = 0;
 
 	// pipeline
 	virtual void BBClear(bool clearOnlyDepth = false) = 0;

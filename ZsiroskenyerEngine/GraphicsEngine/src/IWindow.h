@@ -12,7 +12,7 @@ public:
 	typedef int32* Handle;
 	typedef int32* AppInstance;
 
-	enum eBrush {
+	enum class eBrush {
 		WHITE,
 		LTGRAY,
 		GRAY,
@@ -22,12 +22,12 @@ public:
 		HOLLOW,
 	};
 
-	enum eStyle {
+	enum class eStyle {
 		OVERLAPPED,
 		POPUP,
 	};
 
-	enum eMessage {
+	enum class eMessage {
 		QUIT,
 		DESTROY,
 		CLOSE,

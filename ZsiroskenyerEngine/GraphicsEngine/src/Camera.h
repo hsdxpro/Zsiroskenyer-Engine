@@ -22,7 +22,7 @@ public:
 
 
 	Vec3 GetDirFront(){return Vec3(1,0,0);}
-	Vec3 GetDirBack(){return Vec3(1,0,0);
+	Vec3 GetDirBack(){return Vec3(1,0,0);}
 	Vec3 GetDirUp(){return Vec3(1,0,0);}
 	Vec3 GetDirDown(){return Vec3(1,0,0);}
 	Vec3 GetDirRight(){return Vec3(1,0,0);}

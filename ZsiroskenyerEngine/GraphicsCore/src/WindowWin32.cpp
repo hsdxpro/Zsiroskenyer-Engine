@@ -80,7 +80,7 @@ cWindowWin32::cWindowWin32(const IWindow::tDesc& winDesc)
 	wC.cbSize = sizeof(WNDCLASSEX);
 	wC.cbClsExtra = 0;
 	wC.cbWndExtra = 0;
-	wC.hbrBackground = (HBRUSH)GetStockObject(interpretedBrush);
+	wC.hbrBackground = (HBRUSH)GetStockObject((int)interpretedBrush);
 	wC.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wC.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	wC.hIconSm = NULL;
@@ -92,7 +92,7 @@ cWindowWin32::cWindowWin32(const IWindow::tDesc& winDesc)
 	RegisterClassEx(&wC);
 
 	RECT adjustedsize = {0};
-	AdjustWindowRect(&adjustedsize, interpretedStyle, 0);
+	AdjustWindowRect(&adjustedsize, (int)interpretedStyle, 0);
 
 	int wWidth = winDesc.clientWidth  - adjustedsize.left  + adjustedsize.right;
 	int wHeight = winDesc.clientHeight - adjustedsize.top	+ adjustedsize.bottom;
@@ -100,7 +100,7 @@ cWindowWin32::cWindowWin32(const IWindow::tDesc& winDesc)
 	handle = CreateWindow(
 		_T("windowclass"),
 		winDesc.captionName.c_str(),
-		interpretedStyle,
+		(int)interpretedStyle,
 		0,
 		0,
 		wWidth,

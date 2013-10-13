@@ -7,9 +7,12 @@
 #include "Dx11_SDK/Include/D3Dcompiler.h"
 #include "Dx11_SDK/Include/D3DX11.h"
 
-#include "..\..\GraphicsEngine\src\IGraphicsApi.h"
-#include "..\..\GraphicsEngine\src\IWindow.h"
-#include "..\..\CommonLib\src\common.h"
+#include "../../GraphicsEngine/src/IGraphicsApi.h"
+#include "../../GraphicsEngine/src/IWindow.h"
+#include "../../CommonLib/src/common.h"
+
+#include "../../GraphicsEngine/src/IVertexBuffer.h"
+#include "../../GraphicsEngine/src/IIndexBuffer.h"
 
 #undef max
 
@@ -43,13 +46,17 @@ public:
 	void SetWindow(IWindow *renderWindow) override;
 	void SetBBRenderTarget();
 
-	// buffer interface
-	IVertexBuffer* CreateVertexBuffer(size_t size, eBufferUsage usage, void* data=nullptr) override;
-	IIndexBuffer* CreateIndexBuffer(size_t size, eBufferUsage usage, void* data=nullptr) override;
-	bool Write(IIndexBuffer* buffer, void* source, size_t size=std::numeric_limits<size_t>::max(), size_t offset=0) override;
-	bool Read(IIndexBuffer* buffer, void* dest, size_t size, size_t offset=0) override;
-	bool Write(IVertexBuffer* buffer, void* source, size_t size=std::numeric_limits<size_t>::max(), size_t offset=0) override;
-	bool Read(IVertexBuffer* buffer, void* dest, size_t size, size_t offset=0) override;
+	// Creating Buffers
+	IVertexBuffer* CreateVertexBuffer(size_t size, eBufferUsage usage, void* data = NULL);
+	IIndexBuffer* CreateIndexBuffer(size_t size  , eBufferUsage usage, void* data = NULL);
+
+	// Write to buffers
+	bool Write(IIndexBuffer* buffer , void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset = 0);
+	bool Write(IVertexBuffer* buffer, void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset = 0);
+
+	// Read from buffers
+	bool Read(IIndexBuffer* buffer , void* dest, size_t size, size_t offset = 0);
+	bool Read(IVertexBuffer* buffer, void* dest, size_t size, size_t offset = 0);
 
 	cGraphicsD3D11();
 	~cGraphicsD3D11();

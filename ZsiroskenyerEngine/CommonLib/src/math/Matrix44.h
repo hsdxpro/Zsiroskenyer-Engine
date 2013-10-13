@@ -43,26 +43,24 @@ public:
 				float _41, float _42, float _43, float _44);
 
 	Matrix44& Identity();
-	float Determinant(const Matrix44& m);
+	float Determinant();
+
 	Matrix44& Inverse(Matrix44& out);
 	Matrix44& Inverse();
 	Matrix44& Transpose(const Matrix44& in);
 	Matrix44& Transpose();
 
-	// rotation
-	Matrix44& MatrixRotationX (float angle);
-	Matrix44& MatrixRotationY (float angle);
-	Matrix44& MatrixRotationZ (float angle);
-	Matrix44& MatrixRotationAxisAngle (const Vec3& axis, float angle);
-	Matrix44& MatrixRotationQuat (const Quat&); // typecast ((Matrix44)quaternion) is possibly slower than this shit
+	Matrix44& RotationX (float angle);
+	Matrix44& RotationY (float angle);
+	Matrix44& RotationZ (float angle);
+	Matrix44& RotationAxisAngle (const Vec3& axis, float angle);
+	Matrix44& RotationQuat (const Quat&); // typecast ((Matrix44)quaternion) is possibly slower than this shit
 
-	// scale
-	Matrix44& MatrixScale(float scX, float scY, float scZ);
-	Matrix44& MatrixScale(Vec3 scale);
+	Matrix44& Scale(float scX, float scY, float scZ);
+	Matrix44& Scale(Vec3 scale);
 
-	// translation
-	Matrix44& Translation(Matrix44& out, float vX, float vY, float vZ);
-	Matrix44& Translation(Matrix44& out, Vec3 v);
+	Matrix44& Translation(float vX, float vY, float vZ);
+	Matrix44& Translation(Vec3 v);
 
 	static Matrix44 MatrixViewRH(const Vec3& eye, const Vec3& target, const Vec3& up);
 	static Matrix44 MatrixProjPerspective(float nearPlane, float farPlane, float fovRad);

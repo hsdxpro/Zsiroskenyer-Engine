@@ -42,6 +42,8 @@ typedef unsigned char uchar;
 #define SAFE_FREE(x) if(x != NULL) { free(x); x = NULL;}
 #define SAFE_RELEASE(x) if(x != NULL) { x->Release(); x = NULL;}
 
+#define ZS_NUMLIMITMAX(x) std::numeric_limits<x>::max()
+
 #define ZS_PI			3.14159265358979
 #define ZS_PI2			6.28318530717958
 #define ZS_PIDIV2		1.57079632679489
