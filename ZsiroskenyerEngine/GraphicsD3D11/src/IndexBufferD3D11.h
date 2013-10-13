@@ -18,9 +18,6 @@ public:
 	size_t GetSize();
 	eBufferUsage GetUsage();
 
-	bool Read(void* dest, size_t nBytes=std::numeric_limits<size_t>::max(), size_t offset=0);
-	bool Write(void* source, size_t nBytes, size_t offset=0);
-
 	ID3D11Buffer* const buffer;
 private:
 	size_t size;
