@@ -1,3 +1,4 @@
+
 // Implementation
 #include "GraphicsD3D11.h"
 
@@ -112,7 +113,7 @@ void cGraphicsD3D11::CreateDevice() {
 			break;
 	}
 
-	ZSASSERT_MSG( i != ARRAYSIZE(featurelevels), "Can't create DirectX Device");
+	ZSASSERT_MSG( i != ARRAYSIZE(featurelevels), L"Can't create DirectX Device");
 
 	SAFE_RELEASE(fact);
 	SAFE_RELEASE(mainAdapter);
@@ -279,39 +280,11 @@ void cGraphicsD3D11::CreateDefaultStates(const D3D11_CULL_MODE& cullMode, const 
 	rState->Release();
 }
 
-void cGraphicsD3D11::BBClear(bool clearOnlyDepth) {
-	static const FLOAT defaultClearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-
-	d3dcon->ClearDepthStencilView(backBufferDSV,D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,1.0,0);
-	if(!clearOnlyDepth) {
-		d3dcon->ClearRenderTargetView(backBufferRTV,defaultClearColor);
-	}
-}
-
-void cGraphicsD3D11::Draw(uint32 vertexCount) {
-	d3dcon->Draw(vertexCount,0);
-}
-
-void cGraphicsD3D11::BBPresent() {
-	ZSASSERT_MSG(d3dsc != NULL, "Need to set window for rendering");
-	d3dsc->Present(0,0); 
-}
-
-void cGraphicsD3D11::DrawIndexed(uint32 indexCount) {
-	d3dcon->DrawIndexed(indexCount,0,0);
-}
-
-void cGraphicsD3D11::DrawIndexedInstanced(uint32 indexCount, uint32 instanceCount) {
-	d3dcon->DrawIndexedInstanced(indexCount,instanceCount,0,0,0);
-}
-
 void cGraphicsD3D11::SetBBRenderTarget() {
 	d3dcon->RSSetViewports(1, &backBufferVP);
 	d3dcon->OMSetRenderTargets(1, &backBufferRTV, backBufferDSV);
 }
 
-
-// buffers
 IVertexBuffer* cGraphicsD3D11::CreateVertexBuffer(size_t size, eBufferUsage usage, void* data /*= NULL*/) {
 	ID3D11Buffer* buffer = NULL;
 
@@ -452,4 +425,60 @@ bool cGraphicsD3D11::ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, 
 	d3dcon->Unmap(d3dBuffer, 0);
 
 	return true;
+}
+
+
+void cGraphicsD3D11::Clear(bool target /*= true*/, bool depth /*= false*/, bool stencil /*= false*/) {
+	static const FLOAT defaultClearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+	// Setup clear flags
+	UINT clearFlags = 0;
+	if(depth)
+		clearFlags |= D3D11_CLEAR_DEPTH;
+	if(stencil)
+		clearFlags |= D3D11_CLEAR_STENCIL;
+
+	// Clear depth, stencil if needed
+	if(depth || stencil)
+		d3dcon->ClearDepthStencilView(backBufferDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	// Clear BackBuffer
+	if(target)
+		d3dcon->ClearRenderTargetView(backBufferRTV,defaultClearColor);
+}
+
+void cGraphicsD3D11::Present() {
+	ZSASSERT_MSG(d3dsc != NULL, L"Need to set window for rendering");
+	d3dsc->Present(0,0);
+}
+
+void cGraphicsD3D11::Draw(size_t nVertices, size_t idxStartVertex /*= 0*/) {
+	d3dcon->Draw(nVertices, idxStartVertex);
+}
+
+void cGraphicsD3D11::DrawIndexed(size_t nIndices, size_t idxStartIndex /*= 0*/) {
+	d3dcon->DrawIndexed(nIndices, idxStartIndex, 0);
+}
+
+void cGraphicsD3D11::DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex /*= 0*/, size_t idxStartInstance /*= 0*/) {
+	d3dcon->DrawInstanced(nVerticesPerInstance, nInstances, idxStartVertex, idxStartInstance);
+}
+
+void cGraphicsD3D11::DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex /*= 0*/, size_t idxStartInstance /*= 0*/) {
+	d3dcon->DrawIndexedInstanced(nIndicesPerInstance, nInstances, idxStartIndex, 0, idxStartInstance);
+}
+
+void cGraphicsD3D11::SetVertexData(IVertexBuffer* vertexBuffer) {
+	const UINT strides = vertexBuffer->GetStrides();
+	const UINT offset = 0;
+
+	d3dcon->IASetVertexBuffers(0, 1, (ID3D11Buffer* const*)vertexBuffer, &strides, &offset);
+}
+
+void cGraphicsD3D11::SetIndexData(IIndexBuffer* indexBuffer) {
+	d3dcon->IASetIndexBuffer((ID3D11Buffer*)indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+}
+
+void cGraphicsD3D11::SetInstanceData() {
+
 }

@@ -18,7 +18,7 @@ cFactory::cFactory()
 	// Load DLL's and assign function PTR's to make Factory work after init
 	IDLLLoader::DLLMODULE hGraphicsD3D11 = dllLoader->LoadDLL(L"GraphicsD3D11.dll");
 	IDLLLoader::DLLMODULE hGraphicsGL= dllLoader->LoadDLL(L"GraphicsGL.dll");
-	IDLLLoader::DLLMODULE hEngineGraphics= dllLoader->LoadDLL(L"GraphicsEngine.dll");
+	IDLLLoader::DLLMODULE hEngineGraphics= dllLoader->LoadDLL(L"GraphicsCore.dll");
 
 	ptrCreateGraphicsD3D11 = (funcGraphicsApi)dllLoader->GetDLLFunction(hGraphicsD3D11, L"CreateGraphicsD3D11");
 	ptrCreateGraphicsGL = (funcGraphicsApi)dllLoader->GetDLLFunction(hGraphicsGL, L"CreateGraphicsGL");
@@ -27,21 +27,11 @@ cFactory::cFactory()
 }
 
 IGraphicsApi* cFactory::CreateGraphics() {
-#if ZS_WIN32
 	return ptrCreateGraphicsD3D11();
-#else
-	return ptrCreateGraphicsGL();
-#endif
-	return NULL;
 }
 
 IWindow* cFactory::CreateWindow(const IWindow::tDesc& winDesc) {
-#if ZS_WIN32
 	return ptrCreateWindowWin32(winDesc);
-#else
-	return ptrCreateWindowWin32(winDesc);
-#endif
-	return NULL;
 }
 
 

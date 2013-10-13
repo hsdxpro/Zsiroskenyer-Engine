@@ -19,8 +19,7 @@ zsString cDLLLoaderWin32::GetExecutablePath() const {
 IDLLLoader::DLLMODULE cDLLLoaderWin32::LoadDLL(const zsString& libName) const {
 	HMODULE dll = LoadLibrary((GetExecutablePath() + libName).c_str());
 	if (!dll) {
-		HRESULT error = GetLastError();
-		zsPrintDebug(L"FAILED TO LOAD LIBRARY: " + libName);
+		ZS_MSG((L"FAILED TO LOAD LIBRARY: " + libName).c_str());
 		exit(1);
 	}
 	return dll;

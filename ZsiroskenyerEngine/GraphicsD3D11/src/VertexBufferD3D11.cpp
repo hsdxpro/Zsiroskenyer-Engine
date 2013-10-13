@@ -48,3 +48,8 @@ eBufferUsage cVertexBufferD3D11::GetUsage() {
 cVertexBufferD3D11::operator ID3D11Buffer*() {
 	return buffer;
 }
+
+size_t cVertexBufferD3D11::GetStrides() {
+	// Vertex size
+	return 0;
+}

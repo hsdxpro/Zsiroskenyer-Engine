@@ -17,21 +17,28 @@ class IIndexBuffer;
 
 class IGraphicsApi {
 public:
-	// buffers
 	virtual IVertexBuffer* CreateVertexBuffer(size_t size, eBufferUsage usage, void* data = NULL) = 0;
 	virtual IIndexBuffer* CreateIndexBuffer(size_t size, eBufferUsage usage, void* data = NULL) = 0;
 
 	virtual bool WriteBuffer(IIndexBuffer* buffer , void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset = 0) = 0;
-	virtual bool WriteBuffer(IVertexBuffer* buffer, void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset=0) = 0;
+	virtual bool WriteBuffer(IVertexBuffer* buffer, void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset = 0) = 0;
 
 	virtual bool ReadBuffer(IIndexBuffer* buffer , void* dest, size_t size, size_t offset = 0) = 0;
 	virtual bool ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset = 0) = 0;
 
-	// pipeline
-	virtual void BBClear(bool clearOnlyDepth = false) = 0;
-	virtual void BBPresent() = 0;
+	virtual void Clear(bool target = true, bool depth = false, bool stencil = false) = 0;
+	virtual void Present() = 0;
 
-	// window target
+	virtual void Draw(size_t nVertices, size_t idxStartVertex = 0) = 0;
+	virtual void DrawIndexed(size_t nIndices, size_t idxStartIndex = 0) = 0;
+	virtual void DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex = 0, size_t idxStartInstance = 0) = 0;
+	virtual void DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex = 0, size_t idxStartInstance = 0) = 0;
+
+
+	virtual void SetVertexData(IVertexBuffer* vertexBuffer) = 0;
+	virtual void SetIndexData(IIndexBuffer* indexBuffer) = 0;
+	virtual void SetInstanceData(/*whatever*/) = 0;
+
 	virtual void SetWindow(IWindow *renderWindow) = 0;
 };
 

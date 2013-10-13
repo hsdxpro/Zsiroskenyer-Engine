@@ -25,9 +25,10 @@ typedef unsigned char uchar;
 #define ZSASSERT(condition) assert(condition)
 #define ZSASSERT_MSG(condition, errorMsg) \
 	if (condition != true) { \
-		MessageBoxA(0, errorMsg, "ErrorMsg", MB_OK); \
+		MessageBoxW(0, errorMsg, L"ErrorMsg", MB_OK); \
 		assert(condition); \
 	}
+#define ZS_MSG(errorMsg) MessageBoxW(0, errorMsg, L"ErrorMsg", MB_OK)
 #define zsPrintDebug(msg) std::wcerr<<msg<<std::endl;
 #else
 #define ZSASSERT(x, y) {}

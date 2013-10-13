@@ -8,4 +8,5 @@ class IVertexBuffer {
 public:
 	virtual size_t GetSize() = 0;
 	virtual eBufferUsage GetUsage() = 0;
+	virtual size_t GetStrides() = 0;
 };

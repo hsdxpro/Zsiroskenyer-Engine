@@ -45,8 +45,8 @@ int ricsiMain() {
 	// Main loop
 	while(myWindow->IsOpened()) {
 		myWindow->PeekAllMessages();
-		dx11->BBClear();
-		dx11->BBPresent();
+		dx11->Clear();
+		dx11->Present();
 	}
 	
 	// Free up

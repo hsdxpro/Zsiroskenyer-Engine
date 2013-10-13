@@ -71,13 +71,13 @@ Vec3 cCamera::GetDirUp() const {
 }
 
 Vec3 cCamera::GetDirDown() const {
-	return Vec3::Cross(GetDirFront(), GetDirLeft());
+	return Vec3::Cross(GetDirRight(), GetDirFront());
 }
 
 Vec3 cCamera::GetDirRight() const {
-	return Vec3::Cross(GetDirRight(), Vec3(0.0f, 0.0f, 1.0f));
+	return Vec3::Cross(GetDirFront(), Vec3(0.0f, 0.0f, 1.0f));
 }
 
 Vec3 cCamera::GetDirLeft() const {
-	return Vec3::Cross(Vec3(0.0f, 0.0f, 1.0f), GetDirRight());
+	return Vec3::Cross(Vec3(0.0f, 0.0f, 1.0f), GetDirFront());
 }

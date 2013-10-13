@@ -15,8 +15,8 @@ class cIndexBufferD3D11 : public IIndexBuffer {
 public:
 	cIndexBufferD3D11(ID3D11Buffer* buffer);
 
-	size_t GetSize();
-	eBufferUsage GetUsage();
+	size_t GetSize() override;
+	eBufferUsage GetUsage() override;
 
 	operator ID3D11Buffer*();
 

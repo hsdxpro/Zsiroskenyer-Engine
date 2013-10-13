@@ -1,23 +1,10 @@
 #include "GraphicsGL.h"
 
-void cGraphicsGL::BBClear(bool clearOnlyDepth) {
-
-}
-
-void cGraphicsGL::BBPresent() {
-
-}
-
-void cGraphicsGL::SetWindow(IWindow *renderWindow) {
-
-}
-
-// Creating Buffers
 IVertexBuffer* cGraphicsGL::CreateVertexBuffer(size_t size, eBufferUsage usage, void* data /*= NULL*/) {
 	return NULL;
 }
 
-IIndexBuffer* cGraphicsGL::CreateIndexBuffer(size_t size, eBufferUsage usage, void* data /*= NULL*/) {
+IIndexBuffer* cGraphicsGL::CreateIndexBuffer(size_t size  , eBufferUsage usage, void* data /*= NULL*/) {
 	return NULL;
 }
 
@@ -35,4 +22,44 @@ bool cGraphicsGL::ReadBuffer(IIndexBuffer* buffer , void* dest, size_t size, siz
 
 bool cGraphicsGL::ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset /*= 0*/) {
 	return false;
+}
+
+void cGraphicsGL::Clear(bool target /*= true*/, bool depth /*= false*/, bool stencil /*= false*/) {
+
+}
+
+void cGraphicsGL::Present() {
+	
+}
+
+void cGraphicsGL::Draw(size_t nVertices, size_t idxStartVertex /*= 0*/) {
+	
+}
+
+void cGraphicsGL::DrawIndexed(size_t nIndices, size_t idxStartIndex /*= 0*/) {
+	
+}
+
+void cGraphicsGL::DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex /*= 0*/, size_t idxStartInstance /*= 0*/) {
+	
+}
+
+void cGraphicsGL::DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex /*= 0*/, size_t idxStartInstance /*= 0*/) {
+	
+}
+
+void cGraphicsGL::SetVertexData(IVertexBuffer* vertexBuffer) {
+	
+}
+
+void cGraphicsGL::SetIndexData(IIndexBuffer* indexBuffer) {
+	
+}
+
+void cGraphicsGL::SetInstanceData() {
+
+}
+
+void cGraphicsGL::SetWindow(IWindow *renderWindow) {
+
 }
