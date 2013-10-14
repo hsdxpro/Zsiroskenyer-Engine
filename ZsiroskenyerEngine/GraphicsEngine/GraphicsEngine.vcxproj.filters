@@ -19,6 +19,9 @@
     <Filter Include="ManagerScene">
       <UniqueIdentifier>{cf118672-aa65-42ef-86b2-58177e361283}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ManagerShader">
+      <UniqueIdentifier>{e4ea0f5d-8528-4b27-8fca-85144a0dec57}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DllMain.cpp">
@@ -48,6 +51,9 @@
     <ClCompile Include="src\GeometryBuilder.cpp">
       <Filter>ManagerResource</Filter>
     </ClCompile>
+    <ClCompile Include="src\ManagerShader.cpp">
+      <Filter>ManagerShader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\InstanceGroup.h">
@@ -73,6 +79,9 @@
     </ClInclude>
     <ClInclude Include="src\GraphicsEngine.h">
       <Filter>GraphicsEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ManagerShader.h">
+      <Filter>ManagerShader</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
