@@ -491,50 +491,50 @@ void cGraphicsD3D11::SetInstanceData() {
 }
 
 IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const wchar_t* shaderName) {
-	// Generate .hlsl from .cg
-	//ShellExecute(0, L"open", L"cmd.exe", L"/C ipconfig > out.txt", 0, SW_HIDE);
-
-	// exe path..
+	// workingDirectory path (exe path)
 	WCHAR buf[MAX_PATH];
 	GetModuleFileName(NULL, buf, MAX_PATH);
 	zsString exePath = buf;
 	size_t idx = exePath.find_last_of('\\');
 	exePath = exePath.substr(0, idx + 1);
 
-	// Hlsl 
+	// Strings for processing
 	zsString shaderWithoutExtension = shaderName;
 	shaderWithoutExtension = shaderWithoutExtension.substr(0, shaderWithoutExtension.size() - 3);
-
-	zsString hlslFilePath =  exePath + shaderWithoutExtension + L".hlsl";
+	zsString hlslFilePath =  exePath + + L"shaders\\" + shaderWithoutExtension + L".hlsl";
 	zsString cgcExePath = exePath + L"bin\\cgc.exe";
-	zsString cgShaderPath = exePath + shaderName;
+	zsString cgShaderPath = exePath + L"shaders\\" + shaderName;
 	zsString shellParams = cgcExePath + L" -entry VS_MAIN -profile vs_5_0 " + cgShaderPath + L" > " + hlslFilePath;
-	//ShellExecute(NULL, L"open", L"cmd.exe", shellParams.c_str(), NULL, SW_SHOWNORMAL);
-
-
-	STARTUPINFO StartupInfo; //This is an [in] parameter
-
-	ZeroMemory(&StartupInfo, sizeof(StartupInfo));
-	StartupInfo.cb = sizeof StartupInfo ; //Only compulsory field
+	
+	// Process infos
+	STARTUPINFO StartupInfo;
+		memset(&StartupInfo, 0, sizeof(StartupInfo));
+		StartupInfo.cb = sizeof StartupInfo ;
 	PROCESS_INFORMATION ProcessInfo;
 
 	wchar_t params[512];
-	memcpy(params, shellParams.c_str(), shellParams.size());
-	CreateProcessW(cgcExePath.c_str(), params, NULL, NULL, false, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
+	wcscpy(params, shellParams.c_str());
+	
+	// Start cgc.exe and Generate .hlsl from .cg
+	bool appStarted = CreateProcessW(cgcExePath.c_str(), params, NULL, NULL, false, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
+	if(appStarted) {
+		WaitForSingleObject( ProcessInfo.hProcess, INFINITE );
+	} else {
+		ZS_MSG(L"Cannot execute cg shader compiler : cgc.exe");
+	}
+	
 
 	// Parse vertexDeclaration infos from .hlsl file
 	int nVertexAttributes = 0;
 	D3D11_INPUT_ELEMENT_DESC *vertexDecl = NULL;
-	wchar_t entry[128];
 	ID3D11VertexShader *vs;
 
 	// Compile .hlsl shader
 	ID3DBlob *blob;
-
-	while(FAILED(CompileShaderFromFile(hlslFilePath.c_str(), entry, L"vs_5_0", &blob)))
+	while(FAILED(CompileShaderFromFile(hlslFilePath.c_str(), L"main", L"vs_5_0", &blob)))
 		ZS_MSG(zsString(L"Hibás fájl, vagy hibás szintaxis a .hlsl fájlban, javítsd majd okézz egyet : " + hlslFilePath).c_str());
 
-
+	// Cret
 	HRESULT hr = d3ddev->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), NULL, &vs);
 	if(FAILED(hr))
 		ZS_MSG(zsString(L"Failed to create vertex shader from bytecode: " + hlslFilePath).c_str());
@@ -572,8 +572,14 @@ HRESULT cGraphicsD3D11::CompileShaderFromFile(const wchar_t* fileName, const wch
 	hr = D3DX11CompileFromFileW(fileName, NULL, NULL, ansiEntry, ansiProfile,
 		dwShaderFlags, 0, NULL, ppBlobOut, &pErrorBlob, NULL );
 	if(FAILED(hr)) { 
-		if(pErrorBlob != NULL)
-			ZS_MSG((L"Can't Compile :" + zsString(fileName) + L"\n\n" + zsString((wchar_t*)pErrorBlob->GetBufferPointer())).c_str());
+		if(pErrorBlob != NULL) {
+			char* errorStr = (char*)pErrorBlob->GetBufferPointer();
+			int size_needed = MultiByteToWideChar(CP_UTF8, 0, errorStr, strlen(errorStr), NULL, 0);
+			zsString errorStrW(size_needed, 0);
+			MultiByteToWideChar(CP_UTF8, 0, errorStr, strlen(errorStr), &errorStrW[0], size_needed);
+
+			ZS_MSG(zsString(L"Can't Compile :" + zsString(fileName) + L"\n\n" + errorStrW).c_str());
+		}
 		if( pErrorBlob ) pErrorBlob->Release();
 		return hr;
 	}
