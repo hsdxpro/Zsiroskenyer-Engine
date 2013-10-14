@@ -520,7 +520,7 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const wchar_t* shaderName) {
 	if(appStarted) {
 		WaitForSingleObject( ProcessInfo.hProcess, INFINITE );
 	} else {
-		ZS_MSG(L"Cannot execute cg shader compiler : cgc.exe");
+		ZS_MSG(zsString(L"Cannot execute cg shader compiler : " + cgcExePath).c_str());
 	}
 	
 
