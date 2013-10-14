@@ -6,15 +6,14 @@
 //	stuff.
 ////////////////////////////////////////////////////////////////////////////////
 
-
 #pragma once
 
-
 #include "../../GraphicsCommon/src/IGraphicsEngine.h"
+#include "../../GraphicsCommon/src/IGraphicsApi.h"
 
 #include "ManagerScene.h"
 #include "ManagerResource.h"
-#include "../../GraphicsCommon/src/IGraphicsApi.h"
+#include "ManagerShader.h"
 
 class cGraphicsEngine : public IGraphicsEngine {
 public:
@@ -24,9 +23,10 @@ public:
 
 	IManagerScene* GetSceneManager();
 private:	
-	cManagerResource managerResource;
-	cManagerScene managerScene;
-	IGraphicsApi* gApi;
+	cManagerResource mgrResource;
+	cManagerScene mgrScene;
+	cManagerShader *mgrShader;
+	IGraphicsApi* mgrGApi;
 };
 
 

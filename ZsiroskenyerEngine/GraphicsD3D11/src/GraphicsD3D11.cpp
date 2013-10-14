@@ -495,5 +495,6 @@ void cGraphicsD3D11::SetInstanceData() {
 // shaders
 ////////////////////
 IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const wchar_t* shaderName) {
+	//ShellExecute(0, L"open", L"cmd.exe", L"/C ipconfig > out.txt", 0, SW_HIDE);
 	return NULL;
 }

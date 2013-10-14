@@ -10,25 +10,30 @@
 // construction of the graphics engine
 cGraphicsEngine::cGraphicsEngine()
 	:
-	managerResource(),
-	managerScene(managerResource)
+	mgrResource(),
+	mgrScene(mgrResource)
 {
-	gApi = Factory.CreateGraphics();
+
+	mgrGApi = Factory.CreateGraphics();
+	mgrShader = new cManagerShader(mgrGApi);
+
+
+	mgrShader->LoadShader(L"test.cg");
 }
 
 
 void cGraphicsEngine::RenderSceneForward() {
 	// Set BackBuffer....
-	gApi->SetRenderTargetDefault();
+	mgrGApi->SetRenderTargetDefault();
 
 	// Set Effect...
 
 
 	// Render each instanceGroup
-	auto instanceGroups = managerScene.GetInstanceGroups();
+	auto instanceGroups = mgrScene.GetInstanceGroups();
 }
 
 // interface
 IManagerScene* cGraphicsEngine::GetSceneManager() {
-	return (IManagerScene*)&managerScene;
+	return (IManagerScene*)&mgrScene;
 }
