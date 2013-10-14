@@ -14,6 +14,8 @@
 #include "../../GraphicsCommon/src/IVertexBuffer.h"
 #include "../../GraphicsCommon/src/IIndexBuffer.h"
 
+#include "../../GraphicsCommon/src/IShaderProgram.h"
+
 #undef max
 
 class cGraphicsD3D11 : public IGraphicsApi {
@@ -37,6 +39,7 @@ public:
 
 	};
 
+	// buffers
 	IVertexBuffer* CreateVertexBuffer(size_t size, eBufferUsage usage, void* data = NULL) override;
 	IIndexBuffer* CreateIndexBuffer(size_t size, eBufferUsage usage, void* data = NULL) override;
 
@@ -46,6 +49,7 @@ public:
 	bool ReadBuffer(IIndexBuffer* buffer , void* dest, size_t size, size_t offset = 0) override;
 	bool ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset = 0) override;
 
+	// draw
 	void Clear(bool target = true, bool depth = false, bool stencil = false) override;
 	void Present() override;
 
@@ -60,8 +64,13 @@ public:
 	void SetIndexData(IIndexBuffer* indexBuffer) override;
 	void SetInstanceData(/*whatever*/) override;
 
+	// shader
+	IShaderProgram* CreateShaderProgram(const wchar_t* shaderName) override;
+
+	// misc
 	void SetWindow(IWindow *renderWindow) override;
 
+	// constructor
 	cGraphicsD3D11();
 	~cGraphicsD3D11();
 private:

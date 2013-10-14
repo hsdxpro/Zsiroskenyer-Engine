@@ -286,6 +286,10 @@ void cGraphicsD3D11::SetRenderTargetDefault() {
 	d3dcon->OMSetRenderTargets(1, &backBufferRTV, backBufferDSV);
 }
 
+
+////////////////////
+// buffers
+////////////////////
 IVertexBuffer* cGraphicsD3D11::CreateVertexBuffer(size_t size, eBufferUsage usage, void* data /*= NULL*/) {
 	ID3D11Buffer* buffer = NULL;
 
@@ -428,7 +432,9 @@ bool cGraphicsD3D11::ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, 
 	return true;
 }
 
-
+////////////////////
+// draw
+////////////////////
 void cGraphicsD3D11::Clear(bool target /*= true*/, bool depth /*= false*/, bool stencil /*= false*/) {
 	static const FLOAT defaultClearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
@@ -482,4 +488,12 @@ void cGraphicsD3D11::SetIndexData(IIndexBuffer* indexBuffer) {
 
 void cGraphicsD3D11::SetInstanceData() {
 
+}
+
+
+////////////////////
+// shaders
+////////////////////
+IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const wchar_t* shaderName) {
+	return NULL;
 }

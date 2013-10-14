@@ -20,15 +20,18 @@
     <ClInclude Include="src\IIndexBuffer.h" />
     <ClInclude Include="src\IManagerScene.h" />
     <ClInclude Include="src\IRenderer.h" />
+    <ClInclude Include="src\IShaderProgram.h" />
     <ClInclude Include="src\ITexture.h" />
     <ClInclude Include="src\IVertexBuffer.h" />
     <ClInclude Include="src\IWindow.h" />
     <ClInclude Include="src\Node.h" />
+    <ClInclude Include="src\VertexFormat.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\Exception.cpp" />
+    <ClCompile Include="src\VertexFormat.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{19538A5F-B776-41C7-B386-8F02421E245D}</ProjectGuid>

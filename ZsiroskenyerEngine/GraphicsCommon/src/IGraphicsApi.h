@@ -14,9 +14,11 @@
 
 class IVertexBuffer;
 class IIndexBuffer;
+class IShaderProgram;
 
 class IGraphicsApi {
 public:
+	//buffers
 	virtual IVertexBuffer* CreateVertexBuffer(size_t size, eBufferUsage usage, void* data = NULL) = 0;
 	virtual IIndexBuffer* CreateIndexBuffer(size_t size, eBufferUsage usage, void* data = NULL) = 0;
 
@@ -26,6 +28,7 @@ public:
 	virtual bool ReadBuffer(IIndexBuffer* buffer , void* dest, size_t size, size_t offset = 0) = 0;
 	virtual bool ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset = 0) = 0;
 
+	// draw
 	virtual void Clear(bool target = true, bool depth = false, bool stencil = false) = 0;
 	virtual void Present() = 0;
 
@@ -41,6 +44,10 @@ public:
 	virtual void SetIndexData(IIndexBuffer* indexBuffer) = 0;
 	virtual void SetInstanceData(/*whatever*/) = 0;
 
+	// shader
+	virtual IShaderProgram* CreateShaderProgram(const wchar_t* shaderName) = 0;
+
+	// misc
 	virtual void SetWindow(IWindow *renderWindow) = 0;
 };
 
