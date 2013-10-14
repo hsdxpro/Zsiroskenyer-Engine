@@ -78,6 +78,7 @@ private:
 	void CreateMostAcceptableSwapChain(uint16 width, uint16 height, HWND windowHandle, const tDxConfig& config);
 	void CreateRenderTargetViewForBB(const tDxConfig& config);
 	void CreateDefaultStates(const D3D11_CULL_MODE& cullMode, const D3D11_FILL_MODE& fillMode);
+	HRESULT CompileShaderFromFile(const wchar_t* fileName, const wchar_t* entry, const wchar_t* profile, ID3DBlob** ppBlobOut);
 protected:
 	// backBuffer will be the main render target
 	ID3D11RenderTargetView *backBufferRTV;

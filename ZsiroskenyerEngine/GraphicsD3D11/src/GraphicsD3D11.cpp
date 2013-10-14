@@ -490,11 +490,94 @@ void cGraphicsD3D11::SetInstanceData() {
 
 }
 
-
-////////////////////
-// shaders
-////////////////////
 IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const wchar_t* shaderName) {
+	// Generate .hlsl from .cg
 	//ShellExecute(0, L"open", L"cmd.exe", L"/C ipconfig > out.txt", 0, SW_HIDE);
+
+	// exe path..
+	WCHAR buf[MAX_PATH];
+	GetModuleFileName(NULL, buf, MAX_PATH);
+	zsString exePath = buf;
+	size_t idx = exePath.find_last_of('\\');
+	exePath = exePath.substr(0, idx + 1);
+
+	// Hlsl 
+	zsString shaderWithoutExtension = shaderName;
+	shaderWithoutExtension = shaderWithoutExtension.substr(0, shaderWithoutExtension.size() - 3);
+
+	zsString hlslFilePath =  exePath + shaderWithoutExtension + L".hlsl";
+	zsString cgcExePath = exePath + L"bin\\cgc.exe";
+	zsString cgShaderPath = exePath + shaderName;
+	zsString shellParams = cgcExePath + L" -entry VS_MAIN -profile vs_5_0 " + cgShaderPath + L" > " + hlslFilePath;
+	//ShellExecute(NULL, L"open", L"cmd.exe", shellParams.c_str(), NULL, SW_SHOWNORMAL);
+
+
+	STARTUPINFO StartupInfo; //This is an [in] parameter
+
+	ZeroMemory(&StartupInfo, sizeof(StartupInfo));
+	StartupInfo.cb = sizeof StartupInfo ; //Only compulsory field
+	PROCESS_INFORMATION ProcessInfo;
+
+	wchar_t params[512];
+	memcpy(params, shellParams.c_str(), shellParams.size());
+	CreateProcessW(cgcExePath.c_str(), params, NULL, NULL, false, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
+
+	// Parse vertexDeclaration infos from .hlsl file
+	int nVertexAttributes = 0;
+	D3D11_INPUT_ELEMENT_DESC *vertexDecl = NULL;
+	wchar_t entry[128];
+	ID3D11VertexShader *vs;
+
+	// Compile .hlsl shader
+	ID3DBlob *blob;
+
+	while(FAILED(CompileShaderFromFile(hlslFilePath.c_str(), entry, L"vs_5_0", &blob)))
+		ZS_MSG(zsString(L"Hibás fájl, vagy hibás szintaxis a .hlsl fájlban, javítsd majd okézz egyet : " + hlslFilePath).c_str());
+
+
+	HRESULT hr = d3ddev->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), NULL, &vs);
+	if(FAILED(hr))
+		ZS_MSG(zsString(L"Failed to create vertex shader from bytecode: " + hlslFilePath).c_str());
+
+	// Create inputLayout based on vertexDeclaration
+	ID3D11InputLayout *inputLayout = NULL;
+	hr = d3ddev->CreateInputLayout(vertexDecl , nVertexAttributes, blob->GetBufferPointer(), blob->GetBufferSize(), &inputLayout);
+		if(FAILED(hr))
+			ZS_MSG((L"cGraphicsD3D11::CreateShaderProgram -> Can't get Shader Description from file :" + hlslFilePath).c_str());
+
+	blob->Release();
 	return NULL;
+}
+
+HRESULT cGraphicsD3D11::CompileShaderFromFile(const wchar_t* fileName, const wchar_t* entry, const wchar_t* profile, ID3DBlob** ppBlobOut){
+	HRESULT hr = S_OK;
+
+	DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+
+#if defined( DEBUG ) || defined( _DEBUG )
+	// set the D3DCOMPILE_DEBUG flag to embed debug information in the shaders.
+	// setting this flag improves the shader debugging experience, but still allows 
+	// the shaders to be optimized and to run exactly the way they will run in 
+	// the release configuration of this program.
+	dwShaderFlags |= D3DCOMPILE_DEBUG;
+	dwShaderFlags |= D3D10_SHADER_SKIP_OPTIMIZATION;
+#endif
+
+	ID3DBlob* pErrorBlob;
+	char ansiEntry[256];
+	char ansiProfile[256];
+	wcstombs(ansiEntry, entry, 256);
+	wcstombs(ansiProfile, profile, 256);
+
+	hr = D3DX11CompileFromFileW(fileName, NULL, NULL, ansiEntry, ansiProfile,
+		dwShaderFlags, 0, NULL, ppBlobOut, &pErrorBlob, NULL );
+	if(FAILED(hr)) { 
+		if(pErrorBlob != NULL)
+			ZS_MSG((L"Can't Compile :" + zsString(fileName) + L"\n\n" + zsString((wchar_t*)pErrorBlob->GetBufferPointer())).c_str());
+		if( pErrorBlob ) pErrorBlob->Release();
+		return hr;
+	}
+	if( pErrorBlob ) pErrorBlob->Release();
+
+	return S_OK;
 }
