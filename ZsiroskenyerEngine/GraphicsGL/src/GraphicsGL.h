@@ -28,6 +28,8 @@ public:
 	void SetIndexData(IIndexBuffer* indexBuffer) override;
 	void SetInstanceData(/*whatever*/) override;
 
+	void cGraphicsGL::SetShaderProgram(IShaderProgram* shProg);
+
 	IShaderProgram* CreateShaderProgram(const zsString& shaderPath) override;
 
 	void SetWindow(IWindow *renderWindow) override;

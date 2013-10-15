@@ -13,9 +13,12 @@
 class cShaderProgramD3D11 : public IShaderProgram {
 public:
 	cShaderProgramD3D11(const cVertexFormat& format,  ID3D11InputLayout* inputLayout = NULL, ID3D11VertexShader* vs = NULL, ID3D11PixelShader* ps = NULL);
-	cVertexFormat GetVertexFormat() override;
-private:
+	cVertexFormat GetVertexFormat() const override;
+	ID3D11VertexShader* GetVertexShader() const;
+	ID3D11PixelShader* GetPixelShader() const;
+	ID3D11InputLayout* GetInputLayout() const;
 
+private:
 	ID3D11VertexShader* vs;
 	ID3D11PixelShader* ps;
 

@@ -14,5 +14,5 @@
 
 class IShaderProgram {
 public:
-	virtual cVertexFormat GetVertexFormat() = 0;
+	virtual cVertexFormat GetVertexFormat() const = 0;
 };

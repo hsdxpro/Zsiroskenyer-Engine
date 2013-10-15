@@ -493,6 +493,13 @@ void cGraphicsD3D11::SetInstanceData() {
 
 }
 
+void cGraphicsD3D11::SetShaderProgram(IShaderProgram* shProg) {
+	const cShaderProgramD3D11* shProgD3D11 = (cShaderProgramD3D11*)shProg;
+	d3dcon->IASetInputLayout(shProgD3D11->GetInputLayout());
+	d3dcon->VSSetShader(shProgD3D11->GetVertexShader(), 0, 0);
+	d3dcon->PSSetShader(shProgD3D11->GetPixelShader(), 0, 0);
+}
+
 IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) {
 
 	// workingDirectory path (exe path)
