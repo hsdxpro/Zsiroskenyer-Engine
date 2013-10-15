@@ -13,7 +13,7 @@
 
 #include "../../GraphicsCommon/src/IVertexBuffer.h"
 #include "../../GraphicsCommon/src/IIndexBuffer.h"
-
+#include "../../GraphicsCommon/src/IConstantBuffer.h"
 #include "../../GraphicsCommon/src/IShaderProgram.h"
 
 #undef max
@@ -51,12 +51,15 @@ public:
 	// buffers
 	IVertexBuffer* CreateVertexBuffer(size_t size, eBufferUsage usage, void* data = NULL) override;
 	IIndexBuffer* CreateIndexBuffer(size_t size, eBufferUsage usage, void* data = NULL) override;
+	IConstantBuffer* CreateConstantBuffer(size_t size, eBufferUsage usage, void* data = NULL) override;
 
 	bool WriteBuffer(IIndexBuffer* buffer , void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset = 0) override;
 	bool WriteBuffer(IVertexBuffer* buffer, void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset = 0) override;
 
 	bool ReadBuffer(IIndexBuffer* buffer , void* dest, size_t size, size_t offset = 0) override;
 	bool ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset = 0) override;
+
+	void LoadConstantBuffer(IConstantBuffer* buffer, size_t slotIdx);
 
 	// draw
 	void Clear(bool target = true, bool depth = false, bool stencil = false) override;
@@ -69,7 +72,7 @@ public:
 
 	void SetRenderTargetDefault() override;
 
-	void SetVertexData(const IVertexBuffer* vertexBuffer) override;
+	void SetVertexData(const IVertexBuffer* vertexBuffer, size_t vertexSize) override;
 	void SetIndexData(const IIndexBuffer* indexBuffer) override;
 	void SetInstanceData(/*whatever*/) override;
 

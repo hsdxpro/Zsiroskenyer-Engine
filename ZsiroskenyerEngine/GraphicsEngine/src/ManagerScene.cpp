@@ -11,6 +11,7 @@
 #include "InstanceGroup.h"
 #include "../../GraphicsCommon/src/Entity.h"
 #include "../../GraphicsCommon/src/Exception.h"
+#include "../../GraphicsCommon/src/Camera.h"
 
 #include <cassert>
 
@@ -18,7 +19,7 @@ using namespace std;
 
 
 // constructor and destructor
-cManagerScene::cManagerScene(cManagerResource& rm) : managerResource(rm) {
+cManagerScene::cManagerScene(cManagerResource& rm) : managerResource(rm), activeCamera(NULL) {
 }
 cManagerScene::~cManagerScene() {
 }
@@ -68,6 +69,14 @@ void cManagerScene::RemoveEntity(const cEntity& entity) {
 	if (instGroup->entities.size()==0) {
 		instanceGroups.erase(instGroup);
 	}
+}
+
+void cManagerScene::SetActiveCamera(cCamera *cam) {
+	activeCamera = cam;
+}
+
+cCamera *cManagerScene::GetActiveCamera() const {
+	return activeCamera;
 }
 
 const std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare>& cManagerScene::GetInstanceGroups() const {

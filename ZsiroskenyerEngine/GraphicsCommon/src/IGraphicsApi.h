@@ -15,6 +15,7 @@
 
 class IVertexBuffer;
 class IIndexBuffer;
+class IConstantBuffer;
 class IShaderProgram;
 
 class IGraphicsApi {
@@ -22,12 +23,15 @@ public:
 	//buffers
 	virtual IVertexBuffer* CreateVertexBuffer(size_t size, eBufferUsage usage, void* data = NULL) = 0;
 	virtual IIndexBuffer* CreateIndexBuffer(size_t size, eBufferUsage usage, void* data = NULL) = 0;
+	virtual IConstantBuffer* CreateConstantBuffer(size_t size, eBufferUsage usage, void* data = NULL) = 0;
 
 	virtual bool WriteBuffer(IIndexBuffer* buffer , void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset = 0) = 0;
 	virtual bool WriteBuffer(IVertexBuffer* buffer, void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset = 0) = 0;
 
 	virtual bool ReadBuffer(IIndexBuffer* buffer , void* dest, size_t size, size_t offset = 0) = 0;
 	virtual bool ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset = 0) = 0;
+
+	virtual void LoadConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) = 0;
 
 	// draw
 	virtual void Clear(bool target = true, bool depth = false, bool stencil = false) = 0;
@@ -41,7 +45,7 @@ public:
 	virtual void SetRenderTargetDefault() = 0;
 
 
-	virtual void SetVertexData(const IVertexBuffer* vertexBuffer) = 0;
+	virtual void SetVertexData(const IVertexBuffer* vertexBuffer, size_t vertexSize) = 0;
 	virtual void SetIndexData(const IIndexBuffer* indexBuffer) = 0;
 	virtual void SetInstanceData(/*whatever*/) = 0;
 

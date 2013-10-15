@@ -13,4 +13,5 @@
 class IGraphicsEngine {
 public:
 	virtual IManagerScene* GetSceneManager() = 0;
+	virtual void RenderSceneForward() = 0;
 };

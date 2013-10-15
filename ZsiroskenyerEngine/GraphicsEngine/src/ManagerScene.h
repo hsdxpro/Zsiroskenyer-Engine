@@ -21,6 +21,7 @@
 
 class cEntity;
 class cManagerResource;
+class cCamera;
 
 // helpers for storing cInstanceGroups by pointer
 struct cInstGroupPtrHasher {
@@ -45,8 +46,14 @@ public:
 	cEntity& AddEntity(const zsString& geometry, const zsString& material);
 	void RemoveEntity(const cEntity& entity);
 
+	void SetActiveCamera(cCamera *cam) override;
+
+	cCamera *GetActiveCamera() const override;
+
 	const std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare>& GetInstanceGroups() const;
 private:
 	std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare> instanceGroups;
 	cManagerResource& managerResource;
+
+	cCamera *activeCamera;
 };

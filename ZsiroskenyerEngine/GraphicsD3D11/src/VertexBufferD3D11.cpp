@@ -13,6 +13,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "VertexBufferD3D11.h"
+#include "Dx11_SDK/Include/D3D11.h"
+#include "Dx11_SDK/Include/D3DX11.h"
 
 cVertexBufferD3D11::cVertexBufferD3D11(ID3D11Buffer* buffer) : buffer(buffer) {	
 	D3D11_BUFFER_DESC desc;

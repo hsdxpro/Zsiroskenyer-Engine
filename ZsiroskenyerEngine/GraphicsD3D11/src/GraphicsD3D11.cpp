@@ -4,9 +4,10 @@
 
 #include "VertexBufferD3D11.h"
 #include "IndexBufferD3D11.h"
+#include "ConstantBufferD3D11.h"
+#include "ShaderProgramD3D11.h"
 
 #include "../../CommonLib/src/FileWin32.h"
-#include "ShaderProgramD3D11.h"
 
 #include <cassert>
 #define ASSERT assert
@@ -58,14 +59,13 @@ void cGraphicsD3D11::SetWindow(IWindow *renderWindow) {
 	backBufferVP.MinDepth = 0.0f;
 
 	// BackBuffer will be the render target in default
-#pragma message("+++++ +++++ Function SetBBRenderTarget not found! +++++ +++++")
-	//SetBBRenderTarget();
+	this->SetRenderTargetDefault();
 }
 
 cGraphicsD3D11::~cGraphicsD3D11() {
 
 	ID3D11RenderTargetView *nulltarget[] = {0};
-	d3dcon->OMSetRenderTargets(1,nulltarget,0);
+	d3dcon->OMSetRenderTargets(1, nulltarget, 0);
 
 	if(d3dcon)d3dcon->ClearState();
 	if(d3dcon)d3dcon->Flush();
@@ -224,7 +224,7 @@ void cGraphicsD3D11::CreateRenderTargetViewForBB(const tDxConfig& config) {
 
 	ID3D11Texture2D *backBuffer = NULL;
 	d3dsc->GetBuffer(NULL,__uuidof(ID3D11Resource*),(void**)&backBuffer);
-	d3ddev->CreateRenderTargetView(backBuffer,0,&backBufferRTV);
+	d3ddev->CreateRenderTargetView(backBuffer, 0, &backBufferRTV);
 
 	D3D11_TEXTURE2D_DESC bbDesc;
 	memset(&bbDesc,0,sizeof(bbDesc));
@@ -289,10 +289,6 @@ void cGraphicsD3D11::SetRenderTargetDefault() {
 	d3dcon->OMSetRenderTargets(1, &backBufferRTV, backBufferDSV);
 }
 
-
-////////////////////
-// buffers
-////////////////////
 IVertexBuffer* cGraphicsD3D11::CreateVertexBuffer(size_t size, eBufferUsage usage, void* data /*= NULL*/) {
 	ID3D11Buffer* buffer = NULL;
 
@@ -320,7 +316,7 @@ IVertexBuffer* cGraphicsD3D11::CreateVertexBuffer(size_t size, eBufferUsage usag
 	}
 }
 
-IIndexBuffer* cGraphicsD3D11::CreateIndexBuffer(size_t size  , eBufferUsage usage, void* data /*= NULL*/) {
+IIndexBuffer* cGraphicsD3D11::CreateIndexBuffer(size_t size , eBufferUsage usage, void* data /*= NULL*/) {
 	ID3D11Buffer* buffer = NULL;
 
 	D3D11_BUFFER_DESC desc;
@@ -329,9 +325,9 @@ IIndexBuffer* cGraphicsD3D11::CreateIndexBuffer(size_t size  , eBufferUsage usag
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = 0;
 	switch(usage){
-	case eBufferUsage::IMMUTABLE:	desc.Usage = D3D11_USAGE_IMMUTABLE;		desc.CPUAccessFlags=0;												break;
-	case eBufferUsage::DYNAMIC:		desc.Usage = D3D11_USAGE_DYNAMIC;		desc.CPUAccessFlags=D3D11_CPU_ACCESS_WRITE;							break;
-	case eBufferUsage::STAGING:		desc.Usage = D3D11_USAGE_STAGING;		desc.CPUAccessFlags=D3D11_CPU_ACCESS_READ|D3D11_CPU_ACCESS_WRITE;	break;
+	case eBufferUsage::IMMUTABLE:	desc.Usage = D3D11_USAGE_IMMUTABLE;		desc.CPUAccessFlags = 0;												break;
+	case eBufferUsage::DYNAMIC:		desc.Usage = D3D11_USAGE_DYNAMIC;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;							break;
+	case eBufferUsage::STAGING:		desc.Usage = D3D11_USAGE_STAGING;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ|D3D11_CPU_ACCESS_WRITE;	break;
 	}
 
 	D3D11_SUBRESOURCE_DATA resData;
@@ -344,6 +340,33 @@ IIndexBuffer* cGraphicsD3D11::CreateIndexBuffer(size_t size  , eBufferUsage usag
 	}
 	else {
 		return new cIndexBufferD3D11(buffer);
+	}
+}
+
+IConstantBuffer* cGraphicsD3D11::CreateConstantBuffer(size_t size , eBufferUsage usage, void* data /*= NULL*/) {
+	ID3D11Buffer* buffer = NULL;
+
+	D3D11_BUFFER_DESC desc;
+	desc.ByteWidth = size;
+	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	desc.MiscFlags = 0;
+	desc.StructureByteStride = 0;
+	switch(usage){
+	case eBufferUsage::IMMUTABLE:	desc.Usage = D3D11_USAGE_IMMUTABLE;		desc.CPUAccessFlags = 0;												break;
+	case eBufferUsage::DYNAMIC:		desc.Usage = D3D11_USAGE_DYNAMIC;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;							break;
+	case eBufferUsage::STAGING:		desc.Usage = D3D11_USAGE_STAGING;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ|D3D11_CPU_ACCESS_WRITE;	break;
+	}
+
+	D3D11_SUBRESOURCE_DATA resData;
+	memset(&resData, 0, sizeof(resData));
+	resData.pSysMem = data;
+
+	HRESULT hr = d3ddev->CreateBuffer(&desc, &resData, &buffer);
+	if (hr!=S_OK) {
+		return NULL;
+	}
+	else {
+		return new cConstantBufferD3D11(buffer);
 	}
 }
 
@@ -435,6 +458,10 @@ bool cGraphicsD3D11::ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, 
 	return true;
 }
 
+void cGraphicsD3D11::LoadConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) {
+	d3dcon->VSSetConstantBuffers(slotIdx, 1, (ID3D11Buffer* const *)buffer);
+}
+
 ////////////////////
 // draw
 ////////////////////
@@ -454,7 +481,7 @@ void cGraphicsD3D11::Clear(bool target /*= true*/, bool depth /*= false*/, bool 
 
 	// Clear BackBuffer
 	if(target)
-		d3dcon->ClearRenderTargetView(backBufferRTV,defaultClearColor);
+		d3dcon->ClearRenderTargetView(backBufferRTV, defaultClearColor);
 }
 
 void cGraphicsD3D11::Present() {
@@ -478,12 +505,11 @@ void cGraphicsD3D11::DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nIn
 	d3dcon->DrawIndexedInstanced(nIndicesPerInstance, nInstances, idxStartIndex, 0, idxStartInstance);
 }
 
-void cGraphicsD3D11::SetVertexData(const IVertexBuffer* vertexBuffer) {
-#pragma warning("GET VERTEX STRIDE FROM VERTEX DECL!")
-	//const UINT strides = vertexBuffer->GetStrides();
+void cGraphicsD3D11::SetVertexData(const IVertexBuffer* vertexBuffer, size_t vertexSize) {
+	const UINT strides = vertexSize;
 	const UINT offset = 0;
 
-	//d3dcon->IASetVertexBuffers(0, 1, (ID3D11Buffer* const*)vertexBuffer, &strides, &offset);
+	d3dcon->IASetVertexBuffers(0, 1, (ID3D11Buffer* const*)vertexBuffer, &strides, &offset);
 }
 
 void cGraphicsD3D11::SetIndexData(const IIndexBuffer* indexBuffer) {
@@ -601,7 +627,7 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 	while(iter != vsInStructLines.end()) {
 		// not empty line... Parse Vertex Declaration
 		if(iter->size() != 0) {
-			std::string semanticName;
+			const char* semanticName;
 			eVertexAttribute attribType;
 
 			// Gather Semantic name
@@ -628,21 +654,29 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 			else
 				ZS_MSG(L"Cg compiling, can't math SEMANTIC NAME");
 
+			// Add new Attribute
+			vertexFormat.AddAttribute(attribType);
+
+			// Gather format and size
 			DXGI_FORMAT format;
-			// Gather format...
+			size_t byteSize;
 			if(iter->find(L"float4") != std::wstring::npos) {
 				format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+				byteSize = 16;
 			} else if(iter->find(L"float3") != std::wstring::npos) {
 				format = DXGI_FORMAT_R32G32B32_FLOAT;
+				byteSize = 12;
 			} else if(iter->find(L"float2") != std::wstring::npos) {
 				format = DXGI_FORMAT_R32G32_FLOAT;
+				byteSize = 8;
 			} else if(iter->find(L"float") != std::wstring::npos) {
 				format = DXGI_FORMAT_R32_FLOAT;
+				byteSize = 4;
 			} 
 			else
 				ZS_MSG(L"Cg compiling, can't match FORMAT");
 
-			vertexDecl[attribIdx].SemanticName = semanticName.c_str();
+			vertexDecl[attribIdx].SemanticName = semanticName;
 			vertexDecl[attribIdx].Format = format;
 			vertexDecl[attribIdx].AlignedByteOffset = alignedByteOffset;
 			vertexDecl[attribIdx].InputSlot = 0;
@@ -650,7 +684,7 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 			vertexDecl[attribIdx].InstanceDataStepRate = 0;
 			vertexDecl[attribIdx].SemanticIndex = 0;
 
-			alignedByteOffset += sizeof(float) * 4;
+			alignedByteOffset += byteSize;
 			attribIdx++;
 		}
 		iter++;
@@ -663,7 +697,7 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 
 	blob->Release();
 
-	return new cShaderProgramD3D11(vertexFormat, inputLayout, vs, ps);
+	return new cShaderProgramD3D11(vertexFormat, alignedByteOffset, inputLayout, vs, ps);
 }
 
 HRESULT cGraphicsD3D11::CompileShaderFromFile(const zsString& fileName, const zsString& entry, const zsString& profile, ID3DBlob** ppBlobOut) {

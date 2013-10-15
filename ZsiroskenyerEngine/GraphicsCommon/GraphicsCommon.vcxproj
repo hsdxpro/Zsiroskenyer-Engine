@@ -15,6 +15,7 @@
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\Exception.h" />
+    <ClInclude Include="src\IConstantBuffer.h" />
     <ClInclude Include="src\IGraphicsApi.h" />
     <ClInclude Include="src\IGraphicsEngine.h" />
     <ClInclude Include="src\IIndexBuffer.h" />

@@ -20,7 +20,7 @@ class cGraphicsEngine : public IGraphicsEngine {
 public:
 	cGraphicsEngine();
 
-	void RenderSceneForward();
+	void RenderSceneForward() override;
 
 	IManagerScene* GetSceneManager();
 private:	

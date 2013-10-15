@@ -56,6 +56,9 @@
     <ClInclude Include="src\VertexFormat.h">
       <Filter>Common Stuff</Filter>
     </ClInclude>
+    <ClInclude Include="src\IConstantBuffer.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Entity.cpp">

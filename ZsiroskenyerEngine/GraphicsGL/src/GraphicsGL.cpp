@@ -4,7 +4,7 @@ IVertexBuffer* cGraphicsGL::CreateVertexBuffer(size_t size, eBufferUsage usage, 
 	return NULL;
 }
 
-IIndexBuffer* cGraphicsGL::CreateIndexBuffer(size_t size  , eBufferUsage usage, void* data /*= NULL*/) {
+IIndexBuffer* cGraphicsGL::CreateIndexBuffer(size_t size , eBufferUsage usage, void* data /*= NULL*/) {
 	return NULL;
 }
 
@@ -48,7 +48,7 @@ void cGraphicsGL::DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInsta
 	
 }
 
-void cGraphicsGL::SetVertexData(const IVertexBuffer* vertexBuffer) {
+void cGraphicsGL::SetVertexData(const IVertexBuffer* vertexBuffer, size_t vertexSize) {
 	
 }
 

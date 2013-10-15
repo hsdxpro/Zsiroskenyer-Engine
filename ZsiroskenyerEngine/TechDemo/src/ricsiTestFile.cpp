@@ -1,10 +1,11 @@
 #include "testFiles.h"
 
-#include "../../GraphicsCommon\src\IWindow.h"
-#include "../../GraphicsCommon\src\IGraphicsApi.h"
-#include "../../GraphicsCommon\src\IGraphicsEngine.h"
-#include "..\..\CommonLib\src\Factory.h"
-#include "..\..\CommonLib\src\DLLLoaderWin32.h"
+#include "../../GraphicsCommon/src/IWindow.h"
+#include "../../GraphicsCommon/src/IGraphicsApi.h"
+#include "../../GraphicsCommon/src/IGraphicsEngine.h"
+#include "../../GraphicsCommon/src/Camera.h"
+#include "../../CommonLib/src/Factory.h"
+#include "../../CommonLib/src/DLLLoaderWin32.h"
 
 //@TODO REMOVE THIS FUCKING SHIT OR I KILL MYSELF
 // NEED SOME INTERFACE, TO DETERMINE APPLICATION HANDLE
@@ -35,6 +36,10 @@ int ricsiMain() {
 	// Set Render Window
 	dx11->SetWindow(myWindow);
 
+	// Create camera for testing and use it
+	cCamera *cam = new cCamera(ZS_PIDIV2, 1.0, 0.01f, 5000.0f);
+	mgrScene->SetActiveCamera(cam);
+
 	// Create 3D object for testing
 	cEntity& entity = mgrScene->AddEntity(L"box.dae", L"material");
 		entity.position = Vec3(1,1,1);
@@ -43,10 +48,7 @@ int ricsiMain() {
 	// Main loop
 	while(myWindow->IsOpened()) {
 		myWindow->PeekAllMessages();
-		dx11->Clear();
-#pragma message("+++++ +++++ Line commented because function was not found! +++++ +++++")
-		//
-		/* mgrGEngine->RenderSceneForward(); */
+		mgrGEngine->RenderSceneForward();
 		dx11->Present();
 	}
 	
@@ -54,6 +56,6 @@ int ricsiMain() {
 	SAFE_DELETE(mgrGEngine);
 	SAFE_DELETE(mgrScene);
 	SAFE_DELETE(dx11);
-	
+	SAFE_DELETE(cam);
 	return 0;
 }
