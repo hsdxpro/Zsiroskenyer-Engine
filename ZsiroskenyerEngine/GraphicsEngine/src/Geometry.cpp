@@ -10,3 +10,11 @@
 cGeometry::cGeometry(IVertexBuffer *VB, IIndexBuffer *IB) 
 :VB(VB), IB(IB) {
 }
+
+
+const IIndexBuffer* cGeometry::GetIndexBuffer() const {
+	return IB;
+}
+const IVertexBuffer* cGeometry::GetVertexBuffer() const {
+	return VB;
+}

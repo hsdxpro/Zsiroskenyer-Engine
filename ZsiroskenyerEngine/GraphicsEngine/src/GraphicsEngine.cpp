@@ -53,8 +53,10 @@ void cGraphicsEngine::RenderSceneForward() {
 
 	for (auto& group : instanceGroups) {
 		// set geometry and mtl
-		//const cGeometry* geometry = group->geom.
-		//gApi->SetIndexData(
+		const IVertexBuffer* vb = group->geom->GetVertexBuffer();
+		const IIndexBuffer* ib = group->geom->GetIndexBuffer();
+		gApi->SetIndexData(ib);
+
 		size_t nIndices;
 		for (auto& entity : group->entities) {
 			// draw entity

@@ -30,15 +30,15 @@ cIndexBufferD3D11::cIndexBufferD3D11(ID3D11Buffer* buffer) : buffer(buffer) {
 	}
 }
 
-size_t cIndexBufferD3D11::GetSize() {
+size_t cIndexBufferD3D11::GetSize() const {
 	return size;
 }
 
-eBufferUsage cIndexBufferD3D11::GetUsage() {
+eBufferUsage cIndexBufferD3D11::GetUsage() const {
 	return usage;
 }
 
 
-cIndexBufferD3D11::operator ID3D11Buffer*() {
+cIndexBufferD3D11::operator ID3D11Buffer*() const {
 	return buffer;
 }

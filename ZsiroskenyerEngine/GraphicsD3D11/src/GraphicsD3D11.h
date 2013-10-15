@@ -69,8 +69,8 @@ public:
 
 	void SetRenderTargetDefault() override;
 
-	void SetVertexData(IVertexBuffer* vertexBuffer) override;
-	void SetIndexData(IIndexBuffer* indexBuffer) override;
+	void SetVertexData(const IVertexBuffer* vertexBuffer) override;
+	void SetIndexData(const IIndexBuffer* indexBuffer) override;
 	void SetInstanceData(/*whatever*/) override;
 
 	void cGraphicsD3D11::SetShaderProgram(IShaderProgram* shProg);

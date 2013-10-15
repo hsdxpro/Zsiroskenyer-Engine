@@ -37,19 +37,14 @@ cVertexBufferD3D11::cVertexBufferD3D11(ID3D11Buffer* buffer) : buffer(buffer) {
 	}
 }
 
-size_t cVertexBufferD3D11::GetSize() {
+size_t cVertexBufferD3D11::GetSize() const {
 	return size;
 }
 
-eBufferUsage cVertexBufferD3D11::GetUsage() {
+eBufferUsage cVertexBufferD3D11::GetUsage() const {
 	return usage;
 }
 
-cVertexBufferD3D11::operator ID3D11Buffer*() {
+cVertexBufferD3D11::operator ID3D11Buffer*() const {
 	return buffer;
-}
-
-size_t cVertexBufferD3D11::GetStrides() {
-	// Vertex size
-	return 0;
 }

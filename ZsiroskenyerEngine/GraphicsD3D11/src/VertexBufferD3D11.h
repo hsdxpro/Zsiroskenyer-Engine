@@ -16,11 +16,10 @@ class cVertexBufferD3D11 : public IVertexBuffer {
 public:
 	cVertexBufferD3D11(ID3D11Buffer* buffer);
 
-	size_t GetSize() override;
-	eBufferUsage GetUsage() override;
-	size_t GetStrides() override;
+	size_t GetSize() const override;
+	eBufferUsage GetUsage() const override;
 
-	operator ID3D11Buffer*();
+	operator ID3D11Buffer*() const;
 
 	ID3D11Buffer* const buffer;
 private:

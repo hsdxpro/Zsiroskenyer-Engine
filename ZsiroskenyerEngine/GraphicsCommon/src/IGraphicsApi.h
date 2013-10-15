@@ -41,8 +41,8 @@ public:
 	virtual void SetRenderTargetDefault() = 0;
 
 
-	virtual void SetVertexData(IVertexBuffer* vertexBuffer) = 0;
-	virtual void SetIndexData(IIndexBuffer* indexBuffer) = 0;
+	virtual void SetVertexData(const IVertexBuffer* vertexBuffer) = 0;
+	virtual void SetIndexData(const IIndexBuffer* indexBuffer) = 0;
 	virtual void SetInstanceData(/*whatever*/) = 0;
 
 	virtual void SetShaderProgram(IShaderProgram* shProg) = 0;
