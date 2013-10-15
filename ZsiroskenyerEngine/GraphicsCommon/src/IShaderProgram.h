@@ -8,11 +8,11 @@
 //	Vertex declaration is also stored in this shader. Use shaders only with
 //	correct vertex input format, otherwise behaviour is __undefined__.
 ////////////////////////////////////////////////////////////////////////////////
-
+#pragma once
 
 #include "VertexFormat.h"
 
 class IShaderProgram {
 public:
-	virtual cVertexFormat GetVertexFormat();
+	virtual cVertexFormat GetVertexFormat() = 0;
 };
