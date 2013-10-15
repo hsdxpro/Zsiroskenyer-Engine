@@ -6,6 +6,7 @@
 #include "IndexBufferD3D11.h"
 
 #include "../../CommonLib/src/FileWin32.h"
+#include "ShaderProgramD3D11.h"
 
 #include <cassert>
 #define ASSERT assert
@@ -586,32 +587,55 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 	D3D11_INPUT_ELEMENT_DESC *vertexDecl = new D3D11_INPUT_ELEMENT_DESC[nVertexAttributes];
 	size_t attribIdx = 0;
 	size_t alignedByteOffset = 0;
+	cVertexFormat vertexFormat;
 
 	iter = vsInStructLines.begin();
 	while(iter != vsInStructLines.end()) {
 		// not empty line... Parse Vertex Declaration
 		if(iter->size() != 0) {
+			std::string semanticName;
+			eVertexAttribute attribType;
+
 			// Gather Semantic name
-			if(iter->find(L"POSITION")  != std::wstring::npos)
-				vertexDecl[attribIdx].SemanticName = "POSITION";	
-			else if(iter->find(L"COLOR")  != std::wstring::npos)
-				vertexDecl[attribIdx].SemanticName = "COLOR";
+			if(iter->find(L"POSITION") != std::wstring::npos) {
+				semanticName = "POSITION";
+				attribType = eVertexAttribute::POSITION;
+			}
+			else if(iter->find(L"NORMAL") != std::wstring::npos) {
+				semanticName = "NORMAL";
+				attribType = eVertexAttribute::NORMAL;
+			}
+			else if(iter->find(L"TEXCOORD") != std::wstring::npos) {
+				semanticName = "TEXCOORD";
+				attribType = eVertexAttribute::TEXCOORD;
+			}
+			else if(iter->find(L"COLOR") != std::wstring::npos) {
+				semanticName = "COLOR";
+				attribType = eVertexAttribute::COLOR;
+			}
+			else if(iter->find(L"TANGENT") != std::wstring::npos) {
+				semanticName = "TANGENT";
+				attribType = eVertexAttribute::TANGENT;
+			}
 			else
 				ZS_MSG(L"Cg compiling, can't math SEMANTIC NAME");
 
+			DXGI_FORMAT format;
 			// Gather format...
 			if(iter->find(L"float4") != std::wstring::npos) {
-				vertexDecl[attribIdx].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+				format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 			} else if(iter->find(L"float3") != std::wstring::npos) {
-				vertexDecl[attribIdx].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				format = DXGI_FORMAT_R32G32B32_FLOAT;
 			} else if(iter->find(L"float2") != std::wstring::npos) {
-				vertexDecl[attribIdx].Format = DXGI_FORMAT_R32G32_FLOAT;
+				format = DXGI_FORMAT_R32G32_FLOAT;
 			} else if(iter->find(L"float") != std::wstring::npos) {
-				vertexDecl[attribIdx].Format = DXGI_FORMAT_R32_FLOAT;
+				format = DXGI_FORMAT_R32_FLOAT;
 			} 
 			else
 				ZS_MSG(L"Cg compiling, can't match FORMAT");
 
+			vertexDecl[attribIdx].SemanticName = semanticName.c_str();
+			vertexDecl[attribIdx].Format = format;
 			vertexDecl[attribIdx].AlignedByteOffset = alignedByteOffset;
 			vertexDecl[attribIdx].InputSlot = 0;
 			vertexDecl[attribIdx].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
@@ -629,23 +653,9 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 	if(FAILED(hr))
 		ZS_MSG((L"cGraphicsD3D11::CreateShaderProgram -> Can't create input layout for vertexShader: " + hlslVsFullPath).c_str());
 
-	/*
-	// Parse vertexDeclaration infos from .hlsl file
-	D3D11_INPUT_ELEMENT_DESC *vertexDecl = NULL;
-	ID3D11VertexShader *vs;
-	int nVertexAttributes = 0;
-
-	// Compile .hlsl shader
-
-	// Create inputLayout based on vertexDeclaration
-	ID3D11InputLayout *inputLayout = NULL;
-	hr = d3ddev->CreateInputLayout(vertexDecl , nVertexAttributes, blob->GetBufferPointer(), blob->GetBufferSize(), &inputLayout);
-		if(FAILED(hr))
-			ZS_MSG((L"cGraphicsD3D11::CreateShaderProgram -> Can't create input layout for vertexShader: " + mergedHlslFilePath).c_str());
-	*/
 	blob->Release();
-	
-	return cShaderProgramD3D11(vs, ps, inputLayout);
+
+	return new cShaderProgramD3D11(vertexFormat, inputLayout, vs, ps);
 }
 
 HRESULT cGraphicsD3D11::CompileShaderFromFile(const zsString& fileName, const zsString& entry, const zsString& profile, ID3DBlob** ppBlobOut) {

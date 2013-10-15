@@ -4,22 +4,23 @@
 ////////////////////////////////////////////////////////////////////////////////
 //	A class declaration is worth a thousand words...
 ////////////////////////////////////////////////////////////////////////////////
+#pragma once
 
-
-enum class eVertexAttributes : unsigned {
-	POSITION=1,
-	NORMAL=2,
-	TEXCOORD=4,
-	TANGENT=8,
-	BONE=16,
+enum class eVertexAttribute : unsigned {
+	POSITION	= 1,
+	NORMAL		= 2,
+	TEXCOORD	= 4,
+	COLOR		= 8,
+	TANGENT		= 16,
+	BONE		= 32,
 };
 
 
 class cVertexFormat {
 public:
-	void SetAttribute(eVertexAttributes attrib, bool value);
-	void AddAttribute(eVertexAttributes attrib);
-	void ClearAttribute(eVertexAttributes attrib);
+	void SetAttribute(eVertexAttribute attrib, bool value);
+	void AddAttribute(eVertexAttribute attrib);
+	void ClearAttribute(eVertexAttribute attrib);
 
 	unsigned Get();
 
