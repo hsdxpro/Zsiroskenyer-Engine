@@ -10,13 +10,13 @@
 
 
 // load a shader by its name, or return it if it's already loaded
-IShaderProgram* cManagerShader::LoadShader(const zsString& shaderName) {
+IShaderProgram* cManagerShader::LoadShader(const zsString& shaderDir, const zsString& shaderName) {
 	auto it = loadedShaders.right.find(shaderName);
 	if (it!=loadedShaders.right.end()) {
 		return it->second;
 	}
 
-	IShaderProgram* shader = graphicsApi->CreateShaderProgram(shaderName.c_str());
+	IShaderProgram* shader = graphicsApi->CreateShaderProgram(shaderDir + shaderName);
 	if (shader==NULL)
 		return NULL;
 
@@ -35,6 +35,7 @@ void cManagerShader::UnloadShader(IShaderProgram* shader) {
 	delete shader;
 	loadedShaders.left.erase(it);
 }
+
 void cManagerShader::UnloadShader(const zsString& shaderName) {
 	auto it = loadedShaders.right.find(shaderName);
 	if (it==loadedShaders.right.end())
@@ -46,12 +47,12 @@ void cManagerShader::UnloadShader(const zsString& shaderName) {
 
 
 // reload a shader: it WILL load previously unloaded shaders as well
-IShaderProgram* cManagerShader::ReloadShader(const zsString& shaderName) {
+IShaderProgram* cManagerShader::ReloadShader(const zsString& shaderDir, const zsString& shaderName) {
 	UnloadShader(shaderName);
-	return LoadShader(shaderName);
+	return LoadShader(shaderDir, shaderName);
 }
 // this version won't load previously unloaded shaders, since it doesn't know the name
-IShaderProgram* cManagerShader::ReloadShader(IShaderProgram* shader) {
+IShaderProgram* cManagerShader::ReloadShader(const zsString& shaderDir, IShaderProgram* shader) {
 	// get shader's name first
 	auto it = loadedShaders.left.find(shader);
 	if (it==loadedShaders.left.end())
@@ -60,7 +61,7 @@ IShaderProgram* cManagerShader::ReloadShader(IShaderProgram* shader) {
 	zsString name = it->second;
 
 	UnloadShader(shader);
-	return LoadShader(name);
+	return LoadShader(shaderDir, name);
 }
 
 

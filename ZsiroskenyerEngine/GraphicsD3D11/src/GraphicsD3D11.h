@@ -39,6 +39,15 @@ public:
 
 	};
 
+	// Compiling profiles for cg
+	enum class eProfileCG {
+		VS_5_0,
+		PS_5_0,
+		HS_5_0,
+		DS_5_0,
+		GS_5_0,
+	};
+
 	// buffers
 	IVertexBuffer* CreateVertexBuffer(size_t size, eBufferUsage usage, void* data = NULL) override;
 	IIndexBuffer* CreateIndexBuffer(size_t size, eBufferUsage usage, void* data = NULL) override;
@@ -65,7 +74,7 @@ public:
 	void SetInstanceData(/*whatever*/) override;
 
 	// shader
-	IShaderProgram* CreateShaderProgram(const wchar_t* shaderName) override;
+	IShaderProgram* CreateShaderProgram(const zsString& shaderPath) override;
 
 	// misc
 	void SetWindow(IWindow *renderWindow) override;
@@ -78,7 +87,8 @@ private:
 	void CreateMostAcceptableSwapChain(uint16 width, uint16 height, HWND windowHandle, const tDxConfig& config);
 	void CreateRenderTargetViewForBB(const tDxConfig& config);
 	void CreateDefaultStates(const D3D11_CULL_MODE& cullMode, const D3D11_FILL_MODE& fillMode);
-	HRESULT CompileShaderFromFile(const wchar_t* fileName, const wchar_t* entry, const wchar_t* profile, ID3DBlob** ppBlobOut);
+	HRESULT CompileShaderFromFile(const zsString& fileName, const zsString& entry, const zsString& profile, ID3DBlob** ppBlobOut);
+	void CompileCgToHLSL(const zsString& cgFileName, const zsString& hlslFileName, eProfileCG compileProfile);
 protected:
 	// backBuffer will be the main render target
 	ID3D11RenderTargetView *backBufferRTV;

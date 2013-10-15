@@ -18,7 +18,7 @@ cGraphicsEngine::cGraphicsEngine()
 	mgrShader = new cManagerShader(mgrGApi);
 
 
-	mgrShader->LoadShader(L"test.cg");
+	mgrShader->LoadShader(L"shaders/", L"test.cg");
 }
 
 

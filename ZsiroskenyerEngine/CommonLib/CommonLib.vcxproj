@@ -14,6 +14,7 @@
     <ClCompile Include="src\DLLLoaderWin32.cpp" />
     <ClInclude Include="src\DLLLoaderWin32.h" />
     <ClCompile Include="src\Factory.cpp" />
+    <ClCompile Include="src\FileWin32.cpp" />
     <ClCompile Include="src\math\Color.cpp" />
     <ClCompile Include="src\math\Matrix44.cpp" />
     <ClCompile Include="src\math\Point.cpp" />
@@ -28,6 +29,7 @@
     <ClInclude Include="src\algorithms\statistics.h" />
     <ClInclude Include="src\common.h" />
     <ClInclude Include="src\Factory.h" />
+    <ClInclude Include="src\FileWin32.h" />
     <ClInclude Include="src\IDLLLoader.h" />
     <ClInclude Include="src\math\Color.h" />
     <ClInclude Include="src\math\math_all.h" />
