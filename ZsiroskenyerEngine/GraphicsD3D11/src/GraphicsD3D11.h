@@ -73,6 +73,8 @@ public:
 	void SetIndexData(IIndexBuffer* indexBuffer) override;
 	void SetInstanceData(/*whatever*/) override;
 
+	void cGraphicsD3D11::SetShaderProgram(IShaderProgram* shProg);
+
 	// shader
 	IShaderProgram* CreateShaderProgram(const zsString& shaderPath) override;
 

@@ -45,6 +45,8 @@ public:
 	virtual void SetIndexData(IIndexBuffer* indexBuffer) = 0;
 	virtual void SetInstanceData(/*whatever*/) = 0;
 
+	virtual void SetShaderProgram(IShaderProgram* shProg) = 0;
+
 	// shader
 	virtual IShaderProgram* CreateShaderProgram(const zsString& shaderPath) = 0;
 
