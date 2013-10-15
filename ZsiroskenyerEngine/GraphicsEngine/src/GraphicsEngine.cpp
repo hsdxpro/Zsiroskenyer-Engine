@@ -10,6 +10,7 @@
 #include "ManagerScene.h"
 #include "ManagerResource.h"
 #include "ManagerShader.h"
+#include "Geometry.h"
 #include "../../GraphicsCommon/src/IGraphicsApi.h"
 #include "../../GraphicsCommon/src/IShaderProgram.h"
 
@@ -36,19 +37,28 @@ cGraphicsEngine::cGraphicsEngine() {
 
 
 void cGraphicsEngine::RenderSceneForward() {
-	// Set BackBuffer....
+	// Set BackBuffer
 	gApi->SetRenderTargetDefault();
 
 	// Set Effect...
 	auto shader = managerShader->GetShaderByName(L"test.cg");
-	
+
+
+	// Begin scene
+	gApi->Clear();
+
 
 	// Render each instanceGroup
 	auto instanceGroups = managerScene->GetInstanceGroups();
 
 	for (auto& group : instanceGroups) {
+		// set geometry and mtl
+		//const cGeometry* geometry = group->geom.
+		//gApi->SetIndexData(
+		size_t nIndices;
 		for (auto& entity : group->entities) {
 			// draw entity
+			gApi->DrawIndexed(nIndices, 0);
 		}
 	}
 }
