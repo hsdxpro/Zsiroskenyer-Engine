@@ -12,9 +12,11 @@
 
 #include "../../GraphicsCommon/src/IGraphicsEngine.h"
 
-#include "ManagerScene.h"
-#include "ManagerResource.h"
-#include "../../GraphicsCommon/src/IGraphicsApi.h"
+
+class IGraphicsApi;
+class cManagerShader;
+class cManagerScene;
+class cManagerResource;
 
 class cGraphicsEngine : public IGraphicsEngine {
 public:
@@ -23,10 +25,11 @@ public:
 	void RenderSceneForward();
 
 	IManagerScene* GetSceneManager();
-private:	
-	cManagerResource managerResource;
-	cManagerScene managerScene;
+private:
 	IGraphicsApi* gApi;
+	cManagerShader* managerShader;
+	cManagerResource* managerResource;
+	cManagerScene* managerScene;	
 };
 
 

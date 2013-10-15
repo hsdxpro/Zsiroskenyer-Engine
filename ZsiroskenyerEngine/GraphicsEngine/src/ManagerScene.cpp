@@ -70,6 +70,6 @@ void cManagerScene::RemoveEntity(const cEntity& entity) {
 	}
 }
 
-instanceGroupSet& cManagerScene::GetInstanceGroups() {
+const std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare>& cManagerScene::GetInstanceGroups() const {
 	return instanceGroups;
 }
