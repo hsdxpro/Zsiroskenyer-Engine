@@ -24,3 +24,4 @@ public:
 typedef BaseException<1> FileNotFoundException;
 typedef BaseException<2> InvalidCallException;
 typedef BaseException<3> InvalidDataException;
+typedef BaseException<4> UnknownErrorException;

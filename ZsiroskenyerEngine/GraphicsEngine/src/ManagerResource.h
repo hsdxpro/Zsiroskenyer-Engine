@@ -19,6 +19,8 @@
 #include <boost\bimap.hpp>
 #include <boost\bimap\unordered_set_of.hpp>
 
+class IGraphicsApi;
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -29,7 +31,7 @@ class cManagerResource {
 	friend class cTextureRef;
 public:
 	// constructor
-	cManagerResource();
+	cManagerResource(IGraphicsApi* gApi);
 	~cManagerResource();
 
 	// resource aquisition
@@ -50,6 +52,9 @@ private:
 
 	GeometryMapT geometries;
 	MaterialMapT materials;
+
+	// graphics api
+	IGraphicsApi* const gApi;
 };
 
 

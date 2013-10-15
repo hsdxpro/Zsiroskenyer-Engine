@@ -7,33 +7,38 @@
 #include "GraphicsEngine.h"
 #include "../../CommonLib/src/Factory.h"
 
+#include "ManagerScene.h"
+#include "ManagerResource.h"
+#include "ManagerShader.h"
+#include "../../GraphicsCommon/src/IGraphicsApi.h"
+
+#include "../../GraphicsCommon/src/Exception.h"
+
+
 // construction of the graphics engine
-cGraphicsEngine::cGraphicsEngine()
-	:
-	mgrResource(),
-	mgrScene(mgrResource)
-{
-
-	mgrGApi = Factory.CreateGraphics();
-	mgrShader = new cManagerShader(mgrGApi);
-
-
-	mgrShader->LoadShader(L"shaders/", L"test.cg");
+cGraphicsEngine::cGraphicsEngine() {
+	gApi = Factory.CreateGraphics();
+	if (!gApi)
+		throw UnknownErrorException("failed to create graphics api");
+	managerShader = new cManagerShader(gApi);
+	managerResource = new cManagerResource();
+	managerScene = new cManagerScene(*managerResource);
 }
 
 
 void cGraphicsEngine::RenderSceneForward() {
 	// Set BackBuffer....
-	mgrGApi->SetRenderTargetDefault();
+	gApi->SetRenderTargetDefault();
 
 	// Set Effect...
-
+	
 
 	// Render each instanceGroup
-	auto instanceGroups = mgrScene.GetInstanceGroups();
+	auto instanceGroups = managerScene->GetInstanceGroups();
+
 }
 
 // interface
 IManagerScene* cGraphicsEngine::GetSceneManager() {
-	return (IManagerScene*)&mgrScene;
+	return managerScene;
 }

@@ -9,11 +9,12 @@
 #pragma once
 
 #include "../../GraphicsCommon/src/IGraphicsEngine.h"
-#include "../../GraphicsCommon/src/IGraphicsApi.h"
 
-#include "ManagerScene.h"
-#include "ManagerResource.h"
-#include "ManagerShader.h"
+
+class IGraphicsApi;
+class cManagerShader;
+class cManagerScene;
+class cManagerResource;
 
 class cGraphicsEngine : public IGraphicsEngine {
 public:
@@ -23,10 +24,10 @@ public:
 
 	IManagerScene* GetSceneManager();
 private:	
-	cManagerResource mgrResource;
-	cManagerScene mgrScene;
-	cManagerShader *mgrShader;
-	IGraphicsApi* mgrGApi;
+	IGraphicsApi* gApi;
+	cManagerShader* managerShader;
+	cManagerResource* managerResource;
+	cManagerScene* managerScene;	
 };
 
 
