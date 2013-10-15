@@ -6,9 +6,7 @@
 //	stuff.
 ////////////////////////////////////////////////////////////////////////////////
 
-
 #pragma once
-
 
 #include "../../GraphicsCommon/src/IGraphicsEngine.h"
 
@@ -25,7 +23,7 @@ public:
 	void RenderSceneForward();
 
 	IManagerScene* GetSceneManager();
-private:
+private:	
 	IGraphicsApi* gApi;
 	cManagerShader* managerShader;
 	cManagerResource* managerResource;

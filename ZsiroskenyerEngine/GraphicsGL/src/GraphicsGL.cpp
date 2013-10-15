@@ -60,6 +60,10 @@ void cGraphicsGL::SetInstanceData() {
 
 }
 
+IShaderProgram* cGraphicsGL::CreateShaderProgram(const zsString& shaderPath) {
+	return NULL;
+}
+
 void cGraphicsGL::SetWindow(IWindow *renderWindow) {
 
 }

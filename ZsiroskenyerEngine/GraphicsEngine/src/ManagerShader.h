@@ -16,14 +16,14 @@ class IGraphicsApi;
 
 class cManagerShader {
 public:
-	IShaderProgram* LoadShader(const zsString& shaderName); // load a shader once from source
+	IShaderProgram* LoadShader(const zsString& shaderDir, const zsString& shaderName); // load a shader once from source
 															// multiple loads will return the already-loaded shader
 
 	void UnloadShader(const zsString& shaderName); // permanently unload specified shader
 	void UnloadShader(IShaderProgram* shader);
 
-	IShaderProgram* ReloadShader(const zsString& shaderName); // reload a specified shader from source
-	IShaderProgram* ReloadShader(IShaderProgram* shader);
+	IShaderProgram* ReloadShader(const zsString& shaderDir, const zsString& shaderName);
+	IShaderProgram* ReloadShader(const zsString& shaderDir, IShaderProgram* shader);
 
 	IShaderProgram* GetShaderByName(const zsString& shaderName); // returns the shader by its name
 

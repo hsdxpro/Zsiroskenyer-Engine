@@ -6,6 +6,7 @@
 #include "BufferCommon.h"
 #include <climits>
 #include "../../CommonLib/src/common.h"
+#include "../../CommonLib/src/zsString.h"
 
 #ifdef max
 #define _377995BD_F40A_4067_A633_46AAA084AC7F
@@ -45,7 +46,7 @@ public:
 	virtual void SetInstanceData(/*whatever*/) = 0;
 
 	// shader
-	virtual IShaderProgram* CreateShaderProgram(const wchar_t* shaderName) = 0;
+	virtual IShaderProgram* CreateShaderProgram(const zsString& shaderPath) = 0;
 
 	// misc
 	virtual void SetWindow(IWindow *renderWindow) = 0;

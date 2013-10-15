@@ -26,7 +26,7 @@ cGraphicsEngine::cGraphicsEngine() {
 
 void cGraphicsEngine::RenderSceneForward() {
 	// Set BackBuffer....
-	gApi->SetRenderTargetDefault();
+	mgrGApi->SetRenderTargetDefault();
 
 	// Set Effect...
 
@@ -37,5 +37,5 @@ void cGraphicsEngine::RenderSceneForward() {
 
 // interface
 IManagerScene* cGraphicsEngine::GetSceneManager() {
-	return (IManagerScene*)&managerScene;
+	return (IManagerScene*)&mgrScene;
 }

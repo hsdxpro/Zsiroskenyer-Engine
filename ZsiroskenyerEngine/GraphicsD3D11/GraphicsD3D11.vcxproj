@@ -89,19 +89,14 @@
   <ItemGroup>
     <ClCompile Include="src\DllMain.cpp" />
     <ClCompile Include="src\GraphicsD3D11.cpp" />
-    <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\ShaderProgramD3D11.cpp" />
     <ClCompile Include="src\VertexBufferD3D11.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GraphicsD3D11.h" />
     <ClInclude Include="src\IndexBufferD3D11.h" />
-    <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\ShaderProgramD3D11.h" />
     <ClInclude Include="src\VertexBufferD3D11.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CommonLib\CommonLib.vcxproj">
-      <Project>{4a9a62c0-5b13-4453-b6a9-464dffbe864f}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\IndexBufferD3D11.cpp" />
