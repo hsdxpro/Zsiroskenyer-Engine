@@ -71,6 +71,7 @@ void cFileWin32::Append(const cFileWin32& file) {
 	stream.open(fileName.c_str(), std::ios_base::app);
 	auto iter = file.GetLines().begin();
 	while(iter != file.GetLines().end()) {
+		lines.push_back(*iter);
 		stream << *iter << L"\n";
 		iter++;
 	}
@@ -113,6 +114,7 @@ bool cFileWin32::ReplaceAll(const zsString& repThat, const zsString& withThat) {
 		iter++;
 	}
 
+	Close();
 	return foundReplace;
 }
 
@@ -142,18 +144,24 @@ bool cFileWin32::RemoveDuplicatedLines() {
 	stream.close();
 	stream.open(fileName.c_str(), std::ios::trunc | std::ios_base::out);
 
-	// uniq Lines
+	// Lines that are duplicated
+	std::list<zsString> duplicatedLines;
 	std::list<zsString> uniqLines;
 
 	bool foundDuplicates = false;
 	auto iterI = lines.begin();
 	while(iterI != lines.end()) {
+		// there is no duplication for that line (iterI)
+		if(std::find(duplicatedLines.begin(), duplicatedLines.end(), *iterI) == duplicatedLines.end())
+			uniqLines.push_back(*iterI);
+
 		auto iterJ = lines.begin();
 		while(iterJ != lines.end()) {
 			if(iterJ != iterI) {
 				if(*iterJ == *iterI) {
-					iterJ = lines.erase(iterJ);
+					duplicatedLines.push_back(*iterI); // remember duplicated strings
 					foundDuplicates = true;
+					break;
 				}
 			}
 			iterJ++;
@@ -161,13 +169,47 @@ bool cFileWin32::RemoveDuplicatedLines() {
 		iterI++;
 	}
 
+	
+
 	// Write to file
-	iterI = lines.begin();
-	while(iterI != lines.end()) {
+	iterI = uniqLines.begin();
+	lines.clear();
+	while(iterI != uniqLines.end()) {
+		lines.push_back(*iterI);
 		stream << *iterI << L"\n";
 		iterI++;
 	}
 
 	Close();
 	return foundDuplicates;
+}
+
+zsString cFileWin32::GetStringBefore(const zsString& str) {
+	auto iter = lines.begin();
+	while(iter != lines.end()) {
+		size_t start_pos = iter->find(str);
+		if(start_pos != std::wstring::npos) {
+			return zsString(iter->substr(0, start_pos));
+		}
+		iter++;
+	}
+	return zsString();
+}
+
+std::list<zsString> cFileWin32::GetLinesUnder(const zsString& str, const zsString& endLine) {
+	std::list<zsString> result;
+	auto iter = lines.begin();
+	while(iter != lines.end()) {
+		size_t start_pos = iter->find(str);
+		if(start_pos != std::wstring::npos) {
+			iter++;
+			while(*iter != endLine) {
+				result.push_back(*iter);
+				iter++;
+			}
+			break;
+		}
+		iter++;
+	}
+	return result;
 }

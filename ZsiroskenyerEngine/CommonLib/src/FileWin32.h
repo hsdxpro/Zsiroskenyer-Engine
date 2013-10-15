@@ -20,6 +20,9 @@ public:
 	bool ReplaceAll(const zsString& repThat, const zsString& withThat);
 	bool RemoveDuplicatedLines();
 
+	zsString GetStringBefore(const zsString& str);
+	std::list<zsString> GetLinesUnder(const zsString& str, const zsString& endLine);
+
 	const zsString& GetLine();
 	const std::list<zsString>& GetLines() const;
 	size_t  GetNLines() const;

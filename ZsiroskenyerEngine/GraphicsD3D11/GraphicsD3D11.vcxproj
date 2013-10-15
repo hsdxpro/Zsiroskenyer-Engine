@@ -99,11 +99,6 @@
     <ClInclude Include="src\VertexBufferD3D11.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CommonLib\CommonLib.vcxproj">
-      <Project>{4a9a62c0-5b13-4453-b6a9-464dffbe864f}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="src\IndexBufferD3D11.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

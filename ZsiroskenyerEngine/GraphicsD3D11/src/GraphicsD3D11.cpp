@@ -529,49 +529,123 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 	// etc generated
 	// within these files the entry point is different from .cg file, they named "main"
 	// replace each main with it's appropriate synonim VS_MAIN, PS_MAIN...
-	// then 
-	// MERGE those example_vs.hlsl, example_ps.hlsl etc... to example.hlsl
-	zsString mergedHlslFilePath = exePath  + shaderWithoutExtension + L".hlsl";
-	cFileWin32 mergedHlslFile(mergedHlslFilePath);
-	mergedHlslFile.Clear();
 	if(cgHaveVS) {
 		cFileWin32 vsFile(hlslVsFullPath);
 		vsFile.ReplaceAll(L"main", L"VS_MAIN");
-		mergedHlslFile.Append(vsFile);
 	}
 
 	if(cgHavePS) {
 		cFileWin32 psFile(hlslPsFullPath);
 		psFile.ReplaceAll(L"main", L"PS_MAIN");
-		mergedHlslFile.Append(psFile);
 	}
 
-	mergedHlslFile.RemoveDuplicatedLines();
+	// Shader Compiling creating.. and input layout creation
+	ID3D11VertexShader* vs;
+	ID3D11PixelShader* ps;
+	ID3D11InputLayout* inputLayout;
+	ID3DBlob *blob;
+	
+	// Compile, Create VERTEX_SHADER
+	while(FAILED(CompileShaderFromFile(hlslVsFullPath, L"VS_MAIN", L"vs_5_0", &blob)))
+		ZS_MSG(zsString(L"Something wrong with the .cg shader, repair it i wait you: " + cgFullPath).c_str());
 
+	HRESULT hr = d3ddev->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), NULL, &vs);
+	if(FAILED(hr))
+		ZS_MSG(zsString(L"Failed to create vertex shader from bytecode: " + hlslVsFullPath).c_str());
+
+	// Compile, Create PIXEL_SHADER
+	while(FAILED(CompileShaderFromFile(hlslPsFullPath, L"PS_MAIN", L"ps_5_0", &blob)))
+		ZS_MSG(zsString(L"Something wrong with the .cg shader, repair it i wait you: " + cgFullPath).c_str());
+
+	hr = d3ddev->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), NULL, &ps);
+	if(FAILED(hr))
+		ZS_MSG(zsString(L"Failed to create vertex shader from bytecode: " + hlslPsFullPath).c_str());
+
+
+	// Parse input Layout... from VERTEX_SHADER
+	// 1. search for "VS_MAIN(", get return value, for example VS_OUT
+	// 2. search for VS_OUT, get lines under that, while line != "};"
+	// 3. extract VERTEX DECLARATION from those lines
+
+	zsString vsInStructName = cgFile.GetStringBefore(L" VS_MAIN(");
+	std::list<zsString> vsInStructLines = cgFile.GetLinesUnder(vsInStructName, L"};");
+
+	int nVertexAttributes = 0;
+
+	// Count vertexAttributes
+	auto iter = vsInStructLines.begin();
+	while(iter != vsInStructLines.end()) {
+		// not empty line... Parse Vertex Declaration
+		if(iter->size() != 0) {
+			nVertexAttributes++;
+		}
+		iter++;
+	}
+	
+	// inputLayout descriptor (vertex Declaration)
+	D3D11_INPUT_ELEMENT_DESC *vertexDecl = new D3D11_INPUT_ELEMENT_DESC[nVertexAttributes];
+	size_t attribIdx = 0;
+	size_t alignedByteOffset = 0;
+
+	iter = vsInStructLines.begin();
+	while(iter != vsInStructLines.end()) {
+		// not empty line... Parse Vertex Declaration
+		if(iter->size() != 0) {
+			// Gather Semantic name
+			if(iter->find(L"POSITION")  != std::wstring::npos)
+				vertexDecl[attribIdx].SemanticName = "POSITION";	
+			else if(iter->find(L"COLOR")  != std::wstring::npos)
+				vertexDecl[attribIdx].SemanticName = "COLOR";
+			else
+				ZS_MSG(L"Cg compiling, can't math SEMANTIC NAME");
+
+			// Gather format...
+			if(iter->find(L"float4") != std::wstring::npos) {
+				vertexDecl[attribIdx].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+			} else if(iter->find(L"float3") != std::wstring::npos) {
+				vertexDecl[attribIdx].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+			} else if(iter->find(L"float2") != std::wstring::npos) {
+				vertexDecl[attribIdx].Format = DXGI_FORMAT_R32G32_FLOAT;
+			} else if(iter->find(L"float") != std::wstring::npos) {
+				vertexDecl[attribIdx].Format = DXGI_FORMAT_R32_FLOAT;
+			} 
+			else
+				ZS_MSG(L"Cg compiling, can't match FORMAT");
+
+			vertexDecl[attribIdx].AlignedByteOffset = alignedByteOffset;
+			vertexDecl[attribIdx].InputSlot = 0;
+			vertexDecl[attribIdx].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			vertexDecl[attribIdx].InstanceDataStepRate = 0;
+			vertexDecl[attribIdx].SemanticIndex = 0;
+
+			alignedByteOffset += sizeof(float) * 4;
+			attribIdx++;
+		}
+		iter++;
+	}
+
+	// Creating input layout...
+	hr = d3ddev->CreateInputLayout(vertexDecl , nVertexAttributes, blob->GetBufferPointer(), blob->GetBufferSize(), &inputLayout);
+	if(FAILED(hr))
+		ZS_MSG((L"cGraphicsD3D11::CreateShaderProgram -> Can't create input layout for vertexShader: " + hlslVsFullPath).c_str());
+
+	/*
 	// Parse vertexDeclaration infos from .hlsl file
 	D3D11_INPUT_ELEMENT_DESC *vertexDecl = NULL;
 	ID3D11VertexShader *vs;
 	int nVertexAttributes = 0;
 
 	// Compile .hlsl shader
-	ID3DBlob *blob;
-	while(FAILED(CompileShaderFromFile(mergedHlslFilePath, L"main", L"vs_5_0", &blob)))
-		ZS_MSG(zsString(L"Something wrong with the .cg shader, repair it i wait you: " + cgFullPath).c_str());
-
-	// Cret
-	HRESULT hr = d3ddev->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), NULL, &vs);
-	if(FAILED(hr))
-		ZS_MSG(zsString(L"Failed to create vertex shader from bytecode: " + mergedHlslFilePath).c_str());
 
 	// Create inputLayout based on vertexDeclaration
 	ID3D11InputLayout *inputLayout = NULL;
 	hr = d3ddev->CreateInputLayout(vertexDecl , nVertexAttributes, blob->GetBufferPointer(), blob->GetBufferSize(), &inputLayout);
 		if(FAILED(hr))
 			ZS_MSG((L"cGraphicsD3D11::CreateShaderProgram -> Can't create input layout for vertexShader: " + mergedHlslFilePath).c_str());
-
+	*/
 	blob->Release();
 	
-	return NULL;
+	return cShaderProgramD3D11();
 }
 
 HRESULT cGraphicsD3D11::CompileShaderFromFile(const zsString& fileName, const zsString& entry, const zsString& profile, ID3DBlob** ppBlobOut) {
