@@ -14,11 +14,15 @@
 #include "ASSIMP/include/assimp/PostProcess.h"
 
 // Vertex cache optimisation
-#include "..\..\CommonLib\src\tipsify.h"
+#include "../../CommonLib/src/tipsify.h"
 
 // Common and math
-#include "..\..\CommonLib\src\common.h"
-#include "..\..\CommonLib\src\math\vec3.h"
+#include "../../CommonLib/src/common.h"
+#include "../../CommonLib/src/math/vec3.h"
+
+// Graphics api
+#include "../../GraphicsCommon/src/IGraphicsApi.h"
+
 
 using namespace std;
 
@@ -249,7 +253,7 @@ void cManagerResource::UnloadMaterial(const cMaterial* material) {
 
 
 // constructors
-cManagerResource::cManagerResource() {
+cManagerResource::cManagerResource(IGraphicsApi* gApi) : gApi(gApi) {
 }
 cManagerResource::~cManagerResource() {
 }

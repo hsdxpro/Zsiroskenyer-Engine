@@ -20,22 +20,25 @@ cGraphicsEngine::cGraphicsEngine() {
 	gApi = Factory.CreateGraphics();
 	if (!gApi)
 		throw UnknownErrorException("failed to create graphics api");
-
+	managerShader = new cManagerShader(gApi);
+	managerResource = new cManagerResource();
+	managerScene = new cManagerScene(*managerResource);
 }
 
 
 void cGraphicsEngine::RenderSceneForward() {
 	// Set BackBuffer....
-	mgrGApi->SetRenderTargetDefault();
+	gApi->SetRenderTargetDefault();
 
 	// Set Effect...
-
+	
 
 	// Render each instanceGroup
 	auto instanceGroups = managerScene->GetInstanceGroups();
+
 }
 
 // interface
 IManagerScene* cGraphicsEngine::GetSceneManager() {
-	return (IManagerScene*)&mgrScene;
+	return managerScene;
 }
