@@ -645,7 +645,7 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 	*/
 	blob->Release();
 	
-	return cShaderProgramD3D11();
+	return cShaderProgramD3D11(vs, ps, inputLayout);
 }
 
 HRESULT cGraphicsD3D11::CompileShaderFromFile(const zsString& fileName, const zsString& entry, const zsString& profile, ID3DBlob** ppBlobOut) {
