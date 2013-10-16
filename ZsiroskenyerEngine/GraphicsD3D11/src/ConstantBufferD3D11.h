@@ -7,7 +7,7 @@
 
 class cConstantBufferD3D11 : public IConstantBuffer {
 public:
-	cConstantBufferD3D11(ID3D11Buffer* buffer);
+	cConstantBufferD3D11::cConstantBufferD3D11(ID3D11Buffer* buffer, size_t size, eBufferUsage usage);
 	~cConstantBufferD3D11();
 
 	size_t GetSize() const override;

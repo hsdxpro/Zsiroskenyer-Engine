@@ -19,15 +19,17 @@ class cManagerResource;
 class cGraphicsEngine : public IGraphicsEngine {
 public:
 	cGraphicsEngine();
+	~cGraphicsEngine();
 
 	void RenderSceneForward() override;
 
 	IManagerScene* GetSceneManager();
+	IGraphicsApi* GetGraphicsApi();
 private:	
 	IGraphicsApi* gApi;
 	cManagerShader* managerShader;
 	cManagerResource* managerResource;
-	cManagerScene* managerScene;	
+	cManagerScene* managerScene;
 };
 
 

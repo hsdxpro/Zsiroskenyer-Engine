@@ -37,6 +37,12 @@ cGraphicsEngine::cGraphicsEngine() {
 	}
 }
 
+cGraphicsEngine::~cGraphicsEngine() {
+	delete managerScene;
+	delete managerResource;
+	delete managerShader;
+	delete gApi;
+}
 
 void cGraphicsEngine::RenderSceneForward() {
 	// Set BackBuffer
@@ -49,16 +55,15 @@ void cGraphicsEngine::RenderSceneForward() {
 	// Begin scene
 	gApi->Clear();
 
-	/*
+	
 	// FUCK YOU HARDCODED WVP
 	IConstantBuffer* wvpBuffer = NULL;
-	delete wvpBuffer;
 	cCamera* cam = managerScene->GetActiveCamera();
 	Matrix44 tmpObjTrans;
 	tmpObjTrans.Translation(0.0f, 50.0f, 0.0f);
 	Matrix44 wvp = tmpObjTrans * cam->GetViewMatrix() * cam->GetProjMatrix();
 	wvp.Transpose();
-	gApi->CreateConstantBuffer(sizeof(Matrix44), eBufferUsage::DYNAMIC, &wvp);
+	wvpBuffer = gApi->CreateConstantBuffer(sizeof(Matrix44), eBufferUsage::DEFAULT, &wvp);
 
 	gApi->LoadConstantBuffer(wvpBuffer, 0);
 
@@ -78,10 +83,15 @@ void cGraphicsEngine::RenderSceneForward() {
 			gApi->DrawIndexed(nIndices, 0);
 		}
 	}
-	*/
+
+	delete wvpBuffer;
 }
 
 // interface
 IManagerScene* cGraphicsEngine::GetSceneManager() {
 	return managerScene;
+}
+
+IGraphicsApi* cGraphicsEngine::GetGraphicsApi() {
+	return gApi;
 }

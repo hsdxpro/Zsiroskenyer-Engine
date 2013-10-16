@@ -7,7 +7,8 @@
 #pragma once
 
 enum class eBufferUsage {
-	IMMUTABLE = 1,
+	DEFAULT = 1,
+	IMMUTABLE,
 	DYNAMIC,
 	STAGING
 };

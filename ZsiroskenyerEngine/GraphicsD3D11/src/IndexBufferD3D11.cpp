@@ -7,27 +7,12 @@
 
 #include "IndexBufferD3D11.h"
 
-cIndexBufferD3D11::cIndexBufferD3D11(ID3D11Buffer* buffer) : buffer(buffer) {	
-	D3D11_BUFFER_DESC desc;
-	memset(&desc, 0, sizeof(desc));
-	buffer->GetDesc(&desc);
+cIndexBufferD3D11::cIndexBufferD3D11(ID3D11Buffer* buffer, size_t size, eBufferUsage usage)
+:buffer(buffer), usage(usage), size(size) {		
+}
 
-	size = desc.ByteWidth;
-
-	switch (desc.Usage) {
-	case D3D11_USAGE_IMMUTABLE:
-		usage = eBufferUsage::IMMUTABLE;
-		break;
-	case D3D11_USAGE_DYNAMIC:
-		usage = eBufferUsage::DYNAMIC;
-		break;
-	case D3D11_USAGE_STAGING:
-		usage = eBufferUsage::STAGING;
-		break;
-	default:
-		MessageBoxA(NULL,__FILE__":""28""\nSomething's fucked up...\nApplication will now stop.", "FATAL ERROR", MB_OK);
-		exit(1);
-	}
+cIndexBufferD3D11::~cIndexBufferD3D11() {
+	buffer->Release();
 }
 
 size_t cIndexBufferD3D11::GetSize() const {

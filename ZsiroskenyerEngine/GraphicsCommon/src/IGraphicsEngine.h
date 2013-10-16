@@ -9,9 +9,11 @@
 #pragma once
 
 #include "IManagerScene.h"
+#include "IGraphicsApi.h"
 
 class IGraphicsEngine {
 public:
 	virtual IManagerScene* GetSceneManager() = 0;
+	virtual IGraphicsApi* GetGraphicsApi() = 0;
 	virtual void RenderSceneForward() = 0;
 };
