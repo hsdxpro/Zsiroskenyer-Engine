@@ -21,7 +21,7 @@ class IShaderProgram;
 class IGraphicsApi {
 public:
 	//buffers
-	virtual IVertexBuffer* CreateVertexBuffer(size_t size, eBufferUsage usage, void* data = NULL) = 0;
+	virtual IVertexBuffer* CreateVertexBuffer(size_t nVertices, size_t vertexStride, eBufferUsage usage, void* data = NULL) = 0;
 	virtual IIndexBuffer* CreateIndexBuffer(size_t size, eBufferUsage usage, void* data = NULL) = 0;
 	virtual IConstantBuffer* CreateConstantBuffer(size_t size, eBufferUsage usage, void* data = NULL) = 0;
 

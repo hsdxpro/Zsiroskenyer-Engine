@@ -49,7 +49,7 @@ public:
 	};
 
 	// buffers
-	IVertexBuffer* CreateVertexBuffer(size_t size, eBufferUsage usage, void* data = NULL) override;
+	IVertexBuffer* CreateVertexBuffer(size_t nVertices, size_t vertexStride, eBufferUsage usage, void* data = NULL) override;
 	IIndexBuffer* CreateIndexBuffer(size_t size, eBufferUsage usage, void* data = NULL) override;
 	IConstantBuffer* CreateConstantBuffer(size_t size, eBufferUsage usage, void* data = NULL) override;
 

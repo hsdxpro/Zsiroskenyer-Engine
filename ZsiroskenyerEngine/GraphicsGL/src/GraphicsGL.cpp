@@ -1,6 +1,6 @@
 #include "GraphicsGL.h"
 
-IVertexBuffer* cGraphicsGL::CreateVertexBuffer(size_t size, eBufferUsage usage, void* data /*= NULL*/) {
+IVertexBuffer* cGraphicsGL::CreateVertexBuffer(size_t nVertices, size_t vertexStride, eBufferUsage usage, void* data /*= NULL*/) {
 	return NULL;
 }
 

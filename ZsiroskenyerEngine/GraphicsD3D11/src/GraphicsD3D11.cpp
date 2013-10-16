@@ -289,15 +289,16 @@ void cGraphicsD3D11::SetRenderTargetDefault() {
 	d3dcon->OMSetRenderTargets(1, &backBufferRTV, backBufferDSV);
 }
 
-IVertexBuffer* cGraphicsD3D11::CreateVertexBuffer(size_t size, eBufferUsage usage, void* data /*= NULL*/) {
+IVertexBuffer* cGraphicsD3D11::CreateVertexBuffer(size_t nVertices, size_t vertexStride, eBufferUsage usage, void* data /*= NULL*/) {
 	ID3D11Buffer* buffer = NULL;
 
 	D3D11_BUFFER_DESC desc;
-	desc.ByteWidth = size;
+	desc.ByteWidth = nVertices * vertexStride;
 	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	desc.MiscFlags = 0;
-	desc.StructureByteStride = 0;
+	desc.StructureByteStride = vertexStride;
 	switch(usage){
+	case eBufferUsage::DEFAULT:		desc.Usage = D3D11_USAGE_DEFAULT;		desc.CPUAccessFlags = 0;											break;
 	case eBufferUsage::IMMUTABLE:	desc.Usage = D3D11_USAGE_IMMUTABLE;		desc.CPUAccessFlags=0;												break;
 	case eBufferUsage::DYNAMIC:		desc.Usage = D3D11_USAGE_DYNAMIC;		desc.CPUAccessFlags=D3D11_CPU_ACCESS_WRITE;							break;
 	case eBufferUsage::STAGING:		desc.Usage = D3D11_USAGE_STAGING;		desc.CPUAccessFlags=D3D11_CPU_ACCESS_READ|D3D11_CPU_ACCESS_WRITE;	break;
@@ -320,13 +321,15 @@ IIndexBuffer* cGraphicsD3D11::CreateIndexBuffer(size_t size , eBufferUsage usage
 	ID3D11Buffer* buffer = NULL;
 
 	D3D11_BUFFER_DESC desc;
+	memset(&desc, 0, sizeof(desc));
 	desc.ByteWidth = size;
 	desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	desc.MiscFlags = 0;
-	desc.StructureByteStride = 0;
+	desc.StructureByteStride = sizeof(int);
 	switch(usage){
-	case eBufferUsage::IMMUTABLE:	desc.Usage = D3D11_USAGE_IMMUTABLE;		desc.CPUAccessFlags = 0;												break;
-	case eBufferUsage::DYNAMIC:		desc.Usage = D3D11_USAGE_DYNAMIC;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;							break;
+	case eBufferUsage::DEFAULT:		desc.Usage = D3D11_USAGE_DEFAULT;		desc.CPUAccessFlags = 0;											break;
+	case eBufferUsage::IMMUTABLE:	desc.Usage = D3D11_USAGE_IMMUTABLE;		desc.CPUAccessFlags = 0;											break;
+	case eBufferUsage::DYNAMIC:		desc.Usage = D3D11_USAGE_DYNAMIC;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;						break;
 	case eBufferUsage::STAGING:		desc.Usage = D3D11_USAGE_STAGING;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ|D3D11_CPU_ACCESS_WRITE;	break;
 	}
 
@@ -347,6 +350,7 @@ IConstantBuffer* cGraphicsD3D11::CreateConstantBuffer(size_t size , eBufferUsage
 	ID3D11Buffer* buffer = NULL;
 
 	D3D11_BUFFER_DESC desc;
+	memset(&desc, 0, sizeof(desc));
 	desc.ByteWidth = size;
 	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	desc.MiscFlags = 0;
@@ -359,7 +363,6 @@ IConstantBuffer* cGraphicsD3D11::CreateConstantBuffer(size_t size , eBufferUsage
 	}
 
 	D3D11_SUBRESOURCE_DATA resData;
-	memset(&resData, 0, sizeof(resData));
 	resData.pSysMem = data;
 
 	HRESULT hr = d3ddev->CreateBuffer(&desc, &resData, &buffer);
@@ -460,8 +463,8 @@ bool cGraphicsD3D11::ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, 
 }
 
 void cGraphicsD3D11::LoadConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) {
-	ID3D11Buffer* tmp = (ID3D11Buffer*)buffer;
-	d3dcon->VSSetConstantBuffers(slotIdx, 1, &tmp);
+	ID3D11Buffer* const* tmp = (ID3D11Buffer* const*)buffer;
+	d3dcon->VSSetConstantBuffers(slotIdx, 0, tmp);
 }
 
 ////////////////////

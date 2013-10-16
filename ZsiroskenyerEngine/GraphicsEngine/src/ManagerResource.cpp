@@ -214,13 +214,15 @@ cGeometry* cManagerResource::LoadGeometryDAE(const zsString& fileName) {
 
 	// Finally Index reordering for optimal post vertex cache
 	uint32* reorderedIndices = new uint32[nIndex];
-	reorderedIndices = tipsify(indices,nIndex/3,nVertex,16);
+	reorderedIndices = tipsify(indices, nIndex / 3,nVertex, 16);
 	delete[] indices;
 
 	zsPrintDebug(L"ManagerResource::LoadGeometry -> " + fileName);
-	//return new cGeometry(uniqueVertices, reorderedIndices, nUniqVertices, nIndex);
-	//return new cGeometry(new IVertexBuffer(uniqueVertices, reorderedIndices, nUniqVertices, nIndex);
-	return NULL;
+	int vertexStride = sizeof(float) * 8;
+
+	IVertexBuffer *vb = gApi->CreateVertexBuffer(nUniqVertices, vertexStride, eBufferUsage::DEFAULT, uniqueVertices);
+	IIndexBuffer *ib = gApi->CreateIndexBuffer(nIndex * sizeof(uint32), eBufferUsage::DEFAULT, reorderedIndices);
+	return new cGeometry(vb, ib);
 }
 
 // load/unload materials

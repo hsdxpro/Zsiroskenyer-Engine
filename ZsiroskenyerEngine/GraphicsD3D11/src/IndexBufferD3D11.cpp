@@ -23,7 +23,6 @@ eBufferUsage cIndexBufferD3D11::GetUsage() const {
 	return usage;
 }
 
-
 cIndexBufferD3D11::operator ID3D11Buffer*() const {
 	return buffer;
 }
