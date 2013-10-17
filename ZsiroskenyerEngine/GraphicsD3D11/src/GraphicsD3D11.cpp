@@ -463,8 +463,7 @@ bool cGraphicsD3D11::ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, 
 }
 
 void cGraphicsD3D11::LoadConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) {
-	ID3D11Buffer* const* tmp = (ID3D11Buffer* const*)buffer;
-	d3dcon->VSSetConstantBuffers(slotIdx, 0, tmp);
+	d3dcon->VSSetConstantBuffers(slotIdx, 1, (ID3D11Buffer* const*)buffer->GetBuffer());
 }
 
 ////////////////////
@@ -514,11 +513,11 @@ void cGraphicsD3D11::SetVertexData(const IVertexBuffer* vertexBuffer, size_t ver
 	const UINT strides = vertexSize;
 	const UINT offset = 0;
 
-	d3dcon->IASetVertexBuffers(0, 1, (ID3D11Buffer* const*)vertexBuffer, &strides, &offset);
+	d3dcon->IASetVertexBuffers(0, 1, (ID3D11Buffer* const*)vertexBuffer->GetBuffer(), &strides, &offset);
 }
 
 void cGraphicsD3D11::SetIndexData(const IIndexBuffer* indexBuffer) {
-	d3dcon->IASetIndexBuffer((ID3D11Buffer*)indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	d3dcon->IASetIndexBuffer((ID3D11Buffer*)indexBuffer->GetBuffer(), DXGI_FORMAT_R32_UINT, 0);
 }
 
 void cGraphicsD3D11::SetInstanceData() {

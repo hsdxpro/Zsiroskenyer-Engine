@@ -8,7 +8,7 @@
 #include "IndexBufferD3D11.h"
 
 cIndexBufferD3D11::cIndexBufferD3D11(ID3D11Buffer* buffer, size_t size, eBufferUsage usage)
-:buffer(buffer), usage(usage), size(size) {		
+:buffer(buffer), usage(usage), size(size) {
 }
 
 cIndexBufferD3D11::~cIndexBufferD3D11() {
@@ -23,6 +23,6 @@ eBufferUsage cIndexBufferD3D11::GetUsage() const {
 	return usage;
 }
 
-cIndexBufferD3D11::operator ID3D11Buffer*() const {
+void* cIndexBufferD3D11::GetBuffer() const {
 	return buffer;
 }

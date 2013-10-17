@@ -56,16 +56,15 @@ void cGraphicsEngine::RenderSceneForward() {
 	gApi->Clear();
 
 	
-	// FUCK YOU HARDCODED WVP
-	//IConstantBuffer* wvpBuffer = NULL;
-	//cCamera* cam = managerScene->GetActiveCamera();
-	//Matrix44 tmpObjTrans;
-	//tmpObjTrans.Translation(0.0f, 50.0f, 0.0f);
-	//Matrix44 wvp = tmpObjTrans * cam->GetViewMatrix() * cam->GetProjMatrix();
-	//wvp.Transpose();
-	//wvpBuffer = gApi->CreateConstantBuffer(sizeof(Matrix44), eBufferUsage::DEFAULT, &tmpObjTrans);
+	IConstantBuffer* wvpBuffer = NULL;
+	cCamera* cam = managerScene->GetActiveCamera();
+	Matrix44 tmpObjTrans;
+	tmpObjTrans.Translation(0.0f, 50.0f, 0.0f);
+	Matrix44 wvp = tmpObjTrans * cam->GetViewMatrix() * cam->GetProjMatrix();
+	wvp.Transpose();
+	wvpBuffer = gApi->CreateConstantBuffer(sizeof(Matrix44), eBufferUsage::DEFAULT, &wvp);
 
-	//gApi->LoadConstantBuffer(wvpBuffer, 1);
+	//gApi->LoadConstantBuffer(wvpBuffer, 0);
 
 	// Render each instanceGroup
 	auto instanceGroups = managerScene->GetInstanceGroups();
@@ -75,17 +74,16 @@ void cGraphicsEngine::RenderSceneForward() {
 		const IIndexBuffer* ib = group->geom->GetIndexBuffer();
 		
 		gApi->SetIndexData(ib);
-		//gApi->SetVertexData(vb, shader->GetVertexFormatSize());
-		/*
+		gApi->SetVertexData(vb, shader->GetVertexFormatSize());
+		
 		size_t nIndices = 0;
 		for (auto& entity : group->entities) {
 			// draw entity
 			gApi->DrawIndexed(nIndices, 0);
-		}
-		*/
+		}	
 	}
 
-	//delete wvpBuffer;
+	delete wvpBuffer;
 }
 
 // interface
