@@ -22,11 +22,9 @@
 
 // Graphics api
 #include "../../GraphicsCommon/src/IGraphicsApi.h"
+#include "../../CommonLib/src/FileWin32.h"
 
-
-using namespace std;
-
-
+#include "../../GraphicsCommon/src/Exception.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //	ResourceManager
@@ -38,10 +36,6 @@ cGeometryRef cManagerResource::LoadGeometry(const zsString& fileName) {
 	// lookup if already exists
 	auto it = geometries.left.find(fileName);
 	if (it==geometries.left.end()) {
-
-		// try to load geometry
-		// TODO: add loading code here!
-		// throw a FileNotFound or an InvalidData exception on failure
 
 		// Create geometry based on file extension
 		zsString fileExtension = fileName.substr(fileName.length() - 3, 3);
@@ -68,6 +62,11 @@ void cManagerResource::UnloadGeometry(const cGeometry* geometry) {
 cGeometry* cManagerResource::LoadGeometryDAE(const zsString& fileName) {
 	Assimp::Importer importer;
 
+	if(!cFileWin32::isFileExits(fileName)) {
+		throw FileNotFoundException();
+		//ZS_MSG(zsString(L"Can't load DAE file: " + fileName).c_str());
+	}
+	
 	// read up dae scene
 	char ansiFileName[256];
 	wcstombs(ansiFileName, fileName.c_str(), 256);
@@ -132,7 +131,7 @@ cGeometry* cManagerResource::LoadGeometryDAE(const zsString& fileName) {
 			}
 			meshTrans.Decompose(scaling, rotation, position);
 			position.y *= -1;
-			swap(position.y, position.z);
+			std::swap(position.y, position.z);
 		} else {
 			aiNode *rootNode = scene->mRootNode;
 			aiNode *meshTransNode = (scene->mRootNode->mNumChildren > 1) ? rootNode->mChildren[1] : rootNode->mChildren[0];
@@ -158,7 +157,7 @@ cGeometry* cManagerResource::LoadGeometryDAE(const zsString& fileName) {
 			aiVector3D txcoord	= currTxcoords[j];*/
 			
 			if(meshHaveBakedTrans) {
-				swap(pos.y, pos.z);
+				std::swap(pos.y, pos.z);
 				// x, z, y  stupid assimp
 			}
 
@@ -292,7 +291,7 @@ cGeometryRef& cGeometryRef::operator=(const cGeometryRef& other) {
 }
 
 bool cGeometryRef::operator==(const cGeometryRef& other) {
-	return ::operator==(*this, other);
+	return std::operator==(*this, other);
 }
 
 cGeometry* cGeometryRef::get() const {
@@ -328,7 +327,7 @@ cMaterialRef& cMaterialRef::operator=(const cMaterialRef& other) {
 }
 
 bool cMaterialRef::operator==(const cMaterialRef& other) {
-	return ::operator==(*this, other);
+	return std::operator==(*this, other);
 }
 
 cMaterial* cMaterialRef::get() const {

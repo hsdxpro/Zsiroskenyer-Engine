@@ -101,7 +101,7 @@ void cGraphicsEngine::RenderSceneForward() {
 			gApi->DrawIndexed(nIndices);
 		}	
 	}
-	//wvpBuffer->Release();
+	wvpBuffer->Release();
 }
 
 // interface

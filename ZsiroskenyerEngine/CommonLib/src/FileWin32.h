@@ -28,7 +28,9 @@ public:
 	const zsString& GetLine();
 	const std::list<zsString>& GetLines() const;
 	size_t  GetNLines() const;
+
 	bool IsEOF();
+	static bool isFileExits(const zsString& str);
 
 	cFileWin32(const zsString& file);
 	cFileWin32();

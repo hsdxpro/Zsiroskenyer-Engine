@@ -139,6 +139,13 @@ bool cFileWin32::IsEOF() {
 	return isEof;
 }
 
+bool cFileWin32::isFileExits(const zsString& str) {
+	std::wfstream is(str.c_str(), std::ios_base::in);
+	return is.is_open();
+	is.close();
+}
+
+
 bool cFileWin32::RemoveDuplicatedLines() {
 	// Reopen stream
 	stream.close();
