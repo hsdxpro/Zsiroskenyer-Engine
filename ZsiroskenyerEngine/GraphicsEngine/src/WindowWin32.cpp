@@ -7,8 +7,8 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	switch(msg) {
 	case WM_DESTROY: 
 		{
+			PostQuitMessage(0);
 			//@TODO TMP CODE Fuck... REMOVE THAT
-			exit(0);
 		}
 		break;
 	case IWindow::eMessage::MOUSE_MBUTTONDOWN:
@@ -131,16 +131,20 @@ void cWindowWin32::MoveCenter() {
 }
 
 void cWindowWin32::PeekAllMessages() {
-	MSG msg;
-	while(PeekMessage(&msg,0,0,0,PM_REMOVE))
+	static MSG msg;
+	while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
-	}	
+	}
+
+	// If the message is WM_QUIT, exit the while loop
+	if(msg.message == WM_QUIT)
+		Close();
 }
 
 void cWindowWin32::Close() {
-
+	opened = false;
 }
 
 void cWindowWin32::SetCaptionText(const zsString& str) {
@@ -148,7 +152,7 @@ void cWindowWin32::SetCaptionText(const zsString& str) {
 }
 
 bool cWindowWin32::IsOpened() const {
-	return true;
+	return opened;
 }
 
 bool cWindowWin32::IsFullscreen() const {

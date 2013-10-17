@@ -37,14 +37,15 @@ cGraphicsEngine::cGraphicsEngine() {
 	}
 }
 
-cGraphicsEngine::~cGraphicsEngine() {
+void cGraphicsEngine::Release() {
 	delete managerScene;
 	delete managerResource;
 	delete managerShader;
-	delete gApi;
+	gApi->Release();
 }
 
 void cGraphicsEngine::RenderSceneForward() {
+	
 	// Set BackBuffer
 	gApi->SetRenderTargetDefault();
 
@@ -54,6 +55,7 @@ void cGraphicsEngine::RenderSceneForward() {
 	// Set Effect...
 	auto shader = managerShader->GetShaderByName(L"test.cg");
 	gApi->SetShaderProgram(shader);
+	
 
 	/*
 	Vec3 vertices[4];
@@ -65,7 +67,7 @@ void cGraphicsEngine::RenderSceneForward() {
 	int indices[6];
 	indices[0] = 
 		*/
-	/*
+	
 	IConstantBuffer* wvpBuffer = NULL;
 	cCamera* cam = managerScene->GetActiveCamera();
 	Matrix44 tmpObjTrans;
@@ -80,7 +82,7 @@ void cGraphicsEngine::RenderSceneForward() {
 	wvpBuffer = gApi->CreateConstantBuffer(sizeof(Matrix44), eBufferUsage::DEFAULT, &scale);
 	
 	gApi->LoadConstantBuffer(wvpBuffer, 0);
-	*/
+	
 	
 	// Render each instanceGroup
 	auto instanceGroups = managerScene->GetInstanceGroups();
@@ -99,8 +101,7 @@ void cGraphicsEngine::RenderSceneForward() {
 			gApi->DrawIndexed(nIndices);
 		}	
 	}
-	
-	wvpBuffer->Release();
+	//wvpBuffer->Release();
 }
 
 // interface

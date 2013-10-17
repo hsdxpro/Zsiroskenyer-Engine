@@ -63,8 +63,7 @@ void cGraphicsD3D11::SetWindow(IWindow *renderWindow) {
 	SetRenderTargetDefault();
 }
 
-cGraphicsD3D11::~cGraphicsD3D11() {
-
+void cGraphicsD3D11::Release() {
 	ID3D11RenderTargetView *nulltarget[] = {0};
 	d3dcon->OMSetRenderTargets(1, nulltarget, 0);
 

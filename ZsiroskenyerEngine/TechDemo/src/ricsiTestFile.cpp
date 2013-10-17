@@ -43,7 +43,7 @@ int ricsiMain() {
 	}
 	
 	// Free up
-	SAFE_DELETE(mgrGEngine);
+	mgrGEngine->Release();
 	SAFE_DELETE(cam);
 	return 0;
 }

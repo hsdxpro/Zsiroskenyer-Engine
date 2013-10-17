@@ -13,7 +13,10 @@
 
 class IGraphicsEngine {
 public:
+	virtual void Release() = 0;
+
+	virtual void RenderSceneForward() = 0;
+
 	virtual IManagerScene* GetSceneManager() = 0;
 	virtual IGraphicsApi* GetGraphicsApi() = 0;
-	virtual void RenderSceneForward() = 0;
 };

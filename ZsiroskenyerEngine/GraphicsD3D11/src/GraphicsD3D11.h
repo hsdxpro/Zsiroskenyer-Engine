@@ -88,7 +88,7 @@ public:
 
 	// constructor
 	cGraphicsD3D11();
-	~cGraphicsD3D11();
+	void Release() override;
 private:
 	void CreateDevice();
 	void CreateMostAcceptableSwapChain(uint16 width, uint16 height, HWND windowHandle, const tDxConfig& config);
