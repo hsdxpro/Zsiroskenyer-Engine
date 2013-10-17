@@ -3,7 +3,7 @@
 #include "../../CommonLib/src/common.h"
 
 cCamera::cCamera(float fovRad, float aspectRatio, float nearPlane, float farPlane) 
-:fovRad(fovRad), aspectRatio(aspectRatio), nearPlane(nearPlane), farPlane(farPlane) {
+:fovRad(fovRad), aspectRatio(aspectRatio), nearPlane(nearPlane), farPlane(farPlane), target(0,1,0) {
 }
 
 /*
@@ -52,7 +52,6 @@ float cCamera::GetFarPlane() const {
 
 Matrix44 cCamera::GetViewMatrix() const {
 	const Vec3 up(0.0f, 0.0f, 1.0f);
-	//@TODO fuck dummy bruteforce target
 	return Matrix44::MatrixViewRH(pos, target, up);
 }
 

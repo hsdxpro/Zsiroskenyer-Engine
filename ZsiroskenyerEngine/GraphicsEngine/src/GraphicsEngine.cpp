@@ -53,15 +53,18 @@ void cGraphicsEngine::RenderSceneForward() {
 	gApi->SetShaderProgram(shader);
 	
 	// Begin scene
-	gApi->Clear();
+	gApi->Clear(true, true);
 
 	
 	IConstantBuffer* wvpBuffer = NULL;
 	cCamera* cam = managerScene->GetActiveCamera();
 	Matrix44 tmpObjTrans;
-	tmpObjTrans.Translation(0.0f, 50.0f, 0.0f);
-	Matrix44 wvp = tmpObjTrans * cam->GetViewMatrix() * cam->GetProjMatrix();
+	tmpObjTrans.Translation(0.0f, 0.0f, 0.0f);
+	Matrix44 viewMat = cam->GetViewMatrix();
+	Matrix44 projMat = cam->GetProjMatrix();
+	Matrix44 wvp = tmpObjTrans * viewMat * projMat;
 	wvp.Transpose();
+
 	wvpBuffer = gApi->CreateConstantBuffer(sizeof(Matrix44), eBufferUsage::DEFAULT, &wvp);
 
 	gApi->LoadConstantBuffer(wvpBuffer, 0);
@@ -80,10 +83,10 @@ void cGraphicsEngine::RenderSceneForward() {
 		size_t nIndices = 36;
 		for (auto& entity : group->entities) {
 			// draw entity
-			gApi->DrawIndexed(nIndices, 0);
+			gApi->DrawIndexed(nIndices);
 		}	
 	}
-
+	
 	delete wvpBuffer;
 }
 

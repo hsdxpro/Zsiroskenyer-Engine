@@ -21,6 +21,8 @@ public:
 	bool RemoveDuplicatedLines();
 
 	zsString GetStringBefore(const zsString& str);
+	zsString GetWordAfter(const zsString& str);
+
 	std::list<zsString> GetLinesUnder(const zsString& str, const zsString& endLine);
 
 	const zsString& GetLine();

@@ -196,6 +196,24 @@ zsString cFileWin32::GetStringBefore(const zsString& str) {
 	return zsString();
 }
 
+zsString cFileWin32::GetWordAfter(const zsString& str) {
+	size_t idx = 0;
+	auto iter = lines.begin();
+	while(iter != lines.end()) {
+		size_t start_pos = iter->find(str);
+		if(start_pos != std::wstring::npos) {
+			start_pos += str.size();
+			idx = start_pos;
+			while((*iter)[idx] != ' ') {
+				idx++;
+			}
+			return zsString(iter->substr(start_pos, idx - start_pos));
+		}
+		iter++;
+	}
+	return zsString();
+}
+
 std::list<zsString> cFileWin32::GetLinesUnder(const zsString& str, const zsString& endLine) {
 	std::list<zsString> result;
 	auto iter = lines.begin();

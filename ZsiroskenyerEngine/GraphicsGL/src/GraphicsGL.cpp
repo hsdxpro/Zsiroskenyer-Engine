@@ -48,7 +48,7 @@ void cGraphicsGL::DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInsta
 	
 }
 
-void cGraphicsGL::SetVertexData(const IVertexBuffer* vertexBuffer, size_t vertexSize) {
+void cGraphicsGL::SetVertexData(const IVertexBuffer* vertexBuffer, size_t vertexStride) {
 	
 }
 

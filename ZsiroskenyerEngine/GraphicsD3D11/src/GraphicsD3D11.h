@@ -72,7 +72,7 @@ public:
 
 	void SetRenderTargetDefault() override;
 
-	void SetVertexData(const IVertexBuffer* vertexBuffer, size_t vertexSize) override;
+	void SetVertexData(const IVertexBuffer* vertexBuffer, size_t vertexStride) override;
 	void SetIndexData(const IIndexBuffer* indexBuffer) override;
 	void SetInstanceData(/*whatever*/) override;
 

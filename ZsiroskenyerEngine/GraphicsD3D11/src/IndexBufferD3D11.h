@@ -20,6 +20,7 @@ public:
 	cIndexBufferD3D11(ID3D11Buffer* buffer, size_t size, eBufferUsage usage);
 	~cIndexBufferD3D11();
 
+
 public:
 	ID3D11Buffer* const buffer;
 private:

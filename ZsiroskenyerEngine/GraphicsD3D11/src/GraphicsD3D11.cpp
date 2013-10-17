@@ -32,7 +32,8 @@ cGraphicsD3D11::cGraphicsD3D11()
 	CreateDevice();
 
 	// Create default states
-	CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_BACK,D3D11_FILL_MODE::D3D11_FILL_SOLID);
+	//CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_BACK,D3D11_FILL_MODE::D3D11_FILL_SOLID);
+	CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_NONE,D3D11_FILL_MODE::D3D11_FILL_SOLID);
 }
 
 void cGraphicsD3D11::SetWindow(IWindow *renderWindow) {
@@ -298,10 +299,10 @@ IVertexBuffer* cGraphicsD3D11::CreateVertexBuffer(size_t nVertices, size_t verte
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = vertexStride;
 	switch(usage){
-	case eBufferUsage::DEFAULT:		desc.Usage = D3D11_USAGE_DEFAULT;		desc.CPUAccessFlags = 0;											break;
-	case eBufferUsage::IMMUTABLE:	desc.Usage = D3D11_USAGE_IMMUTABLE;		desc.CPUAccessFlags=0;												break;
-	case eBufferUsage::DYNAMIC:		desc.Usage = D3D11_USAGE_DYNAMIC;		desc.CPUAccessFlags=D3D11_CPU_ACCESS_WRITE;							break;
-	case eBufferUsage::STAGING:		desc.Usage = D3D11_USAGE_STAGING;		desc.CPUAccessFlags=D3D11_CPU_ACCESS_READ|D3D11_CPU_ACCESS_WRITE;	break;
+	case eBufferUsage::DEFAULT:		desc.Usage = D3D11_USAGE_DEFAULT;		desc.CPUAccessFlags = 0;												break;
+	case eBufferUsage::IMMUTABLE:	desc.Usage = D3D11_USAGE_IMMUTABLE;		desc.CPUAccessFlags = 0;												break;
+	case eBufferUsage::DYNAMIC:		desc.Usage = D3D11_USAGE_DYNAMIC;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;							break;
+	case eBufferUsage::STAGING:		desc.Usage = D3D11_USAGE_STAGING;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ|D3D11_CPU_ACCESS_WRITE;		break;
 	}
 
 	D3D11_SUBRESOURCE_DATA resData;
@@ -471,7 +472,7 @@ void cGraphicsD3D11::LoadConstantBuffer(IConstantBuffer* buffer, size_t slotIdx)
 // draw
 ////////////////////
 void cGraphicsD3D11::Clear(bool target /*= true*/, bool depth /*= false*/, bool stencil /*= false*/) {
-	static const FLOAT defaultClearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	static const FLOAT defaultClearColor[4] = { 0.3f, 0.3f, 0.3f, 0.0f };
 
 	// Setup clear flags
 	UINT clearFlags = 0;
@@ -482,7 +483,7 @@ void cGraphicsD3D11::Clear(bool target /*= true*/, bool depth /*= false*/, bool 
 
 	// Clear depth, stencil if needed
 	if(depth || stencil)
-		d3dcon->ClearDepthStencilView(backBufferDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		d3dcon->ClearDepthStencilView(backBufferDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 0.0f, 0);
 
 	// Clear BackBuffer
 	if(target)
@@ -510,8 +511,8 @@ void cGraphicsD3D11::DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nIn
 	d3dcon->DrawIndexedInstanced(nIndicesPerInstance, nInstances, idxStartIndex, 0, idxStartInstance);
 }
 
-void cGraphicsD3D11::SetVertexData(const IVertexBuffer* vertexBuffer, size_t vertexSize) {
-	const UINT strides = vertexSize;
+void cGraphicsD3D11::SetVertexData(const IVertexBuffer* vertexBuffer, size_t vertexStride) {
+	const UINT strides = vertexStride;
 	const UINT offset = 0;
 	ID3D11Buffer* vertices = (ID3D11Buffer*)vertexBuffer->GetBuffer();
 	d3dcon->IASetVertexBuffers(0, 1, &vertices, &strides, &offset);
@@ -607,7 +608,7 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 	// 2. search for VS_OUT, get lines under that, while line != "};"
 	// 3. extract VERTEX DECLARATION from those lines
 
-	zsString vsInStructName = cgFile.GetStringBefore(L" VS_MAIN(");
+	zsString vsInStructName = cgFile.GetWordAfter(L" VS_MAIN(");
 	std::list<zsString> vsInStructLines = cgFile.GetLinesUnder(vsInStructName, L"};");
 
 	int nVertexAttributes = 0;

@@ -45,7 +45,7 @@ public:
 	virtual void SetRenderTargetDefault() = 0;
 
 
-	virtual void SetVertexData(const IVertexBuffer* vertexBuffer, size_t vertexSize) = 0;
+	virtual void SetVertexData(const IVertexBuffer* vertexBuffer, size_t vertexStride) = 0;
 	virtual void SetIndexData(const IIndexBuffer* indexBuffer) = 0;
 	virtual void SetInstanceData(/*whatever*/) = 0;
 

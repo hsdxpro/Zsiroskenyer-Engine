@@ -218,10 +218,11 @@ cGeometry* cManagerResource::LoadGeometryDAE(const zsString& fileName) {
 	delete[] indices;
 
 	zsPrintDebug(L"ManagerResource::LoadGeometry -> " + fileName);
-	int vertexStride = sizeof(float) * 8;
+	size_t vertexStride = sizeof(float) * 3;
+	size_t indexStride = sizeof(uint32);
 
 	IVertexBuffer *vb = gApi->CreateVertexBuffer(nUniqVertices, vertexStride, eBufferUsage::IMMUTABLE, uniqueVertices);
-	IIndexBuffer *ib = gApi->CreateIndexBuffer(nIndex * sizeof(uint32), eBufferUsage::IMMUTABLE, reorderedIndices);
+	IIndexBuffer *ib = gApi->CreateIndexBuffer(nIndex * indexStride, eBufferUsage::IMMUTABLE, reorderedIndices);
 	return new cGeometry(vb, ib);
 }
 

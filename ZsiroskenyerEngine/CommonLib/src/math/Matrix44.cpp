@@ -375,12 +375,11 @@ Matrix44 Matrix44::MatrixViewRH(const Vec3& eye, const Vec3& target, const Vec3&
 
 Matrix44 Matrix44::MatrixProjPerspective(float nearPlane, float farPlane, float fovRad) {
 	Matrix44 mat;
-		float scale = 1.0f / tan(fovRad * 0.5f);
-		mat.m[0][0] = mat.m[1][1] = scale;
-		mat.m[2][2] = - farPlane / (farPlane - nearPlane);
-		mat.m[3][2] = - farPlane * nearPlane / (farPlane - nearPlane);
-		mat.m[2][3] = - 1.0f;
-		mat.m[3][3] = 0.0f;
+	mat._11 = mat._22 = 1.0f / tan(fovRad * 0.5);
+	mat._33 = - farPlane / (farPlane - nearPlane);
+	mat._32 = - farPlane * nearPlane / (farPlane - nearPlane);
+	mat._23 = - 1;
+	mat._44 = 0;
 	return mat;
 }
 ///////////////////////////////////////////////////////////////////////////
