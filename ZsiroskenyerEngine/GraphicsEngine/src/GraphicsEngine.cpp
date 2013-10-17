@@ -71,15 +71,12 @@ void cGraphicsEngine::RenderSceneForward() {
 	IConstantBuffer* wvpBuffer = NULL;
 	cCamera* cam = managerScene->GetActiveCamera();
 	Matrix44 tmpObjTrans;
-	tmpObjTrans.Translation(0.0f, 0.0f, 0.0f);
+	tmpObjTrans.Translation(0.0f, 2.0f, 0.0f);
 	Matrix44 viewMat = cam->GetViewMatrix();
 	Matrix44 projMat = cam->GetProjMatrix();
 	Matrix44 wvp = tmpObjTrans * viewMat * projMat;
-	wvp.Transpose();
-	Matrix44 scale;
-	scale.Scale(Vec3(1.0f/60, 1.0f/60, 1.0f/60));
-	scale.Transpose();
-	wvpBuffer = gApi->CreateConstantBuffer(sizeof(Matrix44), eBufferUsage::DEFAULT, &scale);
+	wvp = wvp.Transpose(wvp);
+	wvpBuffer = gApi->CreateConstantBuffer(sizeof(Matrix44), eBufferUsage::DEFAULT, &wvp);
 	
 	gApi->LoadConstantBuffer(wvpBuffer, 0);
 	

@@ -482,7 +482,7 @@ void cGraphicsD3D11::Clear(bool target /*= true*/, bool depth /*= false*/, bool 
 
 	// Clear depth, stencil if needed
 	if(depth || stencil)
-		d3dcon->ClearDepthStencilView(backBufferDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 0.0f, 0);
+		d3dcon->ClearDepthStencilView(backBufferDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	// Clear BackBuffer
 	if(target)

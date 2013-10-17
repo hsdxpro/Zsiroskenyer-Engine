@@ -6,6 +6,7 @@
 #include <iostream>
 #include "Quat.h"
 #include "Vec3.h"
+#include "Vec4.h"
 
 /* what a matrix has to do? 
 (-decompose: get scale, rot, and translation from a matrix)
@@ -31,6 +32,9 @@ public:
 			float _21, _22, _23, _24;
 			float _31, _32, _33, _34;
 			float _41, _42, _43, _44;
+		};
+		struct {
+			Vec4 r[4];
 		};
 		float m[4][4];
 	};
@@ -64,6 +68,8 @@ public:
 
 	static Matrix44 MatrixViewRH(const Vec3& eye, const Vec3& target, const Vec3& up);
 	static Matrix44 MatrixProjPerspective(float nearPlane, float farPlane, float fovRad);
+
+	void SetColumn(size_t idx, const Vec4& v);
 
 	// Accessors
 	float& operator() (unsigned row, unsigned col);

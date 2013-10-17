@@ -156,7 +156,19 @@ Matrix44& Matrix44::Transpose(const Matrix44& in) {
 	return *this;
 }
 
+void Matrix44::SetColumn(size_t idx, const Vec4& v) {
+	for(size_t i = 0; i < 4; i++) {
+		this->m[i][idx] = v[i];
+	}
+}
+
 Matrix44& Matrix44::Transpose() {
+	Vec4 rows[4];
+	memcpy(rows, r, sizeof(Matrix44));
+	for(size_t i = 0; i < 4; i++)
+		SetColumn(i, rows[i]);
+
+	/*
 	float t;
 	t=_12;	_12 = _21;	_21=t;
 	t=_13;	_13 = _31;	_31=t;
@@ -166,6 +178,7 @@ Matrix44& Matrix44::Transpose() {
 	t= _23;	_23 = _32;	_32=t;
 	t= _34;	_34 = _43;	_43=t;
 
+	*/
 	return *this;
 };
 
