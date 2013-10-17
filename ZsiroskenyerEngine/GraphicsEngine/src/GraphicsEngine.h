@@ -19,7 +19,7 @@ class cManagerResource;
 class cGraphicsEngine : public IGraphicsEngine {
 public:
 	cGraphicsEngine();
-	void Release() over;
+	void Release() override;
 
 	void RenderSceneForward() override;
 
