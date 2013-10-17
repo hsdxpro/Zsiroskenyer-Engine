@@ -86,16 +86,21 @@ cGeometry* cManagerResource::LoadGeometryDAE(const zsString& fileName) {
 	}
 
 	// read up vertex + index
-	//tVertexLayouts::tVertexNro::vertex* vertices = new tVertexLayouts::tVertexNro::vertex[nVertex];
-	Vec3 *verticesPos = new Vec3[nVertex];
-	uint32 *indices = new uint32[nIndex];
+	struct baseVertex {
+		Vec3 pos;
+		Vec3 normal;
+		bool operator == (const baseVertex& v) {return pos == v.pos && normal == v.normal;}
+	};
+
+	baseVertex *vertices= new baseVertex[nVertex];
+	unsigned *indices = new unsigned[nIndex];
 	int indexI = 0;
 	int vertexI = 0;
 	int vertexOffset = 0;
 	for(uint32 i = 0; i < nMeshes;i++) {
 		aiMesh* mesh = meshes[i];
 		aiVector3D* currVertices	= mesh->mVertices;
-		//aiVector3D* currNormals		= mesh->mNormals;
+		aiVector3D* currNormals		= mesh->mNormals;
 		//aiVector3D* currTangents	= mesh->mTangents;
 		//aiVector3D* currTxcoords	= mesh->mTextureCoords[0]; // @TODO not general algorithm, wee need to handle more UV channels
 
@@ -110,18 +115,26 @@ cGeometry* cManagerResource::LoadGeometryDAE(const zsString& fileName) {
 			indices[indexI + 2]	= face.mIndices[2] + vertexI;
 		}
 
-		// process transform for vertices, normals, tangents, read them
+		// Ver
 		for(uint32 j = 0; j < mesh->mNumVertices; vertexI++, j++) {
 			aiVector3D pos = currVertices[j];
-			verticesPos[vertexI] = Vec3(pos.x, pos.y, pos.z);
+			aiVector3D norm = currNormals[j];
+			vertices[vertexI].pos = Vec3(pos.x, pos.y, pos.z);
+			vertices[vertexI].normal = Vec3(norm.x, norm.y, norm.z);
 		}
 	}
-	zsPrintDebug(L"ManagerResource::LoadGeometry -> " + fileName);
-	size_t vertexStride = sizeof(float) * 3;
-	size_t indexStride = sizeof(uint32);
 
-	IVertexBuffer *vb = gApi->CreateVertexBuffer(nVertex, vertexStride, eBufferUsage::IMMUTABLE, verticesPos);
-	IIndexBuffer *ib = gApi->CreateIndexBuffer(nIndex * indexStride, eBufferUsage::IMMUTABLE, indices);
+	// Finally Index reordering for optimal post vertex cache
+	size_t* reorderedIndices = new size_t[nIndex];
+	reorderedIndices = tipsify(indices,nIndex / 3,nVertex, 16); // for vertexCache size 16
+	delete[] indices;
+
+	zsPrintDebug(L"ManagerResource::LoadGeometry -> " + fileName);
+	size_t vertexStride = sizeof(float) * 6;
+	size_t indexStride = sizeof(unsigned);
+
+	IVertexBuffer *vb = gApi->CreateVertexBuffer(nVertex, vertexStride, eBufferUsage::IMMUTABLE, vertices);
+	IIndexBuffer *ib = gApi->CreateIndexBuffer(nIndex * indexStride, eBufferUsage::IMMUTABLE, reorderedIndices);
 	return new cGeometry(vb, ib);
 }
 

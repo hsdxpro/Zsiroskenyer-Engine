@@ -2,7 +2,7 @@
 #pragma once
 
 #include <math.h>
-#include "vec3.h"
+#include "Vec3.h"
 
 #define QUAT_NORM_TOLERANCE 0.00003f
 

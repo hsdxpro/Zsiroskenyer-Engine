@@ -23,11 +23,12 @@
 #include <memory>
 
 Matrix44::Matrix44() 
-:_11(1.0f), _12(0.0f), _13(0.0f), _14(0.0f),
- _21(0.0f), _22(1.0f), _23(0.0f), _24(0.0f),
- _31(0.0f), _32(0.0f), _33(1.0f), _34(0.0f),
- _41(0.0f), _42(0.0f), _43(0.0f), _44(1.0f)
- {}
+{
+	this->_11 = 1.0f; this->_12 = 0.0f; this->_13 = 0.0f; this->_14 = 0.0f;
+	this->_21 = 0.0f; this->_22 = 1.0f; this->_23 = 0.0f; this->_24 = 0.0f;
+	this->_31 = 0.0f; this->_32 = 0.0f; this->_33 = 1.0f; this->_34 = 0.0f;
+	this->_41 = 0.0f; this->_42 = 0.0f; this->_43 = 0.0f; this->_44 = 1.0f;
+}
 
 Matrix44::Matrix44(	float _11, float _12, float _13, float _14,
 					float _21, float _22, float _23, float _24,
@@ -258,18 +259,30 @@ Matrix44& Matrix44::Inverse() {
 }
 
 Matrix44& Matrix44::Scale(float scX, float scY, float scZ) {
-	Identity();
-	_41 = scX;
-	_42 = scY;
-	_43 = scZ;
+	_11 *= scX;
+	_22 *= scY;
+	_33 *= scZ;
 	return *this;
 }
 
-Matrix44& Matrix44::Scale(Vec3 scale) {
-	Identity();
-	_41 = scale.x;
-	_42 = scale.y;
-	_43 = scale.z;
+Matrix44& Matrix44::Scale(const Vec3& s) {
+	_11 *= s.x;
+	_22 *= s.y;
+	_33 *= s.z;
+	return *this;
+}
+
+Matrix44& Matrix44::Translate(float x, float y, float z) {
+	_41 += x;
+	_42 += y;
+	_43 += z;
+	return *this;
+}
+
+Matrix44& Matrix44::Translate(const Vec3& t) {
+	_41 += t.x;
+	_42 += t.y;
+	_43 += t.z;
 	return *this;
 }
 
@@ -281,12 +294,16 @@ Matrix44& Matrix44::Translation( float vX, float vY, float vZ) {
 	return *this;
 }
 
-Matrix44& Matrix44::Translation(Vec3 v) {
+Matrix44& Matrix44::Translation(const Vec3& v) {
 	Identity();
 	_41 = v.x;
 	_42 = v.y;
 	_43 = v.z;
 	return *this;
+}
+
+Matrix44& Matrix44::RotateEuler(const Vec3& rot) {
+	return RotationZ(rot.z) * RotationX(rot.x) * RotationY(rot.y);
 }
 
 Matrix44& Matrix44::RotationX (float angle) {
@@ -386,10 +403,11 @@ Matrix44 Matrix44::MatrixViewRH(const Vec3& eye, const Vec3& target, const Vec3&
 	return ( translation * orientation );
 }
 
-Matrix44 Matrix44::MatrixProjPerspective(float nearPlane, float farPlane, float fovRad) {
+Matrix44 Matrix44::MatrixProjPerspective(float nearPlane, float farPlane, float fovRad, float aspectRatio) {
 	Matrix44 mat;
 	mat.Identity();
 	mat._11 = mat._22 = 1.0f / tan(fovRad * 0.5);
+	mat._11 /= aspectRatio;
 	mat._33 =   farPlane / (farPlane - nearPlane);
 	mat._43 =  -(farPlane * nearPlane) / (farPlane - nearPlane);
 	mat._34 =   1;

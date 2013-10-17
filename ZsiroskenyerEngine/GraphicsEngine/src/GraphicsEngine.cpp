@@ -50,58 +50,53 @@ void cGraphicsEngine::RenderSceneForward() {
 	// Set BackBuffer
 	gApi->SetRenderTargetDefault();
 
+	// Set Effect...
+	IShaderProgram* shaderP = managerShader->GetShaderByName(L"test.cg");
+	gApi->SetShaderProgram(shaderP);
+	
 	// Begin scene
 	gApi->Clear(true, true);
 
-	// Set Effect...
-	auto shader = managerShader->GetShaderByName(L"test.cg");
-	gApi->SetShaderProgram(shader);
-	
-
-	/*
-	Vec3 vertices[4];
-	vertices[0] = Vec3(-1, 1, 0.2f); // bal fent
-	vertices[1] = Vec3(1, 1, 0.2f); // jobb fent
-	vertices[2] = Vec3(1, -1, 0.2f); // jobb lent
-	vertices[3] = Vec3(-1, -1, 0.2f); // bal lent
-
-	int indices[6];
-	indices[0] = 
-		*/
-	
-	IConstantBuffer* wvpBuffer = NULL;
+	// Get camera params
 	cCamera* cam = managerScene->GetActiveCamera();
-	Matrix44 tmpObjTrans;
-	tmpObjTrans.Translation(0.0f, 100.0f, 0.0f);
 	Matrix44 viewMat = cam->GetViewMatrix();
 	Matrix44 projMat = cam->GetProjMatrix();
-	Matrix44 wvp  = tmpObjTrans * viewMat * projMat;
-	wvpBuffer = gApi->CreateConstantBuffer(sizeof(Matrix44), eBufferUsage::DEFAULT, &wvp);
-	
-	gApi->LoadConstantBuffer(wvpBuffer, 0);
-	
 	
 	// Render each instanceGroup
-	auto instanceGroups = managerScene->GetInstanceGroups();
-	for (auto& group : instanceGroups) {
-		// set geometry and mtl
-		const IVertexBuffer* vb = group->geom->GetVertexBuffer();
+	for (auto& group : managerScene->GetInstanceGroups()) {
+		// Set Geometry
 		const IIndexBuffer* ib = group->geom->GetIndexBuffer();
-		
 		gApi->SetIndexData(ib);
-		size_t vertexStride = shader->GetVertexFormatSize();
-		gApi->SetVertexData(vb, vertexStride);
-		
-		size_t nIndices = ib->GetSize() / sizeof(int);
+		gApi->SetVertexData(group->geom->GetVertexBuffer(), shaderP->GetVertexFormatSize());
+
+		// Set material
+
+		// Draw each entity
 		for (auto& entity : group->entities) {
-			// draw entity
-			gApi->DrawIndexed(nIndices);
-		}	
+
+			// Entity world matrix
+			Matrix44 world;
+			world.RotationQuat(entity->rotation);
+			world.Scale(entity->scale);
+			world.Translate(entity->position);
+
+			// WorldViewProj matrix
+			Matrix44 wvp = world * viewMat * projMat;
+
+			// Create and load Constant buffers WorldViewProj
+			IConstantBuffer* wvpBuffer = NULL;
+			wvpBuffer = gApi->CreateConstantBuffer(sizeof(Matrix44), eBufferUsage::DEFAULT, &wvp);
+			gApi->LoadConstantBuffer(wvpBuffer, 0);
+
+			// Draw entity..
+			gApi->DrawIndexed(ib->GetSize() / sizeof(unsigned));	
+
+			// Free up constantBuffer
+			wvpBuffer->Release();
+		}
 	}
-	wvpBuffer->Release();
 }
 
-// interface
 IManagerScene* cGraphicsEngine::GetSceneManager() {
 	return managerScene;
 }

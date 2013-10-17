@@ -56,7 +56,7 @@ Matrix44 cCamera::GetViewMatrix() const {
 }
 
 Matrix44 cCamera::GetProjMatrix() const {
-	return Matrix44::MatrixProjPerspective(nearPlane, farPlane, fovRad);
+	return Matrix44::MatrixProjPerspective(nearPlane, farPlane, fovRad, aspectRatio);
 }
 
 Vec3 cCamera::GetDirFront() const {

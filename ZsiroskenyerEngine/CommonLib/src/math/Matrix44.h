@@ -54,20 +54,25 @@ public:
 	Matrix44& Transpose(const Matrix44& in);
 	Matrix44& Transpose();
 
+	Matrix44& Scale(float scX, float scY, float scZ);
+	Matrix44& Scale(const Vec3& s);
+
+	Matrix44& Translate(float scX, float scY, float scZ);
+	Matrix44& Translate(const Vec3& t);
+
+	Matrix44& RotateEuler(const Vec3& rot);
+
 	Matrix44& RotationX (float angle);
 	Matrix44& RotationY (float angle);
 	Matrix44& RotationZ (float angle);
 	Matrix44& RotationAxisAngle (const Vec3& axis, float angle);
 	Matrix44& RotationQuat (const Quat&); // typecast ((Matrix44)quaternion) is possibly slower than this shit
 
-	Matrix44& Scale(float scX, float scY, float scZ);
-	Matrix44& Scale(Vec3 scale);
-
 	Matrix44& Translation(float vX, float vY, float vZ);
-	Matrix44& Translation(Vec3 v);
+	Matrix44& Translation(const Vec3& v);
 
 	static Matrix44 MatrixViewRH(const Vec3& eye, const Vec3& target, const Vec3& up);
-	static Matrix44 MatrixProjPerspective(float nearPlane, float farPlane, float fovRad);
+	static Matrix44 MatrixProjPerspective(float nearPlane, float farPlane, float fovRad, float aspectRatio);
 
 	void SetColumn(size_t idx, const Vec4& v);
 

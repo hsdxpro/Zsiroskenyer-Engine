@@ -325,7 +325,7 @@ IIndexBuffer* cGraphicsD3D11::CreateIndexBuffer(size_t size , eBufferUsage usage
 	desc.ByteWidth = size;
 	desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	desc.MiscFlags = 0;
-	desc.StructureByteStride = sizeof(int);
+	desc.StructureByteStride = sizeof(unsigned);
 	switch(usage){
 	case eBufferUsage::DEFAULT:		desc.Usage = D3D11_USAGE_DEFAULT;		desc.CPUAccessFlags = 0;											break;
 	case eBufferUsage::IMMUTABLE:	desc.Usage = D3D11_USAGE_IMMUTABLE;		desc.CPUAccessFlags = 0;											break;
@@ -334,10 +334,11 @@ IIndexBuffer* cGraphicsD3D11::CreateIndexBuffer(size_t size , eBufferUsage usage
 	}
 
 	D3D11_SUBRESOURCE_DATA resData;
+	memset(&resData, 0, sizeof(resData));
 	resData.pSysMem = data;
 
 	HRESULT hr = d3ddev->CreateBuffer(&desc, &resData, &buffer);
-	if (hr!=S_OK) {
+	if (hr != S_OK) {
 		return NULL;
 	}
 	else {
@@ -362,6 +363,7 @@ IConstantBuffer* cGraphicsD3D11::CreateConstantBuffer(size_t size , eBufferUsage
 	}
 
 	D3D11_SUBRESOURCE_DATA resData;
+	memset(&resData, 0, sizeof(resData));
 	resData.pSysMem = data;
 
 	HRESULT hr = d3ddev->CreateBuffer(&desc, &resData, &buffer);
@@ -587,7 +589,7 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 	ID3DBlob *psBlob;
 	
 	// Compile, Create VERTEX_SHADER
-	while(FAILED(CompileShaderFromFile(hlslVsFullPath, L"main", L"vs_4_0", &vsBlob)))
+	while(FAILED(CompileShaderFromFile(hlslVsFullPath, L"main", L"vs_5_0", &vsBlob)))
 		ZS_MSG(zsString(L"Something wrong with the .cg shader, repair it i wait you: " + cgFullPath).c_str());
 
 	HRESULT hr = d3ddev->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), NULL, &vs);
@@ -595,7 +597,7 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 		ZS_MSG(zsString(L"Failed to create vertex shader from bytecode: " + hlslVsFullPath).c_str());
 
 	// Compile, Create PIXEL_SHADER
-	while(FAILED(CompileShaderFromFile(hlslPsFullPath, L"main", L"ps_4_0", &psBlob)))
+	while(FAILED(CompileShaderFromFile(hlslPsFullPath, L"main", L"ps_5_0", &psBlob)))
 		ZS_MSG(zsString(L"Something wrong with the .cg shader, repair it i wait you: " + cgFullPath).c_str());
 
 	hr = d3ddev->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), NULL, &ps);
@@ -608,7 +610,7 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 	// 2. search for VS_OUT, get lines under that, while line != "};"
 	// 3. extract VERTEX DECLARATION from those lines
 
-	zsString vsInStructName = cgFile.GetStringBefore(L" VS_MAIN(");
+	zsString vsInStructName = cgFile.GetWordAfter(L" VS_MAIN(");
 	std::list<zsString> vsInStructLines = cgFile.GetLinesUnder(vsInStructName, L"};");
 
 	int nVertexAttributes = 0;
@@ -696,7 +698,7 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 		iter++;
 	}
 
-	// Creating input layout...
+	// Create input layout
 	hr = d3ddev->CreateInputLayout(vertexDecl , nVertexAttributes, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &inputLayout);
 	if(FAILED(hr))
 		ZS_MSG((L"cGraphicsD3D11::CreateShaderProgram -> Can't create input layout for vertexShader: " + hlslVsFullPath).c_str());

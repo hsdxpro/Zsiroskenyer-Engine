@@ -6,6 +6,7 @@
 #include "../../GraphicsCommon/src/Camera.h"
 #include "../../CommonLib/src/Factory.h"
 #include "../../CommonLib/src/DLLLoaderWin32.h"
+#include "../../CommonLib/src/math/Quat.h"
 
 int ricsiMain() {
 	
@@ -26,19 +27,29 @@ int ricsiMain() {
 	// Set Render Window
 	gApi->SetWindow(myWindow);
 
-	// Create camera for testing and use it
-	cCamera *cam = new cCamera(ZS_PIDIV2, 1.0, 0.01f, 5000.0f);
+	// Create camera
+	cCamera *cam = new cCamera(ZS_PIDIV2, (float)desc.clientWidth / desc.clientHeight, 0.01f, 5000.0f);
 	mgrScene->SetActiveCamera(cam);
 
-	// Create 3D object for testing
+	// Create 3D object
 	cEntity& entity = mgrScene->AddEntity(L"box.dae", L"material");
-		entity.position = Vec3(1,1,1);
+		entity.position = Vec3(0,40,0);
 		entity.isVisible = true;
 
+	// euler Z for rotationg entity
+	
 	// Main loop
 	while(myWindow->IsOpened()) {
 		myWindow->PeekAllMessages();
+
 		mgrGEngine->RenderSceneForward();
+
+		// Hardcoded rotation
+		static float zVal = 0.0f;
+		zVal += 0.001f;
+		entity.rotation = Quat::EulerAnglesToQuat(Vec3(zVal, zVal + 0.4, zVal));
+
+		// Present SwapChain
 		gApi->Present();
 	}
 	
