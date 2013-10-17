@@ -610,12 +610,8 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 	// 2. search for VS_OUT, get lines under that, while line != "};"
 	// 3. extract VERTEX DECLARATION from those lines
 
-	zsString vsInStructName = cgFile.GetWordAfter(L" VS_MAIN(");
-	std::list<zsString> vsInStructLines;// = cgFile.GetLinesUnder(vsInStructName, L"};");
-
-	// Cheating
-	vsInStructLines.clear();
-	vsInStructLines.push_back(L"float3 position : POSITION");
+	zsString vsInStructName = cgFile.GetStringBefore(L" VS_MAIN(");
+	std::list<zsString> vsInStructLines = cgFile.GetLinesUnder(vsInStructName, L"};");
 
 	int nVertexAttributes = 0;
 
