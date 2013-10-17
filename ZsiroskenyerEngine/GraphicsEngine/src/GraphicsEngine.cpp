@@ -63,7 +63,7 @@ void cGraphicsEngine::RenderSceneForward() {
 	Matrix44 viewMat = cam->GetViewMatrix();
 	Matrix44 projMat = cam->GetProjMatrix();
 	Matrix44 wvp = tmpObjTrans * viewMat * projMat;
-	wvp.Transpose();
+	//wvp.Transpose();
 
 	wvpBuffer = gApi->CreateConstantBuffer(sizeof(Matrix44), eBufferUsage::DEFAULT, &wvp);
 

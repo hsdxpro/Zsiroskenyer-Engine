@@ -15,11 +15,10 @@ class cIndexBufferD3D11 : public IIndexBuffer {
 public:
 	size_t GetSize() const override;
 	eBufferUsage GetUsage() const override;
-	void* GetBuffer() const override;
+	ID3D11Buffer* GetBufferPointer() const;
 
 	cIndexBufferD3D11(ID3D11Buffer* buffer, size_t size, eBufferUsage usage);
-	~cIndexBufferD3D11();
-
+	~cIndexBufferD3D11();	
 
 public:
 	ID3D11Buffer* const buffer;

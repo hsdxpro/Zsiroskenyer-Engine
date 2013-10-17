@@ -32,6 +32,6 @@ eBufferUsage cVertexBufferD3D11::GetUsage() const {
 	return usage;
 }
 
-void* cVertexBufferD3D11::GetBuffer() const {
+ID3D11Buffer* cVertexBufferD3D11::GetBufferPointer() const {
 	return buffer;
 }

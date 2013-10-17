@@ -16,6 +16,6 @@ eBufferUsage cConstantBufferD3D11::GetUsage() const {
 	return usage;
 }
 
-void* cConstantBufferD3D11::GetBuffer() const {
+ID3D11Buffer* cConstantBufferD3D11::GetBufferPointer() const {
 	return buffer;
 }

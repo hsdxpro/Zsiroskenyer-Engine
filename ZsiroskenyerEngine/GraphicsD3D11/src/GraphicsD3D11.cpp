@@ -464,7 +464,7 @@ bool cGraphicsD3D11::ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, 
 }
 
 void cGraphicsD3D11::LoadConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) {
-	ID3D11Buffer* cBuffer = (ID3D11Buffer*)buffer->GetBuffer();
+	ID3D11Buffer* cBuffer = ((cConstantBufferD3D11*)buffer)->GetBufferPointer();
 	d3dcon->VSSetConstantBuffers(slotIdx, 1, &cBuffer);
 }
 
@@ -514,12 +514,12 @@ void cGraphicsD3D11::DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nIn
 void cGraphicsD3D11::SetVertexData(const IVertexBuffer* vertexBuffer, size_t vertexStride) {
 	const UINT strides = vertexStride;
 	const UINT offset = 0;
-	ID3D11Buffer* vertices = (ID3D11Buffer*)vertexBuffer->GetBuffer();
+	ID3D11Buffer* vertices = ((cVertexBufferD3D11*)vertexBuffer)->GetBufferPointer();
 	d3dcon->IASetVertexBuffers(0, 1, &vertices, &strides, &offset);
 }
 
 void cGraphicsD3D11::SetIndexData(const IIndexBuffer* indexBuffer) {
-	d3dcon->IASetIndexBuffer((ID3D11Buffer*)indexBuffer->GetBuffer(), DXGI_FORMAT_R32_UINT, 0);
+	d3dcon->IASetIndexBuffer(((cIndexBufferD3D11*)indexBuffer)->GetBufferPointer(), DXGI_FORMAT_R32_UINT, 0);
 }
 
 void cGraphicsD3D11::SetInstanceData() {
@@ -558,11 +558,11 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 	cFileWin32 cgFile(cgFullPath);
 	if(cgFile.Find(L"VS_MAIN")) {
 		cgHaveVS = true;
-		CompileCgToHLSL(cgFullPath, hlslVsFullPath, eProfileCG::VS_5_0);
+		CompileCgToHLSL(cgFullPath, hlslVsFullPath, eProfileCG::VS_4_0);
 	}
 	if(cgFile.Find(L"PS_MAIN")) {
 		cgHavePS = true;
-		CompileCgToHLSL(cgFullPath, hlslPsFullPath, eProfileCG::PS_5_0);
+		CompileCgToHLSL(cgFullPath, hlslPsFullPath, eProfileCG::PS_4_0);
 	}
 
 	// Okay example_vs.hlsl
@@ -570,6 +570,7 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 	// etc generated
 	// within these files the entry point is different from .cg file, they named "main"
 	// replace each main with it's appropriate synonim VS_MAIN, PS_MAIN...
+	/*
 	if(cgHaveVS) {
 		cFileWin32 vsFile(hlslVsFullPath);
 		vsFile.ReplaceAll(L"main", L"VS_MAIN");
@@ -578,27 +579,28 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 	if(cgHavePS) {
 		cFileWin32 psFile(hlslPsFullPath);
 		psFile.ReplaceAll(L"main", L"PS_MAIN");
-	}
+	}*/
 
 	// Shader Compiling creating.. and input layout creation
 	ID3D11VertexShader* vs;
 	ID3D11PixelShader* ps;
 	ID3D11InputLayout* inputLayout;
-	ID3DBlob *blob;
+	ID3DBlob *vsBlob;
+	ID3DBlob *psBlob;
 	
 	// Compile, Create VERTEX_SHADER
-	while(FAILED(CompileShaderFromFile(hlslVsFullPath, L"VS_MAIN", L"vs_5_0", &blob)))
+	while(FAILED(CompileShaderFromFile(hlslVsFullPath, L"main", L"vs_4_0", &vsBlob)))
 		ZS_MSG(zsString(L"Something wrong with the .cg shader, repair it i wait you: " + cgFullPath).c_str());
 
-	HRESULT hr = d3ddev->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), NULL, &vs);
+	HRESULT hr = d3ddev->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), NULL, &vs);
 	if(FAILED(hr))
 		ZS_MSG(zsString(L"Failed to create vertex shader from bytecode: " + hlslVsFullPath).c_str());
 
 	// Compile, Create PIXEL_SHADER
-	while(FAILED(CompileShaderFromFile(hlslPsFullPath, L"PS_MAIN", L"ps_5_0", &blob)))
+	while(FAILED(CompileShaderFromFile(hlslPsFullPath, L"main", L"ps_4_0", &psBlob)))
 		ZS_MSG(zsString(L"Something wrong with the .cg shader, repair it i wait you: " + cgFullPath).c_str());
 
-	hr = d3ddev->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), NULL, &ps);
+	hr = d3ddev->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), NULL, &ps);
 	if(FAILED(hr))
 		ZS_MSG(zsString(L"Failed to create vertex shader from bytecode: " + hlslPsFullPath).c_str());
 
@@ -609,7 +611,11 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 	// 3. extract VERTEX DECLARATION from those lines
 
 	zsString vsInStructName = cgFile.GetWordAfter(L" VS_MAIN(");
-	std::list<zsString> vsInStructLines = cgFile.GetLinesUnder(vsInStructName, L"};");
+	std::list<zsString> vsInStructLines;// = cgFile.GetLinesUnder(vsInStructName, L"};");
+
+	// Cheating
+	vsInStructLines.clear();
+	vsInStructLines.push_back(L"float3 position : POSITION");
 
 	int nVertexAttributes = 0;
 
@@ -697,11 +703,12 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 	}
 
 	// Creating input layout...
-	hr = d3ddev->CreateInputLayout(vertexDecl , nVertexAttributes, blob->GetBufferPointer(), blob->GetBufferSize(), &inputLayout);
+	hr = d3ddev->CreateInputLayout(vertexDecl , nVertexAttributes, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &inputLayout);
 	if(FAILED(hr))
 		ZS_MSG((L"cGraphicsD3D11::CreateShaderProgram -> Can't create input layout for vertexShader: " + hlslVsFullPath).c_str());
 
-	blob->Release();
+	vsBlob->Release();
+	psBlob->Release();
 
 	return new cShaderProgramD3D11(vertexFormat, alignedByteOffset, inputLayout, vs, ps);
 }
@@ -764,6 +771,12 @@ void cGraphicsD3D11::CompileCgToHLSL(const zsString& cgFilePath, const zsString&
 			break;
 		case eProfileCG::PS_5_0 :
 			entryAndProfile =  L"-profile ps_5_0 -entry PS_MAIN";
+			break;
+		case eProfileCG::VS_4_0 :
+			entryAndProfile =  L"-profile vs_4_0 -entry VS_MAIN";
+			break;
+		case eProfileCG::PS_4_0 :
+			entryAndProfile =  L"-profile ps_4_0 -entry PS_MAIN";
 			break;
 	}
 	//cgc.exe proba.fx -profile vs_3_0 -entry MAIN -o proba.vs

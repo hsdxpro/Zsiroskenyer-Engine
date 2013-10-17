@@ -46,6 +46,8 @@ public:
 		HS_5_0,
 		DS_5_0,
 		GS_5_0,
+		VS_4_0,
+		PS_4_0
 	};
 
 	// buffers

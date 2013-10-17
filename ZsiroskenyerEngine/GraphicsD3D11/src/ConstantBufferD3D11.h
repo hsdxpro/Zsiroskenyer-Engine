@@ -12,7 +12,8 @@ public:
 
 	size_t GetSize() const override;
 	eBufferUsage GetUsage() const override;
-	void* GetBuffer() const;
+	ID3D11Buffer* GetBufferPointer() const;
+	
 
 	ID3D11Buffer* const buffer;
 private:
