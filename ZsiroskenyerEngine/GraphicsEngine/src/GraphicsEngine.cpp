@@ -64,7 +64,7 @@ void cGraphicsEngine::RenderSceneForward() {
 	wvp.Transpose();
 	wvpBuffer = gApi->CreateConstantBuffer(sizeof(Matrix44), eBufferUsage::DEFAULT, &wvp);
 
-	//gApi->LoadConstantBuffer(wvpBuffer, 0);
+	gApi->LoadConstantBuffer(wvpBuffer, 0);
 
 	// Render each instanceGroup
 	auto instanceGroups = managerScene->GetInstanceGroups();
@@ -74,9 +74,10 @@ void cGraphicsEngine::RenderSceneForward() {
 		const IIndexBuffer* ib = group->geom->GetIndexBuffer();
 		
 		gApi->SetIndexData(ib);
-		gApi->SetVertexData(vb, shader->GetVertexFormatSize());
+		size_t vertexStride = shader->GetVertexFormatSize();
+		gApi->SetVertexData(vb, vertexStride);
 		
-		size_t nIndices = 0;
+		size_t nIndices = 36;
 		for (auto& entity : group->entities) {
 			// draw entity
 			gApi->DrawIndexed(nIndices, 0);

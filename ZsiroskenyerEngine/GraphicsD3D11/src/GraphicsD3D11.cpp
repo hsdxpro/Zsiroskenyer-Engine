@@ -455,7 +455,7 @@ bool cGraphicsD3D11::ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, 
 		return false;
 	}
 
-	memcpy(dest, (void*)(size_t(mappedRes.pData)+offset), size);
+	memcpy(dest, (void*)(size_t(mappedRes.pData) + offset), size);
 
 	d3dcon->Unmap(d3dBuffer, 0);
 
@@ -463,7 +463,8 @@ bool cGraphicsD3D11::ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, 
 }
 
 void cGraphicsD3D11::LoadConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) {
-	d3dcon->VSSetConstantBuffers(slotIdx, 1, (ID3D11Buffer* const*)buffer->GetBuffer());
+	ID3D11Buffer* cBuffer = (ID3D11Buffer*)buffer->GetBuffer();
+	d3dcon->VSSetConstantBuffers(slotIdx, 1, &cBuffer);
 }
 
 ////////////////////
@@ -512,8 +513,8 @@ void cGraphicsD3D11::DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nIn
 void cGraphicsD3D11::SetVertexData(const IVertexBuffer* vertexBuffer, size_t vertexSize) {
 	const UINT strides = vertexSize;
 	const UINT offset = 0;
-
-	d3dcon->IASetVertexBuffers(0, 1, (ID3D11Buffer* const*)vertexBuffer->GetBuffer(), &strides, &offset);
+	ID3D11Buffer* vertices = (ID3D11Buffer*)vertexBuffer->GetBuffer();
+	d3dcon->IASetVertexBuffers(0, 1, &vertices, &strides, &offset);
 }
 
 void cGraphicsD3D11::SetIndexData(const IIndexBuffer* indexBuffer) {

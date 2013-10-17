@@ -220,8 +220,8 @@ cGeometry* cManagerResource::LoadGeometryDAE(const zsString& fileName) {
 	zsPrintDebug(L"ManagerResource::LoadGeometry -> " + fileName);
 	int vertexStride = sizeof(float) * 8;
 
-	IVertexBuffer *vb = gApi->CreateVertexBuffer(nUniqVertices, vertexStride, eBufferUsage::DEFAULT, uniqueVertices);
-	IIndexBuffer *ib = gApi->CreateIndexBuffer(nIndex * sizeof(uint32), eBufferUsage::DEFAULT, reorderedIndices);
+	IVertexBuffer *vb = gApi->CreateVertexBuffer(nUniqVertices, vertexStride, eBufferUsage::IMMUTABLE, uniqueVertices);
+	IIndexBuffer *ib = gApi->CreateIndexBuffer(nIndex * sizeof(uint32), eBufferUsage::IMMUTABLE, reorderedIndices);
 	return new cGeometry(vb, ib);
 }
 
