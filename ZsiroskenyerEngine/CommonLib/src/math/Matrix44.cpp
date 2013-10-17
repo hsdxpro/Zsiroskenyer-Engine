@@ -33,11 +33,12 @@ Matrix44::Matrix44(	float _11, float _12, float _13, float _14,
 					float _21, float _22, float _23, float _24,
 					float _31, float _32, float _33, float _34,
 					float _41, float _42, float _43, float _44)
-:	_11(_11), _12(_12), _13(_13), _14(_14),
-	_21(_21), _22(_22), _23(_23), _24(_14),
-	_31(_31), _32(_32), _33(_33), _34(_14),
-	_41(_41), _42(_42), _43(_43), _44(_14)
-{}
+{
+	this->_11 = _11; this->_12 = (_12); this->_13 = (_13); this->_14 = (_14);
+	this->_21 = _21; this->_22 = (_22); this->_23 = (_23); this->_24 = (_24);
+	this->_31 = _31; this->_32 = (_32); this->_33 = (_33); this->_34 = (_34);
+	this->_41 = _41; this->_42 = (_42); this->_43 = (_43); this->_44 = (_44);
+}
 
 float& Matrix44::operator() (unsigned row, unsigned col) {
 	return m[row][col];
@@ -163,11 +164,12 @@ void Matrix44::SetColumn(size_t idx, const Vec4& v) {
 }
 
 Matrix44& Matrix44::Transpose() {
+
+	
 	Vec4 rows[4];
-	memcpy(rows, r, sizeof(Matrix44));
+	memcpy(rows, this, sizeof(Matrix44));
 	for(size_t i = 0; i < 4; i++)
 		SetColumn(i, rows[i]);
-
 	/*
 	float t;
 	t=_12;	_12 = _21;	_21=t;
@@ -177,11 +179,9 @@ Matrix44& Matrix44::Transpose() {
 	t= _24;	_24 = _42;	_42=t;
 	t= _23;	_23 = _32;	_32=t;
 	t= _34;	_34 = _43;	_43=t;
-
 	*/
 	return *this;
 };
-
 
 float Matrix44::Determinant() {
 	return
@@ -388,10 +388,11 @@ Matrix44 Matrix44::MatrixViewRH(const Vec3& eye, const Vec3& target, const Vec3&
 
 Matrix44 Matrix44::MatrixProjPerspective(float nearPlane, float farPlane, float fovRad) {
 	Matrix44 mat;
+	mat.Identity();
 	mat._11 = mat._22 = 1.0f / tan(fovRad * 0.5);
-	mat._33 = - farPlane / (farPlane - nearPlane);
-	mat._32 = - farPlane * nearPlane / (farPlane - nearPlane);
-	mat._23 = - 1;
+	mat._33 =   farPlane / (farPlane - nearPlane);
+	mat._43 =  -(farPlane * nearPlane) / (farPlane - nearPlane);
+	mat._34 =   1;
 	mat._44 = 0;
 	return mat;
 }

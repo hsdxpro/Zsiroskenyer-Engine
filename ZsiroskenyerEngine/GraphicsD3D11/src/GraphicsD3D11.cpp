@@ -293,6 +293,7 @@ IVertexBuffer* cGraphicsD3D11::CreateVertexBuffer(size_t nVertices, size_t verte
 	ID3D11Buffer* buffer = NULL;
 
 	D3D11_BUFFER_DESC desc;
+	memset(&desc, 0, sizeof(desc));
 	desc.ByteWidth = nVertices * vertexStride;
 	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	desc.MiscFlags = 0;
@@ -305,7 +306,6 @@ IVertexBuffer* cGraphicsD3D11::CreateVertexBuffer(size_t nVertices, size_t verte
 	}
 
 	D3D11_SUBRESOURCE_DATA resData;
-	memset(&resData, 0, sizeof(resData));
 	resData.pSysMem = data;
 
 	HRESULT hr = d3ddev->CreateBuffer(&desc, &resData, &buffer);
@@ -334,7 +334,6 @@ IIndexBuffer* cGraphicsD3D11::CreateIndexBuffer(size_t size , eBufferUsage usage
 	}
 
 	D3D11_SUBRESOURCE_DATA resData;
-	memset(&resData, 0, sizeof(resData));
 	resData.pSysMem = data;
 
 	HRESULT hr = d3ddev->CreateBuffer(&desc, &resData, &buffer);
@@ -557,11 +556,11 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 	cFileWin32 cgFile(cgFullPath);
 	if(cgFile.Find(L"VS_MAIN")) {
 		cgHaveVS = true;
-		CompileCgToHLSL(cgFullPath, hlslVsFullPath, eProfileCG::VS_4_0);
+		CompileCgToHLSL(cgFullPath, hlslVsFullPath, eProfileCG::VS_5_0);
 	}
 	if(cgFile.Find(L"PS_MAIN")) {
 		cgHavePS = true;
-		CompileCgToHLSL(cgFullPath, hlslPsFullPath, eProfileCG::PS_4_0);
+		CompileCgToHLSL(cgFullPath, hlslPsFullPath, eProfileCG::PS_5_0);
 	}
 
 	// Okay example_vs.hlsl

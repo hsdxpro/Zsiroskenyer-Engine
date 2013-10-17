@@ -16,6 +16,7 @@
 #include "../../GraphicsCommon/src/Exception.h"
 #include "../../GraphicsCommon/src/Camera.h"
 #include "../../GraphicsCommon/src/IConstantBuffer.h"
+#include "../../GraphicsCommon/src/IIndexBuffer.h"
 #include "../../CommonLib/src/math/Matrix44.h"
 
 #define WIN32_LEAN_AND_MEAN
@@ -71,11 +72,10 @@ void cGraphicsEngine::RenderSceneForward() {
 	IConstantBuffer* wvpBuffer = NULL;
 	cCamera* cam = managerScene->GetActiveCamera();
 	Matrix44 tmpObjTrans;
-	tmpObjTrans.Translation(0.0f, 2.0f, 0.0f);
+	tmpObjTrans.Translation(0.0f, 100.0f, 0.0f);
 	Matrix44 viewMat = cam->GetViewMatrix();
 	Matrix44 projMat = cam->GetProjMatrix();
-	Matrix44 wvp = tmpObjTrans * viewMat * projMat;
-	wvp = wvp.Transpose(wvp);
+	Matrix44 wvp  = tmpObjTrans * viewMat * projMat;
 	wvpBuffer = gApi->CreateConstantBuffer(sizeof(Matrix44), eBufferUsage::DEFAULT, &wvp);
 	
 	gApi->LoadConstantBuffer(wvpBuffer, 0);
@@ -92,7 +92,7 @@ void cGraphicsEngine::RenderSceneForward() {
 		size_t vertexStride = shader->GetVertexFormatSize();
 		gApi->SetVertexData(vb, vertexStride);
 		
-		size_t nIndices = 36;
+		size_t nIndices = ib->GetSize() / sizeof(int);
 		for (auto& entity : group->entities) {
 			// draw entity
 			gApi->DrawIndexed(nIndices);
