@@ -5,6 +5,12 @@
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	switch(msg) {
+	case WM_DESTROY: 
+		{
+			//@TODO TMP CODE Fuck... REMOVE THAT
+			exit(0);
+		}
+		break;
 	case IWindow::eMessage::MOUSE_MBUTTONDOWN:
 		{
 			//ManagerInput.onMouseMiddleDown();

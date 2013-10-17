@@ -18,6 +18,7 @@ class IIndexBuffer;
 class cGeometry {
 public:
 	cGeometry(IVertexBuffer *VB, IIndexBuffer *IB);
+	~cGeometry();
 
 	const IIndexBuffer* GetIndexBuffer() const;
 	const IVertexBuffer* GetVertexBuffer() const;

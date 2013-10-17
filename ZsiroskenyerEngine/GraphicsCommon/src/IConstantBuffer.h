@@ -8,6 +8,7 @@ class IConstantBuffer {
 public:
 	virtual size_t GetSize() const = 0;
 	virtual eBufferUsage GetUsage() const = 0;
+	virtual void Release() = 0;
 };
 
 

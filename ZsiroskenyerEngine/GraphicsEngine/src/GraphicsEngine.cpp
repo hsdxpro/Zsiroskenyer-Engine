@@ -15,7 +15,7 @@
 #include "../../GraphicsCommon/src/IShaderProgram.h"
 #include "../../GraphicsCommon/src/Exception.h"
 #include "../../GraphicsCommon/src/Camera.h"
-
+#include "../../GraphicsCommon/src/IConstantBuffer.h"
 #include "../../CommonLib/src/math/Matrix44.h"
 
 #define WIN32_LEAN_AND_MEAN
@@ -47,15 +47,25 @@ cGraphicsEngine::~cGraphicsEngine() {
 void cGraphicsEngine::RenderSceneForward() {
 	// Set BackBuffer
 	gApi->SetRenderTargetDefault();
-	
-	// Set Effect...
-	auto shader = managerShader->GetShaderByName(L"test.cg");
-	gApi->SetShaderProgram(shader);
-	
+
 	// Begin scene
 	gApi->Clear(true, true);
 
-	
+	// Set Effect...
+	auto shader = managerShader->GetShaderByName(L"test.cg");
+	gApi->SetShaderProgram(shader);
+
+	/*
+	Vec3 vertices[4];
+	vertices[0] = Vec3(-1, 1, 0.2f); // bal fent
+	vertices[1] = Vec3(1, 1, 0.2f); // jobb fent
+	vertices[2] = Vec3(1, -1, 0.2f); // jobb lent
+	vertices[3] = Vec3(-1, -1, 0.2f); // bal lent
+
+	int indices[6];
+	indices[0] = 
+		*/
+	/*
 	IConstantBuffer* wvpBuffer = NULL;
 	cCamera* cam = managerScene->GetActiveCamera();
 	Matrix44 tmpObjTrans;
@@ -63,12 +73,15 @@ void cGraphicsEngine::RenderSceneForward() {
 	Matrix44 viewMat = cam->GetViewMatrix();
 	Matrix44 projMat = cam->GetProjMatrix();
 	Matrix44 wvp = tmpObjTrans * viewMat * projMat;
-	//wvp.Transpose();
-
-	wvpBuffer = gApi->CreateConstantBuffer(sizeof(Matrix44), eBufferUsage::DEFAULT, &wvp);
-
+	wvp.Transpose();
+	Matrix44 scale;
+	scale.Scale(Vec3(1.0f/60, 1.0f/60, 1.0f/60));
+	scale.Transpose();
+	wvpBuffer = gApi->CreateConstantBuffer(sizeof(Matrix44), eBufferUsage::DEFAULT, &scale);
+	
 	gApi->LoadConstantBuffer(wvpBuffer, 0);
-
+	*/
+	
 	// Render each instanceGroup
 	auto instanceGroups = managerScene->GetInstanceGroups();
 	for (auto& group : instanceGroups) {
@@ -87,7 +100,7 @@ void cGraphicsEngine::RenderSceneForward() {
 		}	
 	}
 	
-	delete wvpBuffer;
+	wvpBuffer->Release();
 }
 
 // interface

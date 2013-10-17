@@ -91,6 +91,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib />
+    <Lib>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

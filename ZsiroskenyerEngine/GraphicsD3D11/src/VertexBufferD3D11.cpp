@@ -20,7 +20,7 @@ cVertexBufferD3D11::cVertexBufferD3D11(ID3D11Buffer* buffer, size_t size, eBuffe
 :buffer(buffer), usage(usage), size(size) {		
 }
 
-cVertexBufferD3D11::~cVertexBufferD3D11() {
+void cVertexBufferD3D11::Release() {
 	buffer->Release();
 }
 

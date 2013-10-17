@@ -6,11 +6,17 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "Geometry.h"
+#include "../../GraphicsCommon/src/IVertexBuffer.h"
+#include "../../GraphicsCommon/src/IIndexBuffer.h"
 
 cGeometry::cGeometry(IVertexBuffer *VB, IIndexBuffer *IB) 
 :VB(VB), IB(IB) {
 }
 
+cGeometry::~cGeometry() {
+	IB->Release();
+	VB->Release();
+}
 
 const IIndexBuffer* cGeometry::GetIndexBuffer() const {
 	return IB;
