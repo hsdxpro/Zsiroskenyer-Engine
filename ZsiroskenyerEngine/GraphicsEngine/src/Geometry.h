@@ -8,9 +8,6 @@
 #pragma once
 
 
-
-
-
 class IVertexBuffer;
 class IIndexBuffer;
 

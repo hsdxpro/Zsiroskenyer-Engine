@@ -8,6 +8,8 @@
 #include "../../CommonLib/src/DLLLoaderWin32.h"
 #include "../../CommonLib/src/math/Quat.h"
 
+#include <vector>
+
 int ricsiMain() {
 	
 	// Create interfaces
@@ -31,12 +33,17 @@ int ricsiMain() {
 	cCamera *cam = new cCamera(ZS_PIDIV2, (float)desc.clientWidth / desc.clientHeight, 0.01f, 5000.0f);
 	mgrScene->SetActiveCamera(cam);
 
+	std::vector<cEntity*> entities;
 	// Create 3D object
-	cEntity& entity = mgrScene->AddEntity(L"box.dae", L"material");
-		entity.position = Vec3(0,40,0);
-		entity.isVisible = true;
 
-	// euler Z for rotationg entity
+	for(size_t i = 0; i < 1 ; i++)
+		for(size_t j = 0; j < 1 ; j++) {
+			cEntity& e =  mgrScene->AddEntity(L"box.dae", L"material");
+			entities.push_back(&e);
+			e.position = Vec3(i * 10, 90, j * 10);
+			e.isVisible = true;
+		}
+
 	
 	// Main loop
 	while(myWindow->IsOpened()) {
@@ -44,10 +51,12 @@ int ricsiMain() {
 
 		mgrGEngine->RenderSceneForward();
 
-		// Hardcoded rotation
+		// Hardcoded rotation 	( euler Z for rotationg entities )
 		static float zVal = 0.0f;
 		zVal += 0.001f;
-		entity.rotation = Quat::EulerAnglesToQuat(Vec3(zVal, zVal + 0.4, zVal));
+		for(cEntity* e : entities) {
+			e->rotation = Quat::EulerAnglesToQuat(Vec3(zVal, zVal + 0.4, zVal));
+		}
 
 		// Present SwapChain
 		gApi->Present();
