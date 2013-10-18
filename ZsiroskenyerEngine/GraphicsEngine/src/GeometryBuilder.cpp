@@ -16,6 +16,10 @@
 // Exception
 #include "../../GraphicsCommon/src/Exception.h"
 
+cGeometryBuilder::cGeometryBuilder() {
+
+}
+
 
 cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometryDAE(const zsString& fileName) {
 	Assimp::Importer importer;
