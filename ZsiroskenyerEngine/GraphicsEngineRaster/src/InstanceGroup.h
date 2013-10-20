@@ -21,16 +21,6 @@ public:
 
 	bool operator == (const cInstanceGroup& other);
 
-	void SetTextureDiffuse(ITexture2D* t);
-	void SetTextureNormal(ITexture2D* t);
-	void SetTextureSpecular(ITexture2D* t);
-	void SetTextureDisplacement(ITexture2D* t);
-
-	ITexture2D* GetTextureDiffuse();
-	ITexture2D* GetTextureNormal();
-	ITexture2D* GetTextureSpecular();
-	ITexture2D* GetTextureDisplacement();
-
 	// Geometry
 	cGeometryRef geom;
 

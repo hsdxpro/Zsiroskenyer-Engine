@@ -33,7 +33,7 @@ int ricsiMain() {
 	mgrScene->SetActiveCamera(cam);
 
 	// Create 3D object
-	cEntity& e = mgrScene->AddEntity(L"objects/box.dae", L"material");
+	cEntity& e = mgrScene->AddEntity(L"objects/box.dae", L"materials/test.zsm");
 	e.position = Vec3(0,50,0);
 
 	// Load texture, assign to object..
