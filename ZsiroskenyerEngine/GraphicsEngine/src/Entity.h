@@ -4,19 +4,17 @@
 ////////////////////////////////////////////////////////////////////////////////
 //	A class that represents an entity on the 3D scene.
 ////////////////////////////////////////////////////////////////////////////////
-
 #pragma once
 
 #include "../../Common/src/math/math_all.h"
 
-
 class cInstanceGroup;
-
-
 
 class cEntity {
 	friend class cManagerScene;
 public:
+	cInstanceGroup* GetInstanceGroup();
+
 	cEntity();
 
 	Vec3 position;

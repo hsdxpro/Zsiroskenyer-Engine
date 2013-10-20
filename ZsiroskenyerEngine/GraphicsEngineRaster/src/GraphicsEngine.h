@@ -5,7 +5,6 @@
 //	This is the core class of the graphics engine, that holds together all the
 //	stuff.
 ////////////////////////////////////////////////////////////////////////////////
-
 #pragma once
 
 #include "../../GraphicsEngine/src/IGraphicsEngine.h"
@@ -23,7 +22,8 @@ public:
 
 	void RenderSceneForward() override;
 
-	IManagerScene* GetSceneManager();
+	IManagerScene* GetManagerScene();
+	cManagerResource* GetManagerResource();
 	IGraphicsApi* GetGraphicsApi();
 private:	
 	IGraphicsApi* gApi;

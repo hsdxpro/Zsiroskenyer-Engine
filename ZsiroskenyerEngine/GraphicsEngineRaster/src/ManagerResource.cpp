@@ -29,8 +29,8 @@ cGeometryRef cManagerResource::LoadGeometry(const zsString& fileName) {
 			cGeometryBuilder b;
 			cGeometryBuilder::tGeometryDesc& d = b.LoadGeometryDAE(fileName);
 
-			IVertexBuffer *VB = gApi->CreateVertexBuffer(d.nVertices, d.vertexStride, eBufferUsage::IMMUTABLE, d.vertices);
-			IIndexBuffer *IB = gApi->CreateIndexBuffer(d.nIndices * d.indexStride, eBufferUsage::IMMUTABLE, d.indices);
+			IVertexBuffer *VB = gApi->CreateBufferVertex(d.nVertices, d.vertexStride, eBufferUsage::IMMUTABLE, d.vertices);
+			IIndexBuffer *IB = gApi->CreateBufferIndex(d.nIndices * d.indexStride, eBufferUsage::IMMUTABLE, d.indices);
 			geom = new cGeometry(VB, IB);
 		}
 		
@@ -71,6 +71,11 @@ cMaterialRef cManagerResource::LoadMaterial(const zsString& fileName) {
 	
 	return cMaterialRef(this, mtl);
 }
+
+ITexture2D* cManagerResource::LoadTexture(const zsString& fileName) {
+	return gApi->CreateTexture(fileName);
+}
+
 void cManagerResource::UnloadMaterial(const cMaterial* material) {
 	auto it = materials.right.find(const_cast<cMaterial*>(material));
 	delete it->first;

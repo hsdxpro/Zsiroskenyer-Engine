@@ -43,6 +43,7 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(Configuration)_\</OutDir>
     <IntDir>$(Configuration)_\</IntDir>
+    <IncludePath>$(SolutionDir)\..\Externals\boost_1_54_0\;$(SolutionDir)\..\Externals\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>

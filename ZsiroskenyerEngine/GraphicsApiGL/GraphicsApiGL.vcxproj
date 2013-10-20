@@ -12,10 +12,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DllMain.cpp" />
-    <ClCompile Include="src\GraphicsGL.cpp" />
+    <ClCompile Include="src\GraphicsApiGL.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\GraphicsGL.h" />
+    <ClInclude Include="src\GraphicsApiGL.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{884FE606-070E-48D2-A0A8-98B5536F432A}</ProjectGuid>

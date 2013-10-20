@@ -85,7 +85,7 @@ void cGraphicsEngine::RenderSceneForward() {
 
 			// Create and load Constant buffers WorldViewProj
 			IConstantBuffer* wvpBuffer = NULL;
-			wvpBuffer = gApi->CreateConstantBuffer(sizeof(Matrix44), eBufferUsage::DEFAULT, &wvp);
+			wvpBuffer = gApi->CreateBufferConstant(sizeof(Matrix44), eBufferUsage::DEFAULT, &wvp);
 			gApi->LoadConstantBuffer(wvpBuffer, 0);
 
 			// Draw entity..
@@ -97,8 +97,12 @@ void cGraphicsEngine::RenderSceneForward() {
 	}
 }
 
-IManagerScene* cGraphicsEngine::GetSceneManager() {
+IManagerScene* cGraphicsEngine::GetManagerScene() {
 	return managerScene;
+}
+
+cManagerResource* cGraphicsEngine::GetManagerResource() {
+	return managerResource;
 }
 
 IGraphicsApi* cGraphicsEngine::GetGraphicsApi() {

@@ -5,14 +5,15 @@
 #include "../../GraphicsEngine/src/Camera.h"
 #include "../../Common/src/Factory.h"
 #include "../../Common/src/math/Quat.h"
-
+#include "../../GraphicsEngineRaster/src/ManagerResource.h"
 #include <vector>
 
 int ricsiMain() {
 	
 	// Create interfaces
 	IGraphicsEngine* mgrGEngine = Factory.CreateEngineGraphics();
-	IManagerScene* mgrScene = mgrGEngine->GetSceneManager();
+	IManagerScene* mgrScene = mgrGEngine->GetManagerScene();
+	cManagerResource* mgrRes = mgrGEngine->GetManagerResource();
 	IGraphicsApi* gApi = mgrGEngine->GetGraphicsApi();
 
 	// Create basic window
@@ -31,11 +32,15 @@ int ricsiMain() {
 	cCamera *cam = new cCamera(ZS_PIDIV2, (float)desc.clientWidth / desc.clientHeight, 0.01f, 5000.0f);
 	mgrScene->SetActiveCamera(cam);
 
-	std::vector<cEntity*> entities;
 	// Create 3D object
-
-	cEntity& e =  mgrScene->AddEntity(L"box.dae", L"material");
+	cEntity& e =  mgrScene->AddEntity(L"objects/box.dae", L"material");
 	e.position = Vec3(0,50,0);
+
+	// Load texture, assign to object..
+	ITexture2D* testDiffuse = mgrRes->LoadTexture(L"textures/ground_DIFFUSE.jpg");
+	ITexture2D* testNormal = mgrRes->LoadTexture(L"textures/ground_NORMAL.jpg");
+	ITexture2D* testSpecular = mgrRes->LoadTexture(L"textures/ground_SPECULAR.jpg");
+	ITexture2D* testDisplacement = mgrRes->LoadTexture(L"textures/ground_DISPLACEMENT.jpg");
 
 	/*
 	for(size_t i = 0; i < 1 ; i++)

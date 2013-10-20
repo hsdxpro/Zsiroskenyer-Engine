@@ -1,32 +1,30 @@
 
 // Implementation
-#include "GraphicsD3D11.h"
+#include "GraphicsApiD3D11.h"
 
 #include "VertexBufferD3D11.h"
 #include "IndexBufferD3D11.h"
 #include "ConstantBufferD3D11.h"
 #include "ShaderProgramD3D11.h"
+#include "Texture2DColorD3D11.h"
 
 #include "../../CommonWin32/src/FileWin32.h"
-
-#include <cassert>
-#define ASSERT assert
 
 #ifdef WIN32
 #pragma warning(disable: 4244)
 #pragma warning(disable: 4005)
 #endif
 
-cGraphicsD3D11::tDxConfig cGraphicsD3D11::tDxConfig::DEFAULT = cGraphicsD3D11::tDxConfig();
-cGraphicsD3D11::tDxConfig cGraphicsD3D11::tDxConfig::MEDIUM = cGraphicsD3D11::tDxConfig();
-cGraphicsD3D11::tDxConfig cGraphicsD3D11::tDxConfig::HIGH = cGraphicsD3D11::tDxConfig();
-cGraphicsD3D11::tDxConfig cGraphicsD3D11::swapChainConfig = cGraphicsD3D11::tDxConfig::DEFAULT;
+cGraphicsApiD3D11::tDxConfig cGraphicsApiD3D11::tDxConfig::DEFAULT = cGraphicsApiD3D11::tDxConfig();
+cGraphicsApiD3D11::tDxConfig cGraphicsApiD3D11::tDxConfig::MEDIUM = cGraphicsApiD3D11::tDxConfig();
+cGraphicsApiD3D11::tDxConfig cGraphicsApiD3D11::tDxConfig::HIGH = cGraphicsApiD3D11::tDxConfig();
+cGraphicsApiD3D11::tDxConfig cGraphicsApiD3D11::swapChainConfig = cGraphicsApiD3D11::tDxConfig::DEFAULT;
 
-cGraphicsD3D11::tDxConfig::tDxConfig() 
+cGraphicsApiD3D11::tDxConfig::tDxConfig() 
 	:multiSampleQuality(0), multiSampleCount(1), createDeviceAtMaxResolution(false), createDeviceFullScreen(false) {
 }
 
-cGraphicsD3D11::cGraphicsD3D11()
+cGraphicsApiD3D11::cGraphicsApiD3D11()
 :d3ddev(NULL), d3dcon(NULL), d3dsc(NULL), backBufferRTV(NULL),backBufferDSV(NULL) {
 	// Create d3ddevice, d3dcontext
 	CreateDevice();
@@ -36,7 +34,7 @@ cGraphicsD3D11::cGraphicsD3D11()
 	CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_NONE,D3D11_FILL_MODE::D3D11_FILL_SOLID);
 }
 
-void cGraphicsD3D11::SetWindow(IWindow *renderWindow) {
+void cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
 	uint32 clientWidth = renderWindow->GetClientWidth();
 	uint32 clientHeight = renderWindow->GetClientHeight();
 	// Same window size : don't need new swap chain
@@ -44,10 +42,10 @@ void cGraphicsD3D11::SetWindow(IWindow *renderWindow) {
 		return;
 
 	// Save new swap chain config
-	//memcpy(&cGraphicsD3D11::swapChainConfig, &config, sizeof(tDxConfig));
+	//memcpy(&cGraphicsApiD3D11::swapChainConfig, &config, sizeof(tDxConfig));
 
 	// Create swap chain for device
-	CreateMostAcceptableSwapChain(clientWidth, clientHeight, (HWND)(renderWindow->GetHandle()), cGraphicsD3D11::swapChainConfig);
+	CreateMostAcceptableSwapChain(clientWidth, clientHeight, (HWND)(renderWindow->GetHandle()), cGraphicsApiD3D11::swapChainConfig);
 
 	// Create main render target (BackBuffer)
 	CreateRenderTargetViewForBB(swapChainConfig);
@@ -63,7 +61,7 @@ void cGraphicsD3D11::SetWindow(IWindow *renderWindow) {
 	SetRenderTargetDefault();
 }
 
-void cGraphicsD3D11::Release() {
+void cGraphicsApiD3D11::Release() {
 	ID3D11RenderTargetView *nulltarget[] = {0};
 	d3dcon->OMSetRenderTargets(1, nulltarget, 0);
 
@@ -77,7 +75,7 @@ void cGraphicsD3D11::Release() {
 	SAFE_RELEASE(d3dsc);
 }
 
-void cGraphicsD3D11::CreateDevice() {
+void cGraphicsApiD3D11::CreateDevice() {
 	// create Graphic Infrastructure factory
 	IDXGIFactory* fact = NULL;
 	CreateDXGIFactory(__uuidof(IDXGIFactory),(void**)&fact);
@@ -123,7 +121,7 @@ void cGraphicsD3D11::CreateDevice() {
 	SAFE_RELEASE(mainAdapter);
 }
 
-void cGraphicsD3D11::CreateMostAcceptableSwapChain(uint16 width, uint16 height, HWND windowHandle, const tDxConfig& config) {
+void cGraphicsApiD3D11::CreateMostAcceptableSwapChain(uint16 width, uint16 height, HWND windowHandle, const tDxConfig& config) {
 	if(d3dsc != NULL)
 		SAFE_RELEASE(d3dsc);
 
@@ -218,7 +216,7 @@ void cGraphicsD3D11::CreateMostAcceptableSwapChain(uint16 width, uint16 height, 
 	delete[] modeDesc;
 }
 
-void cGraphicsD3D11::CreateRenderTargetViewForBB(const tDxConfig& config) {
+void cGraphicsApiD3D11::CreateRenderTargetViewForBB(const tDxConfig& config) {
 	SAFE_RELEASE(backBufferRTV);
 	SAFE_RELEASE(backBufferDSV);
 
@@ -261,7 +259,7 @@ void cGraphicsD3D11::CreateRenderTargetViewForBB(const tDxConfig& config) {
 }
 
 
-void cGraphicsD3D11::CreateDefaultStates(const D3D11_CULL_MODE& cullMode, const D3D11_FILL_MODE& fillMode) {
+void cGraphicsApiD3D11::CreateDefaultStates(const D3D11_CULL_MODE& cullMode, const D3D11_FILL_MODE& fillMode) {
 	// default geometry topology!!
 	d3dcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -284,12 +282,12 @@ void cGraphicsD3D11::CreateDefaultStates(const D3D11_CULL_MODE& cullMode, const 
 	rState->Release();
 }
 
-void cGraphicsD3D11::SetRenderTargetDefault() {
+void cGraphicsApiD3D11::SetRenderTargetDefault() {
 	d3dcon->RSSetViewports(1, &backBufferVP);
 	d3dcon->OMSetRenderTargets(1, &backBufferRTV, backBufferDSV);
 }
 
-IVertexBuffer* cGraphicsD3D11::CreateVertexBuffer(size_t nVertices, size_t vertexStride, eBufferUsage usage, void* data /*= NULL*/) {
+IVertexBuffer* cGraphicsApiD3D11::CreateBufferVertex(size_t nVertices, size_t vertexStride, eBufferUsage usage, void* data /*= NULL*/) {
 	ID3D11Buffer* buffer = NULL;
 
 	D3D11_BUFFER_DESC desc;
@@ -317,7 +315,7 @@ IVertexBuffer* cGraphicsD3D11::CreateVertexBuffer(size_t nVertices, size_t verte
 	}
 }
 
-IIndexBuffer* cGraphicsD3D11::CreateIndexBuffer(size_t size , eBufferUsage usage, void* data /*= NULL*/) {
+IIndexBuffer* cGraphicsApiD3D11::CreateBufferIndex(size_t size , eBufferUsage usage, void* data /*= NULL*/) {
 	ID3D11Buffer* buffer = NULL;
 
 	D3D11_BUFFER_DESC desc;
@@ -346,7 +344,7 @@ IIndexBuffer* cGraphicsD3D11::CreateIndexBuffer(size_t size , eBufferUsage usage
 	}
 }
 
-IConstantBuffer* cGraphicsD3D11::CreateConstantBuffer(size_t size , eBufferUsage usage, void* data /*= NULL*/) {
+IConstantBuffer* cGraphicsApiD3D11::CreateBufferConstant(size_t size , eBufferUsage usage, void* data /*= NULL*/) {
 	ID3D11Buffer* buffer = NULL;
 
 	D3D11_BUFFER_DESC desc;
@@ -375,8 +373,34 @@ IConstantBuffer* cGraphicsD3D11::CreateConstantBuffer(size_t size , eBufferUsage
 	}
 }
 
-bool cGraphicsD3D11::WriteBuffer(IIndexBuffer* buffer , void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
-	ASSERT(buffer!=NULL);
+ITexture2D*	cGraphicsApiD3D11::CreateTexture(const zsString& filePath) {
+	// Shader Resource View of texture
+	ID3D11ShaderResourceView* srv;
+
+	size_t width;
+	size_t height;
+
+	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(d3ddev, filePath.c_str(), 0, 0, &srv, 0);
+	if(FAILED(hr)) {
+		ZS_MSG((zsString(L"cGraphicsApiD3D11::CreateTexture Failed to load :") + filePath).c_str());
+	} else {
+		zsPrintDebug((zsString(L"Texture Created: ") + filePath).c_str());
+
+		// Get Width, Height
+		ID3D11Texture2D* tex2D;
+		srv->GetResource((ID3D11Resource**)&tex2D);
+		D3D11_TEXTURE2D_DESC texDesc;
+		tex2D->GetDesc(&texDesc);
+		width = texDesc.Width;
+		height = texDesc.Height;
+		tex2D->Release();
+	}
+
+	return new cTexture2DColorD3D11(srv, width, height);
+}
+
+bool cGraphicsApiD3D11::WriteBuffer(IIndexBuffer* buffer , void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
+	ZSASSERT(buffer!=NULL);
 
 	if (buffer->GetSize()<size+offset)
 		return false;
@@ -397,8 +421,8 @@ bool cGraphicsD3D11::WriteBuffer(IIndexBuffer* buffer , void* source, size_t siz
 	return true;
 }
 
-bool cGraphicsD3D11::WriteBuffer(IVertexBuffer* buffer, void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
-	ASSERT(buffer!=NULL);
+bool cGraphicsApiD3D11::WriteBuffer(IVertexBuffer* buffer, void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
+	ZSASSERT(buffer!=NULL);
 
 	if (buffer->GetSize()<size+offset)
 		return false;
@@ -419,8 +443,8 @@ bool cGraphicsD3D11::WriteBuffer(IVertexBuffer* buffer, void* source, size_t siz
 	return true;
 }
 
-bool cGraphicsD3D11::ReadBuffer(IIndexBuffer* buffer , void* dest, size_t size, size_t offset /*= 0*/) {
-	ASSERT(buffer!=NULL);
+bool cGraphicsApiD3D11::ReadBuffer(IIndexBuffer* buffer , void* dest, size_t size, size_t offset /*= 0*/) {
+	ZSASSERT(buffer!=NULL);
 
 	if (buffer->GetSize()<size+offset)
 		return false;
@@ -441,8 +465,8 @@ bool cGraphicsD3D11::ReadBuffer(IIndexBuffer* buffer , void* dest, size_t size, 
 	return true;
 }
 
-bool cGraphicsD3D11::ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset /*= 0*/) {
-	ASSERT(buffer!=NULL);
+bool cGraphicsApiD3D11::ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset /*= 0*/) {
+	ZSASSERT(buffer!=NULL);
 
 	if (buffer->GetSize()<size+offset)
 		return false;
@@ -463,7 +487,7 @@ bool cGraphicsD3D11::ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, 
 	return true;
 }
 
-void cGraphicsD3D11::LoadConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) {
+void cGraphicsApiD3D11::LoadConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) {
 	ID3D11Buffer* cBuffer = ((cConstantBufferD3D11*)buffer)->GetBufferPointer();
 	d3dcon->VSSetConstantBuffers(slotIdx, 1, &cBuffer);
 }
@@ -471,7 +495,7 @@ void cGraphicsD3D11::LoadConstantBuffer(IConstantBuffer* buffer, size_t slotIdx)
 ////////////////////
 // draw
 ////////////////////
-void cGraphicsD3D11::Clear(bool target /*= true*/, bool depth /*= false*/, bool stencil /*= false*/) {
+void cGraphicsApiD3D11::Clear(bool target /*= true*/, bool depth /*= false*/, bool stencil /*= false*/) {
 	static const FLOAT defaultClearColor[4] = { 0.3f, 0.3f, 0.3f, 0.0f };
 
 	// Setup clear flags
@@ -490,50 +514,50 @@ void cGraphicsD3D11::Clear(bool target /*= true*/, bool depth /*= false*/, bool 
 		d3dcon->ClearRenderTargetView(backBufferRTV, defaultClearColor);
 }
 
-void cGraphicsD3D11::Present() {
+void cGraphicsApiD3D11::Present() {
 	ZSASSERT_MSG(d3dsc != NULL, L"Need to set window for rendering");
 	d3dsc->Present(0,0);
 }
 
-void cGraphicsD3D11::Draw(size_t nVertices, size_t idxStartVertex /*= 0*/) {
+void cGraphicsApiD3D11::Draw(size_t nVertices, size_t idxStartVertex /*= 0*/) {
 	d3dcon->Draw(nVertices, idxStartVertex);
 }
 
-void cGraphicsD3D11::DrawIndexed(size_t nIndices, size_t idxStartIndex /*= 0*/) {
+void cGraphicsApiD3D11::DrawIndexed(size_t nIndices, size_t idxStartIndex /*= 0*/) {
 	d3dcon->DrawIndexed(nIndices, idxStartIndex, 0);
 }
 
-void cGraphicsD3D11::DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex /*= 0*/, size_t idxStartInstance /*= 0*/) {
+void cGraphicsApiD3D11::DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex /*= 0*/, size_t idxStartInstance /*= 0*/) {
 	d3dcon->DrawInstanced(nVerticesPerInstance, nInstances, idxStartVertex, idxStartInstance);
 }
 
-void cGraphicsD3D11::DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex /*= 0*/, size_t idxStartInstance /*= 0*/) {
+void cGraphicsApiD3D11::DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex /*= 0*/, size_t idxStartInstance /*= 0*/) {
 	d3dcon->DrawIndexedInstanced(nIndicesPerInstance, nInstances, idxStartIndex, 0, idxStartInstance);
 }
 
-void cGraphicsD3D11::SetVertexData(const IVertexBuffer* vertexBuffer, size_t vertexStride) {
+void cGraphicsApiD3D11::SetVertexData(const IVertexBuffer* vertexBuffer, size_t vertexStride) {
 	const UINT strides = vertexStride;
 	const UINT offset = 0;
 	ID3D11Buffer* vertices = ((cVertexBufferD3D11*)vertexBuffer)->GetBufferPointer();
 	d3dcon->IASetVertexBuffers(0, 1, &vertices, &strides, &offset);
 }
 
-void cGraphicsD3D11::SetIndexData(const IIndexBuffer* indexBuffer) {
+void cGraphicsApiD3D11::SetIndexData(const IIndexBuffer* indexBuffer) {
 	d3dcon->IASetIndexBuffer(((cIndexBufferD3D11*)indexBuffer)->GetBufferPointer(), DXGI_FORMAT_R32_UINT, 0);
 }
 
-void cGraphicsD3D11::SetInstanceData() {
+void cGraphicsApiD3D11::SetInstanceData() {
 
 }
 
-void cGraphicsD3D11::SetShaderProgram(IShaderProgram* shProg) {
+void cGraphicsApiD3D11::SetShaderProgram(IShaderProgram* shProg) {
 	const cShaderProgramD3D11* shProgD3D11 = (cShaderProgramD3D11*)shProg;
 	d3dcon->IASetInputLayout(shProgD3D11->GetInputLayout());
 	d3dcon->VSSetShader(shProgD3D11->GetVertexShader(), 0, 0);
 	d3dcon->PSSetShader(shProgD3D11->GetPixelShader(), 0, 0);
 }
 
-IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) {
+IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPath) {
 
 	// workingDirectory path (exe path)
 	WCHAR buf[MAX_PATH];
@@ -564,22 +588,6 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 		cgHavePS = true;
 		CompileCgToHLSL(cgFullPath, hlslPsFullPath, eProfileCG::PS_5_0);
 	}
-
-	// Okay example_vs.hlsl
-	//		example_ps.hlsl
-	// etc generated
-	// within these files the entry point is different from .cg file, they named "main"
-	// replace each main with it's appropriate synonim VS_MAIN, PS_MAIN...
-	/*
-	if(cgHaveVS) {
-		cFileWin32 vsFile(hlslVsFullPath);
-		vsFile.ReplaceAll(L"main", L"VS_MAIN");
-	}
-
-	if(cgHavePS) {
-		cFileWin32 psFile(hlslPsFullPath);
-		psFile.ReplaceAll(L"main", L"PS_MAIN");
-	}*/
 
 	// Shader Compiling creating.. and input layout creation
 	ID3D11VertexShader* vs;
@@ -701,7 +709,7 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 	// Create input layout
 	hr = d3ddev->CreateInputLayout(vertexDecl , nVertexAttributes, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &inputLayout);
 	if(FAILED(hr))
-		ZS_MSG((L"cGraphicsD3D11::CreateShaderProgram -> Can't create input layout for vertexShader: " + hlslVsFullPath).c_str());
+		ZS_MSG((L"cGraphicsApiD3D11::CreateShaderProgram -> Can't create input layout for vertexShader: " + hlslVsFullPath).c_str());
 
 	vsBlob->Release();
 	psBlob->Release();
@@ -709,7 +717,7 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 	return new cShaderProgramD3D11(vertexFormat, alignedByteOffset, inputLayout, vs, ps);
 }
 
-HRESULT cGraphicsD3D11::CompileShaderFromFile(const zsString& fileName, const zsString& entry, const zsString& profile, ID3DBlob** ppBlobOut) {
+HRESULT cGraphicsApiD3D11::CompileShaderFromFile(const zsString& fileName, const zsString& entry, const zsString& profile, ID3DBlob** ppBlobOut) {
 	HRESULT hr = S_OK;
 
 	DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
@@ -749,7 +757,7 @@ HRESULT cGraphicsD3D11::CompileShaderFromFile(const zsString& fileName, const zs
 }
 
 
-void cGraphicsD3D11::CompileCgToHLSL(const zsString& cgFilePath, const zsString& hlslFilePath, eProfileCG compileProfile) {
+void cGraphicsApiD3D11::CompileCgToHLSL(const zsString& cgFilePath, const zsString& hlslFilePath, eProfileCG compileProfile) {
 	// workingDirectory path (exe path)
 	WCHAR buf[MAX_PATH];
 	GetModuleFileName(NULL, buf, MAX_PATH);

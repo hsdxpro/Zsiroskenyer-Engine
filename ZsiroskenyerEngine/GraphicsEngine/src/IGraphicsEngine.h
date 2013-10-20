@@ -9,6 +9,7 @@
 #pragma once
 
 #include "IManagerScene.h"
+#include "../../GraphicsEngineRaster/src/ManagerResource.h"
 #include "../../GraphicsApi/src/IGraphicsApi.h"
 
 class IGraphicsEngine {
@@ -17,6 +18,7 @@ public:
 
 	virtual void RenderSceneForward() = 0;
 
-	virtual IManagerScene* GetSceneManager() = 0;
-	virtual IGraphicsApi* GetGraphicsApi() = 0;
+	virtual IManagerScene*		GetManagerScene() = 0;
+	virtual cManagerResource*	GetManagerResource() = 0;
+	virtual IGraphicsApi*		GetGraphicsApi() = 0;
 };

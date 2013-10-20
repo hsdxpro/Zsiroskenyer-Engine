@@ -9,6 +9,7 @@
 // Common and Math
 #include "../../Common/src/common.h"
 #include "../../Common/src/math/vec3.h"
+#include "../../Common/src/math/vec2.h"
 
 // File IO
 #include "../../CommonWin32/src/FileWin32.h"
@@ -47,9 +48,11 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometryDAE(const zsString
 		nIndex += mesh->mNumFaces * 3;
 	}
 
+	// DEFINE VERTEX STRUCTURE HERE.... @TODO REMOVE IT OR I KILL MYSELF
 	struct baseVertex {
 		Vec3 pos;
 		Vec3 normal;
+		Vec2 tex;
 		bool operator == (const baseVertex& v) {return pos == v.pos && normal == v.normal;}
 	};
 
@@ -63,8 +66,11 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometryDAE(const zsString
 		aiMesh* mesh = meshes[i];
 		aiVector3D* currVertices	= mesh->mVertices;
 		aiVector3D* currNormals		= mesh->mNormals;
+
+		// @TODO not general algorithm, wee need to handle more UV channels
+		aiVector3D* currTxcoords	= mesh->mTextureCoords[0];
 		//aiVector3D* currTangents	= mesh->mTangents;
-		//aiVector3D* currTxcoords	= mesh->mTextureCoords[0]; // @TODO not general algorithm, wee need to handle more UV channels
+		
 
 		// Indices
 		aiFace* faces = mesh->mFaces;
@@ -80,8 +86,10 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometryDAE(const zsString
 		for(size_t j = 0; j < mesh->mNumVertices; vertexI++, j++) {
 			aiVector3D pos = currVertices[j];
 			aiVector3D norm = currNormals[j];
+			aiVector3D tex = currTxcoords[j];
 			vertices[vertexI].pos = Vec3(pos.x, pos.y, pos.z);
 			vertices[vertexI].normal = Vec3(norm.x, norm.y, norm.z);
+			vertices[vertexI].tex = Vec2(tex.x, tex.y);
 		}
 	}
 
@@ -96,7 +104,7 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometryDAE(const zsString
 		geomDesc.indices = reorderedIndices;
 		geomDesc.nVertices = nVertices;
 		geomDesc.nIndices = nIndex;
-		geomDesc.vertexStride = sizeof(float) * 6;
+		geomDesc.vertexStride = sizeof(baseVertex);
 		geomDesc.indexStride= sizeof(unsigned);
 	return geomDesc;
 }

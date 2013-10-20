@@ -5,29 +5,40 @@
 //	Contains a list of Entities with the same material and geometry.
 //	Used for instanced rendering of objects.
 ////////////////////////////////////////////////////////////////////////////////
-
 #pragma once
 
 #include "ManagerResource.h"
 #include <unordered_set>
-
+#include "../../GraphicsApi/src/ITexture2D.h"
 
 class cEntity;
-
-
 
 class cInstanceGroup {
 	friend struct std::hash<cInstanceGroup>;
 public:
-	cInstanceGroup() {}
+	cInstanceGroup();
 	cInstanceGroup(cGeometryRef, cMaterialRef);
 
+	bool operator == (const cInstanceGroup& other);
+
+	void SetTextureDiffuse(ITexture2D* t);
+	void SetTextureNormal(ITexture2D* t);
+	void SetTextureSpecular(ITexture2D* t);
+	void SetTextureDisplacement(ITexture2D* t);
+
+	ITexture2D* GetTextureDiffuse();
+	ITexture2D* GetTextureNormal();
+	ITexture2D* GetTextureSpecular();
+	ITexture2D* GetTextureDisplacement();
+
+	// Geometry
 	cGeometryRef geom;
+
+	// Material
 	cMaterialRef mtl;
+
+	// Entities
 	std::unordered_set<cEntity*> entities;
-	bool operator==(const cInstanceGroup& other) {
-		return geom==other.geom && mtl==other.mtl;
-	}
 };
 
 

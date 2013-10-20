@@ -16,7 +16,7 @@
     <ClInclude Include="src\IGraphicsApi.h" />
     <ClInclude Include="src\IIndexBuffer.h" />
     <ClInclude Include="src\IShaderProgram.h" />
-    <ClInclude Include="src\ITexture.h" />
+    <ClInclude Include="src\ITexture2D.h" />
     <ClInclude Include="src\IVertexBuffer.h" />
     <ClInclude Include="src\VertexFormat.h" />
   </ItemGroup>

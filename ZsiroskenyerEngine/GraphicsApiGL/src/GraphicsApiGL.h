@@ -5,11 +5,15 @@
 #include "../../Common/src/IWindow.h"
 #include "../../Common/src/common.h"
 
-class cGraphicsGL : public IGraphicsApi {
+class cGraphicsApiGL : public IGraphicsApi {
 public:
 	void Release() override;
-	IVertexBuffer* CreateVertexBuffer(size_t nVertices, size_t vertexStride, eBufferUsage usage, void* data = NULL) override;
-	IIndexBuffer* CreateIndexBuffer(size_t size, eBufferUsage usage, void* data = NULL) override;
+	IVertexBuffer*	CreateBufferVertex(size_t nVertices, size_t vertexStride, eBufferUsage usage, void* data = NULL) override;
+	IIndexBuffer*	CreateBufferIndex(size_t size, eBufferUsage usage, void* data = NULL) override;
+	IConstantBuffer*CreateBufferConstant(size_t size, eBufferUsage usage, void* data = NULL) override;
+
+	ITexture2D*		CreateTexture(const zsString& filePath) override;
+	IShaderProgram* CreateShaderProgram(const zsString& shaderPath) override;
 
 	bool WriteBuffer(IIndexBuffer* buffer , void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset = 0) override;
 	bool WriteBuffer(IVertexBuffer* buffer, void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset = 0) override;
@@ -31,8 +35,6 @@ public:
 
 	void SetShaderProgram(IShaderProgram* shProg);
 
-	IShaderProgram* CreateShaderProgram(const zsString& shaderPath) override;
-
 	void SetWindow(IWindow *renderWindow) override;
 protected:
 };
@@ -43,6 +45,6 @@ extern "C"
 	__declspec(dllexport)
 	IGraphicsApi* CreateGraphicsGL() {
 #pragma message("+++++ +++++ Implement opengl class, abstract methots not implemented yet! +++++ +++++")
-		//return new cGraphicsGL();
+		//return new cGraphicsApiGL();
 		return NULL;
 }

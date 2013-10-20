@@ -18,7 +18,7 @@
 
 #undef max
 
-class cGraphicsD3D11 : public IGraphicsApi {
+class cGraphicsApiD3D11 : public IGraphicsApi {
 public:
 	// Configuration to construct with
 	struct tDxConfig {
@@ -51,9 +51,11 @@ public:
 	};
 
 	// buffers
-	IVertexBuffer* CreateVertexBuffer(size_t nVertices, size_t vertexStride, eBufferUsage usage, void* data = NULL) override;
-	IIndexBuffer* CreateIndexBuffer(size_t size, eBufferUsage usage, void* data = NULL) override;
-	IConstantBuffer* CreateConstantBuffer(size_t size, eBufferUsage usage, void* data = NULL) override;
+	IVertexBuffer*	CreateBufferVertex(size_t nVertices, size_t vertexStride, eBufferUsage usage, void* data = NULL) override;
+	IIndexBuffer*	CreateBufferIndex(size_t size, eBufferUsage usage, void* data = NULL) override;
+	IConstantBuffer*CreateBufferConstant(size_t size, eBufferUsage usage, void* data = NULL) override;
+	ITexture2D*		CreateTexture(const zsString& filePath);
+	IShaderProgram* CreateShaderProgram(const zsString& shaderPath) override;
 
 	bool WriteBuffer(IIndexBuffer* buffer , void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset = 0) override;
 	bool WriteBuffer(IVertexBuffer* buffer, void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset = 0) override;
@@ -78,16 +80,10 @@ public:
 	void SetIndexData(const IIndexBuffer* indexBuffer) override;
 	void SetInstanceData(/*whatever*/) override;
 
-	void cGraphicsD3D11::SetShaderProgram(IShaderProgram* shProg);
-
-	// shader
-	IShaderProgram* CreateShaderProgram(const zsString& shaderPath) override;
-
-	// misc
+	void SetShaderProgram(IShaderProgram* shProg);
 	void SetWindow(IWindow *renderWindow) override;
 
-	// constructor
-	cGraphicsD3D11();
+	cGraphicsApiD3D11();
 	void Release() override;
 private:
 	void CreateDevice();
@@ -116,5 +112,5 @@ protected:
 extern "C"
 	__declspec(dllexport)
 	IGraphicsApi* CreateGraphicsD3D11() {
-		return new cGraphicsD3D11();
+		return new cGraphicsApiD3D11();
 }
