@@ -5,6 +5,9 @@ cFactory Factory;
 
 // Win32 DLL loader
 #include "../../CommonWin32/src/DLLLoaderWin32.h"
+#include "../../CommonWin32/src/WindowWin32.h"
+
+#undef CreateWindow
 
 cFactory::cFactory() 
 :dllLoader(NULL) {
@@ -16,13 +19,13 @@ cFactory::cFactory()
 		dllLoader = new cDLLLoaderWin32();
 
 	// Load DLL's and assign function PTR's to make Factory work after init
-	IDLLLoader::DLLMODULE hGraphicsD3D11 = dllLoader->LoadDLL(L"GraphicsD3D11.dll");
-	IDLLLoader::DLLMODULE hGraphicsGL = dllLoader->LoadDLL(L"GraphicsGL.dll");
-	IDLLLoader::DLLMODULE hEngineGraphics = dllLoader->LoadDLL(L"GraphicsEngine.dll");
+	IDLLLoader::DLLMODULE hGraphicsD3D11 = dllLoader->LoadDLL(L"GraphicsApiD3D11.dll");
+	IDLLLoader::DLLMODULE hGraphicsGL = dllLoader->LoadDLL(L"GraphicsApiGL.dll");
+	IDLLLoader::DLLMODULE hEngineGraphics = dllLoader->LoadDLL(L"GraphicsEngineRaster.dll");
 
 	ptrCreateGraphicsD3D11 = (funcGraphicsApi)dllLoader->GetDLLFunction(hGraphicsD3D11, L"CreateGraphicsD3D11");
 	ptrCreateGraphicsGL = (funcGraphicsApi)dllLoader->GetDLLFunction(hGraphicsGL, L"CreateGraphicsGL");
-	ptrCreateWindowWin32 = (funcWindow)dllLoader->GetDLLFunction(hEngineGraphics, L"CreateWindowWin32");
+	ptrCreateWindowWin32 = (funcWindow)CreateWindowWin32;
 	ptrCreateEngineGraphics = (funcEngineGraphics)dllLoader->GetDLLFunction(hEngineGraphics, L"CreateGraphicsEngine");
 }
 

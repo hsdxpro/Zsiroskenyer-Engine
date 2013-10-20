@@ -32,7 +32,4 @@ protected:
 
 // DLL accessor
 extern "C"
-	__declspec(dllexport)
-	IWindow* CreateWindowWin32(const IWindow::tDesc& winDesc) {
-		return new cWindowWin32(winDesc);
-}
+IWindow* CreateWindowWin32(const IWindow::tDesc& winDesc);

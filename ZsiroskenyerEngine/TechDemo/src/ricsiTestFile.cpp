@@ -1,11 +1,9 @@
 #include "testFiles.h"
 
 #include "../../Common/src/IWindow.h"
-#include "../../GraphicsApi/src/IGraphicsApi.h"
 #include "../../GraphicsEngine/src/IGraphicsEngine.h"
 #include "../../GraphicsEngine/src/Camera.h"
 #include "../../Common/src/Factory.h"
-#include "../../CommonWin32/src/DLLLoaderWin32.h"
 #include "../../Common/src/math/Quat.h"
 
 #include <vector>
@@ -36,6 +34,10 @@ int ricsiMain() {
 	std::vector<cEntity*> entities;
 	// Create 3D object
 
+	cEntity& e =  mgrScene->AddEntity(L"box.dae", L"material");
+	e.position = Vec3(0,50,0);
+
+	/*
 	for(size_t i = 0; i < 1 ; i++)
 		for(size_t j = 0; j < 1 ; j++) {
 			cEntity& e =  mgrScene->AddEntity(L"box.dae", L"material");
@@ -43,7 +45,7 @@ int ricsiMain() {
 			e.position = Vec3(i * 10, 90, j * 10);
 			e.isVisible = true;
 		}
-
+	*/
 	
 	// Main loop
 	while(myWindow->IsOpened()) {
@@ -54,9 +56,9 @@ int ricsiMain() {
 		// Hardcoded rotation 	( euler Z for rotationg entities )
 		static float zVal = 0.0f;
 		zVal += 0.001f;
-		for(cEntity* e : entities) {
-			e->rotation = Quat::EulerAnglesToQuat(Vec3(zVal, zVal + 0.4, zVal));
-		}
+		//for(cEntity* e : entities) {
+			e.rotation = Quat::EulerAnglesToQuat(Vec3(zVal, zVal + 0.4, zVal));
+		//}
 
 		// Present SwapChain
 		gApi->Present();

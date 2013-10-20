@@ -590,7 +590,7 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 	
 	// Compile, Create VERTEX_SHADER
 	while(FAILED(CompileShaderFromFile(hlslVsFullPath, L"main", L"vs_5_0", &vsBlob)))
-		ZS_MSG(zsString(L"Something wrong with the .cg shader, repair it i wait you: " + cgFullPath).c_str());
+		ZS_MSG(zsString(L".cg VERTEX SHADER parts are wrong, repair it i wait you: " + cgFullPath).c_str());
 
 	HRESULT hr = d3ddev->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), NULL, &vs);
 	if(FAILED(hr))
@@ -598,7 +598,7 @@ IShaderProgram* cGraphicsD3D11::CreateShaderProgram(const zsString& shaderPath) 
 
 	// Compile, Create PIXEL_SHADER
 	while(FAILED(CompileShaderFromFile(hlslPsFullPath, L"main", L"ps_5_0", &psBlob)))
-		ZS_MSG(zsString(L"Something wrong with the .cg shader, repair it i wait you: " + cgFullPath).c_str());
+		ZS_MSG(zsString(L".cg PIXEL SHADER parts are wrong, repair it i wait you: " + cgFullPath).c_str());
 
 	hr = d3ddev->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), NULL, &ps);
 	if(FAILED(hr))

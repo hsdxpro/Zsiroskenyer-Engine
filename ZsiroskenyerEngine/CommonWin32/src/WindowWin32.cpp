@@ -3,6 +3,14 @@
 #include <tchar.h>
 #include "../../Common/src/zsString.h"
 
+
+// DLL accessor
+extern "C"
+IWindow* CreateWindowWin32(const IWindow::tDesc& winDesc) {
+	return new cWindowWin32(winDesc);
+}
+
+
 LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	switch(msg) {
 	case WM_DESTROY: 

@@ -87,11 +87,6 @@
     <ClCompile Include="src\zsiroskenyer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GraphicsD3D11\GraphicsD3D11.vcxproj">
-      <Project>{6edd9407-84d4-42fa-a763-6a3f11c1aff6}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="src\testFiles.h" />
     <ClCompile Include="src\ricsiTestFile.cpp">
       <FileType>CppHeader</FileType>
