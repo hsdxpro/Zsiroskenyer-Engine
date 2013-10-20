@@ -1,12 +1,12 @@
 #include "testFiles.h"
 
-#include "../../GraphicsCommon/src/IWindow.h"
-#include "../../GraphicsCommon/src/IGraphicsApi.h"
-#include "../../GraphicsCommon/src/IGraphicsEngine.h"
-#include "../../GraphicsCommon/src/Camera.h"
-#include "../../CommonLib/src/Factory.h"
-#include "../../CommonLib/src/DLLLoaderWin32.h"
-#include "../../CommonLib/src/math/Quat.h"
+#include "../../Common/src/IWindow.h"
+#include "../../GraphicsApi/src/IGraphicsApi.h"
+#include "../../GraphicsEngine/src/IGraphicsEngine.h"
+#include "../../GraphicsEngine/src/Camera.h"
+#include "../../Common/src/Factory.h"
+#include "../../CommonWin32/src/DLLLoaderWin32.h"
+#include "../../Common/src/math/Quat.h"
 
 #include <vector>
 

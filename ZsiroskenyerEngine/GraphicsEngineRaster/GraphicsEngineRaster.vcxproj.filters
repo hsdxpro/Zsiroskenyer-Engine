@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="DllMain">
+      <UniqueIdentifier>{9a6dec54-de8c-47d6-b89a-a8f08db756c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GraphicsEngine">
+      <UniqueIdentifier>{85ebeef6-1303-459a-994e-8ad431fb3adf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ManagerResource">
+      <UniqueIdentifier>{11591b19-679d-4fc1-b926-92f647934afd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ManagerScene">
+      <UniqueIdentifier>{cf118672-aa65-42ef-86b2-58177e361283}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ManagerShader">
+      <UniqueIdentifier>{e4ea0f5d-8528-4b27-8fca-85144a0dec57}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\DllMain.cpp">
+      <Filter>DllMain</Filter>
+    </ClCompile>
+    <ClCompile Include="src\InstanceGroup.cpp">
+      <Filter>ManagerScene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Geometry.cpp">
+      <Filter>ManagerResource</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Material.cpp">
+      <Filter>ManagerResource</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GraphicsEngine.cpp">
+      <Filter>GraphicsEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ManagerResource.cpp">
+      <Filter>ManagerResource</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ManagerScene.cpp">
+      <Filter>ManagerScene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GeometryBuilder.cpp">
+      <Filter>ManagerResource</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ManagerShader.cpp">
+      <Filter>ManagerShader</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\InstanceGroup.h">
+      <Filter>ManagerScene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Geometry.h">
+      <Filter>ManagerResource</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Material.h">
+      <Filter>ManagerResource</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ManagerResource.h">
+      <Filter>ManagerResource</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ManagerScene.h">
+      <Filter>ManagerScene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GeometryBuilder.h">
+      <Filter>ManagerResource</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GraphicsEngine.h">
+      <Filter>GraphicsEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ManagerShader.h">
+      <Filter>ManagerShader</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

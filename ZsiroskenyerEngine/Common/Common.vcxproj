@@ -10,20 +10,53 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Factory.cpp" />
+    <ClCompile Include="src\math\Color.cpp" />
+    <ClCompile Include="src\math\Matrix44.cpp" />
+    <ClCompile Include="src\math\Point.cpp" />
+    <ClCompile Include="src\math\Quat.cpp" />
+    <ClCompile Include="src\math\Vec2.cpp" />
+    <ClCompile Include="src\math\Vec3.cpp" />
+    <ClCompile Include="src\math\Vec4.cpp" />
+    <ClCompile Include="src\memory\tlsf.cpp" />
+    <None Include="src\zsString.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\algorithms\sort.h" />
+    <ClInclude Include="src\algorithms\statistics.h" />
+    <ClInclude Include="src\common.h" />
+    <ClInclude Include="src\Factory.h" />
+    <ClInclude Include="src\IDLLLoader.h" />
+    <ClInclude Include="src\IWindow.h" />
+    <ClInclude Include="src\math\Color.h" />
+    <ClInclude Include="src\math\math_all.h" />
+    <ClInclude Include="src\math\Matrix44.h" />
+    <ClInclude Include="src\math\Point.h" />
+    <ClInclude Include="src\math\Quat.h" />
+    <ClInclude Include="src\math\Vec2.h" />
+    <ClInclude Include="src\math\Vec3.h" />
+    <ClInclude Include="src\math\Vec4.h" />
+    <ClInclude Include="src\memory\fixed_size_pool.h" />
+    <ClInclude Include="src\memory\tlsf.h" />
+    <ClInclude Include="src\storage\tree.h" />
+    <ClInclude Include="src\tipsify.h" />
+    <ClInclude Include="src\zsString.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{4E32D6FD-0510-4A22-921C-ED41F2B5F394}</ProjectGuid>
+    <ProjectGuid>{4A9A62C0-5B13-4453-B6A9-464DFFBE864F}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>TechDemo</RootNamespace>
+    <RootNamespace>CommonLib</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -40,12 +73,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(Configuration)_\</OutDir>
     <IntDir>$(Configuration)_\</IntDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -53,17 +82,18 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\Externals\</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>
-      </AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(OutDir)\Common.lib;$(OutDir)\GraphicsEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <Lib />
+    <Lib>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <AdditionalDependencies>$(OutDir)\CommonOS.lib</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -73,30 +103,15 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="src\petiTestFile.cpp" />
-    <ClCompile Include="src\zsiroskenyer.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\GraphicsD3D11\GraphicsD3D11.vcxproj">
-      <Project>{6edd9407-84d4-42fa-a763-6a3f11c1aff6}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\testFiles.h" />
-    <ClCompile Include="src\ricsiTestFile.cpp">
-      <FileType>CppHeader</FileType>
-    </ClCompile>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
