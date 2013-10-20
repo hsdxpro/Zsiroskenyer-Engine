@@ -1,0 +1,33 @@
+float4x4 wvp;
+sampler2D diffuseTex;
+
+struct VS_IN {
+	float3 posL : POSITION;
+	float3 normalL : NORMAL;
+	float2 tex0 : TEXCOORD0;
+};
+
+struct VS_OUT {
+	float4 posH : SV_POSITION;
+	float3 normalW : TEXCOORD0;
+	float2 tex0 : TEXCOORd1;
+};
+
+struct PS_OUT {
+	float4 color : COLOR;
+};
+
+
+VS_OUT VS_MAIN(VS_IN In) {
+	VS_OUT vout;
+	vout.posH = In.posL.x * wvp[0] + ( In.posL.y * wvp[1] + (In.posL.z * wvp[2]) + wvp[3]);
+	vout.normalW = In.normalL;
+	vout.tex0 = In.tex0;
+	return vout;
+}
+
+PS_OUT PS_MAIN(VS_OUT In) {
+	PS_OUT pout;
+	pout.color = float4(In.normalW, 1.0f);
+	return pout;
+};
