@@ -559,23 +559,15 @@ void cGraphicsApiD3D11::SetShaderProgram(IShaderProgram* shProg) {
 
 IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPath) {
 
-	// workingDirectory path (exe path)
-	WCHAR buf[MAX_PATH];
-	GetModuleFileName(NULL, buf, MAX_PATH);
-	zsString exePath = buf;
-	size_t idx = exePath.find_last_of('\\');
-	exePath = exePath.substr(0, idx + 1);
-
-	
 	// For example, test.cg  ->  test
 	zsString shaderWithoutExtension = shaderPath;
 	shaderWithoutExtension = shaderWithoutExtension.substr(0, shaderWithoutExtension.size() - 3);
 	
 
 	// detect that the .cg have VS_MAIN, PS_MAIN, ..... etc
-	zsString cgFullPath = exePath + shaderPath;
-	zsString hlslVsFullPath = exePath  + shaderWithoutExtension + L"_vs.hlsl";
-	zsString hlslPsFullPath = exePath  + shaderWithoutExtension + L"_ps.hlsl";
+	zsString cgFullPath = shaderPath;
+	zsString hlslVsFullPath = shaderWithoutExtension + L"_vs.hlsl";
+	zsString hlslPsFullPath = shaderWithoutExtension + L"_ps.hlsl";
 	bool cgHaveVS = false;
 	bool cgHavePS = false;
 
@@ -758,15 +750,8 @@ HRESULT cGraphicsApiD3D11::CompileShaderFromFile(const zsString& fileName, const
 
 
 void cGraphicsApiD3D11::CompileCgToHLSL(const zsString& cgFilePath, const zsString& hlslFilePath, eProfileCG compileProfile) {
-	// workingDirectory path (exe path)
-	WCHAR buf[MAX_PATH];
-	GetModuleFileName(NULL, buf, MAX_PATH);
-	zsString exePath = buf;
-	size_t idx = exePath.find_last_of('\\');
-	exePath = exePath.substr(0, idx + 1);
-
 	// Paths
-	zsString cgcExePath = exePath + L"bin\\cgc.exe";
+	zsString cgcExePath = L"bin\\cgc.exe";
 	zsString entryAndProfile;
 	switch(compileProfile)
 	{
