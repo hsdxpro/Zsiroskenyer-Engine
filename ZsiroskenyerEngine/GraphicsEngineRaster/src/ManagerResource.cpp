@@ -72,10 +72,6 @@ cMaterialRef cManagerResource::LoadMaterial(const zsString& fileName) {
 	return cMaterialRef(this, mtl);
 }
 
-ITexture2D* cManagerResource::LoadTexture(const zsString& fileName) {
-	return gApi->CreateTexture(fileName);
-}
-
 void cManagerResource::UnloadMaterial(const cMaterial* material) {
 	auto it = materials.right.find(const_cast<cMaterial*>(material));
 	delete it->first;

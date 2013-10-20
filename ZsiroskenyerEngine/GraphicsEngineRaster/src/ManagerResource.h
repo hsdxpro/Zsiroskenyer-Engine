@@ -35,7 +35,6 @@ public:
 	// resource aquisition
 	cGeometryRef LoadGeometry(const zsString& fileName);
 	cMaterialRef LoadMaterial(const zsString& fileName);
-	ITexture2D* LoadTexture(const zsString& fileName);
 
 private:
 	// automatic resource unloading requested by references

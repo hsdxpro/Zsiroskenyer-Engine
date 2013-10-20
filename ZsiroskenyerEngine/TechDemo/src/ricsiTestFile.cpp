@@ -33,14 +33,14 @@ int ricsiMain() {
 	mgrScene->SetActiveCamera(cam);
 
 	// Create 3D object
-	cEntity& e =  mgrScene->AddEntity(L"objects/box.dae", L"material");
+	cEntity& e = mgrScene->AddEntity(L"objects/box.dae", L"material");
 	e.position = Vec3(0,50,0);
 
 	// Load texture, assign to object..
-	ITexture2D* testDiffuse = mgrRes->LoadTexture(L"textures/ground_DIFFUSE.jpg");
-	ITexture2D* testNormal = mgrRes->LoadTexture(L"textures/ground_NORMAL.jpg");
-	ITexture2D* testSpecular = mgrRes->LoadTexture(L"textures/ground_SPECULAR.jpg");
-	ITexture2D* testDisplacement = mgrRes->LoadTexture(L"textures/ground_DISPLACEMENT.jpg");
+	//ITexture2D* testDiffuse = mgrRes->LoadTexture(L"textures/ground_DIFFUSE.jpg");
+	//ITexture2D* testNormal = mgrRes->LoadTexture(L"textures/ground_NORMAL.jpg");
+	//ITexture2D* testSpecular = mgrRes->LoadTexture(L"textures/ground_SPECULAR.jpg");
+	//ITexture2D* testDisplacement = mgrRes->LoadTexture(L"textures/ground_DISPLACEMENT.jpg");
 
 	/*
 	for(size_t i = 0; i < 1 ; i++)
