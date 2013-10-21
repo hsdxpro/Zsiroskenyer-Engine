@@ -19,6 +19,10 @@ public:
 
 	const IIndexBuffer* GetIndexBuffer() const;
 	const IVertexBuffer* GetVertexBuffer() const;
+
+	struct tMatGroup {
+		size_t id, indexOffset, indexCount;
+	};
 protected:
 	IVertexBuffer *VB;
 	IIndexBuffer *IB;
