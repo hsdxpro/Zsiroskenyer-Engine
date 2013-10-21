@@ -6,40 +6,70 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "Material.h"
+#include <stdexcept>
 
-cMaterial::cMaterial()
-:textureDiffuse(0), textureNormal(0), textureSpecular(0), textureDisplacement(0) {
 
+// constructor
+cMaterial::cMaterial() : subMaterials(NULL), size_(0) {
 }
 
-void cMaterial::SetTextureDiffuse(ITexture2D* t) {
-	textureDiffuse = t;
+cMaterial::cMaterial(size_t nSubMaterials) {
+	subMaterials = new tSubMaterial[nSubMaterials];
+	size_ = nSubMaterials;
 }
 
-void cMaterial::SetTextureNormal(ITexture2D* t) {
-	textureNormal = t;
+cMaterial::~cMaterial() {
+	for (size_t i=0; i<size_; i++) {
+#pragma warning("WHY IS THERE NO RELEASE FOR ITEXTURE???")
+		/*
+		if (subMaterials[i].textureDiffuse != NULL)
+			subMaterials[i].textureDiffuse->Release();
+		if (subMaterials[i].textureDisplacement != NULL)
+			subMaterials[i].textureDisplacement->Release();
+		if (subMaterials[i].textureNormal != NULL)
+			subMaterials[i].textureNormal->Release();
+		if (subMaterials[i].textureSpecular != NULL)
+			subMaterials[i].textureSpecular->Release();
+		*/
+	}
+	delete[] subMaterials;
+	subMaterials = NULL; // explicit dtor calls maybe...
 }
 
-void cMaterial::SetTextureSpecular(ITexture2D* t) {
-	textureSpecular = t;
+
+cMaterial::tSubMaterial::tSubMaterial() :
+	textureDiffuse(NULL),
+	textureDisplacement(NULL),
+	textureNormal(NULL),
+	textureSpecular(NULL),
+	diffuse(0,0,0,1),
+	emissive(0,0,0,1),
+	specular(0,0,0,1)
+{
 }
 
-void cMaterial::SetTextureDisplacement(ITexture2D* t) {
-	textureDisplacement = t;
+// bullshit
+void cMaterial::SetSize(size_t nSubMaterials) {
+	this->~cMaterial(); // ugly but i don't want to copy-paste
+	new (this) cMaterial(nSubMaterials); // ugly too...
 }
 
-ITexture2D* cMaterial::GetTextureDiffuse() {
-	return textureDiffuse;
+
+cMaterial::tSubMaterial& cMaterial::operator[](size_t idx) {
+	if (idx>=size_)
+		throw std::out_of_range("no such material id");
+	return subMaterials[idx];
+}
+const cMaterial::tSubMaterial& cMaterial::operator[](size_t idx) const {
+	if (idx>=size_)
+		throw std::out_of_range("no such material id");
+	return subMaterials[idx];
 }
 
-ITexture2D* cMaterial::GetTextureNormal() {
-	return textureNormal;
+
+size_t cMaterial::GetSize() const {
+	return size_;
 }
 
-ITexture2D*cMaterial::GetTextureSpecular() {
-	return textureSpecular;
-}
 
-ITexture2D* cMaterial::GetTextureDisplacement() {
-	return textureDisplacement;
-}
+

@@ -7,24 +7,32 @@
 #pragma once
 
 #include "../../GraphicsApi/src/ITexture2D.h"
+#include "../../Common/src/math/Vec4.h"
 
 class cMaterial {
 public:
 	cMaterial();
+	cMaterial(size_t nSubMaterials);
+	~cMaterial();
+	
+	void SetSize(size_t nSubMaterials);
 
-	void SetTextureDiffuse(ITexture2D* t);
-	void SetTextureNormal(ITexture2D* t);
-	void SetTextureSpecular(ITexture2D* t);
-	void SetTextureDisplacement(ITexture2D* t);
+	struct tSubMaterial {
+		ITexture2D* textureDiffuse;
+		ITexture2D* textureNormal;
+		ITexture2D* textureSpecular;
+		ITexture2D* textureDisplacement;
+		Vec4 diffuse;
+		Vec4 specular;
+		Vec4 emissive;
+		tSubMaterial();
+	};
 
-	ITexture2D* GetTextureDiffuse();
-	ITexture2D* GetTextureNormal();
-	ITexture2D* GetTextureSpecular();
-	ITexture2D* GetTextureDisplacement();
+	tSubMaterial& operator[](size_t idx);
+	const tSubMaterial& operator[](size_t idx) const;
+	size_t GetSize() const;
 
 private:
-	ITexture2D* textureDiffuse;
-	ITexture2D* textureNormal;
-	ITexture2D* textureSpecular;
-	ITexture2D* textureDisplacement;
+	tSubMaterial* subMaterials;
+	size_t size_;
 };
