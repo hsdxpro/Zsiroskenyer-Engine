@@ -43,6 +43,9 @@
     <ClCompile Include="src\math\Vec4.cpp">
       <Filter>math</Filter>
     </ClCompile>
+    <ClCompile Include="src\multithreading\spinlock.cpp">
+      <Filter>multithreading</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\math\math_all.h">
@@ -92,6 +95,9 @@
     <ClInclude Include="src\IWindow.h" />
     <ClInclude Include="src\shared_ptr.h">
       <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\multithreading\spinlock.h">
+      <Filter>multithreading</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

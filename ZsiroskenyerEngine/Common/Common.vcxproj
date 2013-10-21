@@ -20,6 +20,7 @@
     <ClCompile Include="src\math\Vec3.cpp" />
     <ClCompile Include="src\math\Vec4.cpp" />
     <ClCompile Include="src\memory\tlsf.cpp" />
+    <ClCompile Include="src\multithreading\spinlock.cpp" />
     <None Include="src\zsString.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -39,6 +40,7 @@
     <ClInclude Include="src\math\Vec4.h" />
     <ClInclude Include="src\memory\fixed_size_pool.h" />
     <ClInclude Include="src\memory\tlsf.h" />
+    <ClInclude Include="src\multithreading\spinlock.h" />
     <ClInclude Include="src\shared_ptr.h" />
     <ClInclude Include="src\storage\tree.h" />
     <ClInclude Include="src\tipsify.h" />
