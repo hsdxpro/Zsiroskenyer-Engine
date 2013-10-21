@@ -10,8 +10,11 @@
     <Filter Include="algorithm">
       <UniqueIdentifier>{a5eb5c13-e67f-40dd-847c-b8579fa9b105}</UniqueIdentifier>
     </Filter>
-    <Filter Include="storage">
+    <Filter Include="container">
       <UniqueIdentifier>{5f9b7b97-81fe-4909-b4a0-7d17d3c1fdf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="multithreading">
+      <UniqueIdentifier>{e0e8a2e9-7589-4a18-aef1-e78d0f481274}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -58,7 +61,7 @@
       <Filter>algorithm</Filter>
     </ClInclude>
     <ClInclude Include="src\storage\tree.h">
-      <Filter>storage</Filter>
+      <Filter>container</Filter>
     </ClInclude>
     <ClInclude Include="src\math\Vec3.h">
       <Filter>math</Filter>
@@ -87,6 +90,9 @@
       <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="src\IWindow.h" />
+    <ClInclude Include="src\shared_ptr.h">
+      <Filter>memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\zsString.cpp" />

@@ -39,6 +39,7 @@
     <ClInclude Include="src\math\Vec4.h" />
     <ClInclude Include="src\memory\fixed_size_pool.h" />
     <ClInclude Include="src\memory\tlsf.h" />
+    <ClInclude Include="src\shared_ptr.h" />
     <ClInclude Include="src\storage\tree.h" />
     <ClInclude Include="src\tipsify.h" />
     <ClInclude Include="src\zsString.h" />
