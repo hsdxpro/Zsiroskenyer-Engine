@@ -1,14 +1,11 @@
-
-// Implementation
 #include "GraphicsApiD3D11.h"
-
 #include "VertexBufferD3D11.h"
 #include "IndexBufferD3D11.h"
 #include "ConstantBufferD3D11.h"
 #include "ShaderProgramD3D11.h"
 #include "Texture2DColorD3D11.h"
 
-#include "../../CommonWin32/src/FileWin32.h"
+#include "../../Common/src/IFile.h"
 
 #ifdef WIN32
 #pragma warning(disable: 4244)
@@ -187,7 +184,7 @@ void cGraphicsApiD3D11::CreateMostAcceptableSwapChain(uint16 width, uint16 heigh
 	if(selectedVideoMode != NULL) {
 		sdesc.BufferDesc = *selectedVideoMode; // Copy DisplayMode Data
 	} else {
-		zsPrintError("Using non standard resolution, this may slow down the DirectX application");
+		ILog::GetInstance()->MsgBox(L"Using non standard resolution, this may slow down the DirectX application");
 		sdesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		sdesc.BufferDesc.Width = width;
 		sdesc.BufferDesc.Height = height;
@@ -206,7 +203,7 @@ void cGraphicsApiD3D11::CreateMostAcceptableSwapChain(uint16 width, uint16 heigh
 		sdesc.Windowed = true;
 
 	HRESULT hr = fact->CreateSwapChain(d3ddev,&sdesc,&d3dsc);
-	if(FAILED(hr)) zsPrintError("Can't create DirectX's Swap Chain");
+	if(FAILED(hr)) ILog::GetInstance()->MsgBox(L"Can't create DirectX's Swap Chain");
 
 	// free up everything
 	SAFE_RELEASE(fact);
@@ -382,9 +379,9 @@ ITexture2D*	cGraphicsApiD3D11::CreateTexture(const zsString& filePath) {
 
 	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(d3ddev, filePath.c_str(), 0, 0, &srv, 0);
 	if(FAILED(hr)) {
-		ZS_MSG((zsString(L"cGraphicsApiD3D11::CreateTexture Failed to load :") + filePath).c_str());
+		ILog::GetInstance()->MsgBox(L"cGraphicsApiD3D11::CreateTexture Failed to load :" + filePath);
 	} else {
-		zsPrintDebug((zsString(L"Texture Created: ") + filePath).c_str());
+		ILog::GetInstance()->Log(L"Texture Created: " + filePath);
 
 		// Get Width, Height
 		ID3D11Texture2D* tex2D;
@@ -571,12 +568,12 @@ IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPat
 	bool cgHaveVS = false;
 	bool cgHavePS = false;
 
-	cFileWin32 cgFile(cgFullPath);
-	if(cgFile.Find(L"VS_MAIN")) {
+	IFile* cgFile = IFile::Create(cgFullPath);
+	if(cgFile->Find(L"VS_MAIN")) {
 		cgHaveVS = true;
 		CompileCgToHLSL(cgFullPath, hlslVsFullPath, eProfileCG::VS_5_0);
 	}
-	if(cgFile.Find(L"PS_MAIN")) {
+	if(cgFile->Find(L"PS_MAIN")) {
 		cgHavePS = true;
 		CompileCgToHLSL(cgFullPath, hlslPsFullPath, eProfileCG::PS_5_0);
 	}
@@ -590,19 +587,19 @@ IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPat
 	
 	// Compile, Create VERTEX_SHADER
 	while(FAILED(CompileShaderFromFile(hlslVsFullPath, L"main", L"vs_5_0", &vsBlob)))
-		ZS_MSG(zsString(L".cg VERTEX SHADER parts are wrong, repair it i wait you: " + cgFullPath).c_str());
+		ILog::GetInstance()->MsgBox(L".cg VERTEX SHADER parts are wrong, repair it i wait you: " + cgFullPath);
 
 	HRESULT hr = d3ddev->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), NULL, &vs);
 	if(FAILED(hr))
-		ZS_MSG(zsString(L"Failed to create vertex shader from bytecode: " + hlslVsFullPath).c_str());
+		ILog::GetInstance()->MsgBox(L"Failed to create vertex shader from bytecode: " + hlslVsFullPath);
 
 	// Compile, Create PIXEL_SHADER
 	while(FAILED(CompileShaderFromFile(hlslPsFullPath, L"main", L"ps_5_0", &psBlob)))
-		ZS_MSG(zsString(L".cg PIXEL SHADER parts are wrong, repair it i wait you: " + cgFullPath).c_str());
+		ILog::GetInstance()->MsgBox(L".cg PIXEL SHADER parts are wrong, repair it i wait you: " + cgFullPath);
 
 	hr = d3ddev->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), NULL, &ps);
 	if(FAILED(hr))
-		ZS_MSG(zsString(L"Failed to create vertex shader from bytecode: " + hlslPsFullPath).c_str());
+		ILog::GetInstance()->MsgBox(L"Failed to create vertex shader from bytecode: " + hlslPsFullPath);
 
 
 	// Parse input Layout... from VERTEX_SHADER
@@ -610,8 +607,8 @@ IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPat
 	// 2. search for VS_OUT, get lines under that, while line != "};"
 	// 3. extract VERTEX DECLARATION from those lines
 
-	zsString vsInStructName = cgFile.GetWordAfter(L" VS_MAIN(");
-	std::list<zsString> vsInStructLines = cgFile.GetLinesUnder(vsInStructName, L"};");
+	zsString vsInStructName = cgFile->GetWordAfter(L" VS_MAIN(");
+	std::list<zsString> vsInStructLines = cgFile->GetLinesUnder(vsInStructName, L"};");
 
 	int nVertexAttributes = 0;
 
@@ -660,7 +657,7 @@ IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPat
 				attribType = eVertexAttribute::TANGENT;
 			}
 			else
-				ZS_MSG(L"Cg compiling, can't math SEMANTIC NAME");
+				ILog::GetInstance()->MsgBox(L"Cg compiling, can't math SEMANTIC NAME");
 
 			// Add new Attribute
 			vertexFormat.AddAttribute(attribType);
@@ -682,7 +679,7 @@ IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPat
 				byteSize = 4;
 			} 
 			else
-				ZS_MSG(L"Cg compiling, can't match FORMAT");
+				ILog::GetInstance()->MsgBox(L"Cg compiling, can't match Input Vertex FORMAT");
 
 			vertexDecl[attribIdx].SemanticName = semanticName;
 			vertexDecl[attribIdx].Format = format;
@@ -701,7 +698,7 @@ IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPat
 	// Create input layout
 	hr = d3ddev->CreateInputLayout(vertexDecl , nVertexAttributes, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &inputLayout);
 	if(FAILED(hr))
-		ZS_MSG((L"cGraphicsApiD3D11::CreateShaderProgram -> Can't create input layout for vertexShader: " + hlslVsFullPath).c_str());
+		ILog::GetInstance()->MsgBox(L"cGraphicsApiD3D11::CreateShaderProgram -> Can't create input layout for vertexShader: " + hlslVsFullPath);
 
 	vsBlob->Release();
 	psBlob->Release();
@@ -738,7 +735,7 @@ HRESULT cGraphicsApiD3D11::CompileShaderFromFile(const zsString& fileName, const
 			zsString errorStrW(size_needed, 0);
 			MultiByteToWideChar(CP_UTF8, 0, errorStr, strlen(errorStr), &errorStrW[0], size_needed);
 
-			ZS_MSG(zsString(L"Can't Compile :" + zsString(fileName) + L"\n\n" + errorStrW).c_str());
+			ILog::GetInstance()->MsgBox(L"Can't Compile :" + fileName + L"\n\n" + errorStrW);
 		}
 		if( pErrorBlob ) pErrorBlob->Release();
 		return hr;
@@ -786,6 +783,6 @@ void cGraphicsApiD3D11::CompileCgToHLSL(const zsString& cgFilePath, const zsStri
 	if(appStarted) {
 		WaitForSingleObject( ProcessInfo.hProcess, INFINITE );
 	} else {
-		ZS_MSG(zsString(L"Cannot execute cg shader compiler : " + cgcExePath).c_str());
+		ILog::GetInstance()->MsgBox(L"Cannot execute cg shader compiler : " + cgcExePath);
 	}
 }

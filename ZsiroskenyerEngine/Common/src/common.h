@@ -3,9 +3,7 @@
 
 #include <cassert>
 #include <iostream>
-
-//@TODO need ILog, cLogWin32, etc....
-#define zsPrintError(x) (x)
+#include "ILog.h"
 
 typedef unsigned int uint32;
 typedef signed int int32;
@@ -25,17 +23,13 @@ typedef unsigned char uchar;
 #define ZSASSERT(condition) assert(condition)
 #define ZSASSERT_MSG(condition, errorMsg) \
 	if (condition != true) { \
-		MessageBoxW(0, errorMsg, L"ErrorMsg", MB_OK); \
+		ILog::GetInstance()->MsgBox(errorMsg); \
 		assert(condition); \
 	}
-#define ZS_MSG(errorMsg) MessageBoxW(0, errorMsg, L"ErrorMsg", MB_OK)
-#define zsPrintDebug(msg) std::wcerr<<msg<<std::endl;
 #else
-#define ZSASSERT(x, y) {}
+#define ZSASSERT_MSG(x, y) {}
 #define ZSASSERT(x) {}
-#define zsPrintDebug(msg) {}
 #endif
-
 
 
 #define SAFE_DELETE(x) if(x != NULL) {delete x; x = NULL;}

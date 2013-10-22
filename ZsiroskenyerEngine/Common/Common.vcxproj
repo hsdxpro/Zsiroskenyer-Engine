@@ -12,6 +12,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Factory.cpp" />
+    <ClCompile Include="src\IDLLLoader.cpp" />
+    <ClCompile Include="src\IFile.cpp" />
+    <ClCompile Include="src\ILog.cpp" />
+    <ClCompile Include="src\IWindow.cpp" />
     <ClCompile Include="src\math\Color.cpp" />
     <ClCompile Include="src\math\Matrix44.cpp" />
     <ClCompile Include="src\math\Point.cpp" />
@@ -29,6 +33,8 @@
     <ClInclude Include="src\common.h" />
     <ClInclude Include="src\Factory.h" />
     <ClInclude Include="src\IDLLLoader.h" />
+    <ClInclude Include="src\IFile.h" />
+    <ClInclude Include="src\ILog.h" />
     <ClInclude Include="src\IWindow.h" />
     <ClInclude Include="src\math\Color.h" />
     <ClInclude Include="src\math\math_all.h" />

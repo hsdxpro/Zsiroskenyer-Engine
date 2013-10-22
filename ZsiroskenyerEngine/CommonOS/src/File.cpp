@@ -1,21 +1,19 @@
-#include "FileWin32.h"
+#include "File.h"
 #include "../../Common/src/common.h"
 
-cFileWin32::cFileWin32()
+cFile::cFile()
 :isEof(false) {
 }
 
-cFileWin32::cFileWin32(const zsString& file)
-:isEof(false) {
-	fileName = file;
-
+cFile::cFile(const zsString& filePath)
+:isEof(false), filePath(filePath) {
 	lines.clear();
 	stream.clear();
 	stream.close();
 	// Open stream
-	stream.open(fileName.c_str(), std::ios_base::in);
+	stream.open(filePath.c_str(), std::ios_base::in);
 	if(!stream.is_open()) {
-		//ZS_MSG(zsString(L"Can't open file: " + srcFile).c_str());
+		ILog::GetInstance()->MsgBox(L"Can't open file: " + filePath);
 	} else {
 		// read up lines
 		zsString lineStr;
@@ -31,23 +29,23 @@ cFileWin32::cFileWin32(const zsString& file)
 }
 
 
-void cFileWin32::Clear() {
-	std::ofstream os(fileName.c_str(), std::ios::trunc);
+void cFile::Clear() {
+	std::ofstream os(filePath.c_str(), std::ios::trunc);
 	os.close();
 	lines.clear();
 }
 
-void cFileWin32::Close() {
+void cFile::Close() {
 	stream.clear();
 	stream.close();
 }
 
-void cFileWin32::DeleteFirstLines(size_t nLines) {
-	//ZSASSERT_MSG(nLines <= lines.size(), zsString(L"Can't delete more line from file than how many it have: " + zsString(fileName)).c_str());
+void cFile::DeleteFirstLines(size_t nLines) {
+	//ZSASSERT_MSG(nLines <= lines.size(), zsString(L"Can't delete more line from file than how many it have: " + zsString(filePath)).c_str());
 
 	// Reopen stream
 	stream.close();
-	stream.open(fileName.c_str(), std::ios::trunc | std::ios_base::out);
+	stream.open(filePath.c_str(), std::ios::trunc | std::ios_base::out);
 
 	// Move iteraton behind nLines
 	auto iter = lines.begin();
@@ -66,9 +64,9 @@ void cFileWin32::DeleteFirstLines(size_t nLines) {
 	Close();
 }
 
-void cFileWin32::Append(const cFileWin32& file) {
+void cFile::Append(const IFile& file) {
 	stream.close();
-	stream.open(fileName.c_str(), std::ios_base::app);
+	stream.open(filePath.c_str(), std::ios_base::app);
 	auto iter = file.GetLines().begin();
 	while(iter != file.GetLines().end()) {
 		lines.push_back(*iter);
@@ -79,7 +77,7 @@ void cFileWin32::Append(const cFileWin32& file) {
 	Close();
 }
 
-bool cFileWin32::Find(const zsString& str) {
+bool cFile::Find(const zsString& str) {
 	auto iter = lines.begin();
 	while(iter != lines.end()) {
 		if(iter->find(str.c_str()) != std::wstring::npos)
@@ -89,10 +87,10 @@ bool cFileWin32::Find(const zsString& str) {
 	return false;
 }
 
-bool cFileWin32::ReplaceAll(const zsString& repThat, const zsString& withThat) {
+bool cFile::ReplaceAll(const zsString& repThat, const zsString& withThat) {
 	// Reopen stream
 	stream.close();
-	stream.open(fileName.c_str(), std::ios::trunc | std::ios_base::out);
+	stream.open(filePath.c_str(), std::ios::trunc | std::ios_base::out);
 
 	// Replace strings
 	auto iter = lines.begin();
@@ -118,11 +116,11 @@ bool cFileWin32::ReplaceAll(const zsString& repThat, const zsString& withThat) {
 	return foundReplace;
 }
 
-size_t cFileWin32::GetNLines() const {
+size_t cFile::GetNLines() const {
 	return lines.size();
 }
 
-const zsString& cFileWin32::GetLine() {
+const zsString& cFile::GetLine() {
 	zsString& data = *getLineIterator;
 	getLineIterator++;
 	if(getLineIterator == lines.end()) {
@@ -131,26 +129,25 @@ const zsString& cFileWin32::GetLine() {
 	return data;
 }
 
-const std::list<zsString>& cFileWin32::GetLines() const {
+const std::list<zsString>& cFile::GetLines() const {
 	return lines;
 }
 
-bool cFileWin32::IsEOF() {
+bool cFile::IsEOF() const {
 	return isEof;
 }
 
-bool cFileWin32::isFileExits(const zsString& str) {
+bool cFile::isFileExits(const zsString& str) {
 	std::wfstream is(str.c_str(), std::ios_base::in);
 	bool isOpen = is.is_open();
 	is.close();
 	return isOpen;
 }
 
-
-bool cFileWin32::RemoveDuplicatedLines() {
+bool cFile::RemoveDuplicatedLines() {
 	// Reopen stream
 	stream.close();
-	stream.open(fileName.c_str(), std::ios::trunc | std::ios_base::out);
+	stream.open(filePath.c_str(), std::ios::trunc | std::ios_base::out);
 
 	// Lines that are duplicated
 	std::list<zsString> duplicatedLines;
@@ -192,7 +189,7 @@ bool cFileWin32::RemoveDuplicatedLines() {
 	return foundDuplicates;
 }
 
-zsString cFileWin32::GetStringBefore(const zsString& str) {
+zsString cFile::GetStringBefore(const zsString& str) {
 	auto iter = lines.begin();
 	while(iter != lines.end()) {
 		size_t start_pos = iter->find(str);
@@ -204,7 +201,7 @@ zsString cFileWin32::GetStringBefore(const zsString& str) {
 	return zsString();
 }
 
-zsString cFileWin32::GetWordAfter(const zsString& str) {
+zsString cFile::GetWordAfter(const zsString& str) {
 	size_t idx = 0;
 	auto iter = lines.begin();
 	while(iter != lines.end()) {
@@ -222,7 +219,7 @@ zsString cFileWin32::GetWordAfter(const zsString& str) {
 	return zsString();
 }
 
-std::list<zsString> cFileWin32::GetLinesUnder(const zsString& str, const zsString& endLine) {
+std::list<zsString> cFile::GetLinesUnder(const zsString& str, const zsString& endLine) {
 	std::list<zsString> result;
 	auto iter = lines.begin();
 	while(iter != lines.end()) {

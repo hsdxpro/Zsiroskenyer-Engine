@@ -1,5 +1,5 @@
-// DLLLoaderWin32.cpp implementation
-#include "DLLLoaderWin32.h"
+// DLLLoader.cpp implementation
+#include "DLLLoader.h"
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
@@ -7,7 +7,7 @@
 #include "../../Common/src/zsString.h"
 #include "../../Common/src/common.h"
 
-zsString cDLLLoaderWin32::GetExecutablePath() const {
+zsString cDLLLoader::GetExecutablePath() const {
 	WCHAR buf[MAX_PATH];
 	GetModuleFileName(NULL, buf, MAX_PATH);
 	zsString s = buf;
@@ -16,16 +16,16 @@ zsString cDLLLoaderWin32::GetExecutablePath() const {
 	return s;
 }
 
-IDLLLoader::DLLMODULE cDLLLoaderWin32::LoadDLL(const zsString& libName) const {
+IDLLLoader::DLLMODULE cDLLLoader::LoadDLL(const zsString& libName) const {
 	HMODULE dll = LoadLibrary((GetExecutablePath() + libName).c_str());
 	if (!dll) {
-		ZS_MSG((L"FAILED TO LOAD LIBRARY: " + libName).c_str());
+		ILog::GetInstance()->MsgBox(L"FAILED TO LOAD LIBRARY: " + libName);
 		exit(1);
 	}
 	return dll;
 }
 
-IDLLLoader::DLLFUNCTION cDLLLoaderWin32::GetDLLFunction(IDLLLoader::DLLMODULE dll, const zsString& funcName) const {
+IDLLLoader::DLLFUNCTION cDLLLoader::GetDLLFunction(IDLLLoader::DLLMODULE dll, const zsString& funcName) const {
 	char ansiChars[256];
 
 	wcstombs(ansiChars, funcName.c_str(), 256);

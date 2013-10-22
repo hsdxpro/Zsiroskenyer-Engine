@@ -11,14 +11,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\DLLLoaderWin32.cpp" />
-    <ClCompile Include="src\FileWin32.cpp" />
-    <ClCompile Include="src\WindowWin32.cpp" />
+    <ClCompile Include="src\DLLLoader.cpp" />
+    <ClCompile Include="src\File.cpp" />
+    <ClCompile Include="src\Log.cpp" />
+    <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\DLLLoaderWin32.h" />
-    <ClInclude Include="src\FileWin32.h" />
-    <ClInclude Include="src\WindowWin32.h" />
+    <ClInclude Include="src\DLLLoader.h" />
+    <ClInclude Include="src\File.h" />
+    <ClInclude Include="src\Log.h" />
+    <ClInclude Include="src\Window.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4D619C71-CBC4-417F-86F9-1B4D70F8CAC9}</ProjectGuid>

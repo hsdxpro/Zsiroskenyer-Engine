@@ -1,15 +1,7 @@
 // Implementation
-#include "WindowWin32.h"
+#include "Window.h"
 #include <tchar.h>
 #include "../../Common/src/zsString.h"
-
-
-// DLL accessor
-extern "C"
-IWindow* CreateWindowWin32(const IWindow::tDesc& winDesc) {
-	return new cWindowWin32(winDesc);
-}
-
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	switch(msg) {
@@ -69,7 +61,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	return DefWindowProc(hwnd,msg,wParam,lParam);
 }
 
-cWindowWin32::cWindowWin32(const IWindow::tDesc& winDesc)
+cWindow::cWindow(const IWindow::tDesc& winDesc)
 :opened(true) {
 	
 	// Description holds OS independent style code, so interpret it to win32
@@ -131,14 +123,14 @@ cWindowWin32::cWindowWin32(const IWindow::tDesc& winDesc)
 	UpdateWindow(handle);
 }
 
-void cWindowWin32::MoveCenter() {
+void cWindow::MoveCenter() {
 	uint16 screenCenterX = GetSystemMetrics(SM_CXSCREEN)/2;
 	uint16 screenCenterY = GetSystemMetrics(SM_CXSCREEN)/2;
 	RECT rect; GetWindowRect(handle,&rect);
 	SetWindowPos(handle, 0, screenCenterX - rect.right/2, screenCenterY - rect.bottom/2, rect.right, rect.bottom, 0);
 }
 
-void cWindowWin32::PeekAllMessages() {
+void cWindow::PeekAllMessages() {
 	static MSG msg;
 	while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 	{
@@ -151,44 +143,44 @@ void cWindowWin32::PeekAllMessages() {
 		Close();
 }
 
-void cWindowWin32::Close() {
+void cWindow::Close() {
 	opened = false;
 }
 
-void cWindowWin32::SetCaptionText(const zsString& str) {
+void cWindow::SetCaptionText(const zsString& str) {
 
 }
 
-bool cWindowWin32::IsOpened() const {
+bool cWindow::IsOpened() const {
 	return opened;
 }
 
-bool cWindowWin32::IsFullscreen() const {
+bool cWindow::IsFullscreen() const {
 	return false;
 }
 
-zsString cWindowWin32::GetCaptionText() const {
+zsString cWindow::GetCaptionText() const {
 	return L"asd";
 }
 
-Vec2 cWindowWin32::GetCenter() const {
+Vec2 cWindow::GetCenter() const {
 	return Vec2();
 }
 
-uint32 cWindowWin32::GetClientWidth() const {
+uint32 cWindow::GetClientWidth() const {
 	RECT rect; GetClientRect(handle, &rect);
 	return rect.right - rect.left;
 }
 
-uint32 cWindowWin32::GetClientHeight() const {
+uint32 cWindow::GetClientHeight() const {
 	RECT rect; GetClientRect(handle,&rect);
 	return rect.bottom - rect.top;
 }
 
-float cWindowWin32::GetClientAspectRatio() const {
+float cWindow::GetClientAspectRatio() const {
 	return 1.0f;
 }
 
-IWindow::Handle cWindowWin32::GetHandle() const {
+IWindow::Handle cWindow::GetHandle() const {
 	return (Handle)handle;
 }

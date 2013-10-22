@@ -2,8 +2,6 @@
 //	GraphicsEngine/src/GraphicsEngine.cpp
 //	2013.oct.10, Zsiroskenyer Team, Péter Kardos
 ////////////////////////////////////////////////////////////////////////////////
-
-
 #include "GraphicsEngine.h"
 #include "../../Common/src/Factory.h"
 
@@ -19,10 +17,6 @@
 #include "../../GraphicsApi/src/IIndexBuffer.h"
 #include "../../Common/src/math/Matrix44.h"
 
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h> // töröld ki de gecigyorsan amint nem kell debughoz
-
-
 // construction of the graphics engine
 cGraphicsEngine::cGraphicsEngine() {
 	gApi = Factory.CreateGraphics();
@@ -34,7 +28,7 @@ cGraphicsEngine::cGraphicsEngine() {
 
 	IShaderProgram* sh = managerShader->LoadShader(L"shaders/",L"test.cg");
 	if (!sh) {
-		MessageBoxA(NULL, "nincsen shader bazmeg", "F*ck", MB_OK|MB_ICONERROR);
+		ILog::GetInstance()->MsgBox(L"nincsen shader bazmeg");
 	}
 }
 

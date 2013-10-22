@@ -23,7 +23,7 @@ int ricsiMain() {
 		desc.clientHeight = 600;
 		desc.clientWidth = 800;
 		desc.style = IWindow::eStyle::OVERLAPPED;
-	IWindow* myWindow = Factory.CreateWindow(desc);
+	IWindow* myWindow = IWindow::Create(desc);
 
 	// Set Render Window
 	gApi->SetWindow(myWindow);
@@ -32,25 +32,16 @@ int ricsiMain() {
 	cCamera *cam = new cCamera(ZS_PIDIV2, (float)desc.clientWidth / desc.clientHeight, 0.01f, 5000.0f);
 	mgrScene->SetActiveCamera(cam);
 
-	// Create 3D object
-	cEntity& e = mgrScene->AddEntity(L"objects/box.dae", L"materials/test.zsm");
-	e.position = Vec3(0,50,0);
-
-	// Load texture, assign to object..
-	//ITexture2D* testDiffuse = mgrRes->LoadTexture(L"textures/ground_DIFFUSE.jpg");
-	//ITexture2D* testNormal = mgrRes->LoadTexture(L"textures/ground_NORMAL.jpg");
-	//ITexture2D* testSpecular = mgrRes->LoadTexture(L"textures/ground_SPECULAR.jpg");
-	//ITexture2D* testDisplacement = mgrRes->LoadTexture(L"textures/ground_DISPLACEMENT.jpg");
-
-	/*
-	for(size_t i = 0; i < 1 ; i++)
+	// Create 3D objects
+	std::vector<cEntity*> entities;
+	for(size_t i = 0; i < 1; i++)
 		for(size_t j = 0; j < 1 ; j++) {
-			cEntity& e =  mgrScene->AddEntity(L"box.dae", L"material");
+			cEntity& e =  mgrScene->AddEntity(L"objects/box.dae", L"material");
 			entities.push_back(&e);
 			e.position = Vec3(i * 10, 90, j * 10);
 			e.isVisible = true;
 		}
-	*/
+	
 	
 	// Main loop
 	while(myWindow->IsOpened()) {
@@ -61,9 +52,9 @@ int ricsiMain() {
 		// Hardcoded rotation 	( euler Z for rotationg entities )
 		static float zVal = 0.0f;
 		zVal += 0.001f;
-		//for(cEntity* e : entities) {
-			e.rotation = Quat::EulerAnglesToQuat(Vec3(zVal, zVal + 0.4, zVal));
-		//}
+		for(cEntity* e : entities) {
+			e->rotation = Quat::EulerAnglesToQuat(Vec3(zVal, zVal + 0.4, zVal));
+		}
 
 		// Present SwapChain
 		gApi->Present();
@@ -71,6 +62,7 @@ int ricsiMain() {
 	
 	// Free up
 	mgrGEngine->Release();
+	SAFE_DELETE(myWindow);
 	SAFE_DELETE(cam);
 	return 0;
 }

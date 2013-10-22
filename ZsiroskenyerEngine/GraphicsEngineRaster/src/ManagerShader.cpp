@@ -11,18 +11,16 @@
 
 // load a shader by its name, or return it if it's already loaded
 IShaderProgram* cManagerShader::LoadShader(const zsString& shaderDir, const zsString& shaderName) {
+	IShaderProgram* shProg = NULL;
+
 	auto it = loadedShaders.right.find(shaderName);
-	if (it!=loadedShaders.right.end()) {
-		return it->second;
+	if (it != loadedShaders.right.end()) {
+		shProg = it->second;
+	} else {
+		shProg = graphicsApi->CreateShaderProgram(shaderDir + shaderName);
+		loadedShaders.insert(ShaderMapT::value_type(shProg, shaderName));
 	}
-
-	IShaderProgram* shader = graphicsApi->CreateShaderProgram(shaderDir + shaderName);
-	if (shader==NULL)
-		return NULL;
-
-	loadedShaders.insert(ShaderMapT::value_type(shader, shaderName));
-
-	return shader;
+	return shProg;
 }
 
 

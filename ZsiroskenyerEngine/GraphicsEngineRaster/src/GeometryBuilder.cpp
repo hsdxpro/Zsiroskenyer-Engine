@@ -12,7 +12,7 @@
 #include "../../Common/src/math/vec2.h"
 
 // File IO
-#include "../../CommonWin32/src/FileWin32.h"
+#include "../../Common/src/IFile.h"
 
 // Exception
 #include "../../GraphicsEngine/src/Exception.h"
@@ -25,7 +25,7 @@ cGeometryBuilder::cGeometryBuilder() {
 cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometryDAE(const zsString& fileName) {
 	Assimp::Importer importer;
 
-	if(!cFileWin32::isFileExits(fileName)) {
+	if(!IFile::isFileExits(fileName)) {
 		throw FileNotFoundException();
 	}
 

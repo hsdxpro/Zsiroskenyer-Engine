@@ -11,4 +11,6 @@ public:
 
 	virtual DLLMODULE LoadDLL(const zsString& libName) const = 0;
 	virtual DLLFUNCTION GetDLLFunction(DLLMODULE dll, const zsString& funcName) const = 0;
+
+	static IDLLLoader* Create();
 };

@@ -74,4 +74,6 @@ public:
 	virtual uint32 GetClientWidth() const = 0;
 	virtual uint32 GetClientHeight() const = 0;
 	virtual float GetClientAspectRatio() const = 0;
+
+	static IWindow* Create(const IWindow::tDesc& desc);
 };

@@ -11,6 +11,7 @@
 
 // Graphics api
 #include "../../GraphicsApi/src/IGraphicsApi.h"
+#include "../../Common/src/IFile.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //	ResourceManager
@@ -59,6 +60,12 @@ cMaterialRef cManagerResource::LoadMaterial(const zsString& fileName) {
 		mtl = new cMaterial;
 		// try to load material
 
+		IFile* file = IFile::Create(fileName);
+
+		zsString buffer;
+		while(!file->IsEOF()) {
+			buffer = file->GetLine();
+		}
 		// TODO: add loading code here!
 		// throw a FileNotFound or an InvalidData exception on failure
 

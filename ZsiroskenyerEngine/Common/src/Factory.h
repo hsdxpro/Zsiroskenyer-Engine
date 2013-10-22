@@ -13,29 +13,22 @@
 
 #include "../../GraphicsApi/src/IGraphicsApi.h"
 #include "../../GraphicsEngine/src/IGraphicsEngine.h"
-#include "../../Common/src/IWindow.h"
-#include "IDLLLoader.h"
 
 // Dll function pointers...
-typedef IDLLLoader* (*funcDLLLoader)();
 typedef IGraphicsApi* (*funcGraphicsApi)();
 typedef IGraphicsEngine* (*funcEngineGraphics)();
-typedef IWindow* (*funcWindow)(const IWindow::tDesc& winDesc);
 
 class cFactory {
 public:
 	IGraphicsApi* CreateGraphics();
-	IWindow* CreateWindow(const IWindow::tDesc& winDesc);
 	IGraphicsEngine* CreateEngineGraphics();
 
 	cFactory();
 
 protected:
-	IDLLLoader* dllLoader;
 	funcEngineGraphics ptrCreateEngineGraphics;
 	funcGraphicsApi  ptrCreateGraphicsD3D11;
 	funcGraphicsApi  ptrCreateGraphicsGL;
-	funcWindow		 ptrCreateWindowWin32;
 };
 
 extern cFactory Factory;

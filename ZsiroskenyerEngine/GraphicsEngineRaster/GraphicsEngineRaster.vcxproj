@@ -10,6 +10,27 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\DllMain.cpp" />
+    <ClCompile Include="src\Geometry.cpp" />
+    <ClCompile Include="src\GeometryBuilder.cpp" />
+    <ClCompile Include="src\GraphicsEngine.cpp" />
+    <ClCompile Include="src\InstanceGroup.cpp" />
+    <ClCompile Include="src\ManagerResource.cpp" />
+    <ClCompile Include="src\ManagerScene.cpp" />
+    <ClCompile Include="src\ManagerShader.cpp" />
+    <ClCompile Include="src\Material.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Geometry.h" />
+    <ClInclude Include="src\GeometryBuilder.h" />
+    <ClInclude Include="src\GraphicsEngine.h" />
+    <ClInclude Include="src\InstanceGroup.h" />
+    <ClInclude Include="src\ManagerResource.h" />
+    <ClInclude Include="src\ManagerScene.h" />
+    <ClInclude Include="src\ManagerShader.h" />
+    <ClInclude Include="src\Material.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{593438BA-D952-4A17-AD30-7C261AB425EC}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -84,27 +105,6 @@
       <AdditionalDependencies>$(SolutionDir)\Release\CommonLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="src\DllMain.cpp" />
-    <ClCompile Include="src\Geometry.cpp" />
-    <ClCompile Include="src\GeometryBuilder.cpp" />
-    <ClCompile Include="src\GraphicsEngine.cpp" />
-    <ClCompile Include="src\InstanceGroup.cpp" />
-    <ClCompile Include="src\ManagerShader.cpp" />
-    <ClCompile Include="src\Material.cpp" />
-    <ClCompile Include="src\ManagerResource.cpp" />
-    <ClCompile Include="src\ManagerScene.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\Geometry.h" />
-    <ClInclude Include="src\GeometryBuilder.h" />
-    <ClInclude Include="src\GraphicsEngine.h" />
-    <ClInclude Include="src\InstanceGroup.h" />
-    <ClInclude Include="src\ManagerShader.h" />
-    <ClInclude Include="src\Material.h" />
-    <ClInclude Include="src\ManagerResource.h" />
-    <ClInclude Include="src\ManagerScene.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
