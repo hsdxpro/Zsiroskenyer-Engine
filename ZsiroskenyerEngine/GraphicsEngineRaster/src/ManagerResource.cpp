@@ -65,8 +65,9 @@ cMaterialRef cManagerResource::LoadMaterial(const zsString& fileName) {
 		zsString buffer;
 		while(!file->IsEOF()) {
 			buffer = file->GetLine();
+
+			// Do processing here
 		}
-		// TODO: add loading code here!
 		// throw a FileNotFound or an InvalidData exception on failure
 
 		// insert into database

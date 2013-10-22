@@ -149,7 +149,7 @@ size_t TLSFAllocator<T>::max_size() {
 }
 
 template <class T>
-TLSF TLSFAllocator<T>::memPool(2048,5);
+TLSF TLSFAllocator<T>::memPool(2048, 5);
 
 // zsString type
 typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, TLSFAllocator<wchar_t>> zsString;
