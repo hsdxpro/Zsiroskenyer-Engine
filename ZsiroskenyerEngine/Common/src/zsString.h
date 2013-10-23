@@ -82,6 +82,7 @@ zsString operator + (const CHAR *cStr, const zsString& str);
 #include <string>
 #include <cstdint>
 #include <stdexcept>
+#include <functional>
 
 #undef max
 
@@ -152,6 +153,41 @@ template <class T>
 TLSF TLSFAllocator<T>::memPool(2048, 5);
 
 // zsString type
-typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, TLSFAllocator<wchar_t>> zsString;
+typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, TLSFAllocator<wchar_t>> zsBasicString;
+
+
+class zsString : public zsBasicString {
+public:
+	// constructors
+	zsString() : zsBasicString() {};
+	zsString(size_type s, value_type c) : zsBasicString(s,c) {};
+	zsString(const zsBasicString& other, size_type pos, size_type count=npos) : zsBasicString(other, pos, count) {}
+	zsString(const value_type* s, size_type count) : zsBasicString(s, count) {}
+	zsString(const value_type* s) : zsBasicString(s) {}
+	template <class InputIt>
+	zsString(InputIt first, InputIt last) : zsBasicString(first, last) {}
+	zsString(const zsBasicString& other) : zsBasicString(other) {}
+	zsString(zsBasicString&& other) : zsBasicString(other) {}
+		// zsString(std::initializer_list<valut_type> init) : zsBasicString(init) {}
+
+	// operators
+	zsString& operator=(const zsBasicString& str) {zsBasicString::operator=(str); return *this;}
+	zsString& operator=(zsBasicString&& str) {zsBasicString::operator=(str); return *this;}
+	zsString& operator=(const value_type* s) {zsBasicString::operator=(s); return *this;}
+	zsString& operator=(value_type ch) {zsBasicString::operator=(ch); return *this;}
+		// zsString& operator=(std::initializer_list<CharT> ilist );
+
+	zsString& operator+=(const zsBasicString& str) {zsBasicString::operator+=(str); return *this;}
+	zsString& operator+=(value_type ch) {zsBasicString::operator+=(ch); return *this;}
+	zsString& operator+=(value_type* s) {zsBasicString::operator+=(s); return *this;}
+};
+
+
+template <>
+struct std::hash<zsString> {
+	size_t operator()(const zsString& str) const {
+		return std::hash<zsBasicString>()(str);
+	}
+};
 
 #endif // STATIC_SIZE

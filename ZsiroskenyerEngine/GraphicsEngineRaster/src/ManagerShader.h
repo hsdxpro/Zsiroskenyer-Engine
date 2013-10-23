@@ -32,7 +32,7 @@ public:
 	cManagerShader(IGraphicsApi* graphicsApi);
 	~cManagerShader();
 private:
-	typedef boost::bimap<boost::bimaps::unordered_set_of<IShaderProgram*>, boost::bimaps::unordered_set_of<zsString>> ShaderMapT;
+	typedef boost::bimap<boost::bimaps::unordered_set_of<IShaderProgram*>, boost::bimaps::unordered_set_of<zsString, std::hash<zsString>>> ShaderMapT;
 
 	ShaderMapT loadedShaders;
 	IGraphicsApi* graphicsApi;

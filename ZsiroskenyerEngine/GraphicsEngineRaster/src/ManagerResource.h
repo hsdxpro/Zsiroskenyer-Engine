@@ -42,8 +42,8 @@ private:
 	void UnloadMaterial(const cMaterial* material);
 
 	// resource database
-	typedef boost::bimap<boost::bimaps::unordered_set_of<const zsString>, boost::bimaps::unordered_set_of<cGeometry*>> GeometryMapT;
-	typedef boost::bimap<boost::bimaps::unordered_set_of<const zsString>, boost::bimaps::unordered_set_of<cMaterial*>> MaterialMapT;
+	typedef boost::bimap<boost::bimaps::unordered_set_of<zsString, std::hash<zsString>>, boost::bimaps::unordered_set_of<cGeometry*>> GeometryMapT;
+	typedef boost::bimap<boost::bimaps::unordered_set_of<zsString, std::hash<zsString>>, boost::bimaps::unordered_set_of<cMaterial*>> MaterialMapT;
 
 	GeometryMapT geometries;
 	MaterialMapT materials;
