@@ -3,7 +3,7 @@
 
 #include "../../GraphicsApi/src/ITexture2D.h"
 
-class ID3D11ShaderResourceView;
+struct ID3D11ShaderResourceView;
 
 class cTexture2DColorD3D11 : public ITexture2D {
 public:
