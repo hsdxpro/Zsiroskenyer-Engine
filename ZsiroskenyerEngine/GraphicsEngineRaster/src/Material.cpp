@@ -8,38 +8,31 @@
 #include "Material.h"
 #include <stdexcept>
 
+#include "../../Common/src/common.h"
 
 // constructor
-cMaterial::cMaterial() : subMaterials(NULL), size_(0) {
+cMaterial::cMaterial() 
+:subMaterials(NULL), size_(0) {
 }
 
-cMaterial::cMaterial(size_t nSubMaterials) {
+cMaterial::cMaterial(size_t nSubMaterials)
+:size_(nSubMaterials) {
 	subMaterials = new tSubMaterial[nSubMaterials];
-	size_ = nSubMaterials;
 }
 
 cMaterial::~cMaterial() {
-	for (size_t i=0; i<size_; i++) {
-#pragma warning("WHY IS THERE NO RELEASE FOR ITEXTURE???")
-		/*
-		if (subMaterials[i].textureDiffuse != NULL)
-			subMaterials[i].textureDiffuse->Release();
-		if (subMaterials[i].textureDisplacement != NULL)
-			subMaterials[i].textureDisplacement->Release();
-		if (subMaterials[i].textureNormal != NULL)
-			subMaterials[i].textureNormal->Release();
-		if (subMaterials[i].textureSpecular != NULL)
-			subMaterials[i].textureSpecular->Release();
-		*/
+	for (size_t i=0; i < size_; i++) {
+		SAFE_RELEASE(subMaterials[i].textureDiffuse);
+		SAFE_RELEASE(subMaterials[i].textureNormal);
+		SAFE_RELEASE(subMaterials[i].textureSpecular);
+		SAFE_RELEASE(subMaterials[i].textureDisplace);
 	}
-	delete[] subMaterials;
-	subMaterials = NULL; // explicit dtor calls maybe...
+	SAFE_DELETE_ARRAY(subMaterials);
 }
 
-
-cMaterial::tSubMaterial::tSubMaterial() :
-	textureDiffuse(NULL),
-	textureDisplacement(NULL),
+cMaterial::tSubMaterial::tSubMaterial() 
+:	textureDiffuse(NULL),
+	textureDisplace(NULL),
 	textureNormal(NULL),
 	textureSpecular(NULL),
 	diffuse(0,0,0,1),
@@ -65,7 +58,6 @@ const cMaterial::tSubMaterial& cMaterial::operator[](size_t idx) const {
 		throw std::out_of_range("no such material id");
 	return subMaterials[idx];
 }
-
 
 size_t cMaterial::GetSize() const {
 	return size_;

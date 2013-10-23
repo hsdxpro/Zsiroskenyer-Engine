@@ -21,7 +21,7 @@ public:
 		ITexture2D* textureDiffuse;
 		ITexture2D* textureNormal;
 		ITexture2D* textureSpecular;
-		ITexture2D* textureDisplacement;
+		ITexture2D* textureDisplace;
 		Vec4 diffuse;
 		Vec4 specular;
 		Vec4 emissive;

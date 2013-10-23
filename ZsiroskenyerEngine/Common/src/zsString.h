@@ -158,30 +158,51 @@ typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, TLSFAllocator<wcha
 
 class zsString : public zsBasicString {
 public:
+	std::vector<float> GetFloats(size_t startIDx = 0);
+
 	// constructors
 	zsString() : zsBasicString() {};
 	zsString(size_type s, value_type c) : zsBasicString(s,c) {};
 	zsString(const zsBasicString& other, size_type pos, size_type count=npos) : zsBasicString(other, pos, count) {}
 	zsString(const value_type* s, size_type count) : zsBasicString(s, count) {}
 	zsString(const value_type* s) : zsBasicString(s) {}
+
 	template <class InputIt>
 	zsString(InputIt first, InputIt last) : zsBasicString(first, last) {}
+
 	zsString(const zsBasicString& other) : zsBasicString(other) {}
 	zsString(zsBasicString&& other) : zsBasicString(other) {}
 		// zsString(std::initializer_list<valut_type> init) : zsBasicString(init) {}
 
 	// operators
-	zsString& operator=(const zsBasicString& str) {zsBasicString::operator=(str); return *this;}
-	zsString& operator=(zsBasicString&& str) {zsBasicString::operator=(str); return *this;}
-	zsString& operator=(const value_type* s) {zsBasicString::operator=(s); return *this;}
-	zsString& operator=(value_type ch) {zsBasicString::operator=(ch); return *this;}
+	zsString& operator = (const zsBasicString& str) {zsBasicString::operator=(str); return *this;}
+	zsString& operator = (zsBasicString&& str) {zsBasicString::operator=(str); return *this;}
+	zsString& operator = (const value_type* s) {zsBasicString::operator=(s); return *this;}
+	zsString& operator = (value_type ch) {zsBasicString::operator=(ch); return *this;}
 		// zsString& operator=(std::initializer_list<CharT> ilist );
 
-	zsString& operator+=(const zsBasicString& str) {zsBasicString::operator+=(str); return *this;}
-	zsString& operator+=(value_type ch) {zsBasicString::operator+=(ch); return *this;}
-	zsString& operator+=(value_type* s) {zsBasicString::operator+=(s); return *this;}
+	zsString& operator += (const zsBasicString& str) {zsBasicString::operator+=(str); return *this;}
+	zsString& operator += (value_type ch) {zsBasicString::operator+=(ch); return *this;}
+	zsString& operator += (value_type* s) {zsBasicString::operator+=(s); return *this;}
 };
 
+
+std::vector<float> zsString::GetFloats(size_t startIDx) {
+	std::vector<float> floats;
+
+	const wchar_t* str = c_str();
+	size_t idx = startIDx;
+	size_t lastFloatIdx = startIDx;
+	while(str[idx] != '\0') {
+		if(str[idx] == ' ') {
+			//floats.push_back(atof())
+			//lastFloatIdx = idx;
+		}
+
+		idx++;
+	}
+	return floats;
+}
 
 template <>
 struct std::hash<zsString> {

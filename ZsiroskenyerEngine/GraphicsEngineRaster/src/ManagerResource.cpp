@@ -57,16 +57,40 @@ cMaterialRef cManagerResource::LoadMaterial(const zsString& fileName) {
 	// lookup if already exists
 	auto it = materials.left.find(fileName);
 	if (it == materials.left.end()) {
-		mtl = new cMaterial;
-		// try to load material
-
+		// Open material file
 		IFile* file = IFile::Create(fileName);
 
+		// Number of subMaterials
+		size_t nSubMaterials = file->GetNLines() / 8;
+
+		// create material with nSubMaterials subMaterials
+		mtl = new cMaterial(nSubMaterials);
+		
+		for(size_t i = 0; i < nSubMaterials; i++) {
+			// subMaterial ID, not used yet
+			//const zsString& idLine = file->GetLine();
+
+			// Diffuse
+			//auto floats = file->GetLine()->GetFloats();
+			//mtl[i].diffuse = Vec4(floats[0], floats[1], floats[2], floats[3]);
+			// Specular
+
+			// Glossiness
+
+			// Texture Diffuse
+
+			// Texture Normal
+
+			// Texture Specular
+
+			// Texture Displace
+		}
 		zsString buffer;
 		while(!file->IsEOF()) {
 			buffer = file->GetLine();
 
 			// Do processing here
+			
 		}
 		// throw a FileNotFound or an InvalidData exception on failure
 

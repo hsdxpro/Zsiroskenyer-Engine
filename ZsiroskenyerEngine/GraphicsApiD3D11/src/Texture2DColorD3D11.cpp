@@ -14,3 +14,7 @@ size_t cTexture2DColorD3D11::GetWidth() {
 size_t cTexture2DColorD3D11::GetHeight() {
 	return height;
 }
+
+void cTexture2DColorD3D11::Release() {
+	srv->Release();
+}

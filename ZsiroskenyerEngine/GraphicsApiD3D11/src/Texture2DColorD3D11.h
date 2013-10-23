@@ -11,6 +11,7 @@ public:
 	size_t GetHeight() override;
 
 	cTexture2DColorD3D11(ID3D11ShaderResourceView* srv, size_t width, size_t height);
+	void Release();
 private:
 	ID3D11ShaderResourceView* srv;
 	size_t width;
