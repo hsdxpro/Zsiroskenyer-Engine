@@ -54,6 +54,7 @@ public:
 	IVertexBuffer*	CreateBufferVertex(size_t nVertices, size_t vertexStride, eBufferUsage usage, void* data = NULL) override;
 	IIndexBuffer*	CreateBufferIndex(size_t size, eBufferUsage usage, void* data = NULL) override;
 	IConstantBuffer*CreateBufferConstant(size_t size, eBufferUsage usage, void* data = NULL) override;
+
 	ITexture2D*		CreateTexture(const zsString& filePath);
 	IShaderProgram* CreateShaderProgram(const zsString& shaderPath) override;
 
@@ -62,8 +63,6 @@ public:
 
 	bool ReadBuffer(IIndexBuffer* buffer , void* dest, size_t size, size_t offset = 0) override;
 	bool ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset = 0) override;
-
-	void LoadConstantBuffer(IConstantBuffer* buffer, size_t slotIdx);
 
 	// draw
 	void Clear(bool target = true, bool depth = false, bool stencil = false) override;
@@ -80,8 +79,9 @@ public:
 	void SetIndexData(const IIndexBuffer* indexBuffer) override;
 	void SetInstanceData(/*whatever*/) override;
 	void SetTexture(const ITexture2D* tex, size_t slotIdx) override;
+	void SetConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) override;
+	void SetShaderProgram(IShaderProgram* shProg) override;
 
-	void SetShaderProgram(IShaderProgram* shProg);
 	void SetWindow(IWindow *renderWindow) override;
 
 	cGraphicsApiD3D11();

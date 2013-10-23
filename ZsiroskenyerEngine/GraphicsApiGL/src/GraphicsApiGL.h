@@ -33,8 +33,7 @@ public:
 	void SetIndexData(const IIndexBuffer* indexBuffer) override;
 	void SetInstanceData(/*whatever*/) override;
 	void SetTexture(const ITexture2D* tex, size_t slotIdx) override;
-
-	void SetShaderProgram(IShaderProgram* shProg);
+	void SetShaderProgram(IShaderProgram* shProg) override;
 
 	void SetWindow(IWindow *renderWindow) override;
 protected:

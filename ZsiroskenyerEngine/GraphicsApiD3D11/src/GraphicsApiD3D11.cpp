@@ -484,7 +484,7 @@ bool cGraphicsApiD3D11::ReadBuffer(IVertexBuffer* buffer, void* dest, size_t siz
 	return true;
 }
 
-void cGraphicsApiD3D11::LoadConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) {
+void cGraphicsApiD3D11::SetConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) {
 	ID3D11Buffer* cBuffer = ((cConstantBufferD3D11*)buffer)->GetBufferPointer();
 	d3dcon->VSSetConstantBuffers(slotIdx, 1, &cBuffer);
 }

@@ -28,14 +28,13 @@ public:
 	virtual IIndexBuffer*	CreateBufferIndex(size_t size, eBufferUsage usage, void* data = NULL) = 0;
 	virtual IConstantBuffer*CreateBufferConstant(size_t size, eBufferUsage usage, void* data = NULL) = 0;
 	virtual ITexture2D*		CreateTexture(const zsString& filePath) = 0;
+	virtual IShaderProgram* CreateShaderProgram(const zsString& shaderPath) = 0;
 
 	virtual bool WriteBuffer(IIndexBuffer* buffer , void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset = 0) = 0;
 	virtual bool WriteBuffer(IVertexBuffer* buffer, void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset = 0) = 0;
 
 	virtual bool ReadBuffer(IIndexBuffer* buffer , void* dest, size_t size, size_t offset = 0) = 0;
 	virtual bool ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset = 0) = 0;
-
-	virtual void LoadConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) = 0;
 
 	// draw
 	virtual void Clear(bool target = true, bool depth = false, bool stencil = false) = 0;
@@ -51,11 +50,9 @@ public:
 	virtual void SetVertexData(const IVertexBuffer* vertexBuffer, size_t vertexStride) = 0;
 	virtual void SetIndexData(const IIndexBuffer* indexBuffer) = 0;
 	virtual void SetInstanceData(/*whatever*/) = 0;
+	virtual void SetConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) = 0;
 	virtual void SetTexture(const ITexture2D* tex, size_t slotIdx) = 0;
 	virtual void SetShaderProgram(IShaderProgram* shProg) = 0;
-
-	// shader
-	virtual IShaderProgram* CreateShaderProgram(const zsString& shaderPath) = 0;
 
 	// misc
 	virtual void SetWindow(IWindow *renderWindow) = 0;
