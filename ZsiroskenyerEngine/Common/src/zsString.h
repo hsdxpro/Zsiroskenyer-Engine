@@ -3,6 +3,8 @@
 
 //#define STATIC_SIZE
 
+#include <vector>
+
 #ifdef STATIC_SIZE 
 #define ZSSTRING_STACK_SIZE 256
 
