@@ -4,7 +4,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //	See header "ResourceManager.h" for more information.
 ////////////////////////////////////////////////////////////////////////////////
-#include "ManagerResource.h"
+#include "ResourceManager.h"
 
 // Geometry building
 #include "GeometryBuilder.h"
@@ -17,7 +17,7 @@
 //	ResourceManager
 
 // load/unload geometries
-cGeometryRef cManagerResource::LoadGeometry(const zsString& fileName) {
+cGeometryRef cResourceManager::LoadGeometry(const zsString& fileName) {
 	cGeometry* geom;
 
 	// lookup if already exists
@@ -44,14 +44,14 @@ cGeometryRef cManagerResource::LoadGeometry(const zsString& fileName) {
 
 	return cGeometryRef(this, geom);
 }
-void cManagerResource::UnloadGeometry(const cGeometry* geometry) {
+void cResourceManager::UnloadGeometry(const cGeometry* geometry) {
 	auto it = geometries.right.find(const_cast<cGeometry*>(geometry));
 	delete it->first;
 	geometries.right.erase(it);
 }
 
 // load/unload materials
-cMaterialRef cManagerResource::LoadMaterial(const zsString& fileName) {
+cMaterialRef cResourceManager::LoadMaterial(const zsString& fileName) {
 	cMaterial* mtl;
 
 	// lookup if already exists
@@ -109,7 +109,7 @@ cMaterialRef cManagerResource::LoadMaterial(const zsString& fileName) {
 	return cMaterialRef(this, mtl);
 }
 
-void cManagerResource::UnloadMaterial(const cMaterial* material) {
+void cResourceManager::UnloadMaterial(const cMaterial* material) {
 	auto it = materials.right.find(const_cast<cMaterial*>(material));
 	delete it->first;
 	materials.right.erase(it);
@@ -117,9 +117,9 @@ void cManagerResource::UnloadMaterial(const cMaterial* material) {
 
 
 // constructors
-cManagerResource::cManagerResource(IGraphicsApi* gApi) : gApi(gApi) {
+cResourceManager::cResourceManager(IGraphicsApi* gApi) : gApi(gApi) {
 }
-cManagerResource::~cManagerResource() {
+cResourceManager::~cResourceManager() {
 }
 
 
@@ -127,7 +127,7 @@ cManagerResource::~cManagerResource() {
 //	References to resources
 
 // geometry reference
-cGeometryRef::cGeometryRef(cManagerResource* rm, cGeometry* ptr)
+cGeometryRef::cGeometryRef(cResourceManager* rm, cGeometry* ptr)
 	:
 	shared_ptr(ptr, [this](cGeometry* g){this->rm->UnloadGeometry(g);} ), 
 	rm(rm)
@@ -163,7 +163,7 @@ cGeometry* cGeometryRef::get() const {
 
 
 // material reference
-cMaterialRef::cMaterialRef(cManagerResource* rm, cMaterial* ptr)
+cMaterialRef::cMaterialRef(cResourceManager* rm, cMaterial* ptr)
 	:
 	shared_ptr(ptr, [this](cMaterial* m){this->rm->UnloadMaterial(m);} ), 
 	rm(rm)

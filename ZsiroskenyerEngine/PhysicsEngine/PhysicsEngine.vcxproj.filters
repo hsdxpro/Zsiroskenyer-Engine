@@ -9,5 +9,6 @@
     <ClInclude Include="src\IPhysicsEngine.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="src\PhysicsEntity.h" />
   </ItemGroup>
 </Project>

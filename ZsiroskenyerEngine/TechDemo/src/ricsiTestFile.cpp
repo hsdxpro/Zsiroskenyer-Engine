@@ -5,15 +5,15 @@
 #include "../../GraphicsEngine/src/Camera.h"
 #include "../../Common/src/Factory.h"
 #include "../../Common/src/math/Quat.h"
-#include "../../GraphicsEngineRaster/src/ManagerResource.h"
+#include "../../GraphicsEngineRaster/src/ResourceManager.h"
 #include <vector>
 
 int ricsiMain() {
 	
 	// Create interfaces
 	IGraphicsEngine* mgrGEngine = Factory.CreateEngineGraphics();
-	IManagerScene* mgrScene = mgrGEngine->GetManagerScene();
-	cManagerResource* mgrRes = mgrGEngine->GetManagerResource();
+	ISceneManager* mgrScene = mgrGEngine->GetManagerScene();
+	cResourceManager* mgrRes = mgrGEngine->GetManagerResource();
 	IGraphicsApi* gApi = mgrGEngine->GetGraphicsApi();
 
 	// Create basic window

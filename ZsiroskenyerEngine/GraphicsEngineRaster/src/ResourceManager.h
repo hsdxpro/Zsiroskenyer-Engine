@@ -23,14 +23,14 @@ class IGraphicsApi;
 
 ////////////////////////////////////////////////////////////////////////////////
 //	ResourceManager
-class cManagerResource {
+class cResourceManager {
 	friend class cGeometryRef;
 	friend class cMaterialRef;
 	friend class cTextureRef;
 public:
 	// constructor
-	cManagerResource(IGraphicsApi* gApi);
-	~cManagerResource();
+	cResourceManager(IGraphicsApi* gApi);
+	~cResourceManager();
 
 	// resource aquisition
 	cGeometryRef LoadGeometry(const zsString& fileName);
@@ -63,7 +63,7 @@ class cGeometryRef : public std::shared_ptr<cGeometry> {
 	friend struct std::hash<cGeometryRef>;
 public:
 	cGeometryRef();
-	cGeometryRef(cManagerResource* rm, cGeometry* ptr=nullptr);
+	cGeometryRef(cResourceManager* rm, cGeometry* ptr=nullptr);
 	cGeometryRef(const cGeometryRef& other);
 
 	cGeometryRef& operator=(const cGeometryRef& other);
@@ -71,7 +71,7 @@ public:
 	bool operator==(const cGeometryRef& other);
 private:
 	cGeometry* get() const;	// kill this function
-	cManagerResource* rm;	// reference to the 'owner'
+	cResourceManager* rm;	// reference to the 'owner'
 };
 
 // material reference
@@ -79,7 +79,7 @@ class cMaterialRef : public std::shared_ptr<cMaterial> {
 	friend struct std::hash<cMaterialRef>;
 public:
 	cMaterialRef();
-	cMaterialRef(cManagerResource* rm, cMaterial* ptr=nullptr);
+	cMaterialRef(cResourceManager* rm, cMaterial* ptr=nullptr);
 	cMaterialRef(const cMaterialRef& other);
 
 	cMaterialRef& operator = (const cMaterialRef& other);
@@ -87,7 +87,7 @@ public:
 	bool operator == (const cMaterialRef& other);
 private:
 	cMaterial* get() const;	// kill this function
-	cManagerResource* rm;	// reference to the 'owner'
+	cResourceManager* rm;	// reference to the 'owner'
 };
 
 

@@ -11,9 +11,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Entity.h">
-      <Filter>Common Stuff</Filter>
-    </ClInclude>
     <ClInclude Include="src\Exception.h">
       <Filter>Common Stuff</Filter>
     </ClInclude>
@@ -23,24 +20,24 @@
     <ClInclude Include="src\IGraphicsEngine.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="src\IManagerScene.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="src\IRenderer.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="src\Camera.h">
       <Filter>Common Stuff</Filter>
     </ClInclude>
+    <ClInclude Include="src\GraphicsEntity.h">
+      <Filter>Common Stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ISceneManager.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Entity.cpp">
-      <Filter>Common Stuff</Filter>
-    </ClCompile>
     <ClCompile Include="src\Exception.cpp">
       <Filter>Common Stuff</Filter>
     </ClCompile>
     <ClCompile Include="src\Camera.cpp">
+      <Filter>Common Stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GraphicsEntity.cpp">
       <Filter>Common Stuff</Filter>
     </ClCompile>
   </ItemGroup>

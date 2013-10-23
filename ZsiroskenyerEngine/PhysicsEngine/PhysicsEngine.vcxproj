@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\IPhysicsEngine.h" />
+    <ClInclude Include="src\PhysicsEntity.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7C55926D-9109-4C80-A4E4-E73359BDE348}</ProjectGuid>

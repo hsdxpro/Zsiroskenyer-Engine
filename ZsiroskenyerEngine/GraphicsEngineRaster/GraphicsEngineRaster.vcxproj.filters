@@ -4,15 +4,6 @@
     <Filter Include="DllMain">
       <UniqueIdentifier>{9a6dec54-de8c-47d6-b89a-a8f08db756c8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ManagerResource">
-      <UniqueIdentifier>{11591b19-679d-4fc1-b926-92f647934afd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ManagerScene">
-      <UniqueIdentifier>{cf118672-aa65-42ef-86b2-58177e361283}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ManagerShader">
-      <UniqueIdentifier>{e4ea0f5d-8528-4b27-8fca-85144a0dec57}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Geometry">
       <UniqueIdentifier>{69401ff4-5718-4298-8a85-0f5f180dac09}</UniqueIdentifier>
     </Filter>
@@ -22,20 +13,14 @@
     <Filter Include="InstanceGroup">
       <UniqueIdentifier>{4e27b621-13b9-4176-95f0-d1159f72e45c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Managers">
+      <UniqueIdentifier>{efe1b5bd-1235-46e6-9508-a4c45cc63c09}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\GraphicsEngine.cpp" />
     <ClCompile Include="src\DllMain.cpp">
       <Filter>DllMain</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ManagerResource.cpp">
-      <Filter>ManagerResource</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ManagerShader.cpp">
-      <Filter>ManagerShader</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ManagerScene.cpp">
-      <Filter>ManagerScene</Filter>
     </ClCompile>
     <ClCompile Include="src\Geometry.cpp">
       <Filter>Geometry</Filter>
@@ -49,18 +34,18 @@
     <ClCompile Include="src\InstanceGroup.cpp">
       <Filter>InstanceGroup</Filter>
     </ClCompile>
+    <ClCompile Include="src\ResourceManager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SceneManager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ShaderManager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GraphicsEngine.h" />
-    <ClInclude Include="src\ManagerResource.h">
-      <Filter>ManagerResource</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ManagerShader.h">
-      <Filter>ManagerShader</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ManagerScene.h">
-      <Filter>ManagerScene</Filter>
-    </ClInclude>
     <ClInclude Include="src\GeometryBuilder.h">
       <Filter>Geometry</Filter>
     </ClInclude>
@@ -72,6 +57,15 @@
     </ClInclude>
     <ClInclude Include="src\InstanceGroup.h">
       <Filter>InstanceGroup</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ResourceManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SceneManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ShaderManager.h">
+      <Filter>Managers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -6,10 +6,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#include "ManagerScene.h"
-#include "ManagerResource.h"
+#include "SceneManager.h"
+#include "ResourceManager.h"
 #include "InstanceGroup.h"
-#include "../../GraphicsEngine/src/Entity.h"
+#include "../../GraphicsEngine/src/GraphicsEntity.h"
 #include "../../GraphicsEngine/src/Exception.h"
 #include "../../GraphicsEngine/src/Camera.h"
 
@@ -19,14 +19,14 @@ using namespace std;
 
 
 // constructor and destructor
-cManagerScene::cManagerScene(cManagerResource& rm) : managerResource(rm), activeCamera(NULL) {
+cSceneManager::cSceneManager(cResourceManager& rm) : managerResource(rm), activeCamera(NULL) {
 }
-cManagerScene::~cManagerScene() {
+cSceneManager::~cSceneManager() {
 }
 
 
 // entities
-cGraphicsEntity& cManagerScene::AddEntity(const zsString& geometry, const zsString& material) {
+cGraphicsEntity& cSceneManager::AddEntity(const zsString& geometry, const zsString& material) {
 	cInstanceGroup* instGroup = nullptr;
 	cInstanceGroup searchDummy;
 	cGraphicsEntity* entity;
@@ -56,7 +56,7 @@ cGraphicsEntity& cManagerScene::AddEntity(const zsString& geometry, const zsStri
 	}
 }
 
-void cManagerScene::RemoveEntity(const cGraphicsEntity& entity) {
+void cSceneManager::RemoveEntity(const cGraphicsEntity& entity) {
 	cInstanceGroup* instGroup = entity.instanceGroup;
 
 	auto it = instanceGroups.find(instGroup);
@@ -71,14 +71,14 @@ void cManagerScene::RemoveEntity(const cGraphicsEntity& entity) {
 	}
 }
 
-void cManagerScene::SetActiveCamera(cCamera *cam) {
+void cSceneManager::SetActiveCamera(cCamera *cam) {
 	activeCamera = cam;
 }
 
-cCamera *cManagerScene::GetActiveCamera() const {
+cCamera *cSceneManager::GetActiveCamera() const {
 	return activeCamera;
 }
 
-const std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare>& cManagerScene::GetInstanceGroups() const {
+const std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare>& cSceneManager::GetInstanceGroups() const {
 	return instanceGroups;
 }

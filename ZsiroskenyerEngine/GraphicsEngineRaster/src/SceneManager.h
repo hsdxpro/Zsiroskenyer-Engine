@@ -14,13 +14,13 @@
 #include "../../Common/src/zsString.h"
 
 #include "InstanceGroup.h"
-#include "../../GraphicsEngine/src/IManagerScene.h"
+#include "../../GraphicsEngine/src/ISceneManager.h"
 
 #include <unordered_set>
 
 
 class cGraphicsEntity;
-class cManagerResource;
+class cResourceManager;
 class cCamera;
 
 // helpers for storing cInstanceGroups by pointer
@@ -38,10 +38,10 @@ struct cInstGroupPtrCompare {
 };
 
 // scene manager
-class cManagerScene : public IManagerScene {
+class cSceneManager : public ISceneManager {
 public:
-	cManagerScene(cManagerResource& rm);
-	~cManagerScene();
+	cSceneManager(cResourceManager& rm);
+	~cSceneManager();
 
 	cGraphicsEntity& AddEntity(const zsString& geometry, const zsString& material);
 	void RemoveEntity(const cGraphicsEntity& entity);
@@ -53,7 +53,7 @@ public:
 	const std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare>& GetInstanceGroups() const;
 private:
 	std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare> instanceGroups;
-	cManagerResource& managerResource;
+	cResourceManager& managerResource;
 
 	cCamera *activeCamera;
 };

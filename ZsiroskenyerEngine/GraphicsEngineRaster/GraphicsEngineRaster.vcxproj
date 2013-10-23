@@ -16,9 +16,9 @@
     <ClCompile Include="src\GeometryBuilder.cpp" />
     <ClCompile Include="src\GraphicsEngine.cpp" />
     <ClCompile Include="src\InstanceGroup.cpp" />
-    <ClCompile Include="src\ManagerResource.cpp" />
-    <ClCompile Include="src\ManagerScene.cpp" />
-    <ClCompile Include="src\ManagerShader.cpp" />
+    <ClCompile Include="src\ResourceManager.cpp" />
+    <ClCompile Include="src\SceneManager.cpp" />
+    <ClCompile Include="src\ShaderManager.cpp" />
     <ClCompile Include="src\Material.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -26,9 +26,9 @@
     <ClInclude Include="src\GeometryBuilder.h" />
     <ClInclude Include="src\GraphicsEngine.h" />
     <ClInclude Include="src\InstanceGroup.h" />
-    <ClInclude Include="src\ManagerResource.h" />
-    <ClInclude Include="src\ManagerScene.h" />
-    <ClInclude Include="src\ManagerShader.h" />
+    <ClInclude Include="src\ResourceManager.h" />
+    <ClInclude Include="src\SceneManager.h" />
+    <ClInclude Include="src\ShaderManager.h" />
     <ClInclude Include="src\Material.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

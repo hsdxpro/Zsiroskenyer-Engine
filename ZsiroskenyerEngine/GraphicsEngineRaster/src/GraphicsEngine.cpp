@@ -5,9 +5,9 @@
 #include "GraphicsEngine.h"
 #include "../../Common/src/Factory.h"
 
-#include "ManagerScene.h"
-#include "ManagerResource.h"
-#include "ManagerShader.h"
+#include "SceneManager.h"
+#include "ResourceManager.h"
+#include "ShaderManager.h"
 #include "Geometry.h"
 #include "../../GraphicsApi/src/IGraphicsApi.h"
 #include "../../GraphicsApi/src/IShaderProgram.h"
@@ -23,8 +23,8 @@ cGraphicsEngine::cGraphicsEngine() {
 	if (!gApi)
 		throw UnknownErrorException("failed to create graphics api");
 	managerShader = new cManagerShader(gApi);
-	managerResource = new cManagerResource(gApi);
-	managerScene = new cManagerScene(*managerResource);
+	managerResource = new cResourceManager(gApi);
+	managerScene = new cSceneManager(*managerResource);
 
 	IShaderProgram* sh = managerShader->LoadShader(L"shaders/",L"test.cg");
 	if (!sh) {
@@ -94,11 +94,11 @@ void cGraphicsEngine::RenderWorldForward() {
 	}
 }
 
-IManagerScene* cGraphicsEngine::GetManagerScene() {
+ISceneManager* cGraphicsEngine::GetManagerScene() {
 	return managerScene;
 }
 
-cManagerResource* cGraphicsEngine::GetManagerResource() {
+cResourceManager* cGraphicsEngine::GetManagerResource() {
 	return managerResource;
 }
 

@@ -8,12 +8,12 @@
 
 #pragma once
 
-#include "../../GraphicsEngine/src/Entity.h"
+#include "../../GraphicsEngine/src/GraphicsEntity.h"
 #include "../../Common/src/zsString.h"
 
 class cCamera;
 
-class IManagerScene {
+class ISceneManager {
 public:
 	virtual cGraphicsEntity& AddEntity(const zsString& geometry, const zsString& material) = 0;
 	virtual void RemoveEntity(const cGraphicsEntity& entity) = 0;

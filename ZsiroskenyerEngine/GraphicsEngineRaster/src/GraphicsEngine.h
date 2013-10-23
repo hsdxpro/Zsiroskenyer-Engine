@@ -12,8 +12,8 @@
 
 class IGraphicsApi;
 class cManagerShader;
-class cManagerScene;
-class cManagerResource;
+class cSceneManager;
+class cResourceManager;
 
 class cGraphicsEngine : public IGraphicsEngine {
 public:
@@ -22,14 +22,14 @@ public:
 
 	void RenderWorldForward() override;
 
-	IManagerScene* GetManagerScene();
-	cManagerResource* GetManagerResource();
+	ISceneManager* GetManagerScene();
+	cResourceManager* GetManagerResource();
 	IGraphicsApi* GetGraphicsApi();
 private:	
 	IGraphicsApi* gApi;
 	cManagerShader* managerShader;
-	cManagerResource* managerResource;
-	cManagerScene* managerScene;
+	cResourceManager* managerResource;
+	cSceneManager* managerScene;
 };
 
 

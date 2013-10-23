@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-//	File: GraphicsEngine/src/Entity.h
+//	File: GraphicsEngine/src/GraphicsEntity.h
 //	2013.oct.09, Zsiroskenyer Team, Péter Kardos
 ////////////////////////////////////////////////////////////////////////////////
 //	A class that represents an entity on the 3D scene.
@@ -11,7 +11,7 @@
 class cInstanceGroup;
 
 class cGraphicsEntity {
-	friend class cManagerScene;
+	friend class cSceneManager;
 public:
 	cInstanceGroup* GetInstanceGroup();
 

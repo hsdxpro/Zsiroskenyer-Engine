@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
-//	GraphicsEngine/src/ManagerShader.h
+//	GraphicsEngine/src/ShaderManager.h
 //	2013.oct.14, Zsiroskenyer Team, Péter Kardos
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#include "ManagerShader.h"
+#include "ShaderManager.h"
 #include "../../GraphicsApi/src/IGraphicsApi.h"
 #include "../../GraphicsApi/src/IShaderProgram.h"
 

@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "ManagerResource.h"
+#include "ResourceManager.h"
 #include <unordered_set>
 #include "../../GraphicsApi/src/ITexture2D.h"
 
