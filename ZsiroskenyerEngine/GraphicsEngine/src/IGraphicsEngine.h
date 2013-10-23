@@ -16,7 +16,7 @@ class IGraphicsEngine {
 public:
 	virtual void Release() = 0;
 
-	virtual void RenderSceneForward() = 0;
+	virtual void RenderWorldForward() = 0;
 
 	virtual IManagerScene*		GetManagerScene() = 0;
 	virtual cManagerResource*	GetManagerResource() = 0;

@@ -47,7 +47,7 @@ int ricsiMain() {
 	while(myWindow->IsOpened()) {
 		myWindow->PeekAllMessages();
 
-		mgrGEngine->RenderSceneForward();
+		mgrGEngine->RenderWorldForward();
 
 		// Hardcoded rotation 	( euler Z for rotationg entities )
 		static float zVal = 0.0f;

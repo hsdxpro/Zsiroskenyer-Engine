@@ -39,7 +39,7 @@ void cGraphicsEngine::Release() {
 	gApi->Release();
 }
 
-void cGraphicsEngine::RenderSceneForward() {
+void cGraphicsEngine::RenderWorldForward() {
 	
 	// Set BackBuffer
 	gApi->SetRenderTargetDefault();

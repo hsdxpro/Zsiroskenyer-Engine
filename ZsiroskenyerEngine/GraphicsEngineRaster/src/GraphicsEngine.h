@@ -20,7 +20,7 @@ public:
 	cGraphicsEngine();
 	void Release() override;
 
-	void RenderSceneForward() override;
+	void RenderWorldForward() override;
 
 	IManagerScene* GetManagerScene();
 	cManagerResource* GetManagerResource();
