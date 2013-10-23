@@ -15,6 +15,10 @@ size_t cTexture2DColorD3D11::GetHeight() {
 	return height;
 }
 
+ID3D11ShaderResourceView* cTexture2DColorD3D11::GetSRV() {
+	return srv;
+}
+
 void cTexture2DColorD3D11::Release() {
 	srv->Release();
 }

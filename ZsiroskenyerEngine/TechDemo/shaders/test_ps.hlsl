@@ -8,9 +8,10 @@
 //program PS_MAIN
 //semantic wvp
 //semantic diffuseTex
+//var sampler2D diffuseTex :  : _diffuseTex : -1 : 1
 //var float4 In.posH : $vin.SV_POSITION :  : 0 : 0
-//var float3 In.normalW : $vin.TEXCOORD0 :  : 0 : 1
-//var float2 In.tex0 : $vin.TEXCOORd1 :  : 0 : 0
+//var float3 In.normalW : $vin.TEXCOORD0 :  : 0 : 0
+//var float2 In.tex0 : $vin.TEXCOORd1 :  : 0 : 1
 //var float4 PS_MAIN.color : $vout.COLOR : COLOR : -1 : 1
 
 #pragma pack_matrix(row_major)
@@ -37,6 +38,8 @@ struct X1X {
     float2 _TEXCOORd1 : TEXCOORD1;
 };
 
+Texture2D<float4> _TMP0;
+SamplerState _diffuseTex;
 
  // main procedure, the original name was PS_MAIN
 PS_OUT main( in X1X cin)
@@ -45,7 +48,7 @@ PS_OUT main( in X1X cin)
     VS_OUT _In;
     PS_OUT _pout;
 
-    _In._normalW = cin._TEXCOORD0;
-    _pout._color = float4(_In._normalW.x, _In._normalW.y, _In._normalW.z,  1.00000000000000000E000f);
+    _In._tex01 = cin._TEXCOORd1;
+    _pout._color = _TMP0.Sample(_diffuseTex, _In._tex01);
     return _pout;
 } // main end

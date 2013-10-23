@@ -79,6 +79,7 @@ public:
 	void SetVertexData(const IVertexBuffer* vertexBuffer, size_t vertexStride) override;
 	void SetIndexData(const IIndexBuffer* indexBuffer) override;
 	void SetInstanceData(/*whatever*/) override;
+	void SetTexture(const ITexture2D* tex, size_t slotIdx) override;
 
 	void SetShaderProgram(IShaderProgram* shProg);
 	void SetWindow(IWindow *renderWindow) override;

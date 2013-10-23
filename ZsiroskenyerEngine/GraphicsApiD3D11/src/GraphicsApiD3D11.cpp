@@ -547,6 +547,11 @@ void cGraphicsApiD3D11::SetInstanceData() {
 
 }
 
+void cGraphicsApiD3D11::SetTexture(const ITexture2D* tex, size_t slotIdx) {
+	ID3D11ShaderResourceView *srv = ((cTexture2DColorD3D11*)tex)->GetSRV();
+	d3dcon->PSSetShaderResources(slotIdx, 1, &srv);
+}
+
 void cGraphicsApiD3D11::SetShaderProgram(IShaderProgram* shProg) {
 	const cShaderProgramD3D11* shProgD3D11 = (cShaderProgramD3D11*)shProg;
 	d3dcon->IASetInputLayout(shProgD3D11->GetInputLayout());

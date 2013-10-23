@@ -82,9 +82,9 @@ public:
 	cMaterialRef(cManagerResource* rm, cMaterial* ptr=nullptr);
 	cMaterialRef(const cMaterialRef& other);
 
-	cMaterialRef& operator=(const cMaterialRef& other);
+	cMaterialRef& operator = (const cMaterialRef& other);
 
-	bool operator==(const cMaterialRef& other);
+	bool operator == (const cMaterialRef& other);
 private:
 	cMaterial* get() const;	// kill this function
 	cManagerResource* rm;	// reference to the 'owner'

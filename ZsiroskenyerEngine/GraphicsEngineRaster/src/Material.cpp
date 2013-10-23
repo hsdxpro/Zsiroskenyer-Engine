@@ -12,16 +12,16 @@
 
 // constructor
 cMaterial::cMaterial() 
-:subMaterials(NULL), size_(0) {
+:subMaterials(NULL), nSubMaterials(0) {
 }
 
 cMaterial::cMaterial(size_t nSubMaterials)
-:size_(nSubMaterials) {
+:nSubMaterials(nSubMaterials) {
 	subMaterials = new tSubMaterial[nSubMaterials];
 }
 
 cMaterial::~cMaterial() {
-	for (size_t i=0; i < size_; i++) {
+	for (size_t i=0; i < nSubMaterials; i++) {
 		SAFE_RELEASE(subMaterials[i].textureDiffuse);
 		SAFE_RELEASE(subMaterials[i].textureNormal);
 		SAFE_RELEASE(subMaterials[i].textureSpecular);
@@ -47,20 +47,20 @@ void cMaterial::SetSize(size_t nSubMaterials) {
 	new (this) cMaterial(nSubMaterials); // ugly too...
 }
 
-
 cMaterial::tSubMaterial& cMaterial::operator[](size_t idx) {
-	if (idx>=size_)
-		throw std::out_of_range("no such material id");
-	return subMaterials[idx];
-}
-const cMaterial::tSubMaterial& cMaterial::operator[](size_t idx) const {
-	if (idx>=size_)
+	if (idx >= nSubMaterials)
 		throw std::out_of_range("no such material id");
 	return subMaterials[idx];
 }
 
-size_t cMaterial::GetSize() const {
-	return size_;
+const cMaterial::tSubMaterial& cMaterial::operator[](size_t idx) const {
+	if (idx >= nSubMaterials)
+		throw std::out_of_range("no such material id");
+	return subMaterials[idx];
+}
+
+size_t cMaterial::GetNSubMaterials() const {
+	return nSubMaterials;
 }
 
 

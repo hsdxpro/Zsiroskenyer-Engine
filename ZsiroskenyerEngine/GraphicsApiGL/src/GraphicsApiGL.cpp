@@ -72,6 +72,10 @@ void cGraphicsApiGL::SetInstanceData() {
 
 }
 
+void cGraphicsApiGL::SetTexture(const ITexture2D* tex, size_t slotIdx) {
+
+}
+
 void cGraphicsApiGL::SetShaderProgram(IShaderProgram* shProg) {
 
 }

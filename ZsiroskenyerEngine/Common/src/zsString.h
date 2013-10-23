@@ -160,7 +160,16 @@ typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, TLSFAllocator<wcha
 
 class zsString : public zsBasicString {
 public:
-	std::vector<float> GetFloats(size_t startIDx = 0);
+	std::vector<float> GetFloats(size_t startIDx = 0) const {
+		std::vector<float> floats;
+		size_t offset = startIDx;
+		wchar_t* end = NULL;
+		do {
+			floats.push_back((float)wcstod(c_str() + offset, &end));
+			offset = end - c_str();
+		}while(*end != '\0');
+		return floats;
+	}
 
 	// constructors
 	zsString() : zsBasicString() {};
@@ -187,24 +196,6 @@ public:
 	zsString& operator += (value_type ch) {zsBasicString::operator+=(ch); return *this;}
 	zsString& operator += (value_type* s) {zsBasicString::operator+=(s); return *this;}
 };
-
-
-std::vector<float> zsString::GetFloats(size_t startIDx) {
-	std::vector<float> floats;
-
-	const wchar_t* str = c_str();
-	size_t idx = startIDx;
-	size_t lastFloatIdx = startIDx;
-	while(str[idx] != '\0') {
-		if(str[idx] == ' ') {
-			//floats.push_back(atof())
-			//lastFloatIdx = idx;
-		}
-
-		idx++;
-	}
-	return floats;
-}
 
 template <>
 struct std::hash<zsString> {

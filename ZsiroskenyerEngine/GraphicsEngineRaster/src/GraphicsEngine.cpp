@@ -63,8 +63,11 @@ void cGraphicsEngine::RenderSceneForward() {
 		gApi->SetIndexData(ib);
 		gApi->SetVertexData(group->geom->GetVertexBuffer(), shaderP->GetVertexFormatSize());
 
-		// Set material
-
+		// Set SubMaterials
+		for(size_t i = 0; i < (*(group->mtl)).GetNSubMaterials(); i++) {
+			gApi->SetTexture((*(group->mtl))[i].textureDiffuse, 0);
+		}
+		
 		// Draw each entity
 		for (auto& entity : group->entities) {
 

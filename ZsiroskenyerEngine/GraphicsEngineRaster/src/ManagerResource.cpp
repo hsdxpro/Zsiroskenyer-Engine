@@ -68,31 +68,36 @@ cMaterialRef cManagerResource::LoadMaterial(const zsString& fileName) {
 		
 		for(size_t i = 0; i < nSubMaterials; i++) {
 			// subMaterial ID, not used yet
-			//const zsString& idLine = file->GetLine();
+			const zsString& idLine = file->GetLine();
 
 			// Diffuse
-			//auto floats = file->GetLine()->GetFloats();
-			//mtl[i].diffuse = Vec4(floats[0], floats[1], floats[2], floats[3]);
+			auto floats = file->GetLine().GetFloats(7);
+			(*mtl)[i].diffuse = Vec4(floats[0], floats[1], floats[2], floats[3]);
+
 			// Specular
+			floats = file->GetLine().GetFloats(8);
+			(*mtl)[i].specular = Vec4(floats[0], floats[1], floats[2], floats[3]);
+
+			// Emissive
+			floats = file->GetLine().GetFloats(8);
+			(*mtl)[i].emissive = Vec4(floats[0], floats[1], floats[2], floats[3]);
 
 			// Glossiness
+			floats = file->GetLine().GetFloats(10);
+			(*mtl)[i].glossiness = floats[0];
 
 			// Texture Diffuse
+			(*mtl)[i].textureDiffuse = gApi->CreateTexture(file->GetLine().c_str() + 9);
 
 			// Texture Normal
+			(*mtl)[i].textureNormal = gApi->CreateTexture(file->GetLine().c_str() + 8);
 
 			// Texture Specular
+			(*mtl)[i].textureSpecular = gApi->CreateTexture(file->GetLine().c_str() + 10);
 
 			// Texture Displace
+			(*mtl)[i].textureDisplace = gApi->CreateTexture(file->GetLine().c_str() + 10);
 		}
-		zsString buffer;
-		while(!file->IsEOF()) {
-			buffer = file->GetLine();
-
-			// Do processing here
-			
-		}
-		// throw a FileNotFound or an InvalidData exception on failure
 
 		// insert into database
 		materials.insert(MaterialMapT::value_type(fileName, mtl));

@@ -25,14 +25,15 @@ public:
 		Vec4 diffuse;
 		Vec4 specular;
 		Vec4 emissive;
+		float glossiness;
 		tSubMaterial();
 	};
 
 	tSubMaterial& operator[](size_t idx);
 	const tSubMaterial& operator[](size_t idx) const;
-	size_t GetSize() const;
+	size_t GetNSubMaterials() const;
 
 private:
 	tSubMaterial* subMaterials;
-	size_t size_;
+	size_t nSubMaterials;
 };

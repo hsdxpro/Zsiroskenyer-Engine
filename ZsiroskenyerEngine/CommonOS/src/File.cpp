@@ -1,5 +1,6 @@
 #include "File.h"
 #include "../../Common/src/common.h"
+#include "../../GraphicsEngine/src/Exception.h"
 
 cFile::cFile()
 :isEof(false) {
@@ -13,6 +14,7 @@ cFile::cFile(const zsString& filePath)
 	// Open stream
 	stream.open(filePath.c_str(), std::ios_base::in);
 	if(!stream.is_open()) {
+		throw FileNotFoundException();
 		ILog::GetInstance()->MsgBox(L"Can't open file: " + filePath);
 	} else {
 		// read up lines
