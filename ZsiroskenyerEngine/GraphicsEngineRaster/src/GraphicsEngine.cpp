@@ -60,8 +60,8 @@ void cGraphicsEngine::RenderSceneForward() {
 	for (auto& group : managerScene->GetInstanceGroups()) {
 		// Set Geometry
 		const IIndexBuffer* ib = group->geom->GetIndexBuffer();
-		gApi->SetIndexData(ib);
-		gApi->SetVertexData(group->geom->GetVertexBuffer(), shaderP->GetVertexFormatSize());
+		gApi->SetIndexBuffer(ib);
+		gApi->SetVertexBuffer(group->geom->GetVertexBuffer(), shaderP->GetVertexFormatSize());
 
 		// Set SubMaterials
 		for(size_t i = 0; i < (*(group->mtl)).GetNSubMaterials(); i++) {

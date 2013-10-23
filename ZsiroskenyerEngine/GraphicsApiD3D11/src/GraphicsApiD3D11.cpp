@@ -532,14 +532,14 @@ void cGraphicsApiD3D11::DrawInstancedIndexed(size_t nIndicesPerInstance, size_t 
 	d3dcon->DrawIndexedInstanced(nIndicesPerInstance, nInstances, idxStartIndex, 0, idxStartInstance);
 }
 
-void cGraphicsApiD3D11::SetVertexData(const IVertexBuffer* vertexBuffer, size_t vertexStride) {
+void cGraphicsApiD3D11::SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) {
 	const UINT strides = vertexStride;
 	const UINT offset = 0;
 	ID3D11Buffer* vertices = ((cVertexBufferD3D11*)vertexBuffer)->GetBufferPointer();
 	d3dcon->IASetVertexBuffers(0, 1, &vertices, &strides, &offset);
 }
 
-void cGraphicsApiD3D11::SetIndexData(const IIndexBuffer* indexBuffer) {
+void cGraphicsApiD3D11::SetIndexBuffer(const IIndexBuffer* indexBuffer) {
 	d3dcon->IASetIndexBuffer(((cIndexBufferD3D11*)indexBuffer)->GetBufferPointer(), DXGI_FORMAT_R32_UINT, 0);
 }
 

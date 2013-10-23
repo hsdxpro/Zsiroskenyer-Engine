@@ -60,11 +60,11 @@ void cGraphicsApiGL::DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nIn
 	
 }
 
-void cGraphicsApiGL::SetVertexData(const IVertexBuffer* vertexBuffer, size_t vertexStride) {
+void cGraphicsApiGL::SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) {
 	
 }
 
-void cGraphicsApiGL::SetIndexData(const IIndexBuffer* indexBuffer) {
+void cGraphicsApiGL::SetIndexBuffer(const IIndexBuffer* indexBuffer) {
 	
 }
 

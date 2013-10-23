@@ -29,8 +29,8 @@ public:
 	void DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex = 0, size_t idxStartInstance = 0) override;
 	void DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex = 0, size_t idxStartInstance = 0) override;
 
-	void SetVertexData(const IVertexBuffer* vertexBuffer, size_t vertexStride) override;
-	void SetIndexData(const IIndexBuffer* indexBuffer) override;
+	void SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) override;
+	void SetIndexBuffer(const IIndexBuffer* indexBuffer) override;
 	void SetInstanceData(/*whatever*/) override;
 	void SetTexture(const ITexture2D* tex, size_t slotIdx) override;
 	void SetShaderProgram(IShaderProgram* shProg) override;
