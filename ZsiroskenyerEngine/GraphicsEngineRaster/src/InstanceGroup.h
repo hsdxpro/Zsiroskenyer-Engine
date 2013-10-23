@@ -9,7 +9,7 @@
 
 #include "ResourceManager.h"
 #include <unordered_set>
-#include "../../GraphicsApi/src/ITexture2D.h"
+#include "../../Core/src/ITexture2D.h"
 
 class cGraphicsEntity;
 

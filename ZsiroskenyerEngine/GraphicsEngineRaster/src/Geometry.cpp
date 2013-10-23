@@ -6,8 +6,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "Geometry.h"
-#include "../../GraphicsApi/src/IVertexBuffer.h"
-#include "../../GraphicsApi/src/IIndexBuffer.h"
+#include "../../Core/src/IVertexBuffer.h"
+#include "../../Core/src/IIndexBuffer.h"
 
 cGeometry::cGeometry(IVertexBuffer *VB, IIndexBuffer *IB) 
 :VB(VB), IB(IB) {

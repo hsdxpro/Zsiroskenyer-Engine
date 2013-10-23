@@ -63,7 +63,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)\..\Externals\boost_1_54_0\;$(SolutionDir)\..\Externals\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\..\Externals\boost_1_54_0;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)$(Configuration)_\</OutDir>
     <IntDir>$(Configuration)_\</IntDir>
   </PropertyGroup>
@@ -83,7 +83,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(OutDir)\Common.lib;$(SolutionDir)\..\Externals\ASSIMP\lib\assimp.lib;$(OutDir)\GraphicsEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)\Core.lib;$(SolutionDir)\..\Externals\ASSIMP\lib\assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>

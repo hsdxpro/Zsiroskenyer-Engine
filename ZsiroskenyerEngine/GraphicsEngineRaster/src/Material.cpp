@@ -8,7 +8,7 @@
 #include "Material.h"
 #include <stdexcept>
 
-#include "../../Common/src/common.h"
+#include "../../Core/src/common.h"
 
 // constructor
 cMaterial::cMaterial() 

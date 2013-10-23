@@ -4,18 +4,18 @@
 #include "ASSIMP/include/assimp/Importer.hpp"
 #include "ASSIMP/include/assimp/Scene.h"
 #include "ASSIMP/include/assimp/PostProcess.h"
-#include "../../Common/src/tipsify.h"
+#include "../../Core/src/tipsify.h"
 
 // Common and Math
-#include "../../Common/src/common.h"
-#include "../../Common/src/math/vec3.h"
-#include "../../Common/src/math/vec2.h"
+#include "../../Core/src/common.h"
+#include "../../Core/src/math/vec3.h"
+#include "../../Core/src/math/vec2.h"
 
 // File IO
-#include "../../Common/src/IFile.h"
+#include "../../Core/src/IFile.h"
 
 // Exception
-#include "../../GraphicsEngine/src/Exception.h"
+#include "../../Core/src/Exception.h"
 
 cGeometryBuilder::cGeometryBuilder() {
 

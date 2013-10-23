@@ -5,8 +5,8 @@
 
 
 #include "ShaderManager.h"
-#include "../../GraphicsApi/src/IGraphicsApi.h"
-#include "../../GraphicsApi/src/IShaderProgram.h"
+#include "../../Core/src/IGraphicsApi.h"
+#include "../../Core/src/IShaderProgram.h"
 
 
 // load a shader by its name, or return it if it's already loaded

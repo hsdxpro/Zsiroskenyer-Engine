@@ -6,8 +6,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../../GraphicsApi/src/ITexture2D.h"
-#include "../../Common/src/math/Vec4.h"
+#include "../../Core/src/ITexture2D.h"
+#include "../../Core/src/math/Vec4.h"
 
 class cMaterial {
 public:

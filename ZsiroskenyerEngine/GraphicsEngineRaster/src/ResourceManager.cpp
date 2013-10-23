@@ -10,8 +10,8 @@
 #include "GeometryBuilder.h"
 
 // Graphics api
-#include "../../GraphicsApi/src/IGraphicsApi.h"
-#include "../../Common/src/IFile.h"
+#include "../../Core/src/IGraphicsApi.h"
+#include "../../Core/src/IFile.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //	ResourceManager

@@ -5,10 +5,10 @@
 //	IShaderProgram implementation
 #pragma once
 
-#include "../../GraphicsApi/src/IShaderProgram.h"
+#include "../../Core/src/IShaderProgram.h"
 #include "Dx11_SDK/Include/D3D11.h"
 #include "Dx11_SDK/Include/D3DX11.h"
-#include "../../Common/src/common.h"
+#include "../../Core/src/common.h"
 
 class cShaderProgramD3D11 : public IShaderProgram {
 public:

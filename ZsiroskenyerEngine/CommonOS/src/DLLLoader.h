@@ -2,7 +2,7 @@
 // DLL loading on win32
 #pragma once
 
-#include "../../Common/src/IDLLLoader.h"
+#include "../../Core/src/IDLLLoader.h"
 
 class cDLLLoader : public IDLLLoader {
 public:

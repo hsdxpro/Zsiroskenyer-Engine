@@ -1,6 +1,6 @@
 // Log.h By ZsíroskenyérTeam 2013.10.22
 // Win32 implementation of Log interface
-#include "../../Common/src/ILog.h"
+#include "../../Core/src/ILog.h"
 
 class cLog : public ILog {
 public:

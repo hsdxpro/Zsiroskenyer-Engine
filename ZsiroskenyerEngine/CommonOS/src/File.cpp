@@ -1,6 +1,6 @@
 #include "File.h"
-#include "../../Common/src/common.h"
-#include "../../GraphicsEngine/src/Exception.h"
+#include "../../Core/src/common.h"
+#include "../../Core/src/Exception.h"
 
 cFile::cFile()
 :isEof(false) {

@@ -3,19 +3,19 @@
 //	2013.oct.10, Zsiroskenyer Team, Péter Kardos
 ////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsEngine.h"
-#include "../../Common/src/Factory.h"
+#include "../../Core/src/Factory.h"
 
 #include "SceneManager.h"
 #include "ResourceManager.h"
 #include "ShaderManager.h"
 #include "Geometry.h"
-#include "../../GraphicsApi/src/IGraphicsApi.h"
-#include "../../GraphicsApi/src/IShaderProgram.h"
-#include "../../GraphicsEngine/src/Exception.h"
-#include "../../GraphicsEngine/src/Camera.h"
-#include "../../GraphicsApi/src/IConstantBuffer.h"
-#include "../../GraphicsApi/src/IIndexBuffer.h"
-#include "../../Common/src/math/Matrix44.h"
+#include "../../Core/src/IGraphicsApi.h"
+#include "../../Core/src/IShaderProgram.h"
+#include "../../Core/src/Exception.h"
+#include "../../Core/src/Camera.h"
+#include "../../Core/src/IConstantBuffer.h"
+#include "../../Core/src/IIndexBuffer.h"
+#include "../../Core/src/math/Matrix44.h"
 
 // construction of the graphics engine
 cGraphicsEngine::cGraphicsEngine() {

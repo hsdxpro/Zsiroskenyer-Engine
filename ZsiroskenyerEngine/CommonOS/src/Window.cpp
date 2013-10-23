@@ -1,7 +1,7 @@
 // Implementation
 #include "Window.h"
 #include <tchar.h>
-#include "../../Common/src/zsString.h"
+#include "../../Core/src/zsString.h"
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	switch(msg) {

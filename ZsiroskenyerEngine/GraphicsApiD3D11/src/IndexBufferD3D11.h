@@ -6,8 +6,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../../GraphicsApi/src/IIndexBuffer.h"
-#include "../../GraphicsApi/src/BufferCommon.h"
+#include "../../Core/src/IIndexBuffer.h"
+#include "../../Core/src/BufferCommon.h"
 #include "Dx11_SDK/Include/D3D11.h"
 #include "Dx11_SDK/Include/D3DX11.h"
 

@@ -1,9 +1,9 @@
 // Camera.h By Zsíroskenyér Team 2013.10.13 0:14 last modified Richárd Németh
 #pragma once
 
-#include "../../Common/src/math/Vec3.h"
-#include "../../Common/src/math/Matrix44.h"
-#include "../../Common/src/math/Quat.h"
+#include "../../Core/src/math/Vec3.h"
+#include "../../Core/src/math/Matrix44.h"
+#include "../../Core/src/math/Quat.h"
 
 class cCamera {
 public:

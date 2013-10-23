@@ -1,6 +1,6 @@
 // Camera.cpp implementation
 #include "Camera.h"
-#include "../../Common/src/common.h"
+#include "../../Core/src/common.h"
 
 cCamera::cCamera(float fovRad, float aspectRatio, float nearPlane, float farPlane) 
 :fovRad(fovRad), aspectRatio(aspectRatio), nearPlane(nearPlane), farPlane(farPlane), target(0,1,0) {

@@ -4,8 +4,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
-#include "../../Common/src/zsString.h"
-#include "../../Common/src/common.h"
+#include "../../Core/src/zsString.h"
+#include "../../Core/src/common.h"
 
 zsString cDLLLoader::GetExecutablePath() const {
 	WCHAR buf[MAX_PATH];

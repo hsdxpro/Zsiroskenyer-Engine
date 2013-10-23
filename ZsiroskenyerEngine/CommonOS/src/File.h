@@ -2,7 +2,7 @@
 // parsing files like .txt .bin .dat ...
 #pragma once
 
-#include "../../Common/src/IFile.h"
+#include "../../Core/src/IFile.h"
 #include <fstream>
 #include <list>
 

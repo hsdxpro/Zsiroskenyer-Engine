@@ -5,7 +5,7 @@
 #include "ShaderProgramD3D11.h"
 #include "Texture2DColorD3D11.h"
 
-#include "../../Common/src/IFile.h"
+#include "../../Core/src/IFile.h"
 
 #ifdef WIN32
 #pragma warning(disable: 4244)

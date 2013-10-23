@@ -1,10 +1,10 @@
 #include "testFiles.h"
 
-#include "../../Common/src/IWindow.h"
-#include "../../GraphicsEngine/src/IGraphicsEngine.h"
-#include "../../GraphicsEngine/src/Camera.h"
-#include "../../Common/src/Factory.h"
-#include "../../Common/src/math/Quat.h"
+#include "../../Core/src/IWindow.h"
+#include "../../Core/src/IGraphicsEngine.h"
+#include "../../Core/src/Camera.h"
+#include "../../Core/src/Factory.h"
+#include "../../Core/src/math/Quat.h"
 #include "../../GraphicsEngineRaster/src/ResourceManager.h"
 #include <vector>
 

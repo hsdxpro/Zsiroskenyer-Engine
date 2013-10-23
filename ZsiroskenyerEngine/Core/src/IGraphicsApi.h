@@ -2,11 +2,11 @@
 // interface for different 3D graphics libraries like DirectX11 or OpenGL ..
 #pragma once
 
-#include "../../Common/src/IWindow.h"
+#include "../../Core/src/IWindow.h"
 #include "BufferCommon.h"
 #include <climits>
-#include "../../Common/src/common.h"
-#include "../../Common/src/zsString.h"
+#include "../../Core/src/common.h"
+#include "../../Core/src/zsString.h"
 
 #ifdef max
 #define _377995BD_F40A_4067_A633_46AAA084AC7F

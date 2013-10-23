@@ -1,7 +1,7 @@
 // ConstantBufferD3D11.h By Zsíroskenyér Team 2013.10.16 0:03
 #pragma once
 
-#include "../../GraphicsApi/src/IConstantBuffer.h"
+#include "../../Core/src/IConstantBuffer.h"
 #include "Dx11_SDK/Include/D3D11.h"
 #include "Dx11_SDK/Include/D3DX11.h"
 

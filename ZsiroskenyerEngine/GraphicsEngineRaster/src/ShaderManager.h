@@ -8,7 +8,7 @@
 
 #include <boost/bimap.hpp>
 #include <boost/bimap/unordered_set_of.hpp>
-#include "../../Common/src/zsString.h"
+#include "../../Core/src/zsString.h"
 
 class IShaderProgram;
 class IGraphicsApi;

@@ -11,8 +11,8 @@
 // etc
 #pragma once
 
-#include "../../GraphicsApi/src/IGraphicsApi.h"
-#include "../../GraphicsEngine/src/IGraphicsEngine.h"
+#include "../../Core/src/IGraphicsApi.h"
+#include "../../Core/src/IGraphicsEngine.h"
 
 // Dll function pointers...
 typedef IGraphicsApi* (*funcGraphicsApi)();

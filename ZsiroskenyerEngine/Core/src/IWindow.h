@@ -2,10 +2,10 @@
 // interface for different O.S specific windows
 #pragma once
 
-#include "../../Common/src/common.h"
-#include "../../Common/src/math/Point.h"
-#include "../../Common/src/math/Vec2.h"
-#include "../../Common/src/zsString.h"
+#include "../../Core/src/common.h"
+#include "../../Core/src/math/Point.h"
+#include "../../Core/src/math/Vec2.h"
+#include "../../Core/src/zsString.h"
 
 class IWindow {
 public:

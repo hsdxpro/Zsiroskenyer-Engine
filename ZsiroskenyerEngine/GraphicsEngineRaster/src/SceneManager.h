@@ -11,10 +11,10 @@
 #pragma once
 
 
-#include "../../Common/src/zsString.h"
+#include "../../Core/src/zsString.h"
 
 #include "InstanceGroup.h"
-#include "../../GraphicsEngine/src/ISceneManager.h"
+#include "../../Core/src/ISceneManager.h"
 
 #include <unordered_set>
 

@@ -1,7 +1,7 @@
 // Texture2DColorD3D11.h By Zsíroskenyér Team 2013.10.20 16:42
 #pragma once
 
-#include "../../GraphicsApi/src/ITexture2D.h"
+#include "../../Core/src/ITexture2D.h"
 
 struct ID3D11ShaderResourceView;
 

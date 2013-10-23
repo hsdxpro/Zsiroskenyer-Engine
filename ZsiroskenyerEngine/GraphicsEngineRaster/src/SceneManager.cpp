@@ -9,9 +9,9 @@
 #include "SceneManager.h"
 #include "ResourceManager.h"
 #include "InstanceGroup.h"
-#include "../../GraphicsEngine/src/GraphicsEntity.h"
-#include "../../GraphicsEngine/src/Exception.h"
-#include "../../GraphicsEngine/src/Camera.h"
+#include "../../Core/src/GraphicsEntity.h"
+#include "../../Core/src/Exception.h"
+#include "../../Core/src/Camera.h"
 
 #include <cassert>
 

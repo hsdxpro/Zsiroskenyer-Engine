@@ -2,7 +2,7 @@
 // hold values in buffers that will be passed to the shader
 #pragma once
 
-#include "../../GraphicsApi/src/BufferCommon.h"
+#include "../../Core/src/BufferCommon.h"
 
 class IConstantBuffer {
 public:

@@ -12,7 +12,7 @@
 
 #include <memory>
 
-#include "../../Common/src/zsString.h"
+#include "../../Core/src/zsString.h"
 #include "Geometry.h"
 #include "Material.h"
 

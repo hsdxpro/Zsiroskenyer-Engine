@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../../Common/src/zsString.h"
+#include "../../Core/src/zsString.h"
 #include "../../GraphicsEngineRaster/src/Geometry.h"
 
 class cGeometryBuilder {

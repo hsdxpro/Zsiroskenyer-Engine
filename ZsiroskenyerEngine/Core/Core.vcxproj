@@ -11,13 +11,73 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\algorithms\sort.h" />
+    <ClInclude Include="src\algorithms\statistics.h" />
+    <ClInclude Include="src\BufferCommon.h" />
+    <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\common.h" />
+    <ClInclude Include="src\Exception.h" />
+    <ClInclude Include="src\Factory.h" />
+    <ClInclude Include="src\GraphicsEntity.h" />
+    <ClInclude Include="src\IConstantBuffer.h" />
+    <ClInclude Include="src\IDLLLoader.h" />
+    <ClInclude Include="src\IFile.h" />
+    <ClInclude Include="src\IGraphicsApi.h" />
+    <ClInclude Include="src\IGraphicsEngine.h" />
+    <ClInclude Include="src\IIndexBuffer.h" />
+    <ClInclude Include="src\ILog.h" />
+    <ClInclude Include="src\INetworkEngine.h" />
     <ClInclude Include="src\IPhysicsEngine.h" />
+    <ClInclude Include="src\ISceneManager.h" />
+    <ClInclude Include="src\IShaderProgram.h" />
+    <ClInclude Include="src\ISoundEngine.h" />
+    <ClInclude Include="src\ITexture2D.h" />
+    <ClInclude Include="src\IVertexBuffer.h" />
+    <ClInclude Include="src\IWindow.h" />
+    <ClInclude Include="src\math\color.h" />
+    <ClInclude Include="src\math\math_all.h" />
+    <ClInclude Include="src\math\Matrix44.h" />
+    <ClInclude Include="src\math\Point.h" />
+    <ClInclude Include="src\math\quat.h" />
+    <ClInclude Include="src\math\Vec2.h" />
+    <ClInclude Include="src\math\vec3.h" />
+    <ClInclude Include="src\math\Vec4.h" />
+    <ClInclude Include="src\memory\fixed_size_pool.h" />
+    <ClInclude Include="src\memory\tlsf.h" />
+    <ClInclude Include="src\multithreading\spinlock.h" />
+    <ClInclude Include="src\Node.h" />
     <ClInclude Include="src\PhysicsEntity.h" />
+    <ClInclude Include="src\shared_ptr.h" />
+    <ClInclude Include="src\storage\tree.h" />
+    <ClInclude Include="src\tipsify.h" />
+    <ClInclude Include="src\VertexFormat.h" />
+    <ClInclude Include="src\zsString.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Exception.cpp" />
+    <ClCompile Include="src\Factory.cpp" />
+    <ClCompile Include="src\GraphicsEntity.cpp" />
+    <ClCompile Include="src\IDLLLoader.cpp" />
+    <ClCompile Include="src\IFile.cpp" />
+    <ClCompile Include="src\ILog.cpp" />
+    <ClCompile Include="src\IWindow.cpp" />
+    <ClCompile Include="src\math\color.cpp" />
+    <ClCompile Include="src\math\Matrix44.cpp" />
+    <ClCompile Include="src\math\Point.cpp" />
+    <ClCompile Include="src\math\quat.cpp" />
+    <ClCompile Include="src\math\Vec2.cpp" />
+    <ClCompile Include="src\math\vec3.cpp" />
+    <ClCompile Include="src\math\Vec4.cpp" />
+    <ClCompile Include="src\memory\tlsf.cpp" />
+    <ClCompile Include="src\multithreading\spinlock.cpp" />
+    <ClCompile Include="src\VertexFormat.cpp" />
+    <ClCompile Include="src\zsString.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{7C55926D-9109-4C80-A4E4-E73359BDE348}</ProjectGuid>
+    <ProjectGuid>{0444E71E-FDC6-4511-B395-6946993BBB5F}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>PhysicsEngine</RootNamespace>
+    <RootNamespace>Core</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -43,7 +103,11 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(SolutionDir)\..\Externals\boost_1_54_0;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)$(Configuration)_\</OutDir>
+    <IntDir>$(Configuration)_\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>
@@ -56,6 +120,9 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalDependencies>$(OutDir)\CommonOS.lib</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

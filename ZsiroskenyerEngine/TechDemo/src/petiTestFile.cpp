@@ -7,7 +7,7 @@
 using namespace std;
 
 
-#include "../../GraphicsEngine/src/IGraphicsEngine.h"
+#include "../../Core/src/IGraphicsEngine.h"
 
 namespace peti_test {
 
