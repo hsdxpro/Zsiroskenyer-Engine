@@ -8,7 +8,7 @@
 #include "Entity.h"
 #include "../../Common/src/common.h"
 
-cEntity::cEntity() : 
+cGraphicsEntity::cGraphicsEntity() : 
 		position(0,0,0),
 		rotation(Vec3(0,0,0), 0),
 		scale(1,1,1),
@@ -17,6 +17,6 @@ cEntity::cEntity() :
 {
 }
 
-cInstanceGroup* cEntity::GetInstanceGroup() {
+cInstanceGroup* cGraphicsEntity::GetInstanceGroup() {
 	return instanceGroup;
 }

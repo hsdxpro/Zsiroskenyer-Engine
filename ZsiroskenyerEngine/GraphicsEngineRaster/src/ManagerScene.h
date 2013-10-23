@@ -19,7 +19,7 @@
 #include <unordered_set>
 
 
-class cEntity;
+class cGraphicsEntity;
 class cManagerResource;
 class cCamera;
 
@@ -43,8 +43,8 @@ public:
 	cManagerScene(cManagerResource& rm);
 	~cManagerScene();
 
-	cEntity& AddEntity(const zsString& geometry, const zsString& material);
-	void RemoveEntity(const cEntity& entity);
+	cGraphicsEntity& AddEntity(const zsString& geometry, const zsString& material);
+	void RemoveEntity(const cGraphicsEntity& entity);
 
 	void SetActiveCamera(cCamera *cam) override;
 

@@ -33,10 +33,10 @@ int ricsiMain() {
 	mgrScene->SetActiveCamera(cam);
 
 	// Create 3D objects
-	std::vector<cEntity*> entities;
+	std::vector<cGraphicsEntity*> entities;
 	for(size_t i = 0; i < 1; i++)
 		for(size_t j = 0; j < 1 ; j++) {
-			cEntity& e =  mgrScene->AddEntity(L"objects/box.dae", L"materials/test.zsm");
+			cGraphicsEntity& e =  mgrScene->AddEntity(L"objects/box.dae", L"materials/test.zsm");
 			entities.push_back(&e);
 			e.position = Vec3(i * 10, 90, j * 10);
 			e.isVisible = true;
@@ -52,7 +52,7 @@ int ricsiMain() {
 		// Hardcoded rotation 	( euler Z for rotationg entities )
 		static float zVal = 0.0f;
 		zVal += 0.001f;
-		for(cEntity* e : entities) {
+		for(cGraphicsEntity* e : entities) {
 			e->rotation = Quat::EulerAnglesToQuat(Vec3(zVal, zVal + 0.4, zVal));
 		}
 

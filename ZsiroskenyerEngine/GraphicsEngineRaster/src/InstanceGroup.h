@@ -11,7 +11,7 @@
 #include <unordered_set>
 #include "../../GraphicsApi/src/ITexture2D.h"
 
-class cEntity;
+class cGraphicsEntity;
 
 class cInstanceGroup {
 	friend struct std::hash<cInstanceGroup>;
@@ -28,7 +28,7 @@ public:
 	cMaterialRef mtl;
 
 	// Entities
-	std::unordered_set<cEntity*> entities;
+	std::unordered_set<cGraphicsEntity*> entities;
 };
 
 

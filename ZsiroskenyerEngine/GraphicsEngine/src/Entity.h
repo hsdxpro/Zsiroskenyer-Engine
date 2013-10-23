@@ -10,12 +10,12 @@
 
 class cInstanceGroup;
 
-class cEntity {
+class cGraphicsEntity {
 	friend class cManagerScene;
 public:
 	cInstanceGroup* GetInstanceGroup();
 
-	cEntity();
+	cGraphicsEntity();
 
 	Vec3 position;
 	Quat rotation;

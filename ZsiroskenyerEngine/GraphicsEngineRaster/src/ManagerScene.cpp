@@ -26,10 +26,10 @@ cManagerScene::~cManagerScene() {
 
 
 // entities
-cEntity& cManagerScene::AddEntity(const zsString& geometry, const zsString& material) {
+cGraphicsEntity& cManagerScene::AddEntity(const zsString& geometry, const zsString& material) {
 	cInstanceGroup* instGroup = nullptr;
 	cInstanceGroup searchDummy;
-	cEntity* entity;
+	cGraphicsEntity* entity;
 
 	try {
 		cGeometryRef g = managerResource.LoadGeometry(geometry);
@@ -45,7 +45,7 @@ cEntity& cManagerScene::AddEntity(const zsString& geometry, const zsString& mate
 			instGroup = *it;
 		}
 
-		entity = new cEntity();
+		entity = new cGraphicsEntity();
 		entity->instanceGroup = instGroup;
 		instGroup->entities.insert(entity);
 
@@ -56,7 +56,7 @@ cEntity& cManagerScene::AddEntity(const zsString& geometry, const zsString& mate
 	}
 }
 
-void cManagerScene::RemoveEntity(const cEntity& entity) {
+void cManagerScene::RemoveEntity(const cGraphicsEntity& entity) {
 	cInstanceGroup* instGroup = entity.instanceGroup;
 
 	auto it = instanceGroups.find(instGroup);
@@ -65,7 +65,7 @@ void cManagerScene::RemoveEntity(const cEntity& entity) {
 		return;
 	}
 
-	instGroup->entities.erase(const_cast<cEntity*>(&entity));
+	instGroup->entities.erase(const_cast<cGraphicsEntity*>(&entity));
 	if (instGroup->entities.size()==0) {
 		instanceGroups.erase(instGroup);
 	}
