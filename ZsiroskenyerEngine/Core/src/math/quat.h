@@ -29,6 +29,7 @@ class Quat {
 		static Quat& QuatRotation(Quat& out, Vec3 axis, float angle);
 
 		static Quat EulerAnglesToQuat(const Vec3& eulerAngles);
+		static Quat EulerAnglesToQuat(float rotX, float rotY, float rotZ);
 		static Vec3 QuatToEulerAngles(const Quat& quaternion);
 
 		Quat& operator*=(const Quat& q2);		

@@ -51,8 +51,8 @@ void cGraphicsEngine::RenderWorldForward() {
 	// Begin scene
 	gApi->Clear(true, true);
 
-	// Get camera params
-	cCamera* cam = managerScene->GetActiveCamera();
+	// Get camera params FAIILLL
+	cCamera* cam = NULL;//managerScene->GetActiveCamera();
 	Matrix44 viewMat = cam->GetViewMatrix();
 	Matrix44 projMat = cam->GetProjMatrix();
 	

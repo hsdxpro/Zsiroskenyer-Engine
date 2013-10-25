@@ -120,6 +120,16 @@
     </ClInclude>
     <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\Factory.h" />
+    <ClInclude Include="src\Game.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Level.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Entity.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\IDLLLoader.cpp">
@@ -175,6 +185,13 @@
     </ClCompile>
     <ClCompile Include="src\Exception.cpp" />
     <ClCompile Include="src\Factory.cpp" />
+    <ClCompile Include="src\Game.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Level.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Interfaces">
@@ -215,6 +232,9 @@
     </Filter>
     <Filter Include="PhysicsEngine">
       <UniqueIdentifier>{ae5210cb-150f-4a6b-a43d-7de79ba395c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{51d87b20-2ddf-4b46-8c17-90fe40718315}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

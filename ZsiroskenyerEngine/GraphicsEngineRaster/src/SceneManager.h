@@ -46,10 +46,6 @@ public:
 	cGraphicsEntity& AddEntity(const zsString& geometry, const zsString& material);
 	void RemoveEntity(const cGraphicsEntity& entity);
 
-	void SetActiveCamera(cCamera *cam) override;
-
-	cCamera *GetActiveCamera() const override;
-
 	const std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare>& GetInstanceGroups() const;
 private:
 	std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare> instanceGroups;

@@ -16,8 +16,11 @@
     <ClInclude Include="src\BufferCommon.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\common.h" />
+    <ClInclude Include="src\Core.h" />
+    <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\Factory.h" />
+    <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\GraphicsEntity.h" />
     <ClInclude Include="src\IConstantBuffer.h" />
     <ClInclude Include="src\IDLLLoader.h" />
@@ -34,6 +37,7 @@
     <ClInclude Include="src\ITexture2D.h" />
     <ClInclude Include="src\IVertexBuffer.h" />
     <ClInclude Include="src\IWindow.h" />
+    <ClInclude Include="src\Level.h" />
     <ClInclude Include="src\math\color.h" />
     <ClInclude Include="src\math\math_all.h" />
     <ClInclude Include="src\math\Matrix44.h" />
@@ -55,13 +59,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Core.cpp" />
     <ClCompile Include="src\Exception.cpp" />
     <ClCompile Include="src\Factory.cpp" />
+    <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\GraphicsEntity.cpp" />
     <ClCompile Include="src\IDLLLoader.cpp" />
     <ClCompile Include="src\IFile.cpp" />
     <ClCompile Include="src\ILog.cpp" />
     <ClCompile Include="src\IWindow.cpp" />
+    <ClCompile Include="src\Level.cpp" />
     <ClCompile Include="src\math\color.cpp" />
     <ClCompile Include="src\math\Matrix44.cpp" />
     <ClCompile Include="src\math\Point.cpp" />

@@ -17,6 +17,4 @@ class ISceneManager {
 public:
 	virtual cGraphicsEntity& AddEntity(const zsString& geometry, const zsString& material) = 0;
 	virtual void RemoveEntity(const cGraphicsEntity& entity) = 0;
-	virtual cCamera* GetActiveCamera() const = 0;
-	virtual void SetActiveCamera(cCamera *cam) = 0;
 };

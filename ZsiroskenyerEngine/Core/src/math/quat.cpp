@@ -138,14 +138,18 @@ Quat::operator Matrix44() {
 };
 
 Quat Quat::EulerAnglesToQuat(const Vec3& eulerAngles) {
-	Quat q;
-	float cos_x = cos(eulerAngles.x*0.5f);
-	float sin_x = sin(eulerAngles.x*0.5f);
-	float cos_y = cos(eulerAngles.y*0.5f);
-	float sin_y = sin(eulerAngles.y*0.5f);
-	float cos_z = cos(eulerAngles.z*0.5f);
-	float sin_z = sin(eulerAngles.z*0.5f);
+	return EulerAnglesToQuat(eulerAngles.x, eulerAngles.y, eulerAngles.z);
+}
 
+Quat Quat::EulerAnglesToQuat(float rotX, float rotY, float rotZ) {
+	Quat q;
+	float cos_x = cos(rotX * 0.5f);
+	float sin_x = sin(rotX * 0.5f);
+	float cos_y = cos(rotY * 0.5f);
+	float sin_y = sin(rotY * 0.5f);
+	float cos_z = cos(rotZ * 0.5f);
+	float sin_z = sin(rotZ * 0.5f);
+						   
 	q.w =	cos_x *	cos_y *	cos_z	+	sin_x *	sin_y *	sin_z;
 	q.x =	sin_x *	cos_y *	cos_z	-	cos_x *	sin_y *	sin_z;
 	q.y =	cos_x *	sin_y *	cos_z	+	sin_x *	cos_y *	sin_z;

@@ -71,14 +71,6 @@ void cSceneManager::RemoveEntity(const cGraphicsEntity& entity) {
 	}
 }
 
-void cSceneManager::SetActiveCamera(cCamera *cam) {
-	activeCamera = cam;
-}
-
-cCamera *cSceneManager::GetActiveCamera() const {
-	return activeCamera;
-}
-
 const std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare>& cSceneManager::GetInstanceGroups() const {
 	return instanceGroups;
 }
