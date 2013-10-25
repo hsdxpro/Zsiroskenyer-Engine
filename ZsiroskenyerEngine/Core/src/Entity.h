@@ -3,11 +3,11 @@
 #pragma once
 
 #include "GraphicsEntity.h"
-#include "PhysicsEntity.h"
+#include "IPhysicsEntity.h"
 
 class cEntity {
 public:
 protected:
 	cGraphicsEntity* graphicsEntity;
-	cPhysicsEntity* physicsEntity;
+	IPhysicsentity* physicsEntity;
 };
