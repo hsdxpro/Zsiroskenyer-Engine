@@ -9,5 +9,5 @@ class cEntity {
 public:
 protected:
 	cGraphicsEntity* graphicsEntity;
-	IPhysicsentity* physicsEntity;
+	IPhysicsEntity* physicsEntity;
 };
