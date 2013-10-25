@@ -9,3 +9,16 @@ cCore* cCore::GetInstance() {
 		cCore::instance = new cCore();
 	return cCore::instance;
 }
+
+cCore::~cCore() {
+	SAFE_RELEASE(graphicsEngine);
+	SAFE_RELEASE(physicsEngine);
+}
+
+IGraphicsEngine* cCore::GetGraphicsEngine() {
+	return graphicsEngine;
+}
+
+IPhysicsEngine* cCore::GetPhysicsEngine() {
+	return physicsEngine;
+}

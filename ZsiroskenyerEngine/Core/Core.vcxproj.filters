@@ -130,6 +130,9 @@
       <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="src\Core.h" />
+    <ClInclude Include="src\IPhysicsEntity.h">
+      <Filter>Interfaces\PhysicsEntity</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\IDLLLoader.cpp">
@@ -192,6 +195,9 @@
       <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="src\Core.cpp" />
+    <ClCompile Include="src\PhysicsEntity.cpp">
+      <Filter>PhysicsEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Interfaces">
@@ -235,6 +241,9 @@
     </Filter>
     <Filter Include="Game">
       <UniqueIdentifier>{51d87b20-2ddf-4b46-8c17-90fe40718315}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces\PhysicsEntity">
+      <UniqueIdentifier>{9033b0df-f7a0-4e54-969f-ef32838d68b2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

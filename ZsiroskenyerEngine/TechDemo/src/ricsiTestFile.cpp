@@ -42,35 +42,35 @@ int ricsiMain() {
 	// Create Camera
 	cCamera cam(ZS_PIDIV2, (float)winDesc.clientWidth / winDesc.clientHeight, 0.01f, 5000.0f);
 
-	// Create game based on window and camera
-	cGame ricsiGame(window, &cam);
+	// Create Game based on camera
+	cGame ricsiGame(&cam);
 
 	// Add, set new level
-	cLevel level01();
+	cLevel level01;
 	ricsiGame.SetActiveLevel(&level01);
 
 
 	// Create 3D objects
-	std::vector<cEntity&> entities;
+	std::vector<cEntity*> entities;
 	for(size_t i = 0; i < 1; i++)
 		for(size_t j = 0; j < 1 ; j++) {
-			cEntity& e = engine->AddEntity(L"objects/box.dae", L"materials/test.zsm", 100);
-				e.SetPosition(i * 10, 90, j * 10);
-				e.SetVisibility(true);
-			level01.add(e);
+			//cEntity& e = core->AddEntity(L"objects/box.dae", L"materials/test.zsm", 100);
+//				e.SetPosition(i * 10, 90, j * 10);
+				//e.SetVisibility(true);
+			//level01.add(&e);
 	}	
 	
 	// Main loop
 	while(window->IsOpened()) {
 		window->PeekAllMessages();
 
-		gEngine->RenderLevel(&level01);
+		//gEngine->RenderLevel(&level01);
 
 		// Hardcoded rotation 	( euler Z for rotationg entities ) (GAME LOGIC WHAOOO :D)
 		static float zVal = 0.0f;
 		zVal += 0.001f;
-		for(cEntity& e : entities) {
-			e.SetRotation(Quat::EulerAnglesToQuat(zVal, zVal + 0.4, zVal);
+		for(cEntity *e : entities) {
+			//e->SetRotation(Quat::EulerAnglesToQuat(zVal, zVal + 0.4, zVal);
 		}
 
 		// Present SwapChain

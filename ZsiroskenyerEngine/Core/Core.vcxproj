@@ -31,6 +31,7 @@
     <ClInclude Include="src\ILog.h" />
     <ClInclude Include="src\INetworkEngine.h" />
     <ClInclude Include="src\IPhysicsEngine.h" />
+    <ClInclude Include="src\IPhysicsEntity.h" />
     <ClInclude Include="src\ISceneManager.h" />
     <ClInclude Include="src\IShaderProgram.h" />
     <ClInclude Include="src\ISoundEngine.h" />
@@ -78,6 +79,7 @@
     <ClCompile Include="src\math\Vec4.cpp" />
     <ClCompile Include="src\memory\tlsf.cpp" />
     <ClCompile Include="src\multithreading\spinlock.cpp" />
+    <ClCompile Include="src\PhysicsEntity.cpp" />
     <ClCompile Include="src\VertexFormat.cpp" />
     <ClCompile Include="src\zsString.cpp" />
   </ItemGroup>

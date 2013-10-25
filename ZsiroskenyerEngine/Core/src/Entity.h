@@ -6,7 +6,8 @@
 #include "PhysicsEntity.h"
 
 class cEntity {
+public:
 protected:
 	cGraphicsEntity* graphicsEntity;
-	cGraphicsEntity* physicsEntity;
+	cPhysicsEntity* physicsEntity;
 };
