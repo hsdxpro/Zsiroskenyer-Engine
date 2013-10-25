@@ -10,15 +10,15 @@
 
 #include "ISceneManager.h"
 #include "../../GraphicsEngineRaster/src/ResourceManager.h"
-#include "../../Core/src/IGraphicsApi.h"
+#include "IGraphicsApi.h"
 
 class IGraphicsEngine {
 public:
 	virtual void Release() = 0;
 
-	virtual void RenderWorldForward() = 0;
+	virtual void RenderSceneForward() = 0;
 
-	virtual ISceneManager*		GetManagerScene() = 0;
-	virtual cResourceManager*	GetManagerResource() = 0;
+	virtual ISceneManager*		GetSceneManager() = 0;
+	virtual cResourceManager*	GetResourceManager() = 0;
 	virtual IGraphicsApi*		GetGraphicsApi() = 0;
 };

@@ -19,11 +19,13 @@
 
 int ricsiMain() {
 
-	// Create engine...
+	// Create core
 	cCore* core = cCore::GetInstance();
+
+	// Get Modules
 	IGraphicsEngine* gEngine = core->GetGraphicsEngine();
-	// gApi, Ugly boy...
 	IGraphicsApi* gApi = gEngine->GetGraphicsApi();
+	ISceneManager* sceneManager = gEngine->GetSceneManager();
 
 	// Window description
 	IWindow::tDesc winDesc;
@@ -41,30 +43,24 @@ int ricsiMain() {
 
 	// Create Camera
 	cCamera cam(ZS_PIDIV2, (float)winDesc.clientWidth / winDesc.clientHeight, 0.01f, 5000.0f);
-
-	// Create Game based on camera
-	cGame ricsiGame(&cam);
-
-	// Add, set new level
-	cLevel level01;
-	ricsiGame.SetActiveLevel(&level01);
-
+	sceneManager->SetActiveCamera(&cam);
 
 	// Create 3D objects
 	std::vector<cEntity*> entities;
 	for(size_t i = 0; i < 1; i++)
 		for(size_t j = 0; j < 1 ; j++) {
-			//cEntity& e = core->AddEntity(L"objects/box.dae", L"materials/test.zsm", 100);
-//				e.SetPosition(i * 10, 90, j * 10);
-				//e.SetVisibility(true);
-			//level01.add(&e);
+			core->AddEntity(L"objects/box.dae", L"materials/test.zsm", 100);
+				//e->position = Vec3(i * 10, 90, j * 10);
+				//e->visible = true;
 	}	
 	
 	// Main loop
 	while(window->IsOpened()) {
 		window->PeekAllMessages();
 
-		//gEngine->RenderLevel(&level01);
+		gApi->Clear(true, true);
+
+		gEngine->RenderSceneForward();
 
 		// Hardcoded rotation 	( euler Z for rotationg entities ) (GAME LOGIC WHAOOO :D)
 		static float zVal = 0.0f;

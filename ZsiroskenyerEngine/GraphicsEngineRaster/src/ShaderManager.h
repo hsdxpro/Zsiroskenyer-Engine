@@ -14,7 +14,7 @@ class IShaderProgram;
 class IGraphicsApi;
 
 
-class cManagerShader {
+class cShaderManager {
 public:
 	IShaderProgram* LoadShader(const zsString& shaderDir, const zsString& shaderName); // load a shader once from source
 															// multiple loads will return the already-loaded shader
@@ -29,8 +29,8 @@ public:
 
 	void Reset(); // unloads all shaders
 
-	cManagerShader(IGraphicsApi* graphicsApi);
-	~cManagerShader();
+	cShaderManager(IGraphicsApi* graphicsApi);
+	~cShaderManager();
 private:
 	typedef boost::bimap<boost::bimaps::unordered_set_of<IShaderProgram*>, boost::bimaps::unordered_set_of<zsString, std::hash<zsString>>> ShaderMapT;
 

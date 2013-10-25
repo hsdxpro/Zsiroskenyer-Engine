@@ -43,7 +43,7 @@ protected:
 // DLL accessor
 extern "C"
 	__declspec(dllexport)
-	IGraphicsApi* CreateGraphicsGL() {
+	IGraphicsApi* CreateGraphicsApiGL() {
 #pragma message("+++++ +++++ Implement opengl class, abstract methots not implemented yet! +++++ +++++")
 		//return new cGraphicsApiGL();
 		return NULL;

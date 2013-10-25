@@ -406,7 +406,7 @@ Matrix44 Matrix44::MatrixViewRH(const Vec3& eye, const Vec3& target, const Vec3&
 Matrix44 Matrix44::MatrixProjPerspective(float nearPlane, float farPlane, float fovRad, float aspectRatio) {
 	Matrix44 mat;
 	mat.Identity();
-	mat._11 = mat._22 = 1.0f / tanf(fovRad * 0.5);
+	mat._11 = mat._22 = 1.0f / tanf(fovRad * 0.5f);
 	mat._11 /= aspectRatio;
 	mat._33 =   farPlane / (farPlane - nearPlane);
 	mat._43 =  -(farPlane * nearPlane) / (farPlane - nearPlane);

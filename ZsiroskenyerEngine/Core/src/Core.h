@@ -6,16 +6,19 @@
 
 #include "IPhysicsEngine.h"
 #include "IGraphicsEngine.h"
+//#include "Entity.h"
 
 class cCore {
 public:
+	void AddEntity(const zsString& geomPath, const zsString& materialPath, float mass);
+
 	IGraphicsEngine* GetGraphicsEngine();
 	IPhysicsEngine* GetPhysicsEngine();
 
 	static cCore* GetInstance();
 	~cCore();
 protected:
-	cCore(){}
+	cCore();
 	static cCore* instance;
 
 	IGraphicsEngine *graphicsEngine;

@@ -112,6 +112,6 @@ protected:
 // DLL accessor
 extern "C"
 	__declspec(dllexport)
-	IGraphicsApi* CreateGraphicsD3D11() {
+	IGraphicsApi* CreateGraphicsApiD3D11() {
 		return new cGraphicsApiD3D11();
 }

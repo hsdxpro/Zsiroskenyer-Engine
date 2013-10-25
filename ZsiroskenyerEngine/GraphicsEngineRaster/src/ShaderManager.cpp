@@ -10,7 +10,7 @@
 
 
 // load a shader by its name, or return it if it's already loaded
-IShaderProgram* cManagerShader::LoadShader(const zsString& shaderDir, const zsString& shaderName) {
+IShaderProgram* cShaderManager::LoadShader(const zsString& shaderDir, const zsString& shaderName) {
 	IShaderProgram* shProg = NULL;
 
 	auto it = loadedShaders.right.find(shaderName);
@@ -25,7 +25,7 @@ IShaderProgram* cManagerShader::LoadShader(const zsString& shaderDir, const zsSt
 
 
 // unload shader
-void cManagerShader::UnloadShader(IShaderProgram* shader) {
+void cShaderManager::UnloadShader(IShaderProgram* shader) {
 	auto it = loadedShaders.left.find(shader);
 	if (it==loadedShaders.left.end())
 		return;
@@ -34,7 +34,7 @@ void cManagerShader::UnloadShader(IShaderProgram* shader) {
 	loadedShaders.left.erase(it);
 }
 
-void cManagerShader::UnloadShader(const zsString& shaderName) {
+void cShaderManager::UnloadShader(const zsString& shaderName) {
 	auto it = loadedShaders.right.find(shaderName);
 	if (it==loadedShaders.right.end())
 		return;
@@ -45,12 +45,12 @@ void cManagerShader::UnloadShader(const zsString& shaderName) {
 
 
 // reload a shader: it WILL load previously unloaded shaders as well
-IShaderProgram* cManagerShader::ReloadShader(const zsString& shaderDir, const zsString& shaderName) {
+IShaderProgram* cShaderManager::ReloadShader(const zsString& shaderDir, const zsString& shaderName) {
 	UnloadShader(shaderName);
 	return LoadShader(shaderDir, shaderName);
 }
 // this version won't load previously unloaded shaders, since it doesn't know the name
-IShaderProgram* cManagerShader::ReloadShader(const zsString& shaderDir, IShaderProgram* shader) {
+IShaderProgram* cShaderManager::ReloadShader(const zsString& shaderDir, IShaderProgram* shader) {
 	// get shader's name first
 	auto it = loadedShaders.left.find(shader);
 	if (it==loadedShaders.left.end())
@@ -64,7 +64,7 @@ IShaderProgram* cManagerShader::ReloadShader(const zsString& shaderDir, IShaderP
 
 
 // unloads all shader resources
-void cManagerShader::Reset() {
+void cShaderManager::Reset() {
 	for (auto& shader : loadedShaders) {
 		delete shader.left;
 	}
@@ -74,7 +74,7 @@ void cManagerShader::Reset() {
 
 
 // return a reference to a shader by its name
-IShaderProgram* cManagerShader::GetShaderByName(const zsString& name) {
+IShaderProgram* cShaderManager::GetShaderByName(const zsString& name) {
 	auto it = loadedShaders.right.find(name);
 	if (it==loadedShaders.right.end())
 		return NULL;
@@ -84,9 +84,9 @@ IShaderProgram* cManagerShader::GetShaderByName(const zsString& name) {
 
 
 // constructs the shader manager with a graphics interface [required, no default]
-cManagerShader::cManagerShader(IGraphicsApi* graphicsApi) : graphicsApi(graphicsApi) {
+cShaderManager::cShaderManager(IGraphicsApi* graphicsApi) : graphicsApi(graphicsApi) {
 }
 // destructing the manager DESTROYS ALL LOADED SHADERS
-cManagerShader::~cManagerShader() {
+cShaderManager::~cShaderManager() {
 	Reset();
 }

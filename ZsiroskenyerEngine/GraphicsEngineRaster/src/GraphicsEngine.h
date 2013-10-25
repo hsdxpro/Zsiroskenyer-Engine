@@ -11,7 +11,7 @@
 
 
 class IGraphicsApi;
-class cManagerShader;
+class cShaderManager;
 class cSceneManager;
 class cResourceManager;
 
@@ -20,20 +20,20 @@ public:
 	cGraphicsEngine();
 	void Release() override;
 
-	void RenderWorldForward() override;
+	void RenderSceneForward() override;
 
-	ISceneManager* GetManagerScene();
-	cResourceManager* GetManagerResource();
-	IGraphicsApi* GetGraphicsApi();
+	ISceneManager*		GetSceneManager();
+	cResourceManager*	GetResourceManager();
+	IGraphicsApi*		GetGraphicsApi();
 private:	
 	IGraphicsApi* gApi;
-	cManagerShader* managerShader;
-	cResourceManager* managerResource;
-	cSceneManager* managerScene;
+	cShaderManager* shaderManager;
+	cResourceManager* resourceManager;
+	cSceneManager* sceneManager;
 };
 
 
 extern "C"
-__declspec(dllexport) IGraphicsEngine* CreateGraphicsEngine() {
+__declspec(dllexport) IGraphicsEngine* CreateGraphicsEngineRaster() {
 	return new cGraphicsEngine();
 }

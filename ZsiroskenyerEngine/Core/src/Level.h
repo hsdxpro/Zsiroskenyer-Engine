@@ -3,5 +3,4 @@
 #pragma once
 
 class cLevel {
-
 };

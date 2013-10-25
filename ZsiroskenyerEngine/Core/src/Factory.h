@@ -11,24 +11,29 @@
 // etc
 #pragma once
 
-#include "../../Core/src/IGraphicsApi.h"
-#include "../../Core/src/IGraphicsEngine.h"
+#include "IGraphicsApi.h"
+#include "IGraphicsEngine.h"
+#include "IPhysicsEngine.h"
 
 // Dll function pointers...
 typedef IGraphicsApi* (*funcGraphicsApi)();
-typedef IGraphicsEngine* (*funcEngineGraphics)();
+typedef IGraphicsEngine* (*funcGraphicsEngine)();
+typedef IPhysicsEngine* (*funcPhysicsEngine)();
 
 class cFactory {
 public:
-	IGraphicsApi* CreateGraphics();
-	IGraphicsEngine* CreateEngineGraphics();
+	IGraphicsApi* CreateGraphicsD3D11();
+	IGraphicsApi* CreateGraphicsGL();
+	IGraphicsEngine* CreateGraphicsEngine();
+	IPhysicsEngine* CreatePhysicsEngineBullet();
 
 	cFactory();
 
 protected:
-	funcEngineGraphics ptrCreateEngineGraphics;
-	funcGraphicsApi  ptrCreateGraphicsD3D11;
-	funcGraphicsApi  ptrCreateGraphicsGL;
+	funcGraphicsEngine	ptrCreateGraphicsEngine;
+	funcPhysicsEngine	ptrCreatePhysicsEngineBullet;
+	funcGraphicsApi		ptrCreateGraphicsD3D11;
+	funcGraphicsApi		ptrCreateGraphicsGL;
 };
 
 extern cFactory Factory;
