@@ -3,6 +3,6 @@
 
 class IPhysicsEngine {
 public:
-	virtual void simulateWorld() = 0;
+	virtual void simulateWorld(float deltaT) = 0;
 	virtual void Release() = 0;
 };

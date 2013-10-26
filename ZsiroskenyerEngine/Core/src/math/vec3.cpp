@@ -2,6 +2,8 @@
 #include "Vec3.h"
 #include "Matrix44.h"
 
+#include "../common.h"
+
 #define VEC3_NORM_TOLERANCE 0.00003f
 
 Vec3& Vec3::operator*=(const Vec3& v2) {
@@ -114,8 +116,13 @@ float Vec3::Lenght() const {
 	return sqrt(x*x + y*y + z*z);
 }
 
+float Vec3::operator [](size_t idx) const {
+	ZSASSERT(idx >= 0 && idx <= 4);
+	return *((float*)this + idx);
+}
+
 Vec3 Vec3::Normalize(const Vec3& v) {
-	Vec3 n=v;
+	Vec3 n = v;
 	n.Normalize();
 	return n;
 }

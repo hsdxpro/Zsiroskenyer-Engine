@@ -23,6 +23,8 @@ class Vec3 {
 
 		float Lenght() const;
 
+		float operator [](size_t idx) const;
+
 		Vec3& operator *= (const Vec3& v2);
 		Vec3& operator /= (const Vec3& v2);
 		Vec3& operator += (const Vec3& v2);

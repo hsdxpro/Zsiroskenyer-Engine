@@ -2,10 +2,23 @@
 #pragma once
 
 #include "..\..\Core\src\IPhysicsEngine.h"
+#include "btBulletDynamicsCommon.h"
+#include "BulletSoftBody\btSoftRigidDynamicsWorld.h"
+#include "..\..\Core\src\math\vec3.h"
 
 class cPhysicsEngineBullet : public IPhysicsEngine {
-	void simulateWorld() override;
+public:
+	void simulateWorld(float deltaT) override;
+	btRigidBody* ShootBox(const Vec3& camPos,const Vec3& destination);
+
+	cPhysicsEngineBullet();
 	void Release() override;
+protected:
+	//Fizikai világ reprezentálója
+	btSoftRigidDynamicsWorld* physicsWorld;
+		
+	//Fizika (Be,Ki)
+	bool physicsEnabled;
 };
 
 // DLL accessor

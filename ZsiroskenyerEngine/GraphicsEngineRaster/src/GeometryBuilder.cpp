@@ -36,9 +36,9 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometryDAE(const zsString
 	if(scene == NULL)
 		throw FileNotFoundException();
 
-	int nVertices = 0;
-	int nIndex = 0;
-	int nMeshes = scene->mNumMeshes;
+	size_t nVertices = 0;
+	size_t nIndex = 0;
+	size_t nMeshes = scene->mNumMeshes;
 	aiMesh** meshes = scene->mMeshes;
 
 	// count indices, vertices
@@ -59,9 +59,9 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometryDAE(const zsString
 	// Geometry read up
 	baseVertex *vertices= new baseVertex[nVertices];
 	unsigned *indices = new unsigned[nIndex];
-	int indexI = 0;
-	int vertexI = 0;
-	int vertexOffset = 0;
+	size_t indexI = 0;
+	size_t vertexI = 0;
+	size_t vertexOffset = 0;
 	for(size_t i = 0; i < nMeshes;i++) {
 		aiMesh* mesh = meshes[i];
 		aiVector3D* currVertices	= mesh->mVertices;

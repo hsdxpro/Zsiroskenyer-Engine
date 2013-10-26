@@ -75,9 +75,9 @@ int getNextVertex ( int nVertices, int& i, int k, const VertexIndexType* nextCan
 
 			int p = 0 ;
 
-			// In cache even a fterfanning ?
+			// In cache even after fanning ?
 			if(s - cacheTime[v] + 2 * liveTriangles[v] <= k)
-				// Priorityisposition in cache
+				// Priority is position in cache
 					p = s - cacheTime[v];
 
 			// Keep best candidate
