@@ -40,7 +40,7 @@
     <ClCompile Include="src\ShaderManager.cpp">
       <Filter>Managers</Filter>
     </ClCompile>
-    <ClCompile Include="src\GraphicsGeometry.cpp">
+    <ClCompile Include="src\Geometry.cpp">
       <Filter>Geometry</Filter>
     </ClCompile>
   </ItemGroup>
@@ -64,7 +64,7 @@
     <ClInclude Include="src\ShaderManager.h">
       <Filter>Managers</Filter>
     </ClInclude>
-    <ClInclude Include="src\GraphicsGeometry.h">
+    <ClInclude Include="src\Geometry.h">
       <Filter>Geometry</Filter>
     </ClInclude>
   </ItemGroup>

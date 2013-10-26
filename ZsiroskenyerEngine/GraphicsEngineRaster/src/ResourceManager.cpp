@@ -17,8 +17,8 @@
 //	ResourceManager
 
 // load/unload geometries
-cGraphicsGeometryRef cResourceManager::LoadGeometry(const zsString& fileName) {
-	cGraphicsGeometry* geom;
+cGeometryRef cResourceManager::LoadGeometry(const zsString& fileName) {
+	cGeometry* geom;
 
 	// lookup if already exists
 	auto it = geometries.left.find(fileName);
@@ -32,7 +32,7 @@ cGraphicsGeometryRef cResourceManager::LoadGeometry(const zsString& fileName) {
 
 			IVertexBuffer *VB = gApi->CreateBufferVertex(d.nVertices, d.vertexStride, eBufferUsage::IMMUTABLE, d.vertices);
 			IIndexBuffer *IB = gApi->CreateBufferIndex(d.nIndices * d.indexStride, eBufferUsage::IMMUTABLE, d.indices);
-			geom = new cGraphicsGeometry(VB, IB);
+			geom = new cGeometry(VB, IB);
 		}
 		
 		// insert into database
@@ -42,10 +42,10 @@ cGraphicsGeometryRef cResourceManager::LoadGeometry(const zsString& fileName) {
 		geom = it->second;
 	}
 
-	return cGraphicsGeometryRef(this, geom);
+	return cGeometryRef(this, geom);
 }
-void cResourceManager::UnloadGeometry(const cGraphicsGeometry* geometry) {
-	auto it = geometries.right.find(const_cast<cGraphicsGeometry*>(geometry));
+void cResourceManager::UnloadGeometry(const cGeometry* geometry) {
+	auto it = geometries.right.find(const_cast<cGeometry*>(geometry));
 	delete it->first;
 	geometries.right.erase(it);
 }
@@ -127,37 +127,37 @@ cResourceManager::~cResourceManager() {
 //	References to resources
 
 // geometry reference
-cGraphicsGeometryRef::cGraphicsGeometryRef(cResourceManager* rm, cGraphicsGeometry* ptr)
+cGeometryRef::cGeometryRef(cResourceManager* rm, cGeometry* ptr)
 	:
-	shared_ptr(ptr, [this](cGraphicsGeometry* g){this->rm->UnloadGeometry(g);} ), 
+	shared_ptr(ptr, [this](cGeometry* g){this->rm->UnloadGeometry(g);} ), 
 	rm(rm)
 {
 }
-cGraphicsGeometryRef::cGraphicsGeometryRef(const cGraphicsGeometryRef& other) 
+cGeometryRef::cGeometryRef(const cGeometryRef& other) 
 	:
 	shared_ptr(other),
 	rm(other.rm)
 {
 }
-cGraphicsGeometryRef::cGraphicsGeometryRef()
+cGeometryRef::cGeometryRef()
 	:
 	shared_ptr(nullptr),
 	rm(nullptr)
 {
 }
 
-cGraphicsGeometryRef& cGraphicsGeometryRef::operator=(const cGraphicsGeometryRef& other) {
-	shared_ptr<cGraphicsGeometry>::operator=(other);
+cGeometryRef& cGeometryRef::operator=(const cGeometryRef& other) {
+	shared_ptr<cGeometry>::operator=(other);
 	rm = other.rm;
 	return *this;
 }
 
-bool cGraphicsGeometryRef::operator==(const cGraphicsGeometryRef& other) {
+bool cGeometryRef::operator==(const cGeometryRef& other) {
 	return std::operator==(*this, other);
 }
 
-cGraphicsGeometry* cGraphicsGeometryRef::get() const {
-	return shared_ptr<cGraphicsGeometry>::get();
+cGeometry* cGeometryRef::get() const {
+	return shared_ptr<cGeometry>::get();
 }
 
 

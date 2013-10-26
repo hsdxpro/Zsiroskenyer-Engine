@@ -17,12 +17,12 @@ class cInstanceGroup {
 	friend struct std::hash<cInstanceGroup>;
 public:
 	cInstanceGroup();
-	cInstanceGroup(cGraphicsGeometryRef, cMaterialRef);
+	cInstanceGroup(cGeometryRef, cMaterialRef);
 
 	bool operator == (const cInstanceGroup& other);
 
 	// Geometry
-	cGraphicsGeometryRef geom;
+	cGeometryRef geom;
 
 	// Material
 	cMaterialRef mtl;
@@ -38,6 +38,6 @@ struct std::hash<cInstanceGroup> {
 	typedef cMaterialRef argument_type;
 	typedef std::size_t return_type;
 	std::size_t operator()(const cInstanceGroup i) const {
-		return std::hash<cGraphicsGeometryRef>()(i.geom)^std::hash<cMaterialRef>()(i.mtl);
+		return std::hash<cGeometryRef>()(i.geom)^std::hash<cMaterialRef>()(i.mtl);
 	}
 };
