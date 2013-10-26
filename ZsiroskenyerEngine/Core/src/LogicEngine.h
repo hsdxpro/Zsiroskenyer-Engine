@@ -1,0 +1,17 @@
+// LogicEngine.h By Zsíroskenyér Team 2013.10.26 20:48
+#pragma once
+
+#include "Entity.h"
+#include "EntityType.h"
+#include <map>
+#include "zsString.h"
+#include "..\..\GraphicsEngineRaster\src\ResourceManager.h"
+
+class cLogicEngine {
+public:
+	bool IsEntityTypeExits(const zsString& str);
+
+	cEntityType* CreateEntityType(const zsString& name, cGeometryRef *graphicsGeom, cGeometryRef *physGeom, cMaterialRef *material, float mass);
+protected:
+	std::map<zsString, cEntityType*> entityTypes;
+};

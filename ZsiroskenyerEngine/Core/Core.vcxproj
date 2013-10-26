@@ -18,9 +18,11 @@
     <ClInclude Include="src\common.h" />
     <ClInclude Include="src\Core.h" />
     <ClInclude Include="src\Entity.h" />
+    <ClInclude Include="src\EntityType.h" />
     <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\Factory.h" />
     <ClInclude Include="src\Game.h" />
+    <ClInclude Include="src\GeometryBuilder.h" />
     <ClInclude Include="src\GraphicsEntity.h" />
     <ClInclude Include="src\IConstantBuffer.h" />
     <ClInclude Include="src\IDLLLoader.h" />
@@ -39,6 +41,7 @@
     <ClInclude Include="src\IVertexBuffer.h" />
     <ClInclude Include="src\IWindow.h" />
     <ClInclude Include="src\Level.h" />
+    <ClInclude Include="src\LogicEngine.h" />
     <ClInclude Include="src\math\color.h" />
     <ClInclude Include="src\math\math_all.h" />
     <ClInclude Include="src\math\Matrix44.h" />
@@ -61,15 +64,19 @@
   <ItemGroup>
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Core.cpp" />
+    <ClCompile Include="src\Entity.cpp" />
+    <ClCompile Include="src\EntityType.cpp" />
     <ClCompile Include="src\Exception.cpp" />
     <ClCompile Include="src\Factory.cpp" />
     <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\GeometryBuilder.cpp" />
     <ClCompile Include="src\GraphicsEntity.cpp" />
     <ClCompile Include="src\IDLLLoader.cpp" />
     <ClCompile Include="src\IFile.cpp" />
     <ClCompile Include="src\ILog.cpp" />
     <ClCompile Include="src\IWindow.cpp" />
     <ClCompile Include="src\Level.cpp" />
+    <ClCompile Include="src\LogicEngine.cpp" />
     <ClCompile Include="src\math\color.cpp" />
     <ClCompile Include="src\math\Matrix44.cpp" />
     <ClCompile Include="src\math\Point.cpp" />
@@ -125,13 +132,14 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\Externals\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>$(OutDir)\CommonOS.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)\CommonOS.lib;$(SolutionDir)\..\Externals\ASSIMP\lib\assimp.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

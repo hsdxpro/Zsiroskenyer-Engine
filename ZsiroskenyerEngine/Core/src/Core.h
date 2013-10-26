@@ -6,11 +6,12 @@
 
 #include "IPhysicsEngine.h"
 #include "IGraphicsEngine.h"
-//#include "Entity.h"
+#include "LogicEngine.h"
 
 class cCore {
 public:
-	void AddEntity(const zsString& geomPath, const zsString& materialPath, float mass);
+	cEntityType* CreateEntityType(const zsString& typeName, const zsString& physGraphGeomPath, const zsString& materialPath, float mass = 0.0f);
+	cEntity* AddEntity(cEntityType* type, const Vec3& position);
 
 	IGraphicsEngine* GetGraphicsEngine();
 	IPhysicsEngine* GetPhysicsEngine();
@@ -23,4 +24,5 @@ protected:
 
 	IGraphicsEngine *graphicsEngine;
 	IPhysicsEngine* physicsEngine;
+	cLogicEngine*	logicEngine;
 };

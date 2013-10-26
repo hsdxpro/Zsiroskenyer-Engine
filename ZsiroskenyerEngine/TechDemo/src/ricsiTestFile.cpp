@@ -45,6 +45,14 @@ int ricsiMain() {
 	cCamera cam(ZS_PIDIV2, (float)winDesc.clientWidth / winDesc.clientHeight, 0.01f, 5000.0f);
 	sceneManager->SetActiveCamera(&cam);
 
+	// Create object type dynamic physics BOX
+	const float mass = 100.0f;
+	cEntityType* boxType = core->CreateEntityType(L"dyn_box", L"objects/box.dae", L"materials/test.zsm", mass);
+
+	const Vec3 position = Vec3(0, 50, 0);
+	cEntity* entity = core->AddEntity(boxType, position);
+
+	/*
 	// Create 3D objects
 	std::vector<cEntity*> entities;
 	for(size_t i = 0; i < 1; i++)
@@ -53,7 +61,8 @@ int ricsiMain() {
 				//e->position = Vec3(i * 10, 90, j * 10);
 				//e->visible = true;
 	}	
-	
+	*/
+
 	// Main loop
 	while(window->IsOpened()) {
 		window->PeekAllMessages();
@@ -65,9 +74,9 @@ int ricsiMain() {
 		// Hardcoded rotation 	( euler Z for rotationg entities ) (GAME LOGIC WHAOOO :D)
 		static float zVal = 0.0f;
 		zVal += 0.001f;
-		for(cEntity *e : entities) {
+		//for(cEntity *e : entities) {
 			//e->SetRotation(Quat::EulerAnglesToQuat(zVal, zVal + 0.4, zVal);
-		}
+		//}
 
 		// Present SwapChain
 		gApi->Present();

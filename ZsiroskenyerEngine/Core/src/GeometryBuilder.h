@@ -8,7 +8,6 @@
 #pragma once
 
 #include "../../Core/src/zsString.h"
-#include "../../GraphicsEngineRaster/src/Geometry.h"
 
 class cGeometryBuilder {
 public:
@@ -25,8 +24,5 @@ public:
 
 	// Loading .DAE geometry with Assimp 3d library
 	tGeometryDesc LoadGeometryDAE(const zsString& fileName);
-
 	cGeometryBuilder();
-private:
-
 };

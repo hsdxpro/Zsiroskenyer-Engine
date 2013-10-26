@@ -59,6 +59,14 @@ void cPhysicsEngineBullet::Release() {
 	SAFE_DELETE(physicsWorld);
 }
 
+bool cPhysicsEngineBullet::IsGeometryExists(const zsString& filePath) {
+	return false;
+}
+
+void cPhysicsEngineBullet::LoadGeometry(const zsString& filePath, const cGeometryBuilder::tGeometryDesc& geomDesc) {
+
+}
+
 btRigidBody* cPhysicsEngineBullet::ShootBox(const Vec3& camPos,const Vec3& destination)
 {
 	if (physicsWorld) {

@@ -7,14 +7,20 @@
 #include "ResourceManager.h"
 
 // Geometry building
-#include "GeometryBuilder.h"
+#include "..\..\Core\src\GeometryBuilder.h"
 
 // Graphics api
-#include "../../Core/src/IGraphicsApi.h"
-#include "../../Core/src/IFile.h"
+#include "..\..\Core\src\IGraphicsApi.h"
+#include "..\..\Core\src\IFile.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //	ResourceManager
+
+// constructors
+cResourceManager::cResourceManager(IGraphicsApi* gApi) : gApi(gApi) {
+}
+cResourceManager::~cResourceManager() {
+}
 
 // load/unload geometries
 cGeometryRef cResourceManager::LoadGeometry(const zsString& fileName) {
@@ -44,6 +50,31 @@ cGeometryRef cResourceManager::LoadGeometry(const zsString& fileName) {
 
 	return cGeometryRef(this, geom);
 }
+cGeometryRef cResourceManager::LoadGeometry(const zsString& fileName, const cGeometryBuilder::tGeometryDesc& geomDesc) {
+	cGeometry* geom;
+
+	// lookup if already exists
+	auto it = geometries.left.find(fileName);
+	if (it==geometries.left.end()) {
+
+		// Create geometry based on file extension
+		zsString fileExtension = fileName.substr(fileName.length() - 3, 3);
+		if(fileExtension == L"dae") {
+			IVertexBuffer *VB = gApi->CreateBufferVertex(geomDesc.nVertices, geomDesc.vertexStride, eBufferUsage::IMMUTABLE, geomDesc.vertices);
+			IIndexBuffer *IB = gApi->CreateBufferIndex(geomDesc.nIndices * geomDesc.indexStride, eBufferUsage::IMMUTABLE, geomDesc.indices);
+			geom = new cGeometry(VB, IB);
+		}
+		
+		// insert into database
+		geometries.insert(GeometryMapT::value_type(fileName, geom));
+	}
+	else {
+		geom = it->second;
+	}
+
+	return cGeometryRef(this, geom);
+}
+
 void cResourceManager::UnloadGeometry(const cGeometry* geometry) {
 	auto it = geometries.right.find(const_cast<cGeometry*>(geometry));
 	delete it->first;
@@ -115,13 +146,13 @@ void cResourceManager::UnloadMaterial(const cMaterial* material) {
 	materials.right.erase(it);
 }
 
-
-// constructors
-cResourceManager::cResourceManager(IGraphicsApi* gApi) : gApi(gApi) {
-}
-cResourceManager::~cResourceManager() {
+bool cResourceManager::IsGeometryExists(const zsString& fileName) {
+	return geometries.left.find(fileName) != geometries.left.end();
 }
 
+bool cResourceManager::IsMaterialExists(const zsString& fileName) {
+	return materials.left.find(fileName) != materials.left.end();
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //	References to resources

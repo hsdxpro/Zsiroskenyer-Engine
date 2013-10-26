@@ -11,6 +11,9 @@ public:
 	void simulateWorld(float deltaT) override;
 	btRigidBody* ShootBox(const Vec3& camPos,const Vec3& destination);
 
+	bool IsGeometryExists(const zsString& filePath);
+	void LoadGeometry(const zsString& filePath, const cGeometryBuilder::tGeometryDesc& geomDesc);
+
 	cPhysicsEngineBullet();
 	void Release() override;
 protected:

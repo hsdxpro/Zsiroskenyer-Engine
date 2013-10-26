@@ -6,18 +6,18 @@
 //	unloading of graphical resources, such as geometries, textures and 
 //	materials.
 ////////////////////////////////////////////////////////////////////////////////
-
 #pragma once
 
-
-#include <memory>
-
-#include "../../Core/src/zsString.h"
+#include "..\..\Core\src\GeometryBuilder.h"
 #include "Geometry.h"
 #include "Material.h"
 
+#include "..\..\Core\src\zsString.h"
+#include <memory>
+
 #include <boost\bimap.hpp>
 #include <boost\bimap\unordered_set_of.hpp>
+
 
 class IGraphicsApi;
 
@@ -28,14 +28,18 @@ class cResourceManager {
 	friend class cMaterialRef;
 	friend class cTextureRef;
 public:
-	// constructor
-	cResourceManager(IGraphicsApi* gApi);
-	~cResourceManager();
-
 	// resource aquisition
 	cGeometryRef LoadGeometry(const zsString& fileName);
 	cMaterialRef LoadMaterial(const zsString& fileName);
 
+	cGeometryRef LoadGeometry(const zsString& fileName, const cGeometryBuilder::tGeometryDesc& geomDesc);
+
+	bool IsGeometryExists(const zsString& fileName);
+	bool IsMaterialExists(const zsString& fileName);
+
+	// constructor
+	cResourceManager(IGraphicsApi* gApi);
+	~cResourceManager();
 private:
 	// automatic resource unloading requested by references
 	void UnloadGeometry(const cGeometry* geometry);
