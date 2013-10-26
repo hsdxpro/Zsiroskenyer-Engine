@@ -32,7 +32,7 @@ cGraphicsEntity& cSceneManager::AddEntity(const zsString& geometry, const zsStri
 	cGraphicsEntity* entity;
 
 	try {
-		cGeometryRef g = managerResource.LoadGeometry(geometry);
+		cGraphicsGeometryRef g = managerResource.LoadGeometry(geometry);
 		cMaterialRef m = managerResource.LoadMaterial(material);
 		searchDummy.geom = g; searchDummy.mtl = m;
 

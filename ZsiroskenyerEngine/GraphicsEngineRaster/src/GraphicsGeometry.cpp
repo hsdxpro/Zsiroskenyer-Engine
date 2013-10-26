@@ -2,25 +2,25 @@
 //	File: GraphicsEngine/src/Geometry.cpp
 //	2013.oct.09, Zsiroskenyer Team, Péter Kardos
 ////////////////////////////////////////////////////////////////////////////////
-//	See header "Geometry.h" for more information.
+//	See header "GraphicsGeometry.h" for more information.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "Geometry.h"
+#include "GraphicsGeometry.h"
 #include "../../Core/src/IVertexBuffer.h"
 #include "../../Core/src/IIndexBuffer.h"
 
-cGeometry::cGeometry(IVertexBuffer *VB, IIndexBuffer *IB) 
+cGraphicsGeometry::cGraphicsGeometry(IVertexBuffer *VB, IIndexBuffer *IB) 
 :VB(VB), IB(IB) {
 }
 
-cGeometry::~cGeometry() {
+cGraphicsGeometry::~cGraphicsGeometry() {
 	IB->Release();
 	VB->Release();
 }
 
-const IIndexBuffer* cGeometry::GetIndexBuffer() const {
+const IIndexBuffer* cGraphicsGeometry::GetIndexBuffer() const {
 	return IB;
 }
-const IVertexBuffer* cGeometry::GetVertexBuffer() const {
+const IVertexBuffer* cGraphicsGeometry::GetVertexBuffer() const {
 	return VB;
 }

@@ -10,7 +10,7 @@ cInstanceGroup::cInstanceGroup() {
 
 }
 
-cInstanceGroup::cInstanceGroup(cGeometryRef geom, cMaterialRef mtl) 
+cInstanceGroup::cInstanceGroup(cGraphicsGeometryRef geom, cMaterialRef mtl) 
 : geom(geom), mtl(mtl) {
 }
 

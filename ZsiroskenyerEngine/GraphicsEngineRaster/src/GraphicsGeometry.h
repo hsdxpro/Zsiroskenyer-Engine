@@ -12,10 +12,10 @@ class IVertexBuffer;
 class IIndexBuffer;
 
 
-class cGeometry {
+class cGraphicsGeometry {
 public:
-	cGeometry(IVertexBuffer *VB, IIndexBuffer *IB);
-	~cGeometry();
+	cGraphicsGeometry(IVertexBuffer *VB, IIndexBuffer *IB);
+	~cGraphicsGeometry();
 
 	const IIndexBuffer* GetIndexBuffer() const;
 	const IVertexBuffer* GetVertexBuffer() const;

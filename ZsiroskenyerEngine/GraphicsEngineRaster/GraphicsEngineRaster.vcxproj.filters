@@ -22,9 +22,6 @@
     <ClCompile Include="src\DllMain.cpp">
       <Filter>DllMain</Filter>
     </ClCompile>
-    <ClCompile Include="src\Geometry.cpp">
-      <Filter>Geometry</Filter>
-    </ClCompile>
     <ClCompile Include="src\GeometryBuilder.cpp">
       <Filter>Geometry</Filter>
     </ClCompile>
@@ -43,13 +40,13 @@
     <ClCompile Include="src\ShaderManager.cpp">
       <Filter>Managers</Filter>
     </ClCompile>
+    <ClCompile Include="src\GraphicsGeometry.cpp">
+      <Filter>Geometry</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GraphicsEngine.h" />
     <ClInclude Include="src\GeometryBuilder.h">
-      <Filter>Geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Geometry.h">
       <Filter>Geometry</Filter>
     </ClInclude>
     <ClInclude Include="src\Material.h">
@@ -66,6 +63,9 @@
     </ClInclude>
     <ClInclude Include="src\ShaderManager.h">
       <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GraphicsGeometry.h">
+      <Filter>Geometry</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -8,7 +8,7 @@
 #pragma once
 
 #include "../../Core/src/zsString.h"
-#include "../../GraphicsEngineRaster/src/Geometry.h"
+#include "../../GraphicsEngineRaster/src/GraphicsGeometry.h"
 
 class cGeometryBuilder {
 public:

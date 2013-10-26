@@ -64,8 +64,8 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometryDAE(const zsString
 	size_t vertexOffset = 0;
 	for(size_t i = 0; i < nMeshes;i++) {
 		aiMesh* mesh = meshes[i];
-		aiVector3D* currVertices	= mesh->mVertices;
-		aiVector3D* currNormals		= mesh->mNormals;
+		aiVector3D* currVertices = mesh->mVertices;
+		aiVector3D* currNormals	= mesh->mNormals;
 
 		// @TODO not general algorithm, wee need to handle more UV channels
 		aiVector3D* currTxcoords	= mesh->mTextureCoords[0];

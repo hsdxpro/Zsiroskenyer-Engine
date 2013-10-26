@@ -12,7 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DllMain.cpp" />
-    <ClCompile Include="src\Geometry.cpp" />
+    <ClCompile Include="src\GraphicsGeometry.cpp" />
     <ClCompile Include="src\GeometryBuilder.cpp" />
     <ClCompile Include="src\GraphicsEngine.cpp" />
     <ClCompile Include="src\InstanceGroup.cpp" />
@@ -22,7 +22,7 @@
     <ClCompile Include="src\Material.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Geometry.h" />
+    <ClInclude Include="src\GraphicsGeometry.h" />
     <ClInclude Include="src\GeometryBuilder.h" />
     <ClInclude Include="src\GraphicsEngine.h" />
     <ClInclude Include="src\InstanceGroup.h" />

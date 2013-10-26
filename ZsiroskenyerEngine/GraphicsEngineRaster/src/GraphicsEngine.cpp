@@ -9,7 +9,7 @@
 #include "ResourceManager.h"
 #include "ShaderManager.h"
 
-#include "Geometry.h"
+#include "GraphicsGeometry.h"
 #include "../../Core/src/Camera.h"
 
 #include "../../Core/src/IGraphicsApi.h"

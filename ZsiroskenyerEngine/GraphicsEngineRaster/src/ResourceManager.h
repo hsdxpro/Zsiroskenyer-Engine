@@ -13,7 +13,7 @@
 #include <memory>
 
 #include "../../Core/src/zsString.h"
-#include "Geometry.h"
+#include "GraphicsGeometry.h"
 #include "Material.h"
 
 #include <boost\bimap.hpp>
@@ -24,7 +24,7 @@ class IGraphicsApi;
 ////////////////////////////////////////////////////////////////////////////////
 //	ResourceManager
 class cResourceManager {
-	friend class cGeometryRef;
+	friend class cGraphicsGeometryRef;
 	friend class cMaterialRef;
 	friend class cTextureRef;
 public:
@@ -33,16 +33,16 @@ public:
 	~cResourceManager();
 
 	// resource aquisition
-	cGeometryRef LoadGeometry(const zsString& fileName);
+	cGraphicsGeometryRef LoadGeometry(const zsString& fileName);
 	cMaterialRef LoadMaterial(const zsString& fileName);
 
 private:
 	// automatic resource unloading requested by references
-	void UnloadGeometry(const cGeometry* geometry);
+	void UnloadGeometry(const cGraphicsGeometry* geometry);
 	void UnloadMaterial(const cMaterial* material);
 
 	// resource database
-	typedef boost::bimap<boost::bimaps::unordered_set_of<zsString, std::hash<zsString>>, boost::bimaps::unordered_set_of<cGeometry*>> GeometryMapT;
+	typedef boost::bimap<boost::bimaps::unordered_set_of<zsString, std::hash<zsString>>, boost::bimaps::unordered_set_of<cGraphicsGeometry*>> GeometryMapT;
 	typedef boost::bimap<boost::bimaps::unordered_set_of<zsString, std::hash<zsString>>, boost::bimaps::unordered_set_of<cMaterial*>> MaterialMapT;
 
 	GeometryMapT geometries;
@@ -59,18 +59,18 @@ private:
 //	References to resources
 
 // geometry reference
-class cGeometryRef : public std::shared_ptr<cGeometry> {
-	friend struct std::hash<cGeometryRef>;
+class cGraphicsGeometryRef : public std::shared_ptr<cGraphicsGeometry> {
+	friend struct std::hash<cGraphicsGeometryRef>;
 public:
-	cGeometryRef();
-	cGeometryRef(cResourceManager* rm, cGeometry* ptr=nullptr);
-	cGeometryRef(const cGeometryRef& other);
+	cGraphicsGeometryRef();
+	cGraphicsGeometryRef(cResourceManager* rm, cGraphicsGeometry* ptr=nullptr);
+	cGraphicsGeometryRef(const cGraphicsGeometryRef& other);
 
-	cGeometryRef& operator=(const cGeometryRef& other);
+	cGraphicsGeometryRef& operator=(const cGraphicsGeometryRef& other);
 
-	bool operator==(const cGeometryRef& other);
+	bool operator==(const cGraphicsGeometryRef& other);
 private:
-	cGeometry* get() const;	// kill this function
+	cGraphicsGeometry* get() const;	// kill this function
 	cResourceManager* rm;	// reference to the 'owner'
 };
 
@@ -93,11 +93,11 @@ private:
 
 // hashers
 template <>
-struct std::hash<cGeometryRef> {
-	typedef cGeometryRef argument_type;
+struct std::hash<cGraphicsGeometryRef> {
+	typedef cGraphicsGeometryRef argument_type;
 	typedef std::size_t return_type;
-	std::size_t operator()(const cGeometryRef& g) {
-		return std::hash<cGeometry*>()(g.get());
+	std::size_t operator()(const cGraphicsGeometryRef& g) {
+		return std::hash<cGraphicsGeometry*>()(g.get());
 	}
 };
 
