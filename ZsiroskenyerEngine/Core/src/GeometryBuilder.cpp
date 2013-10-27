@@ -22,19 +22,21 @@ cGeometryBuilder::cGeometryBuilder() {
 }
 
 
-cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometryDAE(const zsString& fileName) {
+cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometryDAE(const zsString& filePath) {
 	Assimp::Importer importer;
 
-	if(!IFile::isFileExits(fileName)) {
+	if(!IFile::isFileExits(filePath)) {
 		throw FileNotFoundException();
 	}
 
 	// read up dae scene
-	char ansiFileName[256];
-	wcstombs(ansiFileName, fileName.c_str(), 256);
-	const aiScene* scene = importer.ReadFile(ansiFileName, (aiProcessPreset_TargetRealtime_Quality | aiProcess_MakeLeftHanded | aiProcess_FlipWindingOrder)^aiProcess_FindInvalidData);
-	if(scene == NULL)
+	char ansiFilePath[256];
+	wcstombs(ansiFilePath, filePath.c_str(), 256);
+	const aiScene* scene = importer.ReadFile(ansiFilePath, (aiProcessPreset_TargetRealtime_Quality | aiProcess_MakeLeftHanded | aiProcess_FlipWindingOrder)^aiProcess_FindInvalidData);
+	if(scene == NULL) {
+		ILog::GetInstance()->MsgBox(L"Can found 3D model: " + filePath);
 		throw FileNotFoundException();
+	}
 
 	size_t nVertices = 0;
 	size_t nIndex = 0;
