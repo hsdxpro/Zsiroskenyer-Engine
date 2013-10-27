@@ -48,6 +48,8 @@ int ricsiMain() {
 	// Create object type dynamic physics BOX
 	const float mass = 100.0f;
 	cEntityType* boxType = core->CreateEntityType(L"dyn_box", L"objects/001Kurva.obj", L"materials/test.zsm", mass);
+	//cEntityType* boxType = core->CreateEntityType(L"dyn_box", L"objects/box.dae", L"materials/test.zsm", mass);
+	//cEntityType* boxType = core->CreateEntityType(L"dyn_box", L"objects/gallardo.dae", L"materials/test.zsm", mass);
 
 	// Create entity
 	const Vec3 position = Vec3(0, 3, 0);
