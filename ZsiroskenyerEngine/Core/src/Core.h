@@ -10,6 +10,8 @@
 
 class cCore {
 public:
+	void Update(float deltaT);
+
 	cEntityType* CreateEntityType(const zsString& name, const zsString& physGraphGeomPath, const zsString& mtlPath, float mass = 0.0f);
 	cEntity* AddEntity(cEntityType* type, const Vec3& position);
 

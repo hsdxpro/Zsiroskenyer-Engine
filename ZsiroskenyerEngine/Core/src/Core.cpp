@@ -25,6 +25,10 @@ cCore::~cCore() {
 	SAFE_DELETE(logicEngine);
 }
 
+void cCore::Update(float deltaT) {
+
+}
+
 cEntityType* cCore::CreateEntityType(const zsString& name, const zsString& physGraphGeomPath, const zsString& mtlPath, float mass /*= 0.0f*/) {
 	// EntityType doesn't exists
 	if(! logicEngine->IsEntityTypeExits(name)) {
@@ -51,7 +55,7 @@ cEntityType* cCore::CreateEntityType(const zsString& name, const zsString& physG
 
 cEntity* cCore::AddEntity(cEntityType* type, const Vec3& position) {
 	cGraphicsEntity* gEntity = graphicsEngine->GetSceneManager()->AddEntity(type->GetGraphicsGeometry(), type->GetMaterial());
-	IPhysicsEntity* pEntity = NULL;
+	IPhysicsEntity* pEntity = NULL;//physicsEngine->AddEntity(
 
 	cEntity* e = logicEngine->AddEntity(gEntity, pEntity);
 		e->SetPosition(position);

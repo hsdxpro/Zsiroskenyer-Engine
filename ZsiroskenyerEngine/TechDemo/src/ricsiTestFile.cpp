@@ -7,15 +7,17 @@
 #include "../../Core/src/Game.h"
 #include "../../Core/src/Level.h"
 #include "../../Core/src/Entity.h"
-#include "../../Core/src/Core.h"
+#include "..\..\Core\src\Core.h"
 
 // OS
-#include "../../Core/src/IWindow.h"
+#include "..\..\Core\src\IWindow.h"
 
 // Math and utils
-#include "../../Core/src/Factory.h"
-#include "../../Core/src/math/Quat.h"
+#include "..\..\Core\src\Factory.h"
+#include "..\..\Core\src\math/Quat.h"
 #include <vector>
+
+#include "..\..\Core\src\Timer.h"
 
 int ricsiMain() {
 
@@ -61,6 +63,9 @@ int ricsiMain() {
 
 		// Clear BB
 		gApi->Clear(true, true);
+	
+		// Update engine
+		core->Update(cTimer::getDeltaSeconds());
 
 		// Render Scene
 		gEngine->RenderSceneForward();

@@ -145,6 +145,7 @@
     <ClInclude Include="src\IResourceManager.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="src\Timer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\IDLLLoader.cpp">
@@ -222,6 +223,7 @@
     <ClCompile Include="src\Entity.cpp">
       <Filter>Engines\LogicEngine\Entity</Filter>
     </ClCompile>
+    <ClCompile Include="src\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Interfaces">
