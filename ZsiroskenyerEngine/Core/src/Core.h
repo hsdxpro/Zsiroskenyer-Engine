@@ -10,7 +10,7 @@
 
 class cCore {
 public:
-	cEntityType* CreateEntityType(const zsString& typeName, const zsString& physGraphGeomPath, const zsString& materialPath, float mass = 0.0f);
+	cEntityType* CreateEntityType(const zsString& name, const zsString& physGraphGeomPath, const zsString& mtlPath, float mass = 0.0f);
 	cEntity* AddEntity(cEntityType* type, const Vec3& position);
 
 	IGraphicsEngine* GetGraphicsEngine();

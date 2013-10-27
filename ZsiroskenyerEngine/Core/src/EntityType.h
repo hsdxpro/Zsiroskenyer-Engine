@@ -5,10 +5,12 @@
 
 class cEntityType {
 public:
-	cEntityType(cGeometryRef *graphicsGeom, cGeometryRef *physicsGeom, cMaterialRef *material, float mass);
+	cGeometryRef* GetGraphicsGeometry() const;
+	cMaterialRef* GetMaterial() const;
+
+	cEntityType(cGeometryRef *graphicsGeom, cMaterialRef *material, float mass);
 protected:
 	cGeometryRef* graphicsGeom;
-	cGeometryRef* physicsGeom;
 	cMaterialRef* material;
 
 	float mass;

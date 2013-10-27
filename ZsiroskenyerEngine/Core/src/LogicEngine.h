@@ -3,15 +3,21 @@
 
 #include "Entity.h"
 #include "EntityType.h"
+
 #include <map>
+#include <list>
 #include "zsString.h"
+
 #include "..\..\GraphicsEngineRaster\src\ResourceManager.h"
 
 class cLogicEngine {
 public:
 	bool IsEntityTypeExits(const zsString& str);
 
-	cEntityType* CreateEntityType(const zsString& name, cGeometryRef *graphicsGeom, cGeometryRef *physGeom, cMaterialRef *material, float mass);
+	cEntityType* CreateEntityType(const zsString& name, cGeometryRef *graphicsGeom, cMaterialRef *material, float mass);
+	cEntity* AddEntity(cGraphicsEntity* gEntity, IPhysicsEntity* pEntity);
+
 protected:
 	std::map<zsString, cEntityType*> entityTypes;
+	std::list<cEntity*> entities;
 };

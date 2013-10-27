@@ -49,26 +49,18 @@ int ricsiMain() {
 	const float mass = 100.0f;
 	cEntityType* boxType = core->CreateEntityType(L"dyn_box", L"objects/box.dae", L"materials/test.zsm", mass);
 
+	// Create entity
 	const Vec3 position = Vec3(0, 50, 0);
 	cEntity* entity = core->AddEntity(boxType, position);
-
-	/*
-	// Create 3D objects
-	std::vector<cEntity*> entities;
-	for(size_t i = 0; i < 1; i++)
-		for(size_t j = 0; j < 1 ; j++) {
-			core->AddEntity(L"objects/box.dae", L"materials/test.zsm", 100);
-				//e->position = Vec3(i * 10, 90, j * 10);
-				//e->visible = true;
-	}	
-	*/
 
 	// Main loop
 	while(window->IsOpened()) {
 		window->PeekAllMessages();
 
+		// Clear BB
 		gApi->Clear(true, true);
 
+		// Render Scene
 		gEngine->RenderSceneForward();
 
 		// Hardcoded rotation 	( euler Z for rotationg entities ) (GAME LOGIC WHAOOO :D)

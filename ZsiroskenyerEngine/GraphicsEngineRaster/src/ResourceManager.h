@@ -8,6 +8,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include "..\..\Core\src\IResourceManager.h"
 #include "..\..\Core\src\GeometryBuilder.h"
 #include "Geometry.h"
 #include "Material.h"
@@ -23,27 +24,27 @@ class IGraphicsApi;
 
 ////////////////////////////////////////////////////////////////////////////////
 //	ResourceManager
-class cResourceManager {
+class cResourceManager : public IResourceManager {
 	friend class cGeometryRef;
 	friend class cMaterialRef;
 	friend class cTextureRef;
 public:
 	// resource aquisition
-	cGeometryRef LoadGeometry(const zsString& fileName);
-	cMaterialRef LoadMaterial(const zsString& fileName);
+	cGeometryRef *LoadGeometry(const zsString& fileName) override;
+	cMaterialRef *LoadMaterial(const zsString& fileName) override;
 
-	cGeometryRef LoadGeometry(const zsString& fileName, const cGeometryBuilder::tGeometryDesc& geomDesc);
+	cGeometryRef *LoadGeometry(const zsString& fileName, const cGeometryBuilder::tGeometryDesc& geomDesc) override;
 
-	bool IsGeometryExists(const zsString& fileName);
-	bool IsMaterialExists(const zsString& fileName);
+	bool IsGeometryExists(const zsString& fileName) override;
+	bool IsMaterialExists(const zsString& fileName) override;
 
 	// constructor
 	cResourceManager(IGraphicsApi* gApi);
 	~cResourceManager();
 private:
 	// automatic resource unloading requested by references
-	void UnloadGeometry(const cGeometry* geometry);
-	void UnloadMaterial(const cMaterial* material);
+	void UnloadGeometry(const cGeometry* geometry) override;
+	void UnloadMaterial(const cMaterial* material) override;
 
 	// resource database
 	typedef boost::bimap<boost::bimaps::unordered_set_of<zsString, std::hash<zsString>>, boost::bimaps::unordered_set_of<cGeometry*>> GeometryMapT;

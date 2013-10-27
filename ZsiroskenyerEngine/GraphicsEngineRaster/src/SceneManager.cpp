@@ -26,19 +26,17 @@ cSceneManager::~cSceneManager() {
 
 
 // entities
-cGraphicsEntity& cSceneManager::AddEntity(const zsString& geometry, const zsString& material) {
+cGraphicsEntity* cSceneManager::AddEntity(cGeometryRef *geom, cMaterialRef* mtl) {
 	cInstanceGroup* instGroup = nullptr;
 	cInstanceGroup searchDummy;
 	cGraphicsEntity* entity;
 
 	try {
-		cGeometryRef g = managerResource.LoadGeometry(geometry);
-		cMaterialRef m = managerResource.LoadMaterial(material);
-		searchDummy.geom = g; searchDummy.mtl = m;
+		searchDummy.geom = geom; searchDummy.mtl = mtl;
 
 		auto it = instanceGroups.find(&searchDummy);
 		if (it==instanceGroups.end()) {
-			instGroup = new cInstanceGroup(g,m);
+			instGroup = new cInstanceGroup(geom, mtl);
 			instanceGroups.insert(instGroup);
 		}
 		else {
@@ -49,7 +47,7 @@ cGraphicsEntity& cSceneManager::AddEntity(const zsString& geometry, const zsStri
 		entity->instanceGroup = instGroup;
 		instGroup->entities.insert(entity);
 
-		return *entity;
+		return entity;
 	}
 	catch (GraphicsEngineException&) {
 		throw;

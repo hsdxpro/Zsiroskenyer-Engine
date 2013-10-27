@@ -74,7 +74,7 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometryDAE(const zsString
 
 		// Indices
 		aiFace* faces = mesh->mFaces;
-		int nFaces = mesh->mNumFaces;
+		size_t nFaces = mesh->mNumFaces;
 		for(size_t j = 0; j < nFaces; indexI += 3, j++) {
 			aiFace& face = faces[j];
 			indices[indexI]		= face.mIndices[0] + vertexI;

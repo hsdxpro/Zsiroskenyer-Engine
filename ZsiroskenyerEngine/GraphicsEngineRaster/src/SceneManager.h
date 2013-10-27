@@ -43,7 +43,7 @@ public:
 	cSceneManager(cResourceManager& rm);
 	~cSceneManager();
 
-	cGraphicsEntity& AddEntity(const zsString& geometry, const zsString& material);
+	cGraphicsEntity* AddEntity(cGeometryRef *geom, cMaterialRef* mtl);
 	void RemoveEntity(const cGraphicsEntity& entity);
 
 	void SetActiveCamera(cCamera *cam) override;

@@ -23,7 +23,7 @@ cResourceManager::~cResourceManager() {
 }
 
 // load/unload geometries
-cGeometryRef cResourceManager::LoadGeometry(const zsString& fileName) {
+cGeometryRef* cResourceManager::LoadGeometry(const zsString& fileName) {
 	cGeometry* geom;
 
 	// lookup if already exists
@@ -48,9 +48,9 @@ cGeometryRef cResourceManager::LoadGeometry(const zsString& fileName) {
 		geom = it->second;
 	}
 
-	return cGeometryRef(this, geom);
+	return new cGeometryRef(this, geom);
 }
-cGeometryRef cResourceManager::LoadGeometry(const zsString& fileName, const cGeometryBuilder::tGeometryDesc& geomDesc) {
+cGeometryRef* cResourceManager::LoadGeometry(const zsString& fileName, const cGeometryBuilder::tGeometryDesc& geomDesc) {
 	cGeometry* geom;
 
 	// lookup if already exists
@@ -72,7 +72,7 @@ cGeometryRef cResourceManager::LoadGeometry(const zsString& fileName, const cGeo
 		geom = it->second;
 	}
 
-	return cGeometryRef(this, geom);
+	return new cGeometryRef(this, geom);
 }
 
 void cResourceManager::UnloadGeometry(const cGeometry* geometry) {
@@ -82,7 +82,7 @@ void cResourceManager::UnloadGeometry(const cGeometry* geometry) {
 }
 
 // load/unload materials
-cMaterialRef cResourceManager::LoadMaterial(const zsString& fileName) {
+cMaterialRef* cResourceManager::LoadMaterial(const zsString& fileName) {
 	cMaterial* mtl;
 
 	// lookup if already exists
@@ -137,7 +137,7 @@ cMaterialRef cResourceManager::LoadMaterial(const zsString& fileName) {
 		mtl = it->second;
 	}
 	
-	return cMaterialRef(this, mtl);
+	return new cMaterialRef(this, mtl);
 }
 
 void cResourceManager::UnloadMaterial(const cMaterial* material) {

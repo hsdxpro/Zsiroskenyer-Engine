@@ -7,6 +7,7 @@
 
 class cEntity {
 public:
+	cEntity(cGraphicsEntity* g, IPhysicsEntity* p);
 protected:
 	cGraphicsEntity* graphicsEntity;
 	IPhysicsEntity* physicsEntity;

@@ -51,10 +51,11 @@ int petiMain() {
 	IGraphicsEngine* engine = CreateGraphicsEngine();
 	ISceneManager* sceneManager = engine->GetSceneManager();
 
-	cGraphicsEntity& entity = sceneManager->AddEntity(L"geometry", L"material");
+	// Deprecated use
+	//cGraphicsEntity& entity = sceneManager->AddEntity(L"geometry", L"material");
 
-	entity.position = Vec3(1,1,1);
-	entity.isVisible = true;
+	//entity.position = Vec3(1,1,1);
+	//entity.isVisible = true;
 
 
 	return 0;

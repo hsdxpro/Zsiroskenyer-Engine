@@ -142,6 +142,9 @@
     <ClInclude Include="src\Entity.h">
       <Filter>Engines\LogicEngine\Entity</Filter>
     </ClInclude>
+    <ClInclude Include="src\IResourceManager.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\IDLLLoader.cpp">

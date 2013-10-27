@@ -25,32 +25,34 @@ cCore::~cCore() {
 	SAFE_DELETE(logicEngine);
 }
 
-cEntityType* cCore::CreateEntityType(const zsString& typeName, const zsString& physGraphGeomPath, const zsString& materialPath, float mass /*= 0.0f*/) {
-	/*
+cEntityType* cCore::CreateEntityType(const zsString& name, const zsString& physGraphGeomPath, const zsString& mtlPath, float mass /*= 0.0f*/) {
 	// EntityType doesn't exists
-	if(! logicEngine->IsEntityTypeExits(typeName)) {
+	if(! logicEngine->IsEntityTypeExits(name)) {
 		cResourceManager* graphicsRMgr = graphicsEngine->GetResourceManager();
-//		cResourceManager* graphicsRMgr = graphicsEngine->GetResourceManager();
 
+		// Material
+		cMaterialRef* mtl = graphicsRMgr->LoadMaterial(mtlPath);
+		cGeometryRef* geom = NULL;
+		
 		// Graphics geometry doesn't exists
 		if(! graphicsRMgr->IsGeometryExists(physGraphGeomPath)) {
 			cGeometryBuilder builder;
 			cGeometryBuilder::tGeometryDesc desc = builder.LoadGeometryDAE(physGraphGeomPath);
-			graphicsRMgr->LoadGeometry(physGraphGeomPath, desc);
+			geom = graphicsRMgr->LoadGeometry(physGraphGeomPath, desc);
 			if(! physicsEngine->IsGeometryExists(physGraphGeomPath)) {
 				physicsEngine->LoadGeometry(physGraphGeomPath, desc);
 			}
 		}
 
-		// Minden csak teszt jellegû...
-		// LogicEngine -> Create EntityType....
+		return logicEngine->CreateEntityType(name, geom, mtl, mass);
 	}
-	*/
 	return NULL;
 }
 
 cEntity* cCore::AddEntity(cEntityType* type, const Vec3& position) {
-	return NULL;
+	cGraphicsEntity* gEntity = graphicsEngine->GetSceneManager()->AddEntity(type->GetGraphicsGeometry(), type->GetMaterial());
+	IPhysicsEntity* pEntity = NULL;
+	return logicEngine->AddEntity(gEntity, pEntity);
 }
 
 IGraphicsEngine* cCore::GetGraphicsEngine() {
