@@ -31,15 +31,15 @@ cGeometryRef* cResourceManager::LoadGeometry(const zsString& fileName) {
 	if (it==geometries.left.end()) {
 
 		// Create geometry based on file extension
-		zsString fileExtension = fileName.substr(fileName.length() - 3, 3);
-		if(fileExtension == L"dae") {
+		//zsString fileExtension = fileName.substr(fileName.length() - 3, 3);
+		//if(fileExtension == L"dae") {
 			cGeometryBuilder b;
 			cGeometryBuilder::tGeometryDesc& d = b.LoadGeometryDAE(fileName);
 
 			IVertexBuffer *VB = gApi->CreateBufferVertex(d.nVertices, d.vertexStride, eBufferUsage::IMMUTABLE, d.vertices);
 			IIndexBuffer *IB = gApi->CreateBufferIndex(d.nIndices * d.indexStride, eBufferUsage::IMMUTABLE, d.indices);
 			geom = new cGeometry(VB, IB);
-		}
+		//}
 		
 		// insert into database
 		geometries.insert(GeometryMapT::value_type(fileName, geom));
@@ -58,12 +58,12 @@ cGeometryRef* cResourceManager::LoadGeometry(const zsString& fileName, const cGe
 	if (it==geometries.left.end()) {
 
 		// Create geometry based on file extension
-		zsString fileExtension = fileName.substr(fileName.length() - 3, 3);
-		if(fileExtension == L"dae") {
+		//zsString fileExtension = fileName.substr(fileName.length() - 3, 3);
+		//if(fileExtension == L"dae") {
 			IVertexBuffer *VB = gApi->CreateBufferVertex(geomDesc.nVertices, geomDesc.vertexStride, eBufferUsage::IMMUTABLE, geomDesc.vertices);
 			IIndexBuffer *IB = gApi->CreateBufferIndex(geomDesc.nIndices * geomDesc.indexStride, eBufferUsage::IMMUTABLE, geomDesc.indices);
 			geom = new cGeometry(VB, IB);
-		}
+		//}
 		
 		// insert into database
 		geometries.insert(GeometryMapT::value_type(fileName, geom));

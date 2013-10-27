@@ -7,6 +7,11 @@
 
 class cEntity {
 public:
+	void SetPosition(const Vec3& position);
+	void SetRotation(const Quat& rotation);
+	void SetScale(const Vec3& scale);
+	void setVisibility(bool visible);
+
 	cEntity(cGraphicsEntity* g, IPhysicsEntity* p);
 protected:
 	cGraphicsEntity* graphicsEntity;

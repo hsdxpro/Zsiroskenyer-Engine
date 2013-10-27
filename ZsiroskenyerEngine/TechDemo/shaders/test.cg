@@ -1,4 +1,5 @@
 float4x4 wvp;
+float4x4 world;
 sampler2D diffuseTex;
 
 struct VS_IN {
@@ -11,6 +12,7 @@ struct VS_OUT {
 	float4 posH : SV_POSITION;
 	float3 normalW : TEXCOORD0;
 	float2 tex0 : TEXCOORd1;
+	float3 posW : TEXCOORD2;
 };
 
 struct PS_OUT {
@@ -20,6 +22,7 @@ struct PS_OUT {
 
 VS_OUT VS_MAIN(VS_IN In) {
 	VS_OUT vout;
+	//vout.posW = In.posL.x * world[0] + ( In.posL.y * world[1] + (In.posL.z * world[2]) + world[3]);
 	vout.posH = In.posL.x * wvp[0] + ( In.posL.y * wvp[1] + (In.posL.z * wvp[2]) + wvp[3]);
 	vout.normalW = In.normalL;
 	vout.tex0 = In.tex0;
@@ -28,6 +31,10 @@ VS_OUT VS_MAIN(VS_IN In) {
 
 PS_OUT PS_MAIN(VS_OUT In) {
 	PS_OUT pout;
-	pout.color = tex2D(diffuseTex, In.tex0);
+//	pout.color = tex2D(diffuseTex, In.tex0);
+	float3 pointLightPos = float3(20, 50, 0);
+	float3 lightVec = normalize(pointLightPos - In.posW);
+	float intensity = dot(In.normalW, lightVec);
+	pout.color = float4(intensity, intensity, intensity, 1.0f);
 	return pout;
 };

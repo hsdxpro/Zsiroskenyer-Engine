@@ -87,8 +87,12 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometryDAE(const zsString
 			aiVector3D pos = currVertices[j];
 			aiVector3D norm = currNormals[j];
 			aiVector3D tex = currTxcoords[j];
-			vertices[vertexI].pos = Vec3(pos.x, pos.y, pos.z);
-			vertices[vertexI].normal = Vec3(norm.x, norm.y, norm.z);
+			//vertices[vertexI].pos = Vec3(pos.x, pos.y, pos.z);
+			//vertices[vertexI].normal = Vec3(norm.x, norm.y, norm.z);
+
+			vertices[vertexI].pos = Vec3(pos.x, pos.z, pos.y);
+			vertices[vertexI].normal = Vec3(norm.x, norm.z, norm.y);
+
 			vertices[vertexI].tex = Vec2(tex.x, tex.y);
 		}
 	}

@@ -39,9 +39,9 @@ cEntityType* cCore::CreateEntityType(const zsString& name, const zsString& physG
 			cGeometryBuilder builder;
 			cGeometryBuilder::tGeometryDesc desc = builder.LoadGeometryDAE(physGraphGeomPath);
 			geom = graphicsRMgr->LoadGeometry(physGraphGeomPath, desc);
-			if(! physicsEngine->IsGeometryExists(physGraphGeomPath)) {
-				physicsEngine->LoadGeometry(physGraphGeomPath, desc);
-			}
+			//if(! physicsEngine->IsGeometryExists(physGraphGeomPath)) {
+				//physicsEngine->LoadGeometry(physGraphGeomPath, desc);
+			//}
 		}
 
 		return logicEngine->CreateEntityType(name, geom, mtl, mass);
@@ -52,7 +52,10 @@ cEntityType* cCore::CreateEntityType(const zsString& name, const zsString& physG
 cEntity* cCore::AddEntity(cEntityType* type, const Vec3& position) {
 	cGraphicsEntity* gEntity = graphicsEngine->GetSceneManager()->AddEntity(type->GetGraphicsGeometry(), type->GetMaterial());
 	IPhysicsEntity* pEntity = NULL;
-	return logicEngine->AddEntity(gEntity, pEntity);
+
+	cEntity* e = logicEngine->AddEntity(gEntity, pEntity);
+		e->SetPosition(position);
+	return e;
 }
 
 IGraphicsEngine* cCore::GetGraphicsEngine() {

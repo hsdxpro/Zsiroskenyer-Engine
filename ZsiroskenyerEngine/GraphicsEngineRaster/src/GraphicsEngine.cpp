@@ -82,16 +82,23 @@ void cGraphicsEngine::RenderSceneForward() {
 			// WorldViewProj matrix
 			Matrix44 wvp = world * viewMat * projMat;
 
+			// Create and load Constant buffers World
+			IConstantBuffer* worldBuffer = NULL;
+			worldBuffer = gApi->CreateBufferConstant(sizeof(Matrix44), eBufferUsage::DEFAULT, &world);
+			gApi->SetConstantBuffer(worldBuffer, 1);
+
 			// Create and load Constant buffers WorldViewProj
 			IConstantBuffer* wvpBuffer = NULL;
 			wvpBuffer = gApi->CreateBufferConstant(sizeof(Matrix44), eBufferUsage::DEFAULT, &wvp);
 			gApi->SetConstantBuffer(wvpBuffer, 0);
 
+
 			// Draw entity..
-			gApi->DrawIndexed(ib->GetSize() / sizeof(unsigned));	
+			gApi->DrawIndexed(ib->GetSize() / sizeof(unsigned));
 
 			// Free up constantBuffer
 			wvpBuffer->Release();
+			worldBuffer->Release();
 		}
 	}
 }

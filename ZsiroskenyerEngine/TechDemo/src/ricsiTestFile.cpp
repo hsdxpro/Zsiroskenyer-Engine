@@ -47,10 +47,10 @@ int ricsiMain() {
 
 	// Create object type dynamic physics BOX
 	const float mass = 100.0f;
-	cEntityType* boxType = core->CreateEntityType(L"dyn_box", L"objects/box.dae", L"materials/test.zsm", mass);
+	cEntityType* boxType = core->CreateEntityType(L"dyn_box", L"objects/001Kurva.obj", L"materials/test.zsm", mass);
 
 	// Create entity
-	const Vec3 position = Vec3(0, 50, 0);
+	const Vec3 position = Vec3(0, 3, 0);
 	cEntity* entity = core->AddEntity(boxType, position);
 
 	// Main loop
@@ -63,12 +63,11 @@ int ricsiMain() {
 		// Render Scene
 		gEngine->RenderSceneForward();
 
-		// Hardcoded rotation 	( euler Z for rotationg entities ) (GAME LOGIC WHAOOO :D)
+		// (game logic) z rotation
 		static float zVal = 0.0f;
-		zVal += 0.001f;
-		//for(cEntity *e : entities) {
-			//e->SetRotation(Quat::EulerAnglesToQuat(zVal, zVal + 0.4, zVal);
-		//}
+		zVal += 0.0007f;
+		//entity->SetRotation(Quat::EulerAnglesToQuat(zVal, zVal + 0.4, zVal));
+		entity->SetRotation(Quat::EulerAnglesToQuat(0, 0, zVal));
 
 		// Present SwapChain
 		gApi->Present();
