@@ -69,6 +69,8 @@ int ricsiMain() {
 		// Render Scene
 		gEngine->RenderSceneForward();
 
+		core->DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
+
 		// (game logic) z rotation
 		//static float zVal = 0.0f;
 		//zVal += 0.0007f;
