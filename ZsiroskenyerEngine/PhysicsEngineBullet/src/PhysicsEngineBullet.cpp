@@ -45,6 +45,8 @@ cPhysicsEngineBullet::cPhysicsEngineBullet() {
 }
 
 void cPhysicsEngineBullet::Release() {
+		collisionShapes.clear();
+
 	int i;
 	for (i = physicsWorld->getNumCollisionObjects()-1; i>=0 ;i--) {
 		btCollisionObject* obj = physicsWorld->getCollisionObjectArray()[i];
@@ -57,6 +59,14 @@ void cPhysicsEngineBullet::Release() {
 	}
 
 	SAFE_DELETE(physicsWorld);
+
+	for(auto it = physicsTypes.begin() ; it != physicsTypes.end(); it++)
+		SAFE_DELETE(*it);
+	physicsTypes.clear();
+	
+	for(auto it = entities.begin() ; it != entities.end(); it++)
+		SAFE_DELETE(*it);
+	entities.clear();
 }
 
 void cPhysicsEngineBullet::SimulateWorld(float deltaT) {
