@@ -8,8 +8,18 @@
 #include "IGraphicsEngine.h"
 #include "LogicEngine.h"
 
+
 class cCore {
 public:
+	enum class eDebugRenderMode {
+		PHYSICS_AABB		= 1 << 0,
+		PHYSICS_TRIANGLES	= 1 << 1,
+		PHYSICS_COLPOINTS	= 1 << 2,
+	};
+
+	// Use eDebugRenderMode bit combinations
+	void DebugRender(unsigned long renderFlags);
+
 	void Update(float deltaT);
 
 	cEntityType* CreateEntityType(const zsString& name, const zsString& graphGeomPath, const zsString& physGeomPath, const zsString& mtlPath, float mass = 0.0f);

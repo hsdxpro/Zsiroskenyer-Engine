@@ -25,6 +25,9 @@ cCore::~cCore() {
 	SAFE_DELETE(logicEngine);
 }
 
+void cCore::DebugRender(unsigned long renderFlags) {
+}
+
 void cCore::Update(float deltaT) {
 	physicsEngine->SimulateWorld(deltaT);
 	logicEngine->Update();

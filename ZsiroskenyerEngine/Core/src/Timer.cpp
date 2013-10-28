@@ -3,7 +3,7 @@
 float cTimer::getDeltaSeconds() {
 	static std::chrono::system_clock::time_point last;
 	static std::chrono::system_clock::time_point curr;
-	static bool firstRun = false;
+	static bool firstRun = true;
 	if(firstRun) {
 		last = std::chrono::system_clock::now();
 		curr = last;
