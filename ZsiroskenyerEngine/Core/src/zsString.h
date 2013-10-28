@@ -160,6 +160,10 @@ typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, TLSFAllocator<wcha
 
 class zsString : public zsBasicString {
 public:
+	static void UniToAnsi(const zsString& src, char* source, size_t nChars) {
+		wcstombs(source, src.c_str(), nChars);
+	}
+		
 	std::vector<float> GetFloats(size_t startIDx = 0) const {
 		std::vector<float> floats;
 		size_t offset = startIDx;

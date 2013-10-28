@@ -56,7 +56,7 @@ PS_OUT main( in X1X cin)
 
     _In._normalW = cin._TEXCOORD0;
     _In._posW = cin._TEXCOORD2;
-    _v0003 = float3(  2.00000000000000000E001f,  5.00000000000000000E001f,  0.00000000000000000E000f) - _In._posW;
+    _v0003 = float3(  1.00000000000000000E000f,  0.00000000000000000E000f,  0.00000000000000000E000f) - _In._posW;
     _TMP0 = dot(_v0003, _v0003);
     _TMP1 = rsqrt(_TMP0);
     _lightVec = _TMP1*_v0003;

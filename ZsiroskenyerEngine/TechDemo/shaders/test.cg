@@ -22,9 +22,10 @@ struct PS_OUT {
 
 VS_OUT VS_MAIN(VS_IN In) {
 	VS_OUT vout;
-	//vout.posW = In.posL.x * world[0] + ( In.posL.y * world[1] + (In.posL.z * world[2]) + world[3]);
-	vout.posH = In.posL.x * wvp[0] + ( In.posL.y * wvp[1] + (In.posL.z * wvp[2]) + wvp[3]);
-	vout.normalW = In.normalL;
+	vout.posW = In.posL.x * world[0].xyz + ( In.posL.y * world[1].xyz + (In.posL.z * world[2].xyz) + world[3].xyz);
+	vout.normalW = In.normalL.x* wvp[0].xyz + ( In.normalL.y * wvp[1].xyz + (In.normalL.z * wvp[2].xyz));
+	vout.posH = In.posL.x * wvp[0] + ( In.posL.y * wvp[1] + (In.posL.z * wvp[2] + wvp[3]));
+
 	vout.tex0 = In.tex0;
 	return vout;
 }
@@ -32,7 +33,7 @@ VS_OUT VS_MAIN(VS_IN In) {
 PS_OUT PS_MAIN(VS_OUT In) {
 	PS_OUT pout;
 //	pout.color = tex2D(diffuseTex, In.tex0);
-	float3 pointLightPos = float3(20, 50, 0);
+	float3 pointLightPos = float3(1, 0, 0);
 	float3 lightVec = normalize(pointLightPos - In.posW);
 	float intensity = dot(In.normalW, lightVec);
 	pout.color = float4(intensity, intensity, intensity, 1.0f);

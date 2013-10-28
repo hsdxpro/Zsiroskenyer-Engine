@@ -35,6 +35,7 @@
     <ClInclude Include="src\IPhysicsEngine.h" />
     <ClInclude Include="src\IPhysicsEntity.h" />
     <ClInclude Include="src\IResourceManager.h" />
+    <ClInclude Include="src\IPhysicsType.h" />
     <ClInclude Include="src\ISceneManager.h" />
     <ClInclude Include="src\IShaderProgram.h" />
     <ClInclude Include="src\ISoundEngine.h" />

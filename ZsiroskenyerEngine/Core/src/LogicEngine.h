@@ -9,12 +9,13 @@
 #include "zsString.h"
 
 #include "..\..\GraphicsEngineRaster\src\ResourceManager.h"
+#include "IPhysicsType.h"
 
 class cLogicEngine {
 public:
 	bool IsEntityTypeExits(const zsString& str);
 
-	cEntityType* CreateEntityType(const zsString& name, cGeometryRef *graphicsGeom, cMaterialRef *material, float mass);
+	cEntityType* CreateEntityType(const zsString& name, cGeometryRef *graphicsGeom, cMaterialRef *material, IPhysicsType* physType);
 	cEntity* AddEntity(cGraphicsEntity* gEntity, IPhysicsEntity* pEntity);
 
 protected:

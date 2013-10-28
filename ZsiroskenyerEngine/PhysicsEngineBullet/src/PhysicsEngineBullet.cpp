@@ -2,6 +2,8 @@
 
 #include "..\..\Core\src\common.h"
 
+#include "RigidTypeBullet.h"
+
 cPhysicsEngineBullet::cPhysicsEngineBullet() {
 	//PHYSICSDEBUGDRAWER* drawer = new PHYSICSDEBUGDRAWER();
 
@@ -40,10 +42,6 @@ cPhysicsEngineBullet::cPhysicsEngineBullet() {
 	//m_physicsworld->getSolverInfo().m_numIterations = 20;
 }
 
-void cPhysicsEngineBullet::simulateWorld(float deltaT) {
-	physicsWorld->stepSimulation(deltaT);
-}
-
 void cPhysicsEngineBullet::Release() {
 	int i;
 	for (i = physicsWorld->getNumCollisionObjects()-1; i>=0 ;i--) {
@@ -59,12 +57,23 @@ void cPhysicsEngineBullet::Release() {
 	SAFE_DELETE(physicsWorld);
 }
 
-bool cPhysicsEngineBullet::IsGeometryExists(const zsString& filePath) {
-	return false;
+void cPhysicsEngineBullet::SimulateWorld(float deltaT) {
+	physicsWorld->stepSimulation(deltaT);
 }
 
-void cPhysicsEngineBullet::LoadGeometry(const zsString& filePath, const cGeometryBuilder::tGeometryDesc& geomDesc) {
+IPhysicsType* cPhysicsEngineBullet::LoadRigidType(const zsString& geomPath, const cGeometryBuilder::tGeometryDesc& desc, float mass) {
+	btCollisionShape* colShape = NULL;
+	if(collisionShapes.find(geomPath) == collisionShapes.end()) {
+		colShape = new btConvexHullShape((btScalar*)desc.vertices, desc.nVertices, desc.vertexStride);
+		collisionShapes[geomPath] = colShape;
+	} else {
+		colShape = collisionShapes[geomPath];
+	}
+	return new cRigidTypeBullet(colShape, mass);
+}
 
+IPhysicsType* cPhysicsEngineBullet::GetRigidType(const zsString& geomPath) {
+	return physicsTypes[geomPath];
 }
 
 btRigidBody* cPhysicsEngineBullet::ShootBox(const Vec3& camPos,const Vec3& destination)

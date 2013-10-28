@@ -26,7 +26,7 @@ cCore::~cCore() {
 }
 
 void cCore::Update(float deltaT) {
-
+	physicsEngine->SimulateWorld(deltaT);
 }
 
 cEntityType* cCore::CreateEntityType(const zsString& name, const zsString& physGraphGeomPath, const zsString& mtlPath, float mass /*= 0.0f*/) {
@@ -37,25 +37,27 @@ cEntityType* cCore::CreateEntityType(const zsString& name, const zsString& physG
 		// Material
 		cMaterialRef* mtl = graphicsRMgr->LoadMaterial(mtlPath);
 		cGeometryRef* geom = NULL;
-		
+		IPhysicsType* physicsType = NULL;
+
 		// Graphics geometry doesn't exists
 		if(! graphicsRMgr->IsGeometryExists(physGraphGeomPath)) {
 			cGeometryBuilder builder;
 			cGeometryBuilder::tGeometryDesc desc = builder.LoadGeometryDAE(physGraphGeomPath);
 			geom = graphicsRMgr->LoadGeometry(physGraphGeomPath, desc);
-			//if(! physicsEngine->IsGeometryExists(physGraphGeomPath)) {
-				//physicsEngine->LoadGeometry(physGraphGeomPath, desc);
-			//}
+			physicsType = physicsEngine->LoadRigidType(physGraphGeomPath, desc, mass);
+		} else {
+			geom = graphicsRMgr->LoadGeometry(physGraphGeomPath);
+			physicsType = physicsEngine->GetRigidType(physGraphGeomPath);
 		}
 
-		return logicEngine->CreateEntityType(name, geom, mtl, mass);
+		return logicEngine->CreateEntityType(name, geom, mtl, physicsType);
 	}
 	return NULL;
 }
 
 cEntity* cCore::AddEntity(cEntityType* type, const Vec3& position) {
 	cGraphicsEntity* gEntity = graphicsEngine->GetSceneManager()->AddEntity(type->GetGraphicsGeometry(), type->GetMaterial());
-	IPhysicsEntity* pEntity = NULL;//physicsEngine->AddEntity(
+	IPhysicsEntity* pEntity = NULL;//physicsEngine->AddRigidEntity(type->NULL;//physicsEngine->AddEntity(
 
 	cEntity* e = logicEngine->AddEntity(gEntity, pEntity);
 		e->SetPosition(position);

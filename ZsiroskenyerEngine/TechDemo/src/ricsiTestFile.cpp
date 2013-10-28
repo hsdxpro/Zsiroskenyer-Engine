@@ -54,7 +54,7 @@ int ricsiMain() {
 	//cEntityType* boxType = core->CreateEntityType(L"dyn_box", L"objects/gallardo.dae", L"materials/test.zsm", mass);
 
 	// Create entity
-	const Vec3 position = Vec3(0, 40, 0);
+	const Vec3 position = Vec3(0, 35, 0);
 	cEntity* entity = core->AddEntity(boxType, position);
 
 	// Main loop

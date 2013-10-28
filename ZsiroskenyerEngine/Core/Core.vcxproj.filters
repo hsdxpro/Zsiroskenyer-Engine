@@ -1,13 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="src\IGraphicsEngine.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="src\INetworkEngine.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="src\IPhysicsEngine.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="src\ISceneManager.h">
@@ -124,9 +118,6 @@
       <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="src\Core.h" />
-    <ClInclude Include="src\IPhysicsEntity.h">
-      <Filter>Interfaces\PhysicsEntity</Filter>
-    </ClInclude>
     <ClInclude Include="src\tipsify.h">
       <Filter>Common</Filter>
     </ClInclude>
@@ -146,6 +137,18 @@
       <Filter>Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="src\Timer.h" />
+    <ClInclude Include="src\IPhysicsEngine.h">
+      <Filter>Interfaces\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IPhysicsEntity.h">
+      <Filter>Interfaces\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IGraphicsEngine.h">
+      <Filter>Interfaces\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IPhysicsType.h">
+      <Filter>Interfaces\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\IDLLLoader.cpp">
@@ -241,9 +244,6 @@
     <Filter Include="Game">
       <UniqueIdentifier>{51d87b20-2ddf-4b46-8c17-90fe40718315}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Interfaces\PhysicsEntity">
-      <UniqueIdentifier>{9033b0df-f7a0-4e54-969f-ef32838d68b2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Common\String">
       <UniqueIdentifier>{a5589084-5a8f-40d5-b088-c90189345a87}</UniqueIdentifier>
     </Filter>
@@ -279,6 +279,12 @@
     </Filter>
     <Filter Include="Engines\LogicEngine\Entity">
       <UniqueIdentifier>{0a211fbf-debc-4a87-a3bf-69961e55d772}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces\Physics">
+      <UniqueIdentifier>{37d7572c-b8a2-416f-aad7-95043da0d77b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces\Graphics">
+      <UniqueIdentifier>{35b2eaf9-eb59-4e98-9d7b-fca8cfe73aba}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -31,7 +31,7 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometryDAE(const zsString
 
 	// read up dae scene
 	char ansiFilePath[256];
-	wcstombs(ansiFilePath, filePath.c_str(), 256);
+	zsString::UniToAnsi(filePath, ansiFilePath, 256);
 	const aiScene* scene = importer.ReadFile(ansiFilePath, (aiProcessPreset_TargetRealtime_Quality | aiProcess_MakeLeftHanded | aiProcess_FlipWindingOrder)^aiProcess_FindInvalidData);
 	if(scene == NULL) {
 		ILog::GetInstance()->MsgBox(L"Can found 3D model: " + filePath);

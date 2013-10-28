@@ -3,15 +3,16 @@
 #pragma once
 #include "..\..\GraphicsEngineRaster\src\ResourceManager.h"
 
+#include "IPhysicsType.h"
+
 class cEntityType {
 public:
 	cGeometryRef* GetGraphicsGeometry() const;
 	cMaterialRef* GetMaterial() const;
 
-	cEntityType(cGeometryRef *graphicsGeom, cMaterialRef *material, float mass);
+	cEntityType(cGeometryRef *graphicsGeom, cMaterialRef *material, IPhysicsType* physicsType);
 protected:
 	cGeometryRef* graphicsGeom;
 	cMaterialRef* material;
-
-	float mass;
+	IPhysicsType* physicsType;
 };

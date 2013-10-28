@@ -1,18 +1,22 @@
 // PhysicsEngineBullet.h By Zsíroskenyér Team 2013.10.26 0:53
 #pragma once
 
-#include "..\..\Core\src\IPhysicsEngine.h"
 #include "btBulletDynamicsCommon.h"
 #include "BulletSoftBody\btSoftRigidDynamicsWorld.h"
+
+#include "..\..\Core\src\IPhysicsEngine.h"
 #include "..\..\Core\src\math\vec3.h"
+
+#include <map>
 
 class cPhysicsEngineBullet : public IPhysicsEngine {
 public:
-	void simulateWorld(float deltaT) override;
-	btRigidBody* ShootBox(const Vec3& camPos,const Vec3& destination);
+	void SimulateWorld(float deltaT) override;
 
-	bool IsGeometryExists(const zsString& filePath);
-	void LoadGeometry(const zsString& filePath, const cGeometryBuilder::tGeometryDesc& geomDesc);
+	IPhysicsType* LoadRigidType(const zsString& geomPath, const cGeometryBuilder::tGeometryDesc& desc, float mass) override;
+	IPhysicsType* GetRigidType(const zsString& geomPath) override;
+
+	btRigidBody* ShootBox(const Vec3& camPos,const Vec3& destination);
 
 	cPhysicsEngineBullet();
 	void Release() override;
@@ -22,6 +26,9 @@ protected:
 		
 	//Fizika (Be,Ki)
 	bool physicsEnabled;
+
+	std::map<zsString, btCollisionShape*> collisionShapes;
+	std::map<zsString, IPhysicsType*> physicsTypes;
 };
 
 // DLL accessor
