@@ -23,26 +23,21 @@ cResourceManager::~cResourceManager() {
 }
 
 // load/unload geometries
-cGeometryRef* cResourceManager::LoadGeometry(const zsString& fileName, const cGeometryBuilder::tGeometryDesc* geomDesc /*= NULL*/) {
+cGeometryRef* cResourceManager::GetGeometry(const zsString& filePath) {
 	cGeometry* geom;
 
 	// lookup if already exists
-	auto it = geometries.left.find(fileName);
+	auto it = geometries.left.find(filePath);
 	if (it==geometries.left.end()) {
-		const cGeometryBuilder::tGeometryDesc* d;
-		if(geomDesc)
-			d = geomDesc;
-		else {
 			cGeometryBuilder b;
-			d = b.LoadGeometryDAE(fileName);
-		}
+			cGeometryBuilder::tGeometryDesc d = b.LoadGeometry(filePath);
 
-			IVertexBuffer *VB = gApi->CreateBufferVertex(geomDesc->nVertices, geomDesc->vertexStride, eBufferUsage::IMMUTABLE, geomDesc->vertices);
-			IIndexBuffer *IB = gApi->CreateBufferIndex(geomDesc->nIndices * geomDesc->indexStride, eBufferUsage::IMMUTABLE, geomDesc->indices);
+			IVertexBuffer *VB = gApi->CreateBufferVertex(d.nVertices, d.vertexStride, eBufferUsage::IMMUTABLE, d.vertices);
+			IIndexBuffer *IB = gApi->CreateBufferIndex(d.nIndices * d.indexStride, eBufferUsage::IMMUTABLE, d.indices);
 			geom = new cGeometry(VB, IB);
 		
 		// insert into database
-		geometries.insert(GeometryMapT::value_type(fileName, geom));
+		geometries.insert(GeometryMapT::value_type(filePath, geom));
 	}
 	else {
 		geom = it->second;
@@ -57,14 +52,14 @@ void cResourceManager::UnloadGeometry(const cGeometry* geometry) {
 }
 
 // load/unload materials
-cMaterialRef* cResourceManager::LoadMaterial(const zsString& fileName) {
+cMaterialRef* cResourceManager::GetMaterial(const zsString& filePath) {
 	cMaterial* mtl;
 
 	// lookup if already exists
-	auto it = materials.left.find(fileName);
+	auto it = materials.left.find(filePath);
 	if (it == materials.left.end()) {
 		// Open material file
-		IFile* file = IFile::Create(fileName);
+		IFile* file = IFile::Create(filePath);
 
 		// Number of subMaterials
 		size_t nSubMaterials = file->GetNLines() / 8;
@@ -106,7 +101,7 @@ cMaterialRef* cResourceManager::LoadMaterial(const zsString& fileName) {
 		}
 
 		// insert into database
-		materials.insert(MaterialMapT::value_type(fileName, mtl));
+		materials.insert(MaterialMapT::value_type(filePath, mtl));
 	}
 	else {
 		mtl = it->second;
@@ -119,14 +114,6 @@ void cResourceManager::UnloadMaterial(const cMaterial* material) {
 	auto it = materials.right.find(const_cast<cMaterial*>(material));
 	delete it->first;
 	materials.right.erase(it);
-}
-
-bool cResourceManager::IsGeometryExists(const zsString& fileName) {
-	return geometries.left.find(fileName) != geometries.left.end();
-}
-
-bool cResourceManager::IsMaterialExists(const zsString& fileName) {
-	return materials.left.find(fileName) != materials.left.end();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

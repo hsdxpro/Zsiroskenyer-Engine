@@ -16,7 +16,7 @@ public:
 	void SimulateWorld(float deltaT) override;
 
 	IPhysicsEntity* AddRigidEntity(const IPhysicsType* type, const Vec3& position) override;
-	IPhysicsType* LoadRigidType(const zsString& geomPath, float mass, const cGeometryBuilder::tGeometryDesc* desc = NULL) override;
+	IPhysicsType* LoadRigidType(const zsString& geomPath, float mass) override;
 	btRigidBody* ShootBox(const Vec3& camPos,const Vec3& destination);
 
 	std::list<Vec3>* GetCollisionShapeEdges() override;

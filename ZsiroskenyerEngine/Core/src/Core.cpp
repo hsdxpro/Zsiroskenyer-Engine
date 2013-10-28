@@ -26,8 +26,8 @@ cCore::~cCore() {
 }
 
 void cCore::DebugRender(unsigned long renderFlags) {
-	std::list<Vec3>* edgeList = physicsEngine->GetCollisionShapeEdges();
-	delete edgeList;
+	//std::list<Vec3>* edgeList = physicsEngine->GetCollisionShapeEdges();
+	//delete edgeList;
 }
 
 void cCore::Update(float deltaT) {
@@ -37,53 +37,11 @@ void cCore::Update(float deltaT) {
 
 cEntityType* cCore::CreateEntityType(const zsString& name, const zsString& graphGeomPath, const zsString& physGeomPath, const zsString& mtlPath, float mass /*= 0.0f*/) {
 	cResourceManager* GRMgr = graphicsEngine->GetResourceManager();
+	cGeometryRef* geom = GRMgr->GetGeometry(graphGeomPath);
+	cMaterialRef* mtl = GRMgr->GetMaterial(mtlPath);
+	IPhysicsType* physicsType = physicsEngine->LoadRigidType(physGeomPath, mass);
 
-	// Graphics and physics description
-	cGeometryRef* gGeom = NULL;
-	IPhysicsType* physicsType = NULL;
-
-	const bool gGeomExists = GRMgr->IsGeometryExists(graphGeomPath);
-	const bool pGeomExists = physicsEngine->IsGeometryExists(physGeomPath);
-
-	// Geometry descriptors
-	cGeometryBuilder::tGeometryDesc* gGeomDesc = NULL;
-	cGeometryBuilder::tGeometryDesc* pGeomDesc = NULL;
-
-	// Graphics Geometry or Physics geometry doesn't exists
-	if(!(gGeomExists && pGeomExists)) {
-
-		// Building geometries
-		cGeometryBuilder builder;
-
-		// Nem létezik fizikai geometria, és különbözik 
-		if(! pGeomExists || graphGeomPath != physGeomPath)
-			pGeomDesc = builder.LoadGeometryDAE(physGeomPath);
-
-		// Create graphics geom desc
-		if(! gGeomExists) {
-			gGeomDesc = builder.LoadGeometryDAE(graphGeomPath);
-			if(graphGeomPath == physGeomPath)
-				pGeomDesc = gGeomDesc;
-			else
-				pGeomDesc = builder.LoadGeometryDAE(physGeomPath);
-		// graphics geom exists
-		} else {
-			if(! pGeomExists) {
-				pGeomDesc = builder.LoadGeometryDAE(physGeomPath);
-			}
-		}
-	}
-	
-	gGeom = GRMgr->LoadGeometry(graphGeomPath, gGeomDesc);
-	physicsType = physicsEngine->LoadRigidType(physGeomPath, mass, pGeomDesc);
-
-	delete gGeomDesc;
-
-	if(pGeomDesc != gGeomDesc)
-		SAFE_DELETE(pGeomDesc);
-	gGeomDesc = NULL;
-
-	return logicEngine->CreateEntityType(name, gGeom, GRMgr->LoadMaterial(mtlPath), physicsType);
+	return logicEngine->CreateEntityType(name, geom, mtl, physicsType);
 }
 
 cEntity* cCore::AddEntity(cEntityType* type, const Vec3& position) {

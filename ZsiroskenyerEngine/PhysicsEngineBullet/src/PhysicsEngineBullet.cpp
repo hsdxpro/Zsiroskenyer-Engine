@@ -5,6 +5,7 @@
 #include "RigidTypeBullet.h"
 #include "RigidEntityBullet.h"
 
+#include "..\..\Core\src\GeometryBuilder.h"
 #include <algorithm>
 #include <list>
 cPhysicsEngineBullet::cPhysicsEngineBullet() {
@@ -90,12 +91,16 @@ IPhysicsEntity* cPhysicsEngineBullet::AddRigidEntity(const IPhysicsType* type, c
 	return r;
 }
 
-IPhysicsType* cPhysicsEngineBullet::LoadRigidType(const zsString& geomPath, float mass, const cGeometryBuilder::tGeometryDesc* desc /*= NULL*/) {
+IPhysicsType* cPhysicsEngineBullet::LoadRigidType(const zsString& geomPath, float mass) {
+
+	cGeometryBuilder b;
+	cGeometryBuilder::tGeometryDesc d = b.LoadGeometry(geomPath);
+
 	IPhysicsType* type;
 	// Geom doesn't exists, create it
 	if(! IsGeometryExists(geomPath)) {
 		// Collision shape
-		btCollisionShape* colShape = new btConvexHullShape((btScalar*)desc->vertices, desc->nVertices, desc->vertexStride);
+		btCollisionShape* colShape = new btConvexHullShape((btScalar*)d.vertices, d.nVertices, d.vertexStride);
 
 		// New rigid Type
 		type = new cRigidTypeBullet(colShape, mass);
