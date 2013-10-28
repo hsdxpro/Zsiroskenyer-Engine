@@ -6,7 +6,7 @@
 #include "RigidEntityBullet.h"
 
 #include <algorithm>
-
+#include <list>
 cPhysicsEngineBullet::cPhysicsEngineBullet() {
 	//PHYSICSDEBUGDRAWER* drawer = new PHYSICSDEBUGDRAWER();
 
@@ -42,8 +42,6 @@ cPhysicsEngineBullet::cPhysicsEngineBullet() {
 	//Ragadós Spagetti effektus :D
 	//m_physicsworld->getSolverInfo().m_splitImpulse=true;
 	//m_physicsworld->getSolverInfo().m_numIterations = 20;
-
-	physicsWorld->getCollisionWorld()->getCollisionObjectArray()[0]->getCollisionShape()->
 }
 
 void cPhysicsEngineBullet::Release() {
@@ -65,7 +63,7 @@ void cPhysicsEngineBullet::SimulateWorld(float deltaT) {
 	physicsWorld->stepSimulation(deltaT, 1);
 }
 
-IPhysicsEntity *cPhysicsEngineBullet::AddRigidEntity(const IPhysicsType* type, const Vec3& position) {
+IPhysicsEntity* cPhysicsEngineBullet::AddRigidEntity(const IPhysicsType* type, const Vec3& position) {
 	
 	cRigidTypeBullet* rigidType = (cRigidTypeBullet*)type;
 
@@ -143,6 +141,40 @@ btRigidBody* cPhysicsEngineBullet::ShootBox(const Vec3& camPos,const Vec3& desti
 		return body;
 	}
 	return NULL;
+}
+
+std::list<Vec3>* cPhysicsEngineBullet::GetCollisionShapeEdges() {
+	
+	// Final list
+	std::list<Vec3>* edges = new std::list<Vec3>();
+
+	// For Edge points...
+	btVector3 p1;
+	btVector3 p2;
+
+	Vec3 fP1;
+	Vec3 fP2;
+
+	auto colObjArray = physicsWorld->getCollisionWorld()->getCollisionObjectArray();
+	size_t nObjs = physicsWorld->getNumCollisionObjects();
+	for(size_t i = 0; i < nObjs; i++) {
+		btCollisionShape* colShape = colObjArray[i]->getCollisionShape();
+
+		// Add each edge from convex Shape to the list
+		if(colObjArray[i]->getCollisionShape()->isConvex()) {
+			btConvexHullShape* convCol = (btConvexHullShape*)colShape;
+			size_t nEdges = convCol->getNumEdges();
+			for(size_t j = 0; j < nEdges; j++) {
+				convCol->getEdge(j, p1, p2);
+				edges->push_back(Vec3(p1.x(), p1.y(), p1.z()));
+				edges->push_back(Vec3(p2.x(), p2.y(), p2.z()));
+			}
+			
+		} else {
+			//@TODO CONCAVE CollisionObject extraction to edge list...
+		}
+	}
+	return edges;
 }
 
 bool cPhysicsEngineBullet::IsGeometryExists(const zsString& geomPath) {

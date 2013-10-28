@@ -26,6 +26,8 @@ cCore::~cCore() {
 }
 
 void cCore::DebugRender(unsigned long renderFlags) {
+	std::list<Vec3>* edgeList = physicsEngine->GetCollisionShapeEdges();
+	delete edgeList;
 }
 
 void cCore::Update(float deltaT) {
