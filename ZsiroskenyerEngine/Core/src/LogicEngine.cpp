@@ -4,8 +4,7 @@
 void cLogicEngine::Update() {
 	// Copy transformations of Physics Objects to GraphicsObjects
 	for (auto* entity : entities) {
-		Vec3 pos = entity->GetPhysicsEntity()->GetPosition();
-		entity->GetGraphicsEntity()->SetPosition(pos);
+		entity->GetGraphicsEntity()->SetPosition(entity->GetPhysicsEntity()->GetPosition());
 		entity->GetGraphicsEntity()->SetRotation(entity->GetPhysicsEntity()->GetRotation());
 	}
 }

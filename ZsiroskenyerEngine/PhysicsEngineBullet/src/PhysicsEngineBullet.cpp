@@ -76,7 +76,6 @@ IPhysicsEntity *cPhysicsEngineBullet::AddRigidEntity(const IPhysicsType* type, c
 	// RigidType things mass, collisionShape, localInertia
 	btRigidBody* body = new btRigidBody(rigidType->GetMass(), new btDefaultMotionState(trans), rigidType->GetCollisionShape(), rigidType->GetLocalInertia());
 	physicsWorld->addRigidBody(body);
-
 	cRigidEntityBullet * r = new cRigidEntityBullet(body);
 	entities.push_back(r);
 	return r;
