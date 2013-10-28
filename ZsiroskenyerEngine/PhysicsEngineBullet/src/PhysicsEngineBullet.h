@@ -8,15 +8,16 @@
 #include "..\..\Core\src\math\vec3.h"
 
 #include <map>
+#include <vector>
 
 class cPhysicsEngineBullet : public IPhysicsEngine {
 public:
 	void SimulateWorld(float deltaT) override;
 
-	IPhysicsType* LoadRigidType(const zsString& geomPath, const cGeometryBuilder::tGeometryDesc& desc, float mass) override;
-	IPhysicsType* GetRigidType(const zsString& geomPath) override;
-
+	IPhysicsType* LoadRigidType(const zsString& geomPath, float mass, const cGeometryBuilder::tGeometryDesc* desc = NULL) override;
 	btRigidBody* ShootBox(const Vec3& camPos,const Vec3& destination);
+
+	bool IsGeometryExists(const zsString& geomPath);
 
 	cPhysicsEngineBullet();
 	void Release() override;
@@ -28,7 +29,7 @@ protected:
 	bool physicsEnabled;
 
 	std::map<zsString, btCollisionShape*> collisionShapes;
-	std::map<zsString, IPhysicsType*> physicsTypes;
+	std::vector<IPhysicsType*> physicsTypes;
 };
 
 // DLL accessor

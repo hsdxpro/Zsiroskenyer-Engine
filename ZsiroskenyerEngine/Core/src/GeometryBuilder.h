@@ -23,6 +23,6 @@ public:
 	};
 
 	// Loading .DAE geometry with Assimp 3d library
-	tGeometryDesc LoadGeometryDAE(const zsString& filePath);
+	cGeometryBuilder::tGeometryDesc* LoadGeometryDAE(const zsString& filePath);
 	cGeometryBuilder();
 };

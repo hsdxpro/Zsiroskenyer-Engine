@@ -30,10 +30,9 @@ class cResourceManager : public IResourceManager {
 	friend class cTextureRef;
 public:
 	// resource aquisition
-	cGeometryRef *LoadGeometry(const zsString& fileName) override;
 	cMaterialRef *LoadMaterial(const zsString& fileName) override;
 
-	cGeometryRef *LoadGeometry(const zsString& fileName, const cGeometryBuilder::tGeometryDesc& geomDesc) override;
+	cGeometryRef *LoadGeometry(const zsString& fileName, const cGeometryBuilder::tGeometryDesc* geomDesc = NULL) override;
 
 	bool IsGeometryExists(const zsString& fileName) override;
 	bool IsMaterialExists(const zsString& fileName) override;

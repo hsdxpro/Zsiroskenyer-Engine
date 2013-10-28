@@ -12,8 +12,7 @@ class cMaterial;
 
 class IResourceManager {
 	// Resource accessing
-	virtual cGeometryRef *LoadGeometry(const zsString& fileName) = 0;
-	virtual cGeometryRef *LoadGeometry(const zsString& fileName, const cGeometryBuilder::tGeometryDesc& geomDesc) = 0;
+	virtual cGeometryRef *LoadGeometry(const zsString& fileName, const cGeometryBuilder::tGeometryDesc* geomDesc = NULL) = 0;
 
 	virtual cMaterialRef *LoadMaterial(const zsString& fileName) = 0;
 

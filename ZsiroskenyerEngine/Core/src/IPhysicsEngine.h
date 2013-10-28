@@ -8,8 +8,9 @@
 class IPhysicsEngine {
 public:
 	virtual void SimulateWorld(float deltaT) = 0;
-	virtual IPhysicsType* LoadRigidType(const zsString& geomPath, const cGeometryBuilder::tGeometryDesc& desc, float mass) = 0;
-	virtual IPhysicsType* GetRigidType(const zsString& geomPath) = 0;
+	virtual IPhysicsType* LoadRigidType(const zsString& geomPath, float mass, const cGeometryBuilder::tGeometryDesc* desc = NULL) = 0;
+
+	virtual bool IsGeometryExists(const zsString& geomPath) = 0;
 
 	virtual void Release() = 0;
 };

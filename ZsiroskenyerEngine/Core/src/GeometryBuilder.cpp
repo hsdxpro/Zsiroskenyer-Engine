@@ -18,11 +18,9 @@
 #include "Exception.h"
 
 cGeometryBuilder::cGeometryBuilder() {
-
 }
 
-
-cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometryDAE(const zsString& filePath) {
+cGeometryBuilder::tGeometryDesc* cGeometryBuilder::LoadGeometryDAE(const zsString& filePath) {
 	Assimp::Importer importer;
 
 	if(!IFile::isFileExits(filePath)) {
@@ -105,12 +103,12 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometryDAE(const zsString
 	delete[] indices;
 
 	// return geometric description about loaded DAE
-	cGeometryBuilder::tGeometryDesc geomDesc;
-		geomDesc.vertices = vertices;
-		geomDesc.indices = reorderedIndices;
-		geomDesc.nVertices = nVertices;
-		geomDesc.nIndices = nIndex;
-		geomDesc.vertexStride = sizeof(baseVertex);
-		geomDesc.indexStride= sizeof(unsigned);
+	cGeometryBuilder::tGeometryDesc* geomDesc = new cGeometryBuilder::tGeometryDesc();
+		geomDesc->vertices = vertices;
+		geomDesc->indices = reorderedIndices;
+		geomDesc->nVertices = nVertices;
+		geomDesc->nIndices = nIndex;
+		geomDesc->vertexStride = sizeof(baseVertex);
+		geomDesc->indexStride= sizeof(unsigned);
 	return geomDesc;
 }

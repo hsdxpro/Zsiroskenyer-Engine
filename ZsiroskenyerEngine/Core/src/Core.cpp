@@ -29,30 +29,55 @@ void cCore::Update(float deltaT) {
 	physicsEngine->SimulateWorld(deltaT);
 }
 
-cEntityType* cCore::CreateEntityType(const zsString& name, const zsString& physGraphGeomPath, const zsString& mtlPath, float mass /*= 0.0f*/) {
-	// EntityType doesn't exists
-	if(! logicEngine->IsEntityTypeExits(name)) {
-		cResourceManager* graphicsRMgr = graphicsEngine->GetResourceManager();
+cEntityType* cCore::CreateEntityType(const zsString& name, const zsString& graphGeomPath, const zsString& physGeomPath, const zsString& mtlPath, float mass /*= 0.0f*/) {
+	cResourceManager* GRMgr = graphicsEngine->GetResourceManager();
 
-		// Material
-		cMaterialRef* mtl = graphicsRMgr->LoadMaterial(mtlPath);
-		cGeometryRef* geom = NULL;
-		IPhysicsType* physicsType = NULL;
+	// Graphics and physics description
+	cGeometryRef* gGeom = NULL;
+	IPhysicsType* physicsType = NULL;
 
-		// Graphics geometry doesn't exists
-		if(! graphicsRMgr->IsGeometryExists(physGraphGeomPath)) {
-			cGeometryBuilder builder;
-			cGeometryBuilder::tGeometryDesc desc = builder.LoadGeometryDAE(physGraphGeomPath);
-			geom = graphicsRMgr->LoadGeometry(physGraphGeomPath, desc);
-			physicsType = physicsEngine->LoadRigidType(physGraphGeomPath, desc, mass);
+	const bool gGeomExists = GRMgr->IsGeometryExists(graphGeomPath);
+	const bool pGeomExists = physicsEngine->IsGeometryExists(physGeomPath);
+
+	// Geometry descriptors
+	cGeometryBuilder::tGeometryDesc* gGeomDesc = NULL;
+	cGeometryBuilder::tGeometryDesc* pGeomDesc = NULL;
+
+	// Graphics Geometry or Physics geometry doesn't exists
+	if(!(gGeomExists && pGeomExists)) {
+
+		// Building geometries
+		cGeometryBuilder builder;
+
+		// Nem létezik fizikai geometria, és különbözik 
+		if(! pGeomExists || graphGeomPath != physGeomPath)
+			pGeomDesc = builder.LoadGeometryDAE(physGeomPath);
+
+		// Create graphics geom desc
+		if(! gGeomExists) {
+			gGeomDesc = builder.LoadGeometryDAE(graphGeomPath);
+			if(graphGeomPath == physGeomPath)
+				pGeomDesc = gGeomDesc;
+			else
+				pGeomDesc = builder.LoadGeometryDAE(physGeomPath);
+		// graphics geom exists
 		} else {
-			geom = graphicsRMgr->LoadGeometry(physGraphGeomPath);
-			physicsType = physicsEngine->GetRigidType(physGraphGeomPath);
+			if(! pGeomExists) {
+				pGeomDesc = builder.LoadGeometryDAE(physGeomPath);
+			}
 		}
-
-		return logicEngine->CreateEntityType(name, geom, mtl, physicsType);
 	}
-	return NULL;
+	
+	gGeom = GRMgr->LoadGeometry(graphGeomPath, gGeomDesc);
+	physicsType = physicsEngine->LoadRigidType(physGeomPath, mass, pGeomDesc);
+
+	delete gGeomDesc;
+
+	if(pGeomDesc != gGeomDesc)
+		SAFE_DELETE(pGeomDesc);
+	gGeomDesc = NULL;
+
+	return logicEngine->CreateEntityType(name, gGeom, GRMgr->LoadMaterial(mtlPath), physicsType);
 }
 
 cEntity* cCore::AddEntity(cEntityType* type, const Vec3& position) {

@@ -4,6 +4,8 @@
 
 #include "RigidTypeBullet.h"
 
+#include <algorithm>
+
 cPhysicsEngineBullet::cPhysicsEngineBullet() {
 	//PHYSICSDEBUGDRAWER* drawer = new PHYSICSDEBUGDRAWER();
 
@@ -61,19 +63,31 @@ void cPhysicsEngineBullet::SimulateWorld(float deltaT) {
 	physicsWorld->stepSimulation(deltaT);
 }
 
-IPhysicsType* cPhysicsEngineBullet::LoadRigidType(const zsString& geomPath, const cGeometryBuilder::tGeometryDesc& desc, float mass) {
-	btCollisionShape* colShape = NULL;
-	if(collisionShapes.find(geomPath) == collisionShapes.end()) {
-		colShape = new btConvexHullShape((btScalar*)desc.vertices, desc.nVertices, desc.vertexStride);
-		collisionShapes[geomPath] = colShape;
-	} else {
-		colShape = collisionShapes[geomPath];
-	}
-	return new cRigidTypeBullet(colShape, mass);
-}
+IPhysicsType* cPhysicsEngineBullet::LoadRigidType(const zsString& geomPath, float mass, const cGeometryBuilder::tGeometryDesc* desc /*= NULL*/) {
+	IPhysicsType* type;
+	// Geom doesn't exists, create it
+	if(! IsGeometryExists(geomPath)) {
+		// Collision shape
+		btCollisionShape* colShape = new btConvexHullShape((btScalar*)desc->vertices, desc->nVertices, desc->vertexStride);
 
-IPhysicsType* cPhysicsEngineBullet::GetRigidType(const zsString& geomPath) {
-	return physicsTypes[geomPath];
+		// New rigid Type
+		type = new cRigidTypeBullet(colShape, mass);
+		physicsTypes.push_back(type);
+		return type;
+	} else /*Geom exists*/ {
+		// Search for equal massed type
+		type = new cRigidTypeBullet(collisionShapes[geomPath], mass);
+		auto it = find(physicsTypes.begin(), physicsTypes.end(), type);
+
+		// Doesn't exists that mass
+		if(it == physicsTypes.end())
+			physicsTypes.push_back(type);
+		else {
+			delete type;
+			type = *it;
+		}
+	}
+	return type;
 }
 
 btRigidBody* cPhysicsEngineBullet::ShootBox(const Vec3& camPos,const Vec3& destination)
@@ -110,4 +124,8 @@ btRigidBody* cPhysicsEngineBullet::ShootBox(const Vec3& camPos,const Vec3& desti
 		return body;
 	}
 	return NULL;
+}
+
+bool cPhysicsEngineBullet::IsGeometryExists(const zsString& geomPath) {
+	return collisionShapes.find(geomPath) != collisionShapes.end();
 }
