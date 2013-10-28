@@ -11,3 +11,7 @@ cGeometryRef* cEntityType::GetGraphicsGeometry() const {
 cMaterialRef* cEntityType::GetMaterial() const {
 	return material;
 }
+
+const IPhysicsType* cEntityType::GetPhysicsType() const {
+	return physicsType;
+}

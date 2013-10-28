@@ -70,10 +70,9 @@ int ricsiMain() {
 		gEngine->RenderSceneForward();
 
 		// (game logic) z rotation
-		static float zVal = 0.0f;
-		zVal += 0.0007f;
-		//entity->SetRotation(Quat::EulerAnglesToQuat(zVal, zVal + 0.4, zVal));
-		entity->SetRotation(Quat::EulerAnglesToQuat(0, 0, zVal));
+		//static float zVal = 0.0f;
+		//zVal += 0.0007f;
+		//entity->SetRotation(Quat::EulerAnglesToQuat(0, 0, zVal));
 
 		// Present SwapChain
 		gApi->Present();

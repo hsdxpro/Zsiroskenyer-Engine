@@ -3,19 +3,25 @@
   <ItemGroup>
     <ClCompile Include="src\dllmain.cpp" />
     <ClCompile Include="src\PhysicsEngineBullet.cpp" />
+    <ClCompile Include="src\RigidEntityBullet.cpp">
+      <Filter>Rigid</Filter>
+    </ClCompile>
     <ClCompile Include="src\RigidTypeBullet.cpp">
-      <Filter>Types</Filter>
+      <Filter>Rigid</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\PhysicsEngineBullet.h" />
+    <ClInclude Include="src\RigidEntityBullet.h">
+      <Filter>Rigid</Filter>
+    </ClInclude>
     <ClInclude Include="src\RigidTypeBullet.h">
-      <Filter>Types</Filter>
+      <Filter>Rigid</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Types">
-      <UniqueIdentifier>{2871e4d7-f9b1-40de-a777-f86a4ca61be3}</UniqueIdentifier>
+    <Filter Include="Rigid">
+      <UniqueIdentifier>{4d2756fa-62e8-4327-9f47-1d17942e7bff}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

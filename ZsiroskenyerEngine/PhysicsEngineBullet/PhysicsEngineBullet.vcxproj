@@ -13,10 +13,12 @@
   <ItemGroup>
     <ClCompile Include="src\dllmain.cpp" />
     <ClCompile Include="src\PhysicsEngineBullet.cpp" />
+    <ClCompile Include="src\RigidEntityBullet.cpp" />
     <ClCompile Include="src\RigidTypeBullet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\PhysicsEngineBullet.h" />
+    <ClInclude Include="src\RigidEntityBullet.h" />
     <ClInclude Include="src\RigidTypeBullet.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

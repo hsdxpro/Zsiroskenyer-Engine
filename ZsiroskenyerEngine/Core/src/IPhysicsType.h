@@ -3,5 +3,5 @@
 #pragma once
 
 class IPhysicsType {
-
+	virtual void Release() = 0;
 };

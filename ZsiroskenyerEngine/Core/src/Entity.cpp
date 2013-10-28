@@ -5,18 +5,22 @@ cEntity::cEntity(cGraphicsEntity* g, IPhysicsEntity* p)
 {
 }
 
-void cEntity::SetPosition(const Vec3& position) {
-	graphicsEntity->position = position;
+void cEntity::SetPosition(const Vec3& pos) {
+	// Set Position for graphics and Physics to
+	graphicsEntity->SetPosition(pos);
+	physicsEntity->SetPosition(pos);
 }
 
-void cEntity::SetRotation(const Quat& rotation) {
-	graphicsEntity->rotation = rotation;
+void cEntity::SetRotation(const Quat& rot) {
+	// Set rotation for graphics and Physics to
+	graphicsEntity->SetRotation(rot);
+	physicsEntity->SetRotation(rot);
 }
 
-void cEntity::SetScale(const Vec3& scale) {
-	graphicsEntity->scale = scale;
+cGraphicsEntity* cEntity::GetGraphicsEntity() {
+	return graphicsEntity;
 }
 
-void cEntity::setVisibility(bool visible) {
-	graphicsEntity->isVisible = visible;
+IPhysicsEntity* cEntity::GetPhysicsEntity() {
+	return physicsEntity;
 }

@@ -1,7 +1,13 @@
 #include "LogicEngine.h"
 
-bool cLogicEngine::IsEntityTypeExits(const zsString& str) {
-	return entityTypes.find(str) != entityTypes.end();
+
+void cLogicEngine::Update() {
+	// Copy transformations of Physics Objects to GraphicsObjects
+	for (auto* entity : entities) {
+		Vec3 pos = entity->GetPhysicsEntity()->GetPosition();
+		entity->GetGraphicsEntity()->SetPosition(pos);
+		entity->GetGraphicsEntity()->SetRotation(entity->GetPhysicsEntity()->GetRotation());
+	}
 }
 
 cEntityType* cLogicEngine::CreateEntityType(const zsString& name, cGeometryRef *graphicsGeom, cMaterialRef *material, IPhysicsType* physType) {
@@ -14,4 +20,8 @@ cEntity* cLogicEngine::AddEntity(cGraphicsEntity* gEntity, IPhysicsEntity* pEnti
 	cEntity* e = new cEntity(gEntity, pEntity);
 	entities.push_back(e);
 	return e;
+}
+
+bool cLogicEngine::IsEntityTypeExits(const zsString& str) {
+	return entityTypes.find(str) != entityTypes.end();
 }

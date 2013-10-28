@@ -56,7 +56,6 @@
     <ClInclude Include="src\memory\tlsf.h" />
     <ClInclude Include="src\multithreading\spinlock.h" />
     <ClInclude Include="src\Node.h" />
-    <ClInclude Include="src\PhysicsEntity.h" />
     <ClInclude Include="src\shared_ptr.h" />
     <ClInclude Include="src\storage\tree.h" />
     <ClInclude Include="src\Timer.h" />
@@ -89,7 +88,6 @@
     <ClCompile Include="src\math\Vec4.cpp" />
     <ClCompile Include="src\memory\tlsf.cpp" />
     <ClCompile Include="src\multithreading\spinlock.cpp" />
-    <ClCompile Include="src\PhysicsEntity.cpp" />
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\VertexFormat.cpp" />
     <ClCompile Include="src\zsString.cpp" />

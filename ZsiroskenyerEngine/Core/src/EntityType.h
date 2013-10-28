@@ -9,6 +9,7 @@ class cEntityType {
 public:
 	cGeometryRef* GetGraphicsGeometry() const;
 	cMaterialRef* GetMaterial() const;
+	const IPhysicsType* GetPhysicsType() const;
 
 	cEntityType(cGeometryRef *graphicsGeom, cMaterialRef *material, IPhysicsType* physicsType);
 protected:

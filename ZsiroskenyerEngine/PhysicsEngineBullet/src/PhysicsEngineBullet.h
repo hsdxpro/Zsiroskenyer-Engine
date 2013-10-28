@@ -6,6 +6,7 @@
 
 #include "..\..\Core\src\IPhysicsEngine.h"
 #include "..\..\Core\src\math\vec3.h"
+#include "..\..\Core\src\IPhysicsEntity.h"
 
 #include <map>
 #include <vector>
@@ -14,6 +15,7 @@ class cPhysicsEngineBullet : public IPhysicsEngine {
 public:
 	void SimulateWorld(float deltaT) override;
 
+	IPhysicsEntity *AddRigidEntity(const IPhysicsType* type, const Vec3& position) override;
 	IPhysicsType* LoadRigidType(const zsString& geomPath, float mass, const cGeometryBuilder::tGeometryDesc* desc = NULL) override;
 	btRigidBody* ShootBox(const Vec3& camPos,const Vec3& destination);
 
@@ -30,6 +32,7 @@ protected:
 
 	std::map<zsString, btCollisionShape*> collisionShapes;
 	std::vector<IPhysicsType*> physicsTypes;
+	std::vector<IPhysicsEntity*> entities;
 };
 
 // DLL accessor

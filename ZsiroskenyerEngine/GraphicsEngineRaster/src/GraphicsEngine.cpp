@@ -72,12 +72,8 @@ void cGraphicsEngine::RenderSceneForward() {
 		
 		// Draw each entity
 		for (auto& entity : group->entities) {
-
 			// Entity world matrix
-			Matrix44 world;
-			world.RotationQuat(entity->rotation);
-			world.Scale(entity->scale);
-			world.Translate(entity->position);
+			Matrix44 world = entity->GetWorldMatrix();
 
 			// WorldViewProj matrix
 			Matrix44 wvp = world * viewMat * projMat;

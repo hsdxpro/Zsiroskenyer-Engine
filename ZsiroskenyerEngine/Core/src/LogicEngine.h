@@ -15,6 +15,8 @@ class cLogicEngine {
 public:
 	bool IsEntityTypeExits(const zsString& str);
 
+	void Update();
+
 	cEntityType* CreateEntityType(const zsString& name, cGeometryRef *graphicsGeom, cMaterialRef *material, IPhysicsType* physType);
 	cEntity* AddEntity(cGraphicsEntity* gEntity, IPhysicsEntity* pEntity);
 

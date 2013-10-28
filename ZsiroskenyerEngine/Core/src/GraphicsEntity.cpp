@@ -17,6 +17,18 @@ cGraphicsEntity::cGraphicsEntity()
 {
 }
 
-cInstanceGroup* cGraphicsEntity::GetInstanceGroup() {
-	return instanceGroup;
+void cGraphicsEntity::SetPosition(const Vec3& pos) {
+	position = pos;
+}
+
+void cGraphicsEntity::SetRotation(const Quat& rot) {
+	rotation = rot;
+}
+
+Matrix44 cGraphicsEntity::GetWorldMatrix() {
+	Matrix44 world;
+		world.RotationQuat(rotation);
+		world.Scale(scale);
+		world.Translate(position);
+	return world;
 }

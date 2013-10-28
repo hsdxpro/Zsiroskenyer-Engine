@@ -13,14 +13,17 @@ class cInstanceGroup;
 class cGraphicsEntity {
 	friend class cSceneManager;
 public:
-	cInstanceGroup* GetInstanceGroup();
+	Matrix44 GetWorldMatrix();
+
+	void SetPosition(const Vec3& pos);
+	void SetRotation(const Quat& rot);
 
 	cGraphicsEntity();
-
+protected:
 	Vec3 position;
 	Quat rotation;
 	Vec3 scale;
 	bool isVisible;
-private:
+
 	cInstanceGroup* instanceGroup;
 };

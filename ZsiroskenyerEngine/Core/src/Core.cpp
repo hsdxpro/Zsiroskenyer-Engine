@@ -27,6 +27,7 @@ cCore::~cCore() {
 
 void cCore::Update(float deltaT) {
 	physicsEngine->SimulateWorld(deltaT);
+	logicEngine->Update();
 }
 
 cEntityType* cCore::CreateEntityType(const zsString& name, const zsString& graphGeomPath, const zsString& physGeomPath, const zsString& mtlPath, float mass /*= 0.0f*/) {
@@ -82,7 +83,7 @@ cEntityType* cCore::CreateEntityType(const zsString& name, const zsString& graph
 
 cEntity* cCore::AddEntity(cEntityType* type, const Vec3& position) {
 	cGraphicsEntity* gEntity = graphicsEngine->GetSceneManager()->AddEntity(type->GetGraphicsGeometry(), type->GetMaterial());
-	IPhysicsEntity* pEntity = NULL;//physicsEngine->AddRigidEntity(type->NULL;//physicsEngine->AddEntity(
+	IPhysicsEntity* pEntity = physicsEngine->AddRigidEntity(type->GetPhysicsType(), position);
 
 	cEntity* e = logicEngine->AddEntity(gEntity, pEntity);
 		e->SetPosition(position);

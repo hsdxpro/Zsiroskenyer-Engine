@@ -3,6 +3,7 @@
 #include "..\..\Core\src\common.h"
 
 #include "RigidTypeBullet.h"
+#include "RigidEntityBullet.h"
 
 #include <algorithm>
 
@@ -61,6 +62,24 @@ void cPhysicsEngineBullet::Release() {
 
 void cPhysicsEngineBullet::SimulateWorld(float deltaT) {
 	physicsWorld->stepSimulation(deltaT);
+}
+
+IPhysicsEntity *cPhysicsEngineBullet::AddRigidEntity(const IPhysicsType* type, const Vec3& position) {
+	
+	cRigidTypeBullet* rigidType = (cRigidTypeBullet*)type;
+
+	btTransform trans;
+	trans.setIdentity();
+	trans.setOrigin(btVector3(position.x, position.y, position.z));
+
+	// /Rigid things -> motionState
+	// RigidType things mass, collisionShape, localInertia
+	btRigidBody* body = new btRigidBody(rigidType->GetMass(), new btDefaultMotionState(trans), rigidType->GetCollisionShape(), rigidType->GetLocalInertia());
+	physicsWorld->addRigidBody(body);
+
+	cRigidEntityBullet * r = new cRigidEntityBullet(body);
+	entities.push_back(r);
+	return r;
 }
 
 IPhysicsType* cPhysicsEngineBullet::LoadRigidType(const zsString& geomPath, float mass, const cGeometryBuilder::tGeometryDesc* desc /*= NULL*/) {

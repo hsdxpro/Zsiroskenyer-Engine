@@ -85,12 +85,6 @@
     <ClInclude Include="src\Camera.h">
       <Filter>Engines\GraphicsEngine</Filter>
     </ClInclude>
-    <ClInclude Include="src\GraphicsEntity.h">
-      <Filter>Engines\GraphicsEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PhysicsEntity.h">
-      <Filter>Engines\PhysicsEngine</Filter>
-    </ClInclude>
     <ClInclude Include="src\Node.h">
       <Filter>Engines\GraphicsEngine</Filter>
     </ClInclude>
@@ -127,12 +121,6 @@
     <ClInclude Include="src\LogicEngine.h">
       <Filter>Engines\LogicEngine</Filter>
     </ClInclude>
-    <ClInclude Include="src\EntityType.h">
-      <Filter>Engines\LogicEngine\EntityType</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Entity.h">
-      <Filter>Engines\LogicEngine\Entity</Filter>
-    </ClInclude>
     <ClInclude Include="src\IResourceManager.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
@@ -148,6 +136,15 @@
     </ClInclude>
     <ClInclude Include="src\IPhysicsType.h">
       <Filter>Interfaces\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\EntityType.h">
+      <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Entity.h">
+      <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GraphicsEntity.h">
+      <Filter>Entity\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -193,9 +190,6 @@
     <ClCompile Include="src\Camera.cpp">
       <Filter>Engines\GraphicsEngine</Filter>
     </ClCompile>
-    <ClCompile Include="src\GraphicsEntity.cpp">
-      <Filter>Engines\GraphicsEngine</Filter>
-    </ClCompile>
     <ClCompile Include="src\VertexFormat.cpp">
       <Filter>Engines\GraphicsEngine</Filter>
     </ClCompile>
@@ -211,22 +205,22 @@
       <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="src\Core.cpp" />
-    <ClCompile Include="src\PhysicsEntity.cpp">
-      <Filter>Engines\PhysicsEngine</Filter>
-    </ClCompile>
     <ClCompile Include="src\GeometryBuilder.cpp">
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="src\LogicEngine.cpp">
       <Filter>Engines\LogicEngine</Filter>
     </ClCompile>
+    <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\EntityType.cpp">
-      <Filter>Engines\LogicEngine\EntityType</Filter>
+      <Filter>Entity</Filter>
     </ClCompile>
     <ClCompile Include="src\Entity.cpp">
-      <Filter>Engines\LogicEngine\Entity</Filter>
+      <Filter>Entity</Filter>
     </ClCompile>
-    <ClCompile Include="src\Timer.cpp" />
+    <ClCompile Include="src\GraphicsEntity.cpp">
+      <Filter>Entity\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Interfaces">
@@ -274,17 +268,17 @@
     <Filter Include="Engines\LogicEngine">
       <UniqueIdentifier>{e16a7a0e-ef13-496d-b7a3-e5cf2a6ef465}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engines\LogicEngine\EntityType">
-      <UniqueIdentifier>{8f08aeaa-817f-467f-9e7c-90321085c818}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engines\LogicEngine\Entity">
-      <UniqueIdentifier>{0a211fbf-debc-4a87-a3bf-69961e55d772}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Interfaces\Physics">
       <UniqueIdentifier>{37d7572c-b8a2-416f-aad7-95043da0d77b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Interfaces\Graphics">
       <UniqueIdentifier>{35b2eaf9-eb59-4e98-9d7b-fca8cfe73aba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity">
+      <UniqueIdentifier>{29c19143-504e-4600-b345-8ba1d28433e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity\Graphics">
+      <UniqueIdentifier>{b142beff-a661-4798-8dc6-33c1525fdedd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
