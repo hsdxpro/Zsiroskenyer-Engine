@@ -7,7 +7,6 @@
 #include "InstanceGroup.h"
 
 cInstanceGroup::cInstanceGroup() {
-
 }
 
 cInstanceGroup::cInstanceGroup(cGeometryRef* geom, cMaterialRef* mtl) 

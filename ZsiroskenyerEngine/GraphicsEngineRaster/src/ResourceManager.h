@@ -64,12 +64,12 @@ class cGeometryRef : public std::shared_ptr<cGeometry> {
 	friend struct std::hash<cGeometryRef>;
 public:
 	cGeometryRef();
-	cGeometryRef(cResourceManager* rm, cGeometry* ptr=nullptr);
+	cGeometryRef(cResourceManager* rm, cGeometry* ptr = NULL);
 	cGeometryRef(const cGeometryRef& other);
 
-	cGeometryRef& operator=(const cGeometryRef& other);
+	cGeometryRef& operator = (const cGeometryRef& other);
 
-	bool operator==(const cGeometryRef& other);
+	bool operator == (const cGeometryRef& other);
 private:
 	cGeometry* get() const;	// kill this function
 	cResourceManager* rm;	// reference to the 'owner'
@@ -80,7 +80,7 @@ class cMaterialRef : public std::shared_ptr<cMaterial> {
 	friend struct std::hash<cMaterialRef>;
 public:
 	cMaterialRef();
-	cMaterialRef(cResourceManager* rm, cMaterial* ptr=nullptr);
+	cMaterialRef(cResourceManager* rm, cMaterial* ptr = NULL);
 	cMaterialRef(const cMaterialRef& other);
 
 	cMaterialRef& operator = (const cMaterialRef& other);
@@ -95,8 +95,6 @@ private:
 // hashers
 template <>
 struct std::hash<cGeometryRef> {
-	typedef cGeometryRef argument_type;
-	typedef std::size_t return_type;
 	std::size_t operator()(const cGeometryRef& g) {
 		return std::hash<cGeometry*>()(g.get());
 	}
@@ -104,8 +102,6 @@ struct std::hash<cGeometryRef> {
 
 template <>
 struct std::hash<cMaterialRef> {
-	typedef cMaterialRef argument_type;
-	typedef std::size_t return_type;
 	std::size_t operator()(const cMaterialRef& m) {
 		return std::hash<cMaterial*>()(m.get());
 	}

@@ -91,7 +91,7 @@ IPhysicsEntity* cPhysicsEngineBullet::AddRigidEntity(const IPhysicsType* type, c
 	return r;
 }
 
-IPhysicsType* cPhysicsEngineBullet::LoadRigidType(const zsString& geomPath, float mass) {
+IPhysicsType* cPhysicsEngineBullet::GetRigidType(const zsString& geomPath, float mass) {
 
 	cGeometryBuilder b;
 	cGeometryBuilder::tGeometryDesc d = b.LoadGeometry(geomPath);
@@ -158,10 +158,10 @@ btRigidBody* cPhysicsEngineBullet::ShootBox(const Vec3& camPos,const Vec3& desti
 	return NULL;
 }
 
-std::list<Vec3>* cPhysicsEngineBullet::GetCollisionShapeEdges() {
+std::list<Vec3> cPhysicsEngineBullet::GetCollisionShapeEdges() {
 	
 	// Final list
-	std::list<Vec3>* edges = new std::list<Vec3>();
+	std::list<Vec3> edges;
 
 	// For Edge points...
 	btVector3 p1;
@@ -181,8 +181,8 @@ std::list<Vec3>* cPhysicsEngineBullet::GetCollisionShapeEdges() {
 			size_t nEdges = convCol->getNumEdges();
 			for(size_t j = 0; j < nEdges; j++) {
 				convCol->getEdge(j, p1, p2);
-				edges->push_back(Vec3(p1.x(), p1.y(), p1.z()));
-				edges->push_back(Vec3(p2.x(), p2.y(), p2.z()));
+				edges.push_back(Vec3(p1.x(), p1.y(), p1.z()));
+				edges.push_back(Vec3(p2.x(), p2.y(), p2.z()));
 			}
 			
 		} else {

@@ -15,19 +15,15 @@
 
 #include <cassert>
 
-using namespace std;
-
-
-// constructor and destructor
-cSceneManager::cSceneManager(cResourceManager& rm) : managerResource(rm), activeCamera(NULL) {
+cSceneManager::cSceneManager(cResourceManager& rm) 
+: managerResource(rm), activeCamera(NULL) {
 }
+
 cSceneManager::~cSceneManager() {
 }
 
-
-// entities
 cGraphicsEntity* cSceneManager::AddEntity(cGeometryRef *geom, cMaterialRef* mtl) {
-	cInstanceGroup* instGroup = nullptr;
+	cInstanceGroup* instGroup = NULL;
 	cInstanceGroup searchDummy;
 	cGraphicsEntity* entity;
 
@@ -35,10 +31,12 @@ cGraphicsEntity* cSceneManager::AddEntity(cGeometryRef *geom, cMaterialRef* mtl)
 		searchDummy.geom = geom; searchDummy.mtl = mtl;
 
 		auto it = instanceGroups.find(&searchDummy);
-		if (it==instanceGroups.end()) {
+		// There is no instanceGroup, create it
+		if (it == instanceGroups.end()) {
 			instGroup = new cInstanceGroup(geom, mtl);
 			instanceGroups.insert(instGroup);
 		}
+		// instanceGroup exists
 		else {
 			instGroup = *it;
 		}
@@ -64,7 +62,7 @@ void cSceneManager::RemoveEntity(const cGraphicsEntity& entity) {
 	}
 
 	instGroup->entities.erase(const_cast<cGraphicsEntity*>(&entity));
-	if (instGroup->entities.size()==0) {
+	if (instGroup->entities.size() == 0) {
 		instanceGroups.erase(instGroup);
 	}
 }
@@ -77,6 +75,6 @@ cCamera *cSceneManager::GetActiveCamera() const {
 	return activeCamera;
 }
 
-const std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare>& cSceneManager::GetInstanceGroups() const {
+const std::unordered_set<cInstanceGroup*, cInstGroupPtrHasher,cInstGroupPtrCompare>& cSceneManager::GetInstanceGroups() const {
 	return instanceGroups;
 }

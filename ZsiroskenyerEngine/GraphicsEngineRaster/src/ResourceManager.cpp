@@ -28,7 +28,7 @@ cGeometryRef* cResourceManager::GetGeometry(const zsString& filePath) {
 
 	// lookup if already exists
 	auto it = geometries.left.find(filePath);
-	if (it==geometries.left.end()) {
+	if (it == geometries.left.end()) {
 			cGeometryBuilder b;
 			cGeometryBuilder::tGeometryDesc d = b.LoadGeometry(filePath);
 
@@ -127,32 +127,25 @@ cGeometryRef::cGeometryRef(cResourceManager* rm, cGeometry* ptr)
 {
 }
 cGeometryRef::cGeometryRef(const cGeometryRef& other) 
-	:
-	shared_ptr(other),
-	rm(other.rm)
-{
+: shared_ptr(other), rm(other.rm) {
 }
 cGeometryRef::cGeometryRef()
-	:
-	shared_ptr(nullptr),
-	rm(nullptr)
-{
+: shared_ptr(NULL), rm(NULL) {
 }
 
-cGeometryRef& cGeometryRef::operator=(const cGeometryRef& other) {
+cGeometryRef& cGeometryRef::operator = (const cGeometryRef& other) {
 	shared_ptr<cGeometry>::operator=(other);
 	rm = other.rm;
 	return *this;
 }
 
-bool cGeometryRef::operator==(const cGeometryRef& other) {
+bool cGeometryRef::operator == (const cGeometryRef& other) {
 	return std::operator==(*this, other);
 }
 
 cGeometry* cGeometryRef::get() const {
 	return shared_ptr<cGeometry>::get();
 }
-
 
 
 // material reference
@@ -162,26 +155,22 @@ cMaterialRef::cMaterialRef(cResourceManager* rm, cMaterial* ptr)
 	rm(rm)
 {
 }
+
 cMaterialRef::cMaterialRef(const cMaterialRef& other) 
-	:
-	shared_ptr(other),
-	rm(other.rm)
-{
-}
-cMaterialRef::cMaterialRef()
-	:
-	shared_ptr(nullptr),
-	rm(nullptr)
-{
+: shared_ptr(other), rm(other.rm) {
 }
 
-cMaterialRef& cMaterialRef::operator=(const cMaterialRef& other) {
+cMaterialRef::cMaterialRef()
+:shared_ptr(NULL), rm(NULL) {
+}
+
+cMaterialRef& cMaterialRef::operator = (const cMaterialRef& other) {
 	shared_ptr<cMaterial>::operator=(other);
 	rm = other.rm;
 	return *this;
 }
 
-bool cMaterialRef::operator==(const cMaterialRef& other) {
+bool cMaterialRef::operator == (const cMaterialRef& other) {
 	return std::operator==(*this, other);
 }
 

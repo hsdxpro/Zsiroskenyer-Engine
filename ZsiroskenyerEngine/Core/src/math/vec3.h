@@ -7,6 +7,7 @@
 class Matrix44;
 class Vec3 {
 	public:
+		~Vec3(){}
 		float x,y,z;
 
 		Vec3() {x=y=z=0.0f;}

@@ -26,8 +26,9 @@ cCore::~cCore() {
 }
 
 void cCore::DebugRender(unsigned long renderFlags) {
-	//std::list<Vec3>* edgeList = physicsEngine->GetCollisionShapeEdges();
-	//delete edgeList;
+	//std::list<Vec3> edgeList = physicsEngine->GetCollisionShapeEdges();
+	std::list<Vec3> asdTeszt;
+	asdTeszt.push_back(Vec3(0,0,0));
 }
 
 void cCore::Update(float deltaT) {
@@ -39,7 +40,7 @@ cEntityType* cCore::CreateEntityType(const zsString& name, const zsString& graph
 	cResourceManager* GRMgr = graphicsEngine->GetResourceManager();
 	cGeometryRef* geom = GRMgr->GetGeometry(graphGeomPath);
 	cMaterialRef* mtl = GRMgr->GetMaterial(mtlPath);
-	IPhysicsType* physicsType = physicsEngine->LoadRigidType(physGeomPath, mass);
+	IPhysicsType* physicsType = physicsEngine->GetRigidType(physGeomPath, mass);
 
 	return logicEngine->CreateEntityType(name, geom, mtl, physicsType);
 }

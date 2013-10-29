@@ -50,7 +50,7 @@ public:
 
 	cCamera *GetActiveCamera() const override;
 
-	const std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare>& GetInstanceGroups() const;
+	const std::unordered_set<cInstanceGroup*, cInstGroupPtrHasher,cInstGroupPtrCompare>& GetInstanceGroups() const;
 private:
 	std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare> instanceGroups;
 	cResourceManager& managerResource;
