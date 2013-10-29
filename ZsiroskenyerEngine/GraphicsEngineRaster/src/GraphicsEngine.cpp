@@ -15,6 +15,7 @@
 #include "../../Core/src/IGraphicsApi.h"
 #include "../../Core/src/IShaderProgram.h"
 #include "../../Core/src/IConstantBuffer.h"
+#include "../../Core/src/IVertexBuffer.h"
 #include "../../Core/src/IIndexBuffer.h"
 #include "../../Core/src/Exception.h"
 #include "../../Core/src/math/Matrix44.h"
@@ -29,10 +30,9 @@ cGraphicsEngine::cGraphicsEngine() {
 	resourceManager = new cResourceManager(gApi);
 	sceneManager = new cSceneManager(*resourceManager);
 
-	IShaderProgram* sh = shaderManager->LoadShader(L"shaders/",L"test.cg");
-	if (!sh) {
-		ILog::GetInstance()->MsgBox(L"nincsen shader bazmeg");
-	}
+
+	shaderManager->LoadShader(L"shaders/",L"test.cg");
+	shaderManager->LoadShader(L"shaders/",L"LINE_RENDERER.cg");
 }
 
 void cGraphicsEngine::Release() {
@@ -78,17 +78,12 @@ void cGraphicsEngine::RenderSceneForward() {
 			// WorldViewProj matrix
 			Matrix44 wvp = world * viewMat * projMat;
 
-			// Create and load Constant buffers World
-			IConstantBuffer* worldBuffer = NULL;
-			worldBuffer = gApi->CreateBufferConstant(sizeof(Matrix44), eBufferUsage::DEFAULT, &world);
-			gApi->SetConstantBuffer(worldBuffer, 1);
-
-			// Create and load Constant buffers WorldViewProj
-			IConstantBuffer* wvpBuffer = NULL;
-			wvpBuffer = gApi->CreateBufferConstant(sizeof(Matrix44), eBufferUsage::DEFAULT, &wvp);
-			gApi->SetConstantBuffer(wvpBuffer, 0);
-
-
+			// Create, load constant buffers, World and WorldViewProj
+			IConstantBuffer* wvpBuffer = gApi->CreateBufferConstant(sizeof(Matrix44), eBufferUsage::DEFAULT, &wvp);
+			IConstantBuffer* worldBuffer= gApi->CreateBufferConstant(sizeof(Matrix44), eBufferUsage::DEFAULT, &world);
+				gApi->SetConstantBuffer(wvpBuffer, 0);
+				gApi->SetConstantBuffer(worldBuffer, 1);
+			
 			// Draw entity..
 			gApi->DrawIndexed(ib->GetSize() / sizeof(unsigned));
 
@@ -97,6 +92,49 @@ void cGraphicsEngine::RenderSceneForward() {
 			worldBuffer->Release();
 		}
 	}
+}
+
+void cGraphicsEngine::RenderLines(const Vec3* lines, size_t nLines, const Vec3& color /*= Vec3(1.0f, 1.0f, 1.0f)*/) {
+
+	// Create, set VertexBuffer for lines
+	IVertexBuffer* linesBuffer = gApi->CreateBufferVertex(nLines * 2, sizeof(Vec3), eBufferUsage::IMMUTABLE, (void*)lines);
+	gApi->SetVertexBuffer(linesBuffer, sizeof(Vec3));
+
+	// Csak azért van ez a retek kifejtés hogy jól látszódjon egyellõre a lényeg
+	// Constants are 16 byte aligned..
+	struct tColor {
+		Vec3 color;
+		float padding;
+	} constantColor;
+	constantColor.color = color;
+	
+	IConstantBuffer* colorBuffer = gApi->CreateBufferConstant(sizeof(tColor), eBufferUsage::DEFAULT, (void*)&constantColor);
+	gApi->SetConstantBuffer(colorBuffer, 1);
+
+	// Set camera constants
+	cCamera* cam = sceneManager->GetActiveCamera();
+		Matrix44 viewProjMat = cam->GetViewMatrix() * cam->GetProjMatrix();
+
+	IConstantBuffer* viewProjBuffer = gApi->CreateBufferConstant(sizeof(Matrix44), eBufferUsage::DEFAULT, &viewProjMat);
+	gApi->SetConstantBuffer(viewProjBuffer, 0);
+
+	// Set BackBuffer
+	gApi->SetRenderTargetDefault();
+
+	// Set Shader
+	IShaderProgram* sh = shaderManager->GetShaderByName(L"LINE_RENDERER.cg");
+	gApi->SetShaderProgram(sh);
+
+	// Set Line primitives for pipeline
+	gApi->SetPrimitiveTopology(ePrimitiveTopology::LINE_LIST);
+
+	// Draw lines
+	gApi->Draw(nLines * 2);
+
+	// Free up buffers
+	linesBuffer->Release();
+	colorBuffer->Release();
+	viewProjBuffer->Release();
 }
 
 ISceneManager* cGraphicsEngine::GetSceneManager()  {

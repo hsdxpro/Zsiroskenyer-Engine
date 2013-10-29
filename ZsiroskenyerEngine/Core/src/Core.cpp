@@ -26,9 +26,15 @@ cCore::~cCore() {
 }
 
 void cCore::DebugRender(unsigned long renderFlags) {
-	//std::list<Vec3> edgeList = physicsEngine->GetCollisionShapeEdges();
-	std::list<Vec3> asdTeszt;
-	asdTeszt.push_back(Vec3(0,0,0));
+	Vec3* edges = new Vec3[1000];
+	size_t nEdges;
+	physicsEngine->GetCollisionShapeEdges(edges, 1000, nEdges);
+
+	// The graphicsEngine can do it...
+
+	graphicsEngine->RenderLines(edges, nEdges, Vec3(1.0f, 0.0f, 0.0f));
+
+	delete[] edges;
 }
 
 void cCore::Update(float deltaT) {

@@ -7,8 +7,6 @@
 #include "zsString.h"
 #include "math\Vec3.h"
 
-#include <list>
-
 class IPhysicsEngine {
 public:
 	// Simulation of the physics world ( deltaT seconds )
@@ -21,7 +19,7 @@ public:
 	virtual IPhysicsType* GetRigidType(const zsString& geomPath, float mass) = 0;
 
 	// Get all edges from the physics world
-	virtual std::list<Vec3> GetCollisionShapeEdges() = 0;
+	virtual void GetCollisionShapeEdges(Vec3* edges, size_t size, size_t& nEdges) = 0;
 
 	// Check whether collision geometry exists based on filePath
 	virtual bool IsGeometryExists(const zsString& geomPath) = 0;

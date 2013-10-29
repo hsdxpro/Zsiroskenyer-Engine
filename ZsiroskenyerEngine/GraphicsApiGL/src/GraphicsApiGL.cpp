@@ -1,7 +1,6 @@
 #include "GraphicsApiGL.h"
 
 void cGraphicsApiGL::Release() {
-
 }
 
 IVertexBuffer* cGraphicsApiGL::CreateBufferVertex(size_t nVertices, size_t vertexStride, eBufferUsage usage, void* data /*= NULL*/) {
@@ -17,6 +16,10 @@ IConstantBuffer* cGraphicsApiGL::CreateBufferConstant(size_t size, eBufferUsage 
 }
 
 ITexture2D*	cGraphicsApiGL::CreateTexture(const zsString& filePath) {
+	return NULL;
+}
+
+IShaderProgram* cGraphicsApiGL::CreateShaderProgram(const zsString& shaderPath) {
 	return NULL;
 }
 
@@ -37,53 +40,40 @@ bool cGraphicsApiGL::ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, 
 }
 
 void cGraphicsApiGL::Clear(bool target /*= true*/, bool depth /*= false*/, bool stencil /*= false*/) {
-
 }
 
 void cGraphicsApiGL::Present() {
-	
 }
 
 void cGraphicsApiGL::Draw(size_t nVertices, size_t idxStartVertex /*= 0*/) {
-	
 }
 
 void cGraphicsApiGL::DrawIndexed(size_t nIndices, size_t idxStartIndex /*= 0*/) {
-	
 }
 
 void cGraphicsApiGL::DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex /*= 0*/, size_t idxStartInstance /*= 0*/) {
-	
 }
 
 void cGraphicsApiGL::DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex /*= 0*/, size_t idxStartInstance /*= 0*/) {
-	
 }
 
 void cGraphicsApiGL::SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) {
-	
 }
 
 void cGraphicsApiGL::SetIndexBuffer(const IIndexBuffer* indexBuffer) {
-	
 }
 
 void cGraphicsApiGL::SetInstanceData() {
-
 }
 
 void cGraphicsApiGL::SetTexture(const ITexture2D* tex, size_t slotIdx) {
-
 }
 
 void cGraphicsApiGL::SetShaderProgram(IShaderProgram* shProg) {
-
 }
 
-IShaderProgram* cGraphicsApiGL::CreateShaderProgram(const zsString& shaderPath) {
-	return NULL;
+void cGraphicsApiGL::SetPrimitiveTopology(ePrimitiveTopology t) {
 }
 
 void cGraphicsApiGL::SetWindow(IWindow *renderWindow) {
-
 }

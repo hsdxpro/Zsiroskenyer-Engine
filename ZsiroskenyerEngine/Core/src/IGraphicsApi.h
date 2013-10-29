@@ -8,16 +8,22 @@
 #include "../../Core/src/common.h"
 #include "../../Core/src/zsString.h"
 
+/*
 #ifdef max
 #define _377995BD_F40A_4067_A633_46AAA084AC7F
 #undef max
 #endif
+*/
 
 class IVertexBuffer;
 class IIndexBuffer;
 class IConstantBuffer;
 class IShaderProgram;
 class ITexture2D;
+
+enum class ePrimitiveTopology {
+	LINE_LIST,
+};
 
 class IGraphicsApi {
 public:
@@ -53,14 +59,16 @@ public:
 	virtual void SetConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) = 0;
 	virtual void SetTexture(const ITexture2D* tex, size_t slotIdx) = 0;
 	virtual void SetShaderProgram(IShaderProgram* shProg) = 0;
+	virtual void SetPrimitiveTopology(ePrimitiveTopology t) = 0;
 
 	// misc
 	virtual void SetWindow(IWindow *renderWindow) = 0;
 };
 
-
+/*
 
 #ifdef _377995BD_F40A_4067_A633_46AAA084AC7F
 #define max(a,b)	(((a) > (b)) ? (a) : (b))
 #undef _377995BD_F40A_4067_A633_46AAA084AC7F
 #endif
+*/

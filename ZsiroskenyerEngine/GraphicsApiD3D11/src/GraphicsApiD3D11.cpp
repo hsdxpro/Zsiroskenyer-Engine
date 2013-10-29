@@ -398,169 +398,6 @@ ITexture2D*	cGraphicsApiD3D11::CreateTexture(const zsString& filePath) {
 	return new cTexture2DColorD3D11(srv, width, height);
 }
 
-bool cGraphicsApiD3D11::WriteBuffer(IIndexBuffer* buffer , void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
-	ZSASSERT(buffer!=NULL);
-
-	if (buffer->GetSize()<size+offset)
-		return false;
-
-	HRESULT hr = S_OK;
-	ID3D11Buffer* d3dBuffer = (ID3D11Buffer*)buffer;
-	D3D11_MAPPED_SUBRESOURCE mappedRes;
-
-	hr = d3dcon->Map(d3dBuffer, 0, D3D11_MAP_WRITE, 0, &mappedRes);
-	if (hr!=S_OK) {
-		return false;
-	}
-
-	memcpy((void*)(size_t(mappedRes.pData)+offset), source, size);
-
-	d3dcon->Unmap(d3dBuffer, 0);
-
-	return true;
-}
-
-bool cGraphicsApiD3D11::WriteBuffer(IVertexBuffer* buffer, void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
-	ZSASSERT(buffer!=NULL);
-
-	if (buffer->GetSize()<size+offset)
-		return false;
-
-	HRESULT hr = S_OK;
-	ID3D11Buffer* d3dBuffer = (ID3D11Buffer*)buffer;
-	D3D11_MAPPED_SUBRESOURCE mappedRes;
-
-	hr = d3dcon->Map(d3dBuffer, 0, D3D11_MAP_WRITE, 0, &mappedRes);
-	if (hr!=S_OK) {
-		return false;
-	}
-
-	memcpy((void*)(size_t(mappedRes.pData)+offset), source, size);
-
-	d3dcon->Unmap(d3dBuffer, 0);
-
-	return true;
-}
-
-bool cGraphicsApiD3D11::ReadBuffer(IIndexBuffer* buffer , void* dest, size_t size, size_t offset /*= 0*/) {
-	ZSASSERT(buffer!=NULL);
-
-	if (buffer->GetSize()<size+offset)
-		return false;
-
-	HRESULT hr = S_OK;
-	ID3D11Buffer* d3dBuffer = (ID3D11Buffer*)buffer;
-	D3D11_MAPPED_SUBRESOURCE mappedRes;
-
-	hr = d3dcon->Map(d3dBuffer, 0, D3D11_MAP_READ, 0, &mappedRes);
-	if (hr!=S_OK) {
-		return false;
-	}
-
-	memcpy(dest, (void*)(size_t(mappedRes.pData)+offset), size);
-
-	d3dcon->Unmap(d3dBuffer, 0);
-
-	return true;
-}
-
-bool cGraphicsApiD3D11::ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset /*= 0*/) {
-	ZSASSERT(buffer!=NULL);
-
-	if (buffer->GetSize()<size+offset)
-		return false;
-
-	HRESULT hr = S_OK;
-	ID3D11Buffer* d3dBuffer = (ID3D11Buffer*)buffer;
-	D3D11_MAPPED_SUBRESOURCE mappedRes;
-
-	hr = d3dcon->Map(d3dBuffer, 0, D3D11_MAP_READ, 0, &mappedRes);
-	if (hr!=S_OK) {
-		return false;
-	}
-
-	memcpy(dest, (void*)(size_t(mappedRes.pData) + offset), size);
-
-	d3dcon->Unmap(d3dBuffer, 0);
-
-	return true;
-}
-
-void cGraphicsApiD3D11::SetConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) {
-	ID3D11Buffer* cBuffer = ((cConstantBufferD3D11*)buffer)->GetBufferPointer();
-	d3dcon->VSSetConstantBuffers(slotIdx, 1, &cBuffer);
-}
-
-////////////////////
-// draw
-////////////////////
-void cGraphicsApiD3D11::Clear(bool target /*= true*/, bool depth /*= false*/, bool stencil /*= false*/) {
-	static const FLOAT defaultClearColor[4] = { 0.3f, 0.3f, 0.3f, 0.0f };
-
-	// Setup clear flags
-	UINT clearFlags = 0;
-	if(depth)
-		clearFlags |= D3D11_CLEAR_DEPTH;
-	if(stencil)
-		clearFlags |= D3D11_CLEAR_STENCIL;
-
-	// Clear depth, stencil if needed
-	if(depth || stencil)
-		d3dcon->ClearDepthStencilView(backBufferDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-	// Clear BackBuffer
-	if(target)
-		d3dcon->ClearRenderTargetView(backBufferRTV, defaultClearColor);
-}
-
-void cGraphicsApiD3D11::Present() {
-	ZSASSERT_MSG(d3dsc != NULL, L"Need to set window for rendering");
-	d3dsc->Present(0,0);
-}
-
-void cGraphicsApiD3D11::Draw(size_t nVertices, size_t idxStartVertex /*= 0*/) {
-	d3dcon->Draw(nVertices, idxStartVertex);
-}
-
-void cGraphicsApiD3D11::DrawIndexed(size_t nIndices, size_t idxStartIndex /*= 0*/) {
-	d3dcon->DrawIndexed(nIndices, idxStartIndex, 0);
-}
-
-void cGraphicsApiD3D11::DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex /*= 0*/, size_t idxStartInstance /*= 0*/) {
-	d3dcon->DrawInstanced(nVerticesPerInstance, nInstances, idxStartVertex, idxStartInstance);
-}
-
-void cGraphicsApiD3D11::DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex /*= 0*/, size_t idxStartInstance /*= 0*/) {
-	d3dcon->DrawIndexedInstanced(nIndicesPerInstance, nInstances, idxStartIndex, 0, idxStartInstance);
-}
-
-void cGraphicsApiD3D11::SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) {
-	const UINT strides = vertexStride;
-	const UINT offset = 0;
-	ID3D11Buffer* vertices = ((cVertexBufferD3D11*)vertexBuffer)->GetBufferPointer();
-	d3dcon->IASetVertexBuffers(0, 1, &vertices, &strides, &offset);
-}
-
-void cGraphicsApiD3D11::SetIndexBuffer(const IIndexBuffer* indexBuffer) {
-	d3dcon->IASetIndexBuffer(((cIndexBufferD3D11*)indexBuffer)->GetBufferPointer(), DXGI_FORMAT_R32_UINT, 0);
-}
-
-void cGraphicsApiD3D11::SetInstanceData() {
-
-}
-
-void cGraphicsApiD3D11::SetTexture(const ITexture2D* tex, size_t slotIdx) {
-	ID3D11ShaderResourceView *srv = ((cTexture2DColorD3D11*)tex)->GetSRV();
-	d3dcon->PSSetShaderResources(slotIdx, 1, &srv);
-}
-
-void cGraphicsApiD3D11::SetShaderProgram(IShaderProgram* shProg) {
-	const cShaderProgramD3D11* shProgD3D11 = (cShaderProgramD3D11*)shProg;
-	d3dcon->IASetInputLayout(shProgD3D11->GetInputLayout());
-	d3dcon->VSSetShader(shProgD3D11->GetVertexShader(), 0, 0);
-	d3dcon->PSSetShader(shProgD3D11->GetPixelShader(), 0, 0);
-}
-
 IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPath) {
 
 	// For example, test.cg  ->  test
@@ -712,6 +549,177 @@ IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPat
 
 	return new cShaderProgramD3D11(vertexFormat, alignedByteOffset, inputLayout, vs, ps);
 }
+
+bool cGraphicsApiD3D11::WriteBuffer(IIndexBuffer* buffer , void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
+	ZSASSERT(buffer!=NULL);
+
+	if (buffer->GetSize()<size+offset)
+		return false;
+
+	HRESULT hr = S_OK;
+	ID3D11Buffer* d3dBuffer = (ID3D11Buffer*)buffer;
+	D3D11_MAPPED_SUBRESOURCE mappedRes;
+
+	hr = d3dcon->Map(d3dBuffer, 0, D3D11_MAP_WRITE, 0, &mappedRes);
+	if (hr!=S_OK) {
+		return false;
+	}
+
+	memcpy((void*)(size_t(mappedRes.pData)+offset), source, size);
+
+	d3dcon->Unmap(d3dBuffer, 0);
+
+	return true;
+}
+
+bool cGraphicsApiD3D11::WriteBuffer(IVertexBuffer* buffer, void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
+	ZSASSERT(buffer!=NULL);
+
+	if (buffer->GetSize()<size+offset)
+		return false;
+
+	HRESULT hr = S_OK;
+	ID3D11Buffer* d3dBuffer = (ID3D11Buffer*)buffer;
+	D3D11_MAPPED_SUBRESOURCE mappedRes;
+
+	hr = d3dcon->Map(d3dBuffer, 0, D3D11_MAP_WRITE, 0, &mappedRes);
+	if (hr!=S_OK) {
+		return false;
+	}
+
+	memcpy((void*)(size_t(mappedRes.pData)+offset), source, size);
+
+	d3dcon->Unmap(d3dBuffer, 0);
+
+	return true;
+}
+
+bool cGraphicsApiD3D11::ReadBuffer(IIndexBuffer* buffer , void* dest, size_t size, size_t offset /*= 0*/) {
+	ZSASSERT(buffer!=NULL);
+
+	if (buffer->GetSize()<size+offset)
+		return false;
+
+	HRESULT hr = S_OK;
+	ID3D11Buffer* d3dBuffer = (ID3D11Buffer*)buffer;
+	D3D11_MAPPED_SUBRESOURCE mappedRes;
+
+	hr = d3dcon->Map(d3dBuffer, 0, D3D11_MAP_READ, 0, &mappedRes);
+	if (hr!=S_OK) {
+		return false;
+	}
+
+	memcpy(dest, (void*)(size_t(mappedRes.pData)+offset), size);
+
+	d3dcon->Unmap(d3dBuffer, 0);
+
+	return true;
+}
+
+bool cGraphicsApiD3D11::ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset /*= 0*/) {
+	ZSASSERT(buffer!=NULL);
+
+	if (buffer->GetSize()<size+offset)
+		return false;
+
+	HRESULT hr = S_OK;
+	ID3D11Buffer* d3dBuffer = (ID3D11Buffer*)buffer;
+	D3D11_MAPPED_SUBRESOURCE mappedRes;
+
+	hr = d3dcon->Map(d3dBuffer, 0, D3D11_MAP_READ, 0, &mappedRes);
+	if (hr!=S_OK) {
+		return false;
+	}
+
+	memcpy(dest, (void*)(size_t(mappedRes.pData) + offset), size);
+
+	d3dcon->Unmap(d3dBuffer, 0);
+
+	return true;
+}
+
+void cGraphicsApiD3D11::SetConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) {
+	ID3D11Buffer* cBuffer = ((cConstantBufferD3D11*)buffer)->GetBufferPointer();
+	d3dcon->VSSetConstantBuffers(slotIdx, 1, &cBuffer);
+}
+
+////////////////////
+// draw
+////////////////////
+void cGraphicsApiD3D11::Clear(bool target /*= true*/, bool depth /*= false*/, bool stencil /*= false*/) {
+	static const FLOAT defaultClearColor[4] = { 0.3f, 0.3f, 0.3f, 0.0f };
+
+	// Setup clear flags
+	UINT clearFlags = 0;
+	if(depth)
+		clearFlags |= D3D11_CLEAR_DEPTH;
+	if(stencil)
+		clearFlags |= D3D11_CLEAR_STENCIL;
+
+	// Clear depth, stencil if needed
+	if(depth || stencil)
+		d3dcon->ClearDepthStencilView(backBufferDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	// Clear BackBuffer
+	if(target)
+		d3dcon->ClearRenderTargetView(backBufferRTV, defaultClearColor);
+}
+
+void cGraphicsApiD3D11::Present() {
+	ZSASSERT_MSG(d3dsc != NULL, L"Need to set window for rendering");
+	d3dsc->Present(0,0);
+}
+
+void cGraphicsApiD3D11::Draw(size_t nVertices, size_t idxStartVertex /*= 0*/) {
+	d3dcon->Draw(nVertices, idxStartVertex);
+}
+
+void cGraphicsApiD3D11::DrawIndexed(size_t nIndices, size_t idxStartIndex /*= 0*/) {
+	d3dcon->DrawIndexed(nIndices, idxStartIndex, 0);
+}
+
+void cGraphicsApiD3D11::DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex /*= 0*/, size_t idxStartInstance /*= 0*/) {
+	d3dcon->DrawInstanced(nVerticesPerInstance, nInstances, idxStartVertex, idxStartInstance);
+}
+
+void cGraphicsApiD3D11::DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex /*= 0*/, size_t idxStartInstance /*= 0*/) {
+	d3dcon->DrawIndexedInstanced(nIndicesPerInstance, nInstances, idxStartIndex, 0, idxStartInstance);
+}
+
+void cGraphicsApiD3D11::SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) {
+	const UINT strides = vertexStride;
+	const UINT offset = 0;
+	ID3D11Buffer* vertices = ((cVertexBufferD3D11*)vertexBuffer)->GetBufferPointer();
+	d3dcon->IASetVertexBuffers(0, 1, &vertices, &strides, &offset);
+}
+
+void cGraphicsApiD3D11::SetIndexBuffer(const IIndexBuffer* indexBuffer) {
+	d3dcon->IASetIndexBuffer(((cIndexBufferD3D11*)indexBuffer)->GetBufferPointer(), DXGI_FORMAT_R32_UINT, 0);
+}
+
+void cGraphicsApiD3D11::SetInstanceData() {
+}
+
+void cGraphicsApiD3D11::SetTexture(const ITexture2D* tex, size_t slotIdx) {
+	ID3D11ShaderResourceView *srv = ((cTexture2DColorD3D11*)tex)->GetSRV();
+	d3dcon->PSSetShaderResources(slotIdx, 1, &srv);
+}
+
+void cGraphicsApiD3D11::SetShaderProgram(IShaderProgram* shProg) {
+	const cShaderProgramD3D11* shProgD3D11 = (cShaderProgramD3D11*)shProg;
+	d3dcon->IASetInputLayout(shProgD3D11->GetInputLayout());
+	d3dcon->VSSetShader(shProgD3D11->GetVertexShader(), 0, 0);
+	d3dcon->PSSetShader(shProgD3D11->GetPixelShader(), 0, 0);
+}
+
+void cGraphicsApiD3D11::SetPrimitiveTopology(ePrimitiveTopology t) {
+	switch(t) {
+		case ePrimitiveTopology::LINE_LIST:
+			d3dcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
+			break;
+	}
+}
+
 
 HRESULT cGraphicsApiD3D11::CompileShaderFromFile(const zsString& fileName, const zsString& entry, const zsString& profile, ID3DBlob** ppBlobOut) {
 	HRESULT hr = S_OK;

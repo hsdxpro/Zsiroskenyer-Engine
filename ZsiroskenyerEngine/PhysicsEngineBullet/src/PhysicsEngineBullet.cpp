@@ -9,8 +9,6 @@
 #include <algorithm>
 #include <list>
 cPhysicsEngineBullet::cPhysicsEngineBullet() {
-	//PHYSICSDEBUGDRAWER* drawer = new PHYSICSDEBUGDRAWER();
-
 	///collision configuration contains default setup for memory, collision setup. Advanced users can create their own configuration.
 	btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
 
@@ -37,7 +35,7 @@ cPhysicsEngineBullet::cPhysicsEngineBullet() {
 	//drawer->setDebugMode(drawer->DBG_DrawAabb);
 	//m_physicsworld->setDebugDrawer(drawer);
 	
-	physicsWorld->setGravity(btVector3(0 ,0 ,-200));
+	physicsWorld->setGravity(btVector3(0 ,0 ,-10));
 
 	physicsWorld->getDispatchInfo().m_useContinuous = true;
 	//Ragadós Spagetti effektus :D
@@ -158,38 +156,50 @@ btRigidBody* cPhysicsEngineBullet::ShootBox(const Vec3& camPos,const Vec3& desti
 	return NULL;
 }
 
-std::list<Vec3> cPhysicsEngineBullet::GetCollisionShapeEdges() {
-	
-	// Final list
-	std::list<Vec3> edges;
-
-	// For Edge points...
-	btVector3 p1;
-	btVector3 p2;
-
-	Vec3 fP1;
-	Vec3 fP2;
+void cPhysicsEngineBullet::GetCollisionShapeEdges(Vec3* edges, size_t size, size_t& nEdges) {
+	// Edge points
+	btVector3 p1, p2;
+	Vec3 fP1, fP2;
 
 	auto colObjArray = physicsWorld->getCollisionWorld()->getCollisionObjectArray();
 	size_t nObjs = physicsWorld->getNumCollisionObjects();
+
+	// Vec3* edges to small
+	ZSASSERT(size >= nObjs * sizeof(Vec3));
+
+	size_t edgeIndex = 0;
+	nEdges = 0;
 	for(size_t i = 0; i < nObjs; i++) {
 		btCollisionShape* colShape = colObjArray[i]->getCollisionShape();
+		btTransform worldTrans = colObjArray[i]->getWorldTransform();
 
 		// Add each edge from convex Shape to the list
 		if(colObjArray[i]->getCollisionShape()->isConvex()) {
 			btConvexHullShape* convCol = (btConvexHullShape*)colShape;
-			size_t nEdges = convCol->getNumEdges();
+			size_t nEdgesOnColShape = convCol->getNumEdges();
+			nEdges += nEdgesOnColShape;
 			for(size_t j = 0; j < nEdges; j++) {
 				convCol->getEdge(j, p1, p2);
-				edges.push_back(Vec3(p1.x(), p1.y(), p1.z()));
-				edges.push_back(Vec3(p2.x(), p2.y(), p2.z()));
+
+				// Transform From local space to World space
+				p1 = worldTrans * p1;
+				p2 = worldTrans * p2;
+
+				// Save values
+					edges[edgeIndex].x = p1.x();
+					edges[edgeIndex].y = p1.y();
+					edges[edgeIndex].z = p1.z();
+				edgeIndex++;
+					edges[edgeIndex].x = p2.x();
+					edges[edgeIndex].y = p2.y();
+					edges[edgeIndex].z = p2.z();
+				edgeIndex++;
 			}
 			
 		} else {
 			//@TODO CONCAVE CollisionObject extraction to edge list...
 		}
 	}
-	return edges;
 }
 
 bool cPhysicsEngineBullet::IsGeometryExists(const zsString& geomPath) {

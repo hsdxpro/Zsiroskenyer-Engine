@@ -34,7 +34,7 @@ public:
 	void SetInstanceData(/*whatever*/) override;
 	void SetTexture(const ITexture2D* tex, size_t slotIdx) override;
 	void SetShaderProgram(IShaderProgram* shProg) override;
-
+	void SetPrimitiveTopology(ePrimitiveTopology t) override;
 	void SetWindow(IWindow *renderWindow) override;
 protected:
 };

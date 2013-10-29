@@ -19,7 +19,7 @@ public:
 	IPhysicsType* GetRigidType(const zsString& geomPath, float mass) override;
 	btRigidBody* ShootBox(const Vec3& camPos,const Vec3& destination);
 
-	std::list<Vec3> GetCollisionShapeEdges() override;
+	void GetCollisionShapeEdges(Vec3* edges, size_t size , size_t& nEdges) override;
 
 	bool IsGeometryExists(const zsString& geomPath);
 

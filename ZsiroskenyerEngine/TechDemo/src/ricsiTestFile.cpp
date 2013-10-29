@@ -53,7 +53,7 @@ int ricsiMain() {
 	cEntityType* boxType = core->CreateEntityType(L"dyn_box", L"objects/box.dae", L"objects/box.dae", L"materials/test.zsm", mass);
 
 	// Create entity
-	const Vec3 position = Vec3(0, 155, 0);
+	const Vec3 position = Vec3(0, 60, 20);
 	cEntity* entity = core->AddEntity(boxType, position);
 
 	// Main loop
@@ -67,7 +67,7 @@ int ricsiMain() {
 		core->Update(cTimer::getDeltaSeconds());
 
 		// Render Scene
-		gEngine->RenderSceneForward();
+		//gEngine->RenderSceneForward();
 
 		core->DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
 

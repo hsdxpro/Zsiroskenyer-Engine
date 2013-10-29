@@ -21,6 +21,7 @@ public:
 	void Release() override;
 
 	void RenderSceneForward() override;
+	void RenderLines(const Vec3* lines, size_t nLines, const Vec3& color = Vec3(1.0f, 1.0f, 1.0f)) override;
 
 	ISceneManager*		GetSceneManager();
 	cResourceManager*	GetResourceManager();

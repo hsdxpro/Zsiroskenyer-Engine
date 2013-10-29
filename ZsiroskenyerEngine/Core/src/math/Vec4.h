@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <iostream>
+#include "vec3.h"
 
 class Matrix44;
 class Vec4 {
@@ -10,6 +11,7 @@ public:
 	float x,y,z, w;
 
 	Vec4();
+	Vec4(const Vec3& v, float w);
 	Vec4(float x, float y, float z, float w);
 	Vec4(float v[4]);
 
