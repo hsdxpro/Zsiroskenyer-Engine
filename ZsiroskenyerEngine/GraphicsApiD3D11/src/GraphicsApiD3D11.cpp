@@ -290,12 +290,11 @@ IVertexBuffer* cGraphicsApiD3D11::CreateBufferVertex(size_t nVertices, size_t ve
 	ID3D11Buffer* buffer = NULL;
 
 	D3D11_BUFFER_DESC desc;
-	memset(&desc, 0, sizeof(desc));
 	desc.ByteWidth = nVertices * vertexStride;
 	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = vertexStride;
-	switch(usage){
+	switch(usage) {
 	case eBufferUsage::DEFAULT:		desc.Usage = D3D11_USAGE_DEFAULT;		desc.CPUAccessFlags = 0;												break;
 	case eBufferUsage::IMMUTABLE:	desc.Usage = D3D11_USAGE_IMMUTABLE;		desc.CPUAccessFlags = 0;												break;
 	case eBufferUsage::DYNAMIC:		desc.Usage = D3D11_USAGE_DYNAMIC;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;							break;
@@ -304,6 +303,8 @@ IVertexBuffer* cGraphicsApiD3D11::CreateBufferVertex(size_t nVertices, size_t ve
 
 	D3D11_SUBRESOURCE_DATA resData;
 	resData.pSysMem = data;
+	resData.SysMemPitch = 0;
+	resData.SysMemSlicePitch = 0;
 
 	HRESULT hr = d3ddev->CreateBuffer(&desc, &resData, &buffer);
 	if (hr!=S_OK) {
@@ -318,7 +319,6 @@ IIndexBuffer* cGraphicsApiD3D11::CreateBufferIndex(size_t size , eBufferUsage us
 	ID3D11Buffer* buffer = NULL;
 
 	D3D11_BUFFER_DESC desc;
-	memset(&desc, 0, sizeof(desc));
 	desc.ByteWidth = size;
 	desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	desc.MiscFlags = 0;
@@ -331,8 +331,9 @@ IIndexBuffer* cGraphicsApiD3D11::CreateBufferIndex(size_t size , eBufferUsage us
 	}
 
 	D3D11_SUBRESOURCE_DATA resData;
-	memset(&resData, 0, sizeof(resData));
 	resData.pSysMem = data;
+	resData.SysMemPitch = 0;
+	resData.SysMemSlicePitch = 0;
 
 	HRESULT hr = d3ddev->CreateBuffer(&desc, &resData, &buffer);
 	if (hr != S_OK) {
@@ -347,12 +348,11 @@ IConstantBuffer* cGraphicsApiD3D11::CreateBufferConstant(size_t size , eBufferUs
 	ID3D11Buffer* buffer = NULL;
 
 	D3D11_BUFFER_DESC desc;
-	memset(&desc, 0, sizeof(desc));
-	desc.ByteWidth = size;
+	desc.ByteWidth = (size < 16) ? 16 : size; // shader constants are 16 byte aligned ...
 	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = 0;
-	switch(usage){
+	switch(usage) {
 	case eBufferUsage::DEFAULT:		desc.Usage = D3D11_USAGE_DEFAULT;		desc.CPUAccessFlags = 0;												break;
 	case eBufferUsage::IMMUTABLE:	desc.Usage = D3D11_USAGE_IMMUTABLE;		desc.CPUAccessFlags = 0;												break;
 	case eBufferUsage::DYNAMIC:		desc.Usage = D3D11_USAGE_DYNAMIC;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;							break;
@@ -360,8 +360,9 @@ IConstantBuffer* cGraphicsApiD3D11::CreateBufferConstant(size_t size , eBufferUs
 	}
 
 	D3D11_SUBRESOURCE_DATA resData;
-	memset(&resData, 0, sizeof(resData));
 	resData.pSysMem = data;
+	resData.SysMemPitch = 0;
+	resData.SysMemSlicePitch = 0;
 
 	HRESULT hr = d3ddev->CreateBuffer(&desc, &resData, &buffer);
 	if (hr != S_OK) {
@@ -638,9 +639,14 @@ bool cGraphicsApiD3D11::ReadBuffer(IVertexBuffer* buffer, void* dest, size_t siz
 	return true;
 }
 
-void cGraphicsApiD3D11::SetConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) {
+void cGraphicsApiD3D11::SetVSConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) {
 	ID3D11Buffer* cBuffer = ((cConstantBufferD3D11*)buffer)->GetBufferPointer();
 	d3dcon->VSSetConstantBuffers(slotIdx, 1, &cBuffer);
+}
+
+void cGraphicsApiD3D11::SetPSConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) {
+	ID3D11Buffer* cBuffer = ((cConstantBufferD3D11*)buffer)->GetBufferPointer();
+	d3dcon->PSSetConstantBuffers(slotIdx, 1, &cBuffer);
 }
 
 ////////////////////

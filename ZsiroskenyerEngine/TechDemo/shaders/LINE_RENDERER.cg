@@ -1,5 +1,5 @@
 float4x4 viewProjMat;
-float4 color;
+float3 color;
 
 
 struct VS_IN {
@@ -23,6 +23,6 @@ VS_OUT VS_MAIN(VS_IN In) {
 
 PS_OUT PS_MAIN(VS_OUT In) {
 	PS_OUT pout;
-		pout.color = color;
+		pout.color = float4(color,1.0f);
 	return pout;
 };

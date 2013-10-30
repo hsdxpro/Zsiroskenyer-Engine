@@ -6,12 +6,9 @@
 //version 3.1.0.13
 //profile ps_5_0
 //program PS_MAIN
-//semantic viewProjMat : C0
-//semantic color : C5
-//semantic dummy1
-//semantic dummy2
-//semantic dummy3
-//var float4 color : C5 : _color : -1 : 1
+//semantic viewProjMat
+//semantic color
+//var float3 color :  : _color : -1 : 1
 //var float4 In.posH : $vin.SV_POSITION :  : 0 : 0
 //var float4 PS_MAIN.color : $vout.COLOR : COLOR : -1 : 1
 
@@ -33,7 +30,7 @@ struct X1X {
     float4 _SV_POSITION : SV_POSITION;
 };
 
-float4 _color : register(c5);
+float3 _color;
 
  // main procedure, the original name was PS_MAIN
 PS_OUT main()
@@ -41,6 +38,6 @@ PS_OUT main()
 
     PS_OUT _pout;
 
-    _pout._color1 = _color;
+    _pout._color1 = float4(_color.x, _color.y, _color.z,  1.00000000000000000E000f);
     return _pout;
 } // main end

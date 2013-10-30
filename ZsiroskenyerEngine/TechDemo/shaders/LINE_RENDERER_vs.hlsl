@@ -6,12 +6,9 @@
 //version 3.1.0.13
 //profile vs_5_0
 //program VS_MAIN
-//semantic viewProjMat : C0
-//semantic color : C5
-//semantic dummy1
-//semantic dummy2
-//semantic dummy3
-//var float4x4 viewProjMat : C0 : _viewProjMat[0], 4 : -1 : 1
+//semantic viewProjMat
+//semantic color
+//var float4x4 viewProjMat :  : _viewProjMat[0], 4 : -1 : 1
 //var float3 In.posL : $vin.POSITION : POSITION : 0 : 1
 //var float4 VS_MAIN.posH : $vout.SV_POSITION :  : -1 : 1
 
@@ -34,7 +31,7 @@ struct X1X {
 };
 
 static X1X cout;
-float4x4 _viewProjMat : register(c0);
+float4x4 _viewProjMat;
 
  // main procedure, the original name was VS_MAIN
 X1X main(in VS_IN _In)

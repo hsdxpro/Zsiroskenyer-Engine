@@ -8,13 +8,6 @@
 #include "../../Core/src/common.h"
 #include "../../Core/src/zsString.h"
 
-/*
-#ifdef max
-#define _377995BD_F40A_4067_A633_46AAA084AC7F
-#undef max
-#endif
-*/
-
 class IVertexBuffer;
 class IIndexBuffer;
 class IConstantBuffer;
@@ -56,7 +49,8 @@ public:
 	virtual void SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) = 0;
 	virtual void SetIndexBuffer(const IIndexBuffer* indexBuffer) = 0;
 	virtual void SetInstanceData(/*whatever*/) = 0;
-	virtual void SetConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) = 0;
+	virtual void SetVSConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) = 0;
+	virtual void SetPSConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) = 0;
 	virtual void SetTexture(const ITexture2D* tex, size_t slotIdx) = 0;
 	virtual void SetShaderProgram(IShaderProgram* shProg) = 0;
 	virtual void SetPrimitiveTopology(ePrimitiveTopology t) = 0;
@@ -64,11 +58,3 @@ public:
 	// misc
 	virtual void SetWindow(IWindow *renderWindow) = 0;
 };
-
-/*
-
-#ifdef _377995BD_F40A_4067_A633_46AAA084AC7F
-#define max(a,b)	(((a) > (b)) ? (a) : (b))
-#undef _377995BD_F40A_4067_A633_46AAA084AC7F
-#endif
-*/

@@ -81,8 +81,8 @@ void cGraphicsEngine::RenderSceneForward() {
 			// Create, load constant buffers, World and WorldViewProj
 			IConstantBuffer* wvpBuffer = gApi->CreateBufferConstant(sizeof(Matrix44), eBufferUsage::DEFAULT, &wvp);
 			IConstantBuffer* worldBuffer= gApi->CreateBufferConstant(sizeof(Matrix44), eBufferUsage::DEFAULT, &world);
-				gApi->SetConstantBuffer(wvpBuffer, 0);
-				gApi->SetConstantBuffer(worldBuffer, 1);
+				gApi->SetVSConstantBuffer(wvpBuffer, 0);
+				gApi->SetVSConstantBuffer(worldBuffer, 1);
 			
 			// Draw entity..
 			gApi->DrawIndexed(ib->GetSize() / sizeof(unsigned));
@@ -100,23 +100,15 @@ void cGraphicsEngine::RenderLines(const Vec3* lines, size_t nLines, const Vec3& 
 	IVertexBuffer* linesBuffer = gApi->CreateBufferVertex(nLines * 2, sizeof(Vec3), eBufferUsage::IMMUTABLE, (void*)lines);
 	gApi->SetVertexBuffer(linesBuffer, sizeof(Vec3));
 
-	// Csak azért van ez a retek kifejtés hogy jól látszódjon egyellõre a lényeg
-	// Constants are 16 byte aligned..
-	struct tColor {
-		Vec3 color;
-		float padding;
-	} constantColor;
-	constantColor.color = color;
-	
-	IConstantBuffer* colorBuffer = gApi->CreateBufferConstant(sizeof(tColor), eBufferUsage::DEFAULT, (void*)&constantColor);
-	gApi->SetConstantBuffer(colorBuffer, 1);
-
 	// Set camera constants
 	cCamera* cam = sceneManager->GetActiveCamera();
 		Matrix44 viewProjMat = cam->GetViewMatrix() * cam->GetProjMatrix();
 
 	IConstantBuffer* viewProjBuffer = gApi->CreateBufferConstant(sizeof(Matrix44), eBufferUsage::DEFAULT, &viewProjMat);
-	gApi->SetConstantBuffer(viewProjBuffer, 0);
+	gApi->SetVSConstantBuffer(viewProjBuffer, 0);
+
+	IConstantBuffer* colorBuffer = gApi->CreateBufferConstant(sizeof(Vec3), eBufferUsage::DEFAULT, (void*)&color);
+	gApi->SetPSConstantBuffer(colorBuffer, 0);
 
 	// Set BackBuffer
 	gApi->SetRenderTargetDefault();
