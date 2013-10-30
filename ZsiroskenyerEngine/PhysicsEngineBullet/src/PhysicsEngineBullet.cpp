@@ -94,6 +94,17 @@ IPhysicsType* cPhysicsEngineBullet::GetRigidType(const zsString& geomPath, float
 	cGeometryBuilder b;
 	cGeometryBuilder::tGeometryDesc d = b.LoadGeometry(geomPath);
 
+	/*
+	// Our Engine coord space is x right, y front, z up.
+	// Bullet uses x right y up , z front, so transform d.vertices
+	for(size_t i = 0; i < d.nVertices; i++) {
+		Vec3* vertPos = (Vec3*)((char*)d.vertices + i * d.vertexStride);
+		float tmp = vertPos->z;
+		vertPos->z = vertPos->y;
+		vertPos->y = tmp;
+	}
+	*/
+
 	IPhysicsType* type;
 	// Geom doesn't exists, create it
 	if(! IsGeometryExists(geomPath)) {
@@ -178,7 +189,8 @@ void cPhysicsEngineBullet::GetCollisionShapeEdges(Vec3* edges, size_t size, size
 			btConvexHullShape* convCol = (btConvexHullShape*)colShape;
 			size_t nEdgesOnColShape = convCol->getNumEdges();
 			nEdges += nEdgesOnColShape;
-			for(size_t j = 0; j < nEdges; j++) {
+
+			for(size_t j = 0; j < nEdgesOnColShape; j++) {
 				convCol->getEdge(j, p1, p2);
 
 				// Transform From local space to World space

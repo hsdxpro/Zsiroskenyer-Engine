@@ -16,6 +16,7 @@ class ITexture2D;
 
 enum class ePrimitiveTopology {
 	LINE_LIST,
+	TRIANGLE_LIST,
 };
 
 class IGraphicsApi {

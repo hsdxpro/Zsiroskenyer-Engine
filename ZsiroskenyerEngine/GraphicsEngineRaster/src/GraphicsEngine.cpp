@@ -127,6 +127,9 @@ void cGraphicsEngine::RenderLines(const Vec3* lines, size_t nLines, const Vec3& 
 	linesBuffer->Release();
 	colorBuffer->Release();
 	viewProjBuffer->Release();
+
+	// // Set TRIANGLE primitives for pipeline
+	gApi->SetPrimitiveTopology(ePrimitiveTopology::TRIANGLE_LIST);
 }
 
 ISceneManager* cGraphicsEngine::GetSceneManager()  {

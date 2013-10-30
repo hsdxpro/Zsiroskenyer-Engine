@@ -67,7 +67,7 @@ int ricsiMain() {
 		core->Update(cTimer::getDeltaSeconds());
 
 		// Render Scene
-		//gEngine->RenderSceneForward();
+		gEngine->RenderSceneForward();
 
 		core->DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
 

@@ -721,7 +721,10 @@ void cGraphicsApiD3D11::SetShaderProgram(IShaderProgram* shProg) {
 void cGraphicsApiD3D11::SetPrimitiveTopology(ePrimitiveTopology t) {
 	switch(t) {
 		case ePrimitiveTopology::LINE_LIST:
-			d3dcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
+			d3dcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+			break;
+		case ePrimitiveTopology::TRIANGLE_LIST:
+			d3dcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			break;
 	}
 }
