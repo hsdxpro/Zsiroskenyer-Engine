@@ -8,6 +8,8 @@
 #include "IGraphicsEngine.h"
 #include "LogicEngine.h"
 
+// For debug rendering
+#include "Renderer.h"
 
 class cCore {
 public:
@@ -33,9 +35,10 @@ protected:
 	cCore();
 	static cCore* instance;
 
-	IGraphicsEngine *graphicsEngine;
+	IGraphicsEngine* graphicsEngine;
 	IPhysicsEngine* physicsEngine;
 	cLogicEngine*	logicEngine;
+	cRenderer* debugRenderer;
 
 	std::list<cGraphicsEntity*> graphicsEntities;
 	std::list<IPhysicsEntity*> physicsEntities;

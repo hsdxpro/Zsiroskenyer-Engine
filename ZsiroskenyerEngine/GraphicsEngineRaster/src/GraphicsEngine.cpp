@@ -10,16 +10,18 @@
 #include "ShaderManager.h"
 
 #include "Geometry.h"
-#include "../../Core/src/Camera.h"
+#include "..\..\Core\src\GraphicsEntity.h"
+#include "..\..\Core\src\Camera.h"
 
-#include "../../Core/src/IGraphicsApi.h"
-#include "../../Core/src/IShaderProgram.h"
-#include "../../Core/src/IConstantBuffer.h"
-#include "../../Core/src/IVertexBuffer.h"
-#include "../../Core/src/IIndexBuffer.h"
-#include "../../Core/src/Exception.h"
-#include "../../Core/src/math/Matrix44.h"
-#include "../../Core/src/common.h"
+#include "..\..\Core\src\IGraphicsApi.h"
+#include "..\..\Core\src\IShaderProgram.h"
+#include "..\..\Core\src\IConstantBuffer.h"
+#include "..\..\Core\src\IVertexBuffer.h"
+#include "..\..\Core\src\IIndexBuffer.h"
+
+#include "..\..\Core\src\Exception.h"
+#include "..\..\Core\src\math/Matrix44.h"
+#include "..\..\Core\src\common.h"
 
 // construction of the graphics engine
 cGraphicsEngine::cGraphicsEngine() {
@@ -28,10 +30,12 @@ cGraphicsEngine::cGraphicsEngine() {
 		throw UnknownErrorException("failed to create graphics api");
 	shaderManager = new cShaderManager(gApi);
 	resourceManager = new cResourceManager(gApi);
-	sceneManager = new cSceneManager(*resourceManager);
+	sceneManager = new cSceneManager(resourceManager);
 
-
+	// Test renderning
 	shaderManager->LoadShader(L"shaders/",L"test.cg");
+
+	// Now, For debugging
 	shaderManager->LoadShader(L"shaders/",L"LINE_RENDERER.cg");
 }
 
@@ -94,49 +98,15 @@ void cGraphicsEngine::RenderSceneForward() {
 	}
 }
 
-void cGraphicsEngine::RenderLines(const Vec3* lines, size_t nLines, const Vec3& color /*= Vec3(1.0f, 1.0f, 1.0f)*/) {
-
-	// Create, set VertexBuffer for lines
-	IVertexBuffer* linesBuffer = gApi->CreateBufferVertex(nLines * 2, sizeof(Vec3), eBufferUsage::IMMUTABLE, (void*)lines);
-	gApi->SetVertexBuffer(linesBuffer, sizeof(Vec3));
-
-	// Set camera constants
-	cCamera* cam = sceneManager->GetActiveCamera();
-		Matrix44 viewProjMat = cam->GetViewMatrix() * cam->GetProjMatrix();
-
-	IConstantBuffer* viewProjBuffer = gApi->CreateBufferConstant(sizeof(Matrix44), eBufferUsage::DEFAULT, &viewProjMat);
-	gApi->SetVSConstantBuffer(viewProjBuffer, 0);
-
-	IConstantBuffer* colorBuffer = gApi->CreateBufferConstant(sizeof(Vec3), eBufferUsage::DEFAULT, (void*)&color);
-	gApi->SetPSConstantBuffer(colorBuffer, 0);
-
-	// Set BackBuffer
-	gApi->SetRenderTargetDefault();
-
-	// Set Shader
-	IShaderProgram* sh = shaderManager->GetShaderByName(L"LINE_RENDERER.cg");
-	gApi->SetShaderProgram(sh);
-
-	// Set Line primitives for pipeline
-	gApi->SetPrimitiveTopology(ePrimitiveTopology::LINE_LIST);
-
-	// Draw lines
-	gApi->Draw(nLines * 2);
-
-	// Free up buffers
-	linesBuffer->Release();
-	colorBuffer->Release();
-	viewProjBuffer->Release();
-
-	// // Set TRIANGLE primitives for pipeline
-	gApi->SetPrimitiveTopology(ePrimitiveTopology::TRIANGLE_LIST);
+void cGraphicsEngine::SetActiveCamera(cCamera* cam) {
+	sceneManager->SetActiveCamera(cam);
 }
 
 cGraphicsEntity* cGraphicsEngine::GetGraphicsEntity(const zsString& geomPath, const zsString& mtlPath) {
 	return sceneManager->AddEntity(resourceManager->GetGeometry(geomPath), resourceManager->GetMaterial(mtlPath));
 }
 
-ISceneManager* cGraphicsEngine::GetSceneManager()  {
+cSceneManager* cGraphicsEngine::GetSceneManager()  {
 	return sceneManager;
 }
 
@@ -146,4 +116,12 @@ cResourceManager* cGraphicsEngine::GetResourceManager() {
 
 IGraphicsApi* cGraphicsEngine::GetGraphicsApi() {
 	return gApi;
+}
+
+IShaderManager* cGraphicsEngine::GetShaderManager() {
+	return shaderManager;
+}
+
+cCamera* cGraphicsEngine::GetActiveCamera() {
+	return sceneManager->GetActiveCamera();
 }

@@ -11,7 +11,7 @@
 
 
 class IGraphicsApi;
-class cShaderManager;
+class IShaderManager;
 class cSceneManager;
 class cResourceManager;
 
@@ -21,16 +21,20 @@ public:
 	void Release() override;
 
 	void RenderSceneForward() override;
-	void RenderLines(const Vec3* lines, size_t nLines, const Vec3& color = Vec3(1.0f, 1.0f, 1.0f)) override;
+
+	void SetActiveCamera(cCamera* cam) override;
 
 	cGraphicsEntity* GetGraphicsEntity(const zsString& geomPath, const zsString& mtlPath) override;
 
-	ISceneManager*		GetSceneManager();
+	cSceneManager*		GetSceneManager();
 	cResourceManager*	GetResourceManager();
-	IGraphicsApi*		GetGraphicsApi();
+	IGraphicsApi*		GetGraphicsApi() override;
+	IShaderManager*		GetShaderManager() override;
+
+	cCamera*			GetActiveCamera() override;
 private:	
 	IGraphicsApi* gApi;
-	cShaderManager* shaderManager;
+	IShaderManager* shaderManager;
 	cResourceManager* resourceManager;
 	cSceneManager* sceneManager;
 };

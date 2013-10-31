@@ -5,6 +5,9 @@
 
 #include "GeometryBuilder.h"
 
+// TMP @TODO remove it
+#include "Camera.h"
+
 cCore* cCore::instance = NULL;
 
 cCore* cCore::GetInstance() {
@@ -14,6 +17,15 @@ cCore* cCore::GetInstance() {
 }
 
 cCore::cCore() {
+	graphicsEngine = Factory.CreateGraphicsEngine();
+	physicsEngine = Factory.CreatePhysicsEngineBullet();
+	logicEngine = new cLogicEngine();
+
+	// For debug purposes
+	debugRenderer = new cRenderer(graphicsEngine->GetGraphicsApi(), graphicsEngine->GetShaderManager());
+}
+
+cCore::~cCore() {
 	for(auto it = graphicsEntities.begin(); it != graphicsEntities.end(); it++)
 		SAFE_DELETE(*it);
 
@@ -24,27 +36,25 @@ cCore::cCore() {
 		SAFE_DELETE(*it);
 
 	// Destroy engines
-	graphicsEngine = Factory.CreateGraphicsEngine();
-	physicsEngine = Factory.CreatePhysicsEngineBullet();
-	logicEngine = new cLogicEngine();
-}
-
-cCore::~cCore() {
 	SAFE_RELEASE(graphicsEngine);
 	SAFE_RELEASE(physicsEngine);
 	SAFE_DELETE(logicEngine);
 }
 
 void cCore::DebugRender(unsigned long renderFlags) {
-	Vec3* edges = new Vec3[1000];
-	size_t nEdges;
-	physicsEngine->GetCollisionShapeEdges(edges, 1000, nEdges);
+	// Render Physics Triangles
+	if(renderFlags & (unsigned long)eDebugRenderMode::PHYSICS_TRIANGLES) {
+		Vec3* edges = new Vec3[1000];
+		size_t nEdges;
+		physicsEngine->GetCollisionShapeEdges(edges, 1000, nEdges);
 
-	// The graphicsEngine can do it...
+		// Render lines for physics..
+		cCamera* cam = graphicsEngine->GetActiveCamera();
+		Matrix44 viewProj = cam->GetViewMatrix() * cam->GetProjMatrix();
+		debugRenderer->RenderLines(viewProj, edges, nEdges, Vec3(1.0f, 0.0f, 0.0f));
 
-	graphicsEngine->RenderLines(edges, nEdges, Vec3(1.0f, 0.0f, 0.0f));
-
-	delete[] edges;
+		delete[] edges;
+	}
 }
 
 void cCore::Update(float deltaT) {

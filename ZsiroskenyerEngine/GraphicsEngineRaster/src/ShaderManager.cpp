@@ -2,14 +2,18 @@
 //	GraphicsEngine/src/ShaderManager.h
 //	2013.oct.14, Zsiroskenyer Team, Péter Kardos
 ////////////////////////////////////////////////////////////////////////////////
-
-
 #include "ShaderManager.h"
 #include "../../Core/src/IGraphicsApi.h"
 #include "../../Core/src/IShaderProgram.h"
 
+cShaderManager::cShaderManager(IGraphicsApi* gApi) 
+	:gApi(gApi) {
+}
 
-// load a shader by its name, or return it if it's already loaded
+cShaderManager::~cShaderManager() {
+	Reset();
+}
+
 IShaderProgram* cShaderManager::LoadShader(const zsString& shaderDir, const zsString& shaderName) {
 	IShaderProgram* shProg = NULL;
 
@@ -17,7 +21,7 @@ IShaderProgram* cShaderManager::LoadShader(const zsString& shaderDir, const zsSt
 	if (it != loadedShaders.right.end()) {
 		shProg = it->second;
 	} else {
-		shProg = graphicsApi->CreateShaderProgram(shaderDir + shaderName);
+		shProg = gApi->CreateShaderProgram(shaderDir + shaderName);
 		loadedShaders.insert(ShaderMapT::value_type(shProg, shaderName));
 	}
 	return shProg;
@@ -80,13 +84,4 @@ IShaderProgram* cShaderManager::GetShaderByName(const zsString& name) {
 		return NULL;
 	else
 		return it->second;
-}
-
-
-// constructs the shader manager with a graphics interface [required, no default]
-cShaderManager::cShaderManager(IGraphicsApi* graphicsApi) : graphicsApi(graphicsApi) {
-}
-// destructing the manager DESTROYS ALL LOADED SHADERS
-cShaderManager::~cShaderManager() {
-	Reset();
 }

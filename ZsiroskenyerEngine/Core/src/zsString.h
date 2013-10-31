@@ -1,7 +1,6 @@
 // zsString.h By Zsíroskenyér Team 2013.10.10 11:07
 #pragma once
-
-//#define STATIC_SIZE
+#pragma warning(disable: 4996)
 
 #include <vector>
 

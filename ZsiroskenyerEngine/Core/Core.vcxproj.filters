@@ -4,9 +4,6 @@
     <ClInclude Include="src\INetworkEngine.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="src\ISceneManager.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="src\ISoundEngine.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
@@ -121,9 +118,6 @@
     <ClInclude Include="src\LogicEngine.h">
       <Filter>Engines\LogicEngine</Filter>
     </ClInclude>
-    <ClInclude Include="src\IResourceManager.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="src\Timer.h" />
     <ClInclude Include="src\IPhysicsEngine.h">
       <Filter>Interfaces\Physics</Filter>
@@ -145,6 +139,10 @@
     </ClInclude>
     <ClInclude Include="src\GraphicsEntity.h">
       <Filter>Entity\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer.h" />
+    <ClInclude Include="src\IShaderManager.h">
+      <Filter>Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -221,6 +219,7 @@
     <ClCompile Include="src\GraphicsEntity.cpp">
       <Filter>Entity\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="src\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Interfaces">

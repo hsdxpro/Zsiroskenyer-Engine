@@ -14,7 +14,6 @@
 #include "../../Core/src/zsString.h"
 
 #include "InstanceGroup.h"
-#include "../../Core/src/ISceneManager.h"
 
 #include <unordered_set>
 
@@ -38,22 +37,22 @@ struct cInstGroupPtrCompare {
 };
 
 // scene manager
-class cSceneManager : public ISceneManager {
+class cSceneManager {
 public:
-	cSceneManager(cResourceManager& rm);
+	cSceneManager(cResourceManager* rm);
 	~cSceneManager();
 
 	cGraphicsEntity* AddEntity(cGeometryRef geom, cMaterialRef mtl);
 	void RemoveEntity(const cGraphicsEntity& entity);
 
-	void SetActiveCamera(cCamera *cam) override;
+	void SetActiveCamera(cCamera *cam);
 
-	cCamera *GetActiveCamera() const override;
+	cCamera *GetActiveCamera() const;
 
 	const std::unordered_set<cInstanceGroup*, cInstGroupPtrHasher,cInstGroupPtrCompare>& GetInstanceGroups() const;
 private:
 	std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare> instanceGroups;
-	cResourceManager& managerResource;
+	cResourceManager* managerResource;
 
-	cCamera *activeCamera;
+	cCamera* activeCamera;
 };

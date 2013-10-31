@@ -7,11 +7,6 @@
 
 #include "../../Core/src/IFile.h"
 
-#ifdef WIN32
-#pragma warning(disable: 4244)
-#pragma warning(disable: 4005)
-#endif
-
 cGraphicsApiD3D11::tDxConfig cGraphicsApiD3D11::tDxConfig::DEFAULT = cGraphicsApiD3D11::tDxConfig();
 cGraphicsApiD3D11::tDxConfig cGraphicsApiD3D11::tDxConfig::MEDIUM = cGraphicsApiD3D11::tDxConfig();
 cGraphicsApiD3D11::tDxConfig cGraphicsApiD3D11::tDxConfig::HIGH = cGraphicsApiD3D11::tDxConfig();

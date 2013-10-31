@@ -8,7 +8,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "..\..\Core\src\IResourceManager.h"
+
 #include "..\..\Core\src\GeometryBuilder.h"
 #include "Geometry.h"
 #include "Material.h"
@@ -24,23 +24,23 @@ class IGraphicsApi;
 
 ////////////////////////////////////////////////////////////////////////////////
 //	ResourceManager
-class cResourceManager : public IResourceManager {
+class cResourceManager {
 	friend class cGeometryRef;
 	friend class cMaterialRef;
 	friend class cTextureRef;
 public:
 	// resource aquisition
-	cMaterialRef GetMaterial(const zsString& filePath) override;
+	cMaterialRef GetMaterial(const zsString& filePath);
 
-	cGeometryRef GetGeometry(const zsString& filePath) override;
+	cGeometryRef GetGeometry(const zsString& filePath);
 
 	// constructor
 	cResourceManager(IGraphicsApi* gApi);
 	~cResourceManager();
 private:
 	// automatic resource unloading requested by references
-	void UnloadGeometry(const cGeometry* geometry) override;
-	void UnloadMaterial(const cMaterial* material) override;
+	void UnloadGeometry(const cGeometry* geometry);
+	void UnloadMaterial(const cMaterial* material);
 
 	// resource database
 	typedef boost::bimap<boost::bimaps::unordered_set_of<zsString, std::hash<zsString>>, boost::bimaps::unordered_set_of<cGeometry*>> GeometryMapT;

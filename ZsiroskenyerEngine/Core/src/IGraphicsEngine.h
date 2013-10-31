@@ -8,23 +8,25 @@
 
 #pragma once
 
-#include "ISceneManager.h"
-#include "..\..\GraphicsEngineRaster\src\ResourceManager.h"
-#include "IGraphicsApi.h"
-#include "math\vec3.h"
+#include "zsString.h"
 
+class IGraphicsApi;
+class IShaderManager;
 class cGraphicsEntity;
+class cCamera;
 
 class IGraphicsEngine {
 public:
 	virtual void Release() = 0;
 
 	virtual void RenderSceneForward() = 0;
-	virtual void RenderLines(const Vec3* lines, size_t nLines, const Vec3& color = Vec3(1.0f, 1.0f, 1.0f)) = 0;
+
+	virtual void SetActiveCamera(cCamera* cam) = 0;
 
 	virtual cGraphicsEntity* GetGraphicsEntity(const zsString& geomPath, const zsString& mtlPath) = 0;
 
-	virtual ISceneManager*		GetSceneManager() = 0;
-	virtual cResourceManager*	GetResourceManager() = 0;
 	virtual IGraphicsApi*		GetGraphicsApi() = 0;
+	virtual IShaderManager*		GetShaderManager() = 0;
+
+	virtual cCamera* GetActiveCamera() = 0;
 };

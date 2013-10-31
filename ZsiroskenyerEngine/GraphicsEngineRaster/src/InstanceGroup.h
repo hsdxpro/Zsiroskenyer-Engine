@@ -32,7 +32,6 @@ public:
 };
 
 
-
 template <>
 struct std::hash<cInstanceGroup> {
 	typedef cMaterialRef argument_type;

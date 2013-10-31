@@ -15,7 +15,7 @@
 
 #include <cassert>
 
-cSceneManager::cSceneManager(cResourceManager& rm) 
+cSceneManager::cSceneManager(cResourceManager* rm) 
 : managerResource(rm), activeCamera(NULL) {
 }
 

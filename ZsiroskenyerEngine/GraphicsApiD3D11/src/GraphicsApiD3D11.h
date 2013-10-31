@@ -1,6 +1,8 @@
 // GraphicsD3D11.h By Zsíroskenyér team 2013.10.10 1:32 last modified Németh Richárd
 // IGraphicsApi interface implementation based on the 3D graphics SDK DirectX11
 #pragma once
+#pragma warning(disable: 4244)
+#pragma warning(disable: 4005)
 
 #include "Dx11_SDK/Include/D3D11.h"
 #include <dxgi.h>
