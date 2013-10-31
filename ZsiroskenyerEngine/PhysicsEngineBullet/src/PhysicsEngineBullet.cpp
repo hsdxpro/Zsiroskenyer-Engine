@@ -44,8 +44,6 @@ cPhysicsEngineBullet::cPhysicsEngineBullet() {
 }
 
 void cPhysicsEngineBullet::Release() {
-		collisionShapes.clear();
-
 	int i;
 	for (i = physicsWorld->getNumCollisionObjects()-1; i>=0 ;i--) {
 		btCollisionObject* obj = physicsWorld->getCollisionObjectArray()[i];
@@ -59,78 +57,39 @@ void cPhysicsEngineBullet::Release() {
 
 	SAFE_DELETE(physicsWorld);
 
-	for(auto it = physicsTypes.begin() ; it != physicsTypes.end(); it++)
-		SAFE_DELETE(*it);
-	physicsTypes.clear();
-	
-	for(auto it = entities.begin() ; it != entities.end(); it++)
-		SAFE_DELETE(*it);
-	entities.clear();
+	collisionShapes.clear();
 }
 
 void cPhysicsEngineBullet::SimulateWorld(float deltaT) {
 	physicsWorld->stepSimulation(deltaT, 1);
 }
 
-IPhysicsEntity* cPhysicsEngineBullet::AddRigidEntity(const IPhysicsType* type, const Vec3& position) {
+IPhysicsEntity* cPhysicsEngineBullet::GetRigidEntity(const zsString& physicsGeom, float mass) {
 	
-	cRigidTypeBullet* rigidType = (cRigidTypeBullet*)type;
+	btCollisionShape* colShape;
+	// Geom path alapján btCollisionShape kikeresése, ha nincs létrehozás...
+	auto it = collisionShapes.find(physicsGeom);
+	if(it == collisionShapes.end()) {
+		cGeometryBuilder b;
+		cGeometryBuilder::tGeometryDesc d = b.LoadGeometry(physicsGeom);
 
-	btTransform trans;
-	trans.setIdentity();
-	trans.setOrigin(btVector3(position.x, position.y, position.z));
+		colShape = new btConvexHullShape((btScalar*)d.vertices, d.nVertices, d.vertexStride);
+		collisionShapes[physicsGeom] = colShape;
+	} else {
+		colShape = collisionShapes[physicsGeom];
+	}
+	
+	// Dynamic Physics entity, calculate local inertia
+	btVector3 localInertia;
+	if(mass != 0)
+		colShape->calculateLocalInertia(mass, localInertia);
 
-	// /Rigid things -> motionState
-	// RigidType things mass, collisionShape, localInertia
-	btRigidBody* body = new btRigidBody(rigidType->GetMass(), new btDefaultMotionState(trans), rigidType->GetCollisionShape(), rigidType->GetLocalInertia());
+	// Create rigid body
+	btRigidBody* body = new btRigidBody(mass, new btDefaultMotionState(), colShape, localInertia);
 	physicsWorld->addRigidBody(body);
 	cRigidEntityBullet * r = new cRigidEntityBullet(body);
-	entities.push_back(r);
 	return r;
 }
-
-IPhysicsType* cPhysicsEngineBullet::GetRigidType(const zsString& geomPath, float mass) {
-
-	cGeometryBuilder b;
-	cGeometryBuilder::tGeometryDesc d = b.LoadGeometry(geomPath);
-
-	/*
-	// Our Engine coord space is x right, y front, z up.
-	// Bullet uses x right y up , z front, so transform d.vertices
-	for(size_t i = 0; i < d.nVertices; i++) {
-		Vec3* vertPos = (Vec3*)((char*)d.vertices + i * d.vertexStride);
-		float tmp = vertPos->z;
-		vertPos->z = vertPos->y;
-		vertPos->y = tmp;
-	}
-	*/
-
-	IPhysicsType* type;
-	// Geom doesn't exists, create it
-	if(! IsGeometryExists(geomPath)) {
-		// Collision shape
-		btCollisionShape* colShape = new btConvexHullShape((btScalar*)d.vertices, d.nVertices, d.vertexStride);
-
-		// New rigid Type
-		type = new cRigidTypeBullet(colShape, mass);
-		physicsTypes.push_back(type);
-		return type;
-	} else /*Geom exists*/ {
-		// Search for equal massed type
-		type = new cRigidTypeBullet(collisionShapes[geomPath], mass);
-		auto it = find(physicsTypes.begin(), physicsTypes.end(), type);
-
-		// Doesn't exists that mass
-		if(it == physicsTypes.end())
-			physicsTypes.push_back(type);
-		else {
-			delete type;
-			type = *it;
-		}
-	}
-	return type;
-}
-
 btRigidBody* cPhysicsEngineBullet::ShootBox(const Vec3& camPos,const Vec3& destination)
 {
 	if (physicsWorld) {
@@ -212,8 +171,4 @@ void cPhysicsEngineBullet::GetCollisionShapeEdges(Vec3* edges, size_t size, size
 			//@TODO CONCAVE CollisionObject extraction to edge list...
 		}
 	}
-}
-
-bool cPhysicsEngineBullet::IsGeometryExists(const zsString& geomPath) {
-	return collisionShapes.find(geomPath) != collisionShapes.end();
 }

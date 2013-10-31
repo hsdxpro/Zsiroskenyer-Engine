@@ -14,6 +14,16 @@ cCore* cCore::GetInstance() {
 }
 
 cCore::cCore() {
+	for(auto it = graphicsEntities.begin(); it != graphicsEntities.end(); it++)
+		SAFE_DELETE(*it);
+
+	for(auto it = physicsEntities.begin(); it != physicsEntities.end(); it++)
+		SAFE_DELETE(*it);
+
+	for(auto it = entities.begin(); it != entities.end(); it++)
+		SAFE_DELETE(*it);
+
+	// Destroy engines
 	graphicsEngine = Factory.CreateGraphicsEngine();
 	physicsEngine = Factory.CreatePhysicsEngineBullet();
 	logicEngine = new cLogicEngine();
@@ -39,24 +49,16 @@ void cCore::DebugRender(unsigned long renderFlags) {
 
 void cCore::Update(float deltaT) {
 	physicsEngine->SimulateWorld(deltaT);
-	logicEngine->Update();
 }
 
-cEntityType* cCore::CreateEntityType(const zsString& name, const zsString& graphGeomPath, const zsString& physGeomPath, const zsString& mtlPath, float mass /*= 0.0f*/) {
-	cResourceManager* GRMgr = graphicsEngine->GetResourceManager();
-	cGeometryRef* geom = GRMgr->GetGeometry(graphGeomPath);
-	cMaterialRef* mtl = GRMgr->GetMaterial(mtlPath);
-	IPhysicsType* physicsType = physicsEngine->GetRigidType(physGeomPath, mass);
+cEntity* cCore::AddEntity(const zsString& graphGeomPath,const zsString& physicsGeom, const zsString& mtlPath, float mass) {
+	cGraphicsEntity* gEntity = graphicsEngine->GetGraphicsEntity(graphGeomPath, mtlPath);
+	IPhysicsEntity* pEntity = physicsEngine->GetRigidEntity(physicsGeom, mass);
 
-	return logicEngine->CreateEntityType(name, geom, mtl, physicsType);
-}
-
-cEntity* cCore::AddEntity(cEntityType* type, const Vec3& position) {
-	cGraphicsEntity* gEntity = graphicsEngine->GetSceneManager()->AddEntity(type->GetGraphicsGeometry(), type->GetMaterial());
-	IPhysicsEntity* pEntity = physicsEngine->AddRigidEntity(type->GetPhysicsType(), position);
-
-	cEntity* e = logicEngine->AddEntity(gEntity, pEntity);
-		e->SetPosition(position);
+	graphicsEntities.push_back(gEntity);
+	physicsEntities.push_back(pEntity);
+	cEntity* e = new cEntity(gEntity, pEntity);
+	entities.push_back(e);
 	return e;
 }
 

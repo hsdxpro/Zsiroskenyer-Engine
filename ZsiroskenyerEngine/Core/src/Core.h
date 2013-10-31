@@ -22,8 +22,7 @@ public:
 
 	void Update(float deltaT);
 
-	cEntityType* CreateEntityType(const zsString& name, const zsString& graphGeomPath, const zsString& physGeomPath, const zsString& mtlPath, float mass = 0.0f);
-	cEntity* AddEntity(cEntityType* type, const Vec3& position);
+	cEntity* AddEntity(const zsString& graphGeomPath, const zsString& physicsGeom, const zsString& mtlPath, float mass);
 
 	IGraphicsEngine* GetGraphicsEngine();
 	IPhysicsEngine* GetPhysicsEngine();
@@ -37,4 +36,11 @@ protected:
 	IGraphicsEngine *graphicsEngine;
 	IPhysicsEngine* physicsEngine;
 	cLogicEngine*	logicEngine;
+
+	std::list<cGraphicsEntity*> graphicsEntities;
+	std::list<IPhysicsEntity*> physicsEntities;
+
+
+	// TMP USAGE
+	std::list<cEntity*> entities;
 };

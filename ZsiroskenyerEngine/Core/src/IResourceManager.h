@@ -12,9 +12,9 @@ class cMaterial;
 
 class IResourceManager {
 	// Resource accessing
-	virtual cGeometryRef *GetGeometry(const zsString& filePath) = 0;
+	virtual cGeometryRef GetGeometry(const zsString& filePath) = 0;
 
-	virtual cMaterialRef *GetMaterial(const zsString& filePath) = 0;
+	virtual cMaterialRef GetMaterial(const zsString& filePath) = 0;
 private:
 	// free up resources
 	virtual void UnloadGeometry(const cGeometry* geometry) = 0;

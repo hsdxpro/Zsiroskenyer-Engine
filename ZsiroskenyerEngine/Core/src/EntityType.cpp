@@ -1,14 +1,14 @@
 #include "EntityType.h"
 
-cEntityType::cEntityType(cGeometryRef *graphicsGeom, cMaterialRef *material, IPhysicsType* physicsType)
+cEntityType::cEntityType(cGeometryRef graphicsGeom, cMaterialRef material, IPhysicsType* physicsType)
 :graphicsGeom(graphicsGeom), material(material), physicsType(physicsType){ 
 }
 
-cGeometryRef* cEntityType::GetGraphicsGeometry() const {
+cGeometryRef cEntityType::GetGraphicsGeometry() const {
 	return graphicsGeom;
 }
 
-cMaterialRef* cEntityType::GetMaterial() const {
+cMaterialRef cEntityType::GetMaterial() const {
 	return material;
 }
 

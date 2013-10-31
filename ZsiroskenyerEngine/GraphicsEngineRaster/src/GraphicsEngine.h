@@ -23,6 +23,8 @@ public:
 	void RenderSceneForward() override;
 	void RenderLines(const Vec3* lines, size_t nLines, const Vec3& color = Vec3(1.0f, 1.0f, 1.0f)) override;
 
+	cGraphicsEntity* GetGraphicsEntity(const zsString& geomPath, const zsString& mtlPath) override;
+
 	ISceneManager*		GetSceneManager();
 	cResourceManager*	GetResourceManager();
 	IGraphicsApi*		GetGraphicsApi();

@@ -11,8 +11,9 @@
 #include "ISceneManager.h"
 #include "..\..\GraphicsEngineRaster\src\ResourceManager.h"
 #include "IGraphicsApi.h"
-
 #include "math\vec3.h"
+
+class cGraphicsEntity;
 
 class IGraphicsEngine {
 public:
@@ -20,6 +21,8 @@ public:
 
 	virtual void RenderSceneForward() = 0;
 	virtual void RenderLines(const Vec3* lines, size_t nLines, const Vec3& color = Vec3(1.0f, 1.0f, 1.0f)) = 0;
+
+	virtual cGraphicsEntity* GetGraphicsEntity(const zsString& geomPath, const zsString& mtlPath) = 0;
 
 	virtual ISceneManager*		GetSceneManager() = 0;
 	virtual cResourceManager*	GetResourceManager() = 0;

@@ -61,13 +61,13 @@ void cGraphicsEngine::RenderSceneForward() {
 	// Render each instanceGroup
 	for (auto& group : sceneManager->GetInstanceGroups()) {
 		// Set Geometry
-		const IIndexBuffer* ib = (*group->geom)->GetIndexBuffer();
+		const IIndexBuffer* ib = (*group->geom).GetIndexBuffer();
 		gApi->SetIndexBuffer(ib);
-		gApi->SetVertexBuffer((*(group->geom))->GetVertexBuffer(), shaderP->GetVertexFormatSize());
+		gApi->SetVertexBuffer((*(group->geom)).GetVertexBuffer(), shaderP->GetVertexFormatSize());
 
 		// Set SubMaterials
-		for(size_t i = 0; i < (*group->mtl)->GetNSubMaterials(); i++) {
-			gApi->SetTexture((*(*group->mtl))[i].textureDiffuse, 0);
+		for(size_t i = 0; i < (*group->mtl).GetNSubMaterials(); i++) {
+			gApi->SetTexture((*(group->mtl))[i].textureDiffuse, 0);
 		}
 		
 		// Draw each entity
@@ -130,6 +130,10 @@ void cGraphicsEngine::RenderLines(const Vec3* lines, size_t nLines, const Vec3& 
 
 	// // Set TRIANGLE primitives for pipeline
 	gApi->SetPrimitiveTopology(ePrimitiveTopology::TRIANGLE_LIST);
+}
+
+cGraphicsEntity* cGraphicsEngine::GetGraphicsEntity(const zsString& geomPath, const zsString& mtlPath) {
+	return sceneManager->AddEntity(resourceManager->GetGeometry(geomPath), resourceManager->GetMaterial(mtlPath));
 }
 
 ISceneManager* cGraphicsEngine::GetSceneManager()  {

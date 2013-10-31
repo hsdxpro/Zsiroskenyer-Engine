@@ -9,7 +9,7 @@ Quat::Quat()
 :x(0.0f), y(0.0f), z(0.0f), w(1.0f) {
 }
 
-Quat::Quat(float w, float x, float y, float z) {
+Quat::Quat(float x, float y, float z, float w) {
 	this->x=x;
 	this->y=y;
 	this->z=z;
@@ -18,13 +18,13 @@ Quat::Quat(float w, float x, float y, float z) {
 
 Quat::Quat(const Vec3& v, float angle) {
 	float sin_angle = sin(angle*0.5f);
-	w = cos(angle*0.5f);
 	x = v.x*sin_angle;
 	y = v.y*sin_angle;
 	z = v.z*sin_angle;
+	w = cos(angle*0.5f);
 }
 
-Quat& Quat::operator*=(const Quat& q2) {
+Quat& Quat::operator *= (const Quat& q2) {
 	float w1=w, x1=x, y1=y, z1=z;
     x =  x1 * q2.w + y1 * q2.z - z1 * q2.y + w1 * q2.x;
     y = -x1 * q2.z + y1 * q2.w + z1 * q2.x + w1 * q2.y;
@@ -33,7 +33,7 @@ Quat& Quat::operator*=(const Quat& q2) {
 	return *this;
 }
 
-Quat Quat::operator*(const Quat& q2) const {
+Quat Quat::operator * (const Quat& q2) const {
 	Quat r;
 	r.w = w*q2.w - x*q2.x - y*q2.y - z*q2.z;
 	r.x = w*q2.x + x*q2.w + y*q2.z - z*q2.y;
@@ -42,7 +42,7 @@ Quat Quat::operator*(const Quat& q2) const {
 	return r;
 }
 
-const Quat Quat::operator~() const {
+const Quat Quat::operator ~ () const {
 	Quat r;
 	r.w=w;
 	r.x=-x;
@@ -51,14 +51,14 @@ const Quat Quat::operator~() const {
 	return r;
 }
 
-bool Quat::operator==(const Quat& r) const {
+bool Quat::operator == (const Quat& r) const {
 	if (w==r.w && x==r.x && y==r.y && z==r.z)
 		return true;
 	else
 		return false;
 }
 
-bool Quat::operator!=(const Quat& r) const {
+bool Quat::operator != (const Quat& r) const {
 	return !(*this==r);
 }
 

@@ -30,9 +30,9 @@ class cResourceManager : public IResourceManager {
 	friend class cTextureRef;
 public:
 	// resource aquisition
-	cMaterialRef *GetMaterial(const zsString& filePath) override;
+	cMaterialRef GetMaterial(const zsString& filePath) override;
 
-	cGeometryRef* GetGeometry(const zsString& filePath) override;
+	cGeometryRef GetGeometry(const zsString& filePath) override;
 
 	// constructor
 	cResourceManager(IGraphicsApi* gApi);

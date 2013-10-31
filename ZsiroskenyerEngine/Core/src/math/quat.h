@@ -9,10 +9,10 @@
 class Matrix44;
 class Quat {
 	public:
-		float w,x,y,z;
+		float x,y,z,w;
 
 		Quat();
-		Quat(float w, float x, float y, float z);
+		Quat(float x, float y, float z, float w);
 		Quat(const Vec3& v, float angle);
 
 		float lenght() const;

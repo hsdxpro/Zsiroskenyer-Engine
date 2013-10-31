@@ -23,7 +23,7 @@ cResourceManager::~cResourceManager() {
 }
 
 // load/unload geometries
-cGeometryRef* cResourceManager::GetGeometry(const zsString& filePath) {
+cGeometryRef cResourceManager::GetGeometry(const zsString& filePath) {
 	cGeometry* geom;
 
 	// lookup if already exists
@@ -43,7 +43,7 @@ cGeometryRef* cResourceManager::GetGeometry(const zsString& filePath) {
 		geom = it->second;
 	}
 
-	return new cGeometryRef(this, geom);
+	return cGeometryRef(this, geom);
 }
 void cResourceManager::UnloadGeometry(const cGeometry* geometry) {
 	auto it = geometries.right.find(const_cast<cGeometry*>(geometry));
@@ -52,7 +52,7 @@ void cResourceManager::UnloadGeometry(const cGeometry* geometry) {
 }
 
 // load/unload materials
-cMaterialRef* cResourceManager::GetMaterial(const zsString& filePath) {
+cMaterialRef cResourceManager::GetMaterial(const zsString& filePath) {
 	cMaterial* mtl;
 
 	// lookup if already exists
@@ -107,7 +107,7 @@ cMaterialRef* cResourceManager::GetMaterial(const zsString& filePath) {
 		mtl = it->second;
 	}
 	
-	return new cMaterialRef(this, mtl);
+	return cMaterialRef(this, mtl);
 }
 
 void cResourceManager::UnloadMaterial(const cMaterial* material) {

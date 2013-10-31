@@ -17,7 +17,7 @@ class cMaterialRef;
 
 class ISceneManager {
 public:
-	virtual cGraphicsEntity* AddEntity(cGeometryRef *geom, cMaterialRef* mtl) = 0;
+	virtual cGraphicsEntity* AddEntity(cGeometryRef geom, cMaterialRef mtl) = 0;
 	virtual void RemoveEntity(const cGraphicsEntity& entity) = 0;
 
 	virtual void SetActiveCamera(cCamera *cam) = 0;

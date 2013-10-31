@@ -11,17 +11,15 @@
 #include <map>
 #include <vector>
 
+
 class cPhysicsEngineBullet : public IPhysicsEngine {
 public:
 	void SimulateWorld(float deltaT) override;
 
-	IPhysicsEntity* AddRigidEntity(const IPhysicsType* type, const Vec3& position) override;
-	IPhysicsType* GetRigidType(const zsString& geomPath, float mass) override;
+	IPhysicsEntity* GetRigidEntity(const zsString& physicsGeom, float mass) override;
 	btRigidBody* ShootBox(const Vec3& camPos,const Vec3& destination);
 
 	void GetCollisionShapeEdges(Vec3* edges, size_t size , size_t& nEdges) override;
-
-	bool IsGeometryExists(const zsString& geomPath);
 
 	cPhysicsEngineBullet();
 	void Release() override;
@@ -33,8 +31,6 @@ protected:
 	bool physicsEnabled;
 
 	std::map<zsString, btCollisionShape*> collisionShapes;
-	std::vector<IPhysicsType*> physicsTypes;
-	std::vector<IPhysicsEntity*> entities;
 };
 
 // DLL accessor

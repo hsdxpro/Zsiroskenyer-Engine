@@ -4,16 +4,17 @@
 #include "..\..\GraphicsEngineRaster\src\ResourceManager.h"
 
 #include "IPhysicsType.h"
+#include "..\..\GraphicsEngineRaster\src\ResourceManager.h"
 
 class cEntityType {
 public:
-	cGeometryRef* GetGraphicsGeometry() const;
-	cMaterialRef* GetMaterial() const;
+	cGeometryRef GetGraphicsGeometry() const;
+	cMaterialRef GetMaterial() const;
 	const IPhysicsType* GetPhysicsType() const;
 
-	cEntityType(cGeometryRef *graphicsGeom, cMaterialRef *material, IPhysicsType* physicsType);
+	cEntityType(cGeometryRef graphicsGeom, cMaterialRef material, IPhysicsType* physicsType);
 protected:
-	cGeometryRef* graphicsGeom;
-	cMaterialRef* material;
+	cGeometryRef graphicsGeom;
+	cMaterialRef material;
 	IPhysicsType* physicsType;
 };

@@ -22,7 +22,7 @@ cSceneManager::cSceneManager(cResourceManager& rm)
 cSceneManager::~cSceneManager() {
 }
 
-cGraphicsEntity* cSceneManager::AddEntity(cGeometryRef *geom, cMaterialRef* mtl) {
+cGraphicsEntity* cSceneManager::AddEntity(cGeometryRef geom, cMaterialRef mtl) {
 	cInstanceGroup* instGroup = NULL;
 	cInstanceGroup searchDummy;
 	cGraphicsEntity* entity;
