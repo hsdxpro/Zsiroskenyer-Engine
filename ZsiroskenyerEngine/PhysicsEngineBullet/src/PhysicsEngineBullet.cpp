@@ -25,8 +25,6 @@ cPhysicsEngineBullet::cPhysicsEngineBullet() {
 
 	physicsWorld = new btSoftRigidDynamicsWorld(dispatcher,overlappingPairCache,solver,collisionConfiguration);
 	
-
-
 	//GImpact Ütközés algot regizni kell a fizikai kontaktus végrehajtónál..hogy tudjon róla
 	//Még lehet hogy használok majd Gimpact ütkzést...
 	//btGImpactCollisionAlgorithm::registerAlgorithm(dispatcher);
@@ -89,6 +87,7 @@ IPhysicsEntity* cPhysicsEngineBullet::GetRigidEntity(const zsString& physicsGeom
 	cRigidEntityBullet * r = new cRigidEntityBullet(body);
 	return r;
 }
+
 btRigidBody* cPhysicsEngineBullet::ShootBox(const Vec3& camPos,const Vec3& destination)
 {
 	if (physicsWorld) {

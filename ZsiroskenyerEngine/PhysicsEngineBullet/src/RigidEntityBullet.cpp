@@ -8,15 +8,13 @@ void cRigidEntityBullet::Release() {
 }
 
 void cRigidEntityBullet::SetPosition(const Vec3& pos) {
-	btTransform trans;
-	body->getMotionState()->getWorldTransform(trans);
+	btTransform trans = body->getWorldTransform();
 	trans.setOrigin(btVector3(pos.x, pos.y, pos.z));
 	body->setWorldTransform(trans);
 }
 
 void cRigidEntityBullet::SetRotation(const Quat& rot) {
-	btTransform trans;
-	body->getMotionState()->getWorldTransform(trans);
+	btTransform trans =  body->getWorldTransform();
 	trans.setRotation(btQuaternion(rot.x, rot.y, rot.z, rot.w));
 	body->setWorldTransform(trans);
 }
