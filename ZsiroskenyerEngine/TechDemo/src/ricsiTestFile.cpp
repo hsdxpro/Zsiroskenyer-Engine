@@ -48,8 +48,11 @@ int ricsiMain() {
 
 	// Create ophysics entity
 	const float mass = 100.0f;
-	cEntity* entity = core->AddEntity(L"objects/box.dae", L"objects/box.dae", L"materials/test.zsm", mass);
-	entity->SetPosition(Vec3(0, 60, 20));
+	cEntity* entity = core->AddEntity(L"objects/001Kurva.obj", L"objects/001Kurva.obj", L"materials/test.zsm", mass);
+	entity->SetPosition(Vec3(0, 3, 0));
+	
+	//cEntity* entity = core->AddEntity(L"objects/box.dae", L"objects/box.dae", L"materials/test.zsm", mass);
+	//entity->SetPosition(Vec3(0, 60, 20));
 
 	// Main loop
 	while(window->IsOpened()) {
@@ -67,9 +70,9 @@ int ricsiMain() {
 		core->DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
 
 		// (game logic) z rotation
-		//static float zVal = 0.0f;
-		//zVal += 0.0007f;
-		//entity->SetRotation(Quat::EulerAnglesToQuat(0, 0, zVal));
+		static float zVal = 0.0f;
+		zVal += 0.07f;
+		entity->SetRotation(Quat::EulerAnglesToQuat(0, 0, zVal));
 
 		// Present SwapChain
 		gApi->Present();

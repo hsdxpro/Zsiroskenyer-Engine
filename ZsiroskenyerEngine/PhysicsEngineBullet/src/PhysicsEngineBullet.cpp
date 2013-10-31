@@ -2,7 +2,6 @@
 
 #include "..\..\Core\src\common.h"
 
-#include "RigidTypeBullet.h"
 #include "RigidEntityBullet.h"
 
 #include "..\..\Core\src\GeometryBuilder.h"
@@ -35,7 +34,7 @@ cPhysicsEngineBullet::cPhysicsEngineBullet() {
 	//drawer->setDebugMode(drawer->DBG_DrawAabb);
 	//m_physicsworld->setDebugDrawer(drawer);
 	
-	physicsWorld->setGravity(btVector3(0 ,0 ,-10));
+	physicsWorld->setGravity(btVector3(0 ,0 ,-1.f));
 
 	physicsWorld->getDispatchInfo().m_useContinuous = true;
 	//Ragadós Spagetti effektus :D

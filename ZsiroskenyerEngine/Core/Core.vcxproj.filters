@@ -128,12 +128,6 @@
     <ClInclude Include="src\IGraphicsEngine.h">
       <Filter>Interfaces\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="src\IPhysicsType.h">
-      <Filter>Interfaces\Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="src\EntityType.h">
-      <Filter>Entity</Filter>
-    </ClInclude>
     <ClInclude Include="src\Entity.h">
       <Filter>Entity</Filter>
     </ClInclude>
@@ -210,9 +204,6 @@
       <Filter>Engines\LogicEngine</Filter>
     </ClCompile>
     <ClCompile Include="src\Timer.cpp" />
-    <ClCompile Include="src\EntityType.cpp">
-      <Filter>Entity</Filter>
-    </ClCompile>
     <ClCompile Include="src\Entity.cpp">
       <Filter>Entity</Filter>
     </ClCompile>
@@ -257,9 +248,6 @@
     </Filter>
     <Filter Include="Engines">
       <UniqueIdentifier>{40e027b0-f6d3-466b-bbb3-2e2297c777a4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engines\PhysicsEngine">
-      <UniqueIdentifier>{ae5210cb-150f-4a6b-a43d-7de79ba395c2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Engines\GraphicsEngine">
       <UniqueIdentifier>{abf5b4b3-b38b-4a21-9662-62beafbd15e2}</UniqueIdentifier>

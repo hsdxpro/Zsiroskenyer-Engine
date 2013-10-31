@@ -1,11 +1,10 @@
 // IPhysicsEngine.h By Zsíroskenyér Team 2013.10.23 22:34
 #pragma once
 
-#include "IPhysicsType.h"
-#include "IPhysicsEntity.h"
-
 #include "zsString.h"
 #include "math\Vec3.h"
+
+class IPhysicsEntity;
 
 class IPhysicsEngine {
 public:

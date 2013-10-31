@@ -6,16 +6,10 @@
     <ClCompile Include="src\RigidEntityBullet.cpp">
       <Filter>Rigid</Filter>
     </ClCompile>
-    <ClCompile Include="src\RigidTypeBullet.cpp">
-      <Filter>Rigid</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\PhysicsEngineBullet.h" />
     <ClInclude Include="src\RigidEntityBullet.h">
-      <Filter>Rigid</Filter>
-    </ClInclude>
-    <ClInclude Include="src\RigidTypeBullet.h">
       <Filter>Rigid</Filter>
     </ClInclude>
   </ItemGroup>

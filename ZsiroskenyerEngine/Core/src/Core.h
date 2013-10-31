@@ -11,6 +11,10 @@
 // For debug rendering
 #include "Renderer.h"
 
+#include <list>
+
+class cEntity;
+
 class cCore {
 public:
 	enum class eDebugRenderMode {

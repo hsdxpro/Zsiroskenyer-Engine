@@ -7,6 +7,7 @@
 
 // TMP @TODO remove it
 #include "Camera.h"
+#include "Entity.h"
 
 cCore* cCore::instance = NULL;
 
@@ -44,9 +45,9 @@ cCore::~cCore() {
 void cCore::DebugRender(unsigned long renderFlags) {
 	// Render Physics Triangles
 	if(renderFlags & (unsigned long)eDebugRenderMode::PHYSICS_TRIANGLES) {
-		Vec3* edges = new Vec3[1000];
+		Vec3* edges = new Vec3[30000];
 		size_t nEdges;
-		physicsEngine->GetCollisionShapeEdges(edges, 1000, nEdges);
+		physicsEngine->GetCollisionShapeEdges(edges, 30000, nEdges);
 
 		// Render lines for physics..
 		cCamera* cam = graphicsEngine->GetActiveCamera();
