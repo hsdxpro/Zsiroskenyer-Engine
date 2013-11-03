@@ -24,6 +24,7 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 	Assimp::Importer importer;
 
 	if(!IFile::isFileExits(filePath)) {
+		ILog::GetInstance()->MsgBox(L"Can't open file: " + filePath);
 		throw FileNotFoundException();
 	}
 

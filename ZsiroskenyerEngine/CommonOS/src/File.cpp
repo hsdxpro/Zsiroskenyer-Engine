@@ -1,6 +1,7 @@
 #include "File.h"
 #include "../../Core/src/common.h"
 #include "../../Core/src/Exception.h"
+#include "../../Core/src/ILog.h"
 
 cFile::cFile()
 :isEof(false) {

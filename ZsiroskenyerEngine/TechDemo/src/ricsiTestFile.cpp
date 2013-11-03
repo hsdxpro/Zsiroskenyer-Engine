@@ -48,8 +48,8 @@ int ricsiMain() {
 
 	// Create ophysics entity
 	const float mass = 0.0f;
-	cEntity* entity = core->AddEntity(L"objects/001Kurva.obj", L"objects/001Kurva.obj", L"materials/test.zsm", mass);
-	entity->SetPosition(Vec3(0, 3, 0));
+	cEntity* entity = core->AddEntity(L"objects/box.dae", L"objects/box.dae", L"materials/test.zsm", mass);
+	entity->SetPosition(Vec3(0, 50, 0));
 
 	// Main loop
 	while(window->IsOpened()) {
