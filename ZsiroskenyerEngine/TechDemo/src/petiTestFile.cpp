@@ -1,62 +1,56 @@
-#include "testFiles.h"
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#include <Windows.h>
 #include <iostream>
+#include <conio.h>
+#include "../../Core/src/shared_ptr.h"
 
 using namespace std;
 
 
-#include "../../Core/src/IGraphicsEngine.h"
 
-namespace peti_test {
+class cZsirosKenyer {
+public:
+	cZsirosKenyer() : calories(150) { cout << "megkenve!\n"; }
+	~cZsirosKenyer() { cout << "megpeneszedett! " << calories << " kcal" << endl; }
+	void Release() { cout << "release: "; delete this; }
+	int calories;
+};
 
-std::string GetExecutablePath() {
-	char buf[MAX_PATH];
-	GetModuleFileNameA(NULL, buf, MAX_PATH);
-	std::string s = buf;
-	size_t idx = s.find_last_of('\\');
-	s = s.substr(0, idx + 1);
-	return s;
+template <class T>
+void del_array(T* ptr) {
+	delete[] ptr;
 }
-
-HMODULE LoadDLL(const std::string& libName) {
-	HMODULE dll = LoadLibraryA((GetExecutablePath() + libName).c_str());
-	if (!dll) {
-		MessageBoxA(NULL, "FAILED TO LOAD LIBRARY", "FUCK...", MB_OK|MB_ICONERROR);
-		exit(1);
-	}
-	return dll;
-}
-
-FARPROC GetDLLFunction(HMODULE dll, const std::string& funcName) {
-	auto function =  GetProcAddress(dll, funcName.c_str());
-	if (!function) {
-		MessageBoxA(NULL, "FAILED TO GET PROC ADDRESS", "FUCK...", MB_OK|MB_ICONERROR);
-		exit(2);
-	}
-	return function;
-}
-
-} // namespace pet_test
-
-using namespace peti_test;
 
 int petiMain() {
-	// load dll
+	cout << "program started...\n";
 
-	HMODULE hDll = LoadDLL("GraphicsEngine.dll");
-	auto CreateGraphicsEngine = (IGraphicsEngine*(*)())GetDLLFunction(hDll, "CreateGraphicsEngine");
+	cout << "sizeof(zs_shared_ptr) = " << sizeof(zs_shared_ptr<int>) << endl;
+	cout << "sizeof(std::function) = " << sizeof(std::function<void(int*)>) << endl;
+	cout << endl;
 
-	IGraphicsEngine* engine = CreateGraphicsEngine();
-	//ISceneManager* sceneManager = engine->GetSceneManager();
+	cZsirosKenyer* p1 = new cZsirosKenyer();
+	cZsirosKenyer* p2 = new cZsirosKenyer();
+	cZsirosKenyer* p3 = new cZsirosKenyer();
 
-	// Deprecated use
-	//cGraphicsEntity& entity = sceneManager->AddEntity(L"geometry", L"material");
+	{
+		zs_shared_ptr<cZsirosKenyer> ptr1 = p1;			cout << ptr1.use_count() << endl;
+		zs_shared_ptr<cZsirosKenyer> ptr2 = p1;			cout << ptr1.use_count() << endl;
+		zs_shared_ptr<cZsirosKenyer> ptr3 = ptr2;		cout << ptr1.use_count() << endl;
+		zs_shared_ptr<cZsirosKenyer> ptr4 = nullptr;	cout << ptr1.use_count() << endl;
+		zs_shared_ptr<cZsirosKenyer> ptr5 = p2;			cout << ptr1.use_count() << endl;
+		zs_shared_ptr<cZsirosKenyer> ptr6(p3, [](cZsirosKenyer* ptr){ ptr->Release(); });
+	}
+	cout << endl;
 
-	//entity.position = Vec3(1,1,1);
-	//entity.isVisible = true;
+	cout << "array test:\n";
+	cZsirosKenyer* katonasagiElelmezes = new cZsirosKenyer[10];
+	for (int i = 0; i < 10; i++) {
+		katonasagiElelmezes[i].calories = 150 + i;
+	}
+	{
+		zs_shared_ptr<cZsirosKenyer> ptr1(katonasagiElelmezes, [](cZsirosKenyer* ptr){ delete[] ptr; });
+	}
 
 
+	cout << "program ended\n";
+	_getch();
 	return 0;
 }
