@@ -5,7 +5,7 @@
  * Subject to the Boost Software License, Version 1.0. 
  * (See accompanying file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
  * Author: Jeff Garland, Bart Garst
- * $Date: 2013-06-13 07:00:48 -0700 (Thu, 13 Jun 2013) $
+ * $Date: 2013-06-05 22:16:21 +0200 (sze, 05 jún 2013) $
  */
 
 #include <map>

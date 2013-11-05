@@ -12,6 +12,7 @@
 #define BOOST_CONTAINER_DETAIL_UTILITIES_HPP
 
 #include "config_begin.hpp"
+#include "workaround.hpp"
 #include <cstdio>
 #include <cstring> //for ::memcpy
 #include <boost/type_traits/is_fundamental.hpp>
@@ -23,6 +24,7 @@
 #include <boost/move/core.hpp>
 #include <boost/move/utility.hpp>
 #include <boost/move/iterator.hpp>
+#include <boost/container/throw_exception.hpp>
 #include <boost/container/detail/mpl.hpp>
 #include <boost/container/detail/type_traits.hpp>
 #include <boost/container/allocator_traits.hpp>
@@ -114,18 +116,21 @@ SizeType
                     ,const SizeType capacity
                     ,const SizeType n)
 {
-//   if (n > max_size - capacity)
-//      throw std::length_error("get_next_capacity");
+   const SizeType remaining = max_size - capacity;
+   if ( remaining < n )
+      boost::container::throw_length_error("get_next_capacity, allocator's max_size reached");
+   const SizeType additional = max_value(n, capacity);
+   return ( remaining < additional ) ? max_size : ( capacity + additional );
+   #if 0 //Alternative for 50% grow
+      const SizeType m3 = max_size/3;
 
-   const SizeType m3 = max_size/3;
+      if (capacity < m3)
+         return capacity + max_value(3*(capacity+1)/5, n);
 
-   if (capacity < m3)
-      return capacity + max_value(3*(capacity+1)/5, n);
-
-   if (capacity < m3*2)
-      return capacity + max_value((capacity+1)/2, n);
-
-   return max_size;
+      if (capacity < m3*2)
+         return capacity + max_value((capacity+1)/2, n);
+      return max_size;
+   #endif
 }
 
 template <class T>
@@ -621,7 +626,7 @@ inline typename container_detail::enable_if_memcpy_copy_constructible<I, F, I>::
 
 //////////////////////////////////////////////////////////////////////////////
 //
-//                               uninitialized_default_alloc_n
+//                               uninitialized_value_init_alloc_n
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -635,12 +640,47 @@ inline typename container_detail::enable_if_memcpy_copy_constructible<I, F, I>::
 template
    <typename A,
     typename F> // F models ForwardIterator
-inline F uninitialized_default_alloc_n(A &a, typename allocator_traits<A>::difference_type n, F r)
+inline F uninitialized_value_init_alloc_n(A &a, typename allocator_traits<A>::difference_type n, F r)
 {
    F back = r;
    BOOST_TRY{
       while (n--) {
          allocator_traits<A>::construct(a, container_detail::to_raw_pointer(&*r));
+         ++r;
+      }
+   }
+   BOOST_CATCH(...){
+	   for (; back != r; ++back){
+         allocator_traits<A>::destroy(a, container_detail::to_raw_pointer(&*back));
+      }
+	   BOOST_RETHROW;
+   }
+   BOOST_CATCH_END
+   return r;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+//
+//                               uninitialized_default_init_alloc_n
+//
+//////////////////////////////////////////////////////////////////////////////
+
+//! <b>Effects</b>:
+//!   \code
+//!   for (; n--; ++r, ++f)
+//!      allocator_traits::construct(a, &*r);
+//!   \endcode
+//!
+//! <b>Returns</b>: r
+template
+   <typename A,
+    typename F> // F models ForwardIterator
+inline F uninitialized_default_init_alloc_n(A &a, typename allocator_traits<A>::difference_type n, F r)
+{
+   F back = r;
+   BOOST_TRY{
+      while (n--) {
+         allocator_traits<A>::construct(a, container_detail::to_raw_pointer(&*r), default_init);
          ++r;
       }
    }
@@ -1055,18 +1095,21 @@ inline typename container_detail::enable_if_c
          ::memcpy(short_ptr, stora_ptr, sizeof_storage);
          large_ptr += sizeof_storage;
          short_ptr += sizeof_storage;
+         BOOST_CONTAINER_FALLTHOUGH
       case 3:
          ::memcpy(stora_ptr, large_ptr, sizeof_storage);
          ::memcpy(large_ptr, short_ptr, sizeof_storage);
          ::memcpy(short_ptr, stora_ptr, sizeof_storage);
          large_ptr += sizeof_storage;
          short_ptr += sizeof_storage;
+         BOOST_CONTAINER_FALLTHOUGH
       case 2:
          ::memcpy(stora_ptr, large_ptr, sizeof_storage);
          ::memcpy(large_ptr, short_ptr, sizeof_storage);
          ::memcpy(short_ptr, stora_ptr, sizeof_storage);
          large_ptr += sizeof_storage;
          short_ptr += sizeof_storage;
+         BOOST_CONTAINER_FALLTHOUGH
       case 1:
          ::memcpy(stora_ptr, large_ptr, sizeof_storage);
          ::memcpy(large_ptr, short_ptr, sizeof_storage);

@@ -806,7 +806,6 @@ namespace boost {
 
         typedef typename EdgeList::value_type StoredEdge;
         typename EdgeList::iterator i = el.find(StoredEdge(v)), end = el.end();
-        BOOST_ASSERT ((i != end));
         if (i != end) {
           g.m_edges.erase((*i).get_iter());
           el.erase(i);
@@ -1611,8 +1610,7 @@ namespace boost {
       typename Config::OutEdgeList::iterator first, last;
       typename Config::EdgeContainer fake_edge_container;
       boost::tie(first, last) = graph_detail::
-        equal_range(el, StoredEdge(v, fake_edge_container.end(),
-                                   &fake_edge_container));
+        equal_range(el, StoredEdge(v));
       return std::make_pair(out_edge_iterator(first, u),
                             out_edge_iterator(last, u));
     }
@@ -2723,7 +2721,6 @@ namespace boost {
 
 } // namespace boost
 
-#if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
 namespace boost {
 
   template <typename V>
@@ -2757,7 +2754,6 @@ namespace boost {
   };
 
 }
-#endif
 
 
 #endif // BOOST_GRAPH_DETAIL_DETAIL_ADJACENCY_LIST_CCT

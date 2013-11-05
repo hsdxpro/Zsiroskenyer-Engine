@@ -37,6 +37,7 @@
 #include <boost/geometry/index/detail/varray_detail.hpp>
 
 #include <boost/concept_check.hpp>
+#include <boost/throw_exception.hpp>
 
 /*!
 \defgroup varray_non_member varray non-member functions
@@ -177,7 +178,7 @@ class varray
 
     BOOST_COPYABLE_AND_MOVABLE(varray)
 
-#ifdef BOOST_NO_RVALUE_REFERENCES
+#ifdef BOOST_NO_CXX11_RVALUE_REFERENCES
 public:
     template <std::size_t C>
     varray & operator=(varray<Value, C> & sv)
@@ -363,7 +364,7 @@ public:
     //!   Linear O(N).
     template <std::size_t C>
 // TEMPORARY WORKAROUND
-#if defined(BOOST_NO_RVALUE_REFERENCES)
+#if defined(BOOST_NO_CXX11_RVALUE_REFERENCES)
     varray & operator=(::boost::rv< varray<value_type, C> > const& other)
 #else
     varray & operator=(varray<value_type, C> const& other)

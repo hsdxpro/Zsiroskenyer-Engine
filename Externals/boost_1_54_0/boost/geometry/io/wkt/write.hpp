@@ -27,6 +27,7 @@
 #include <boost/geometry/core/exterior_ring.hpp>
 #include <boost/geometry/core/interior_rings.hpp>
 #include <boost/geometry/core/ring_type.hpp>
+#include <boost/geometry/algorithms/disjoint.hpp>
 
 #include <boost/geometry/geometries/concepts/check.hpp>
 #include <boost/geometry/geometries/ring.hpp>
@@ -119,9 +120,14 @@ struct wkt_range
 {
     template <typename Char, typename Traits>
     static inline void apply(std::basic_ostream<Char, Traits>& os,
-                Range const& range)
+                Range const& range, bool force_closed)
     {
         typedef typename boost::range_iterator<Range const>::type iterator_type;
+
+        typedef stream_coordinate
+            <
+                point_type, 0, dimension<point_type>::type::value
+            > stream_type;
 
         bool first = true;
 
@@ -129,19 +135,32 @@ struct wkt_range
 
         // TODO: check EMPTY here
 
-        for (iterator_type it = boost::begin(range);
-            it != boost::end(range);
-            ++it)
+        iterator_type begin = boost::begin(range);
+        iterator_type end = boost::end(range);
+        for (iterator_type it = begin; it != end; ++it)
         {
             os << (first ? "" : ",");
-            stream_coordinate
-                <
-                    point_type, 0, dimension<point_type>::type::value
-                >::apply(os, *it);
+            stream_type::apply(os, *it);
             first = false;
         }
 
+        // optionally, close range to ring by repeating the first point
+        if (force_closed 
+            && boost::size(range) > 1
+            && geometry::disjoint(*begin, *(end - 1)))
+        {
+            os << ",";
+            stream_type::apply(os, *begin);
+        }
+
         os << SuffixPolicy::apply();
+    }
+
+    template <typename Char, typename Traits>
+    static inline void apply(std::basic_ostream<Char, Traits>& os,
+                Range const& range)
+    {
+        apply(os, range, false);
     }
 
 private:
@@ -170,18 +189,19 @@ struct wkt_poly
                 Polygon const& poly)
     {
         typedef typename ring_type<Polygon const>::type ring;
+        bool const force_closed = true;
 
         os << PrefixPolicy::apply();
         // TODO: check EMPTY here
         os << "(";
-        wkt_sequence<ring>::apply(os, exterior_ring(poly));
+        wkt_sequence<ring>::apply(os, exterior_ring(poly), force_closed);
 
         typename interior_return_type<Polygon const>::type rings
                     = interior_rings(poly);
         for (BOOST_AUTO_TPL(it, boost::begin(rings)); it != boost::end(rings); ++it)
         {
             os << ",";
-            wkt_sequence<ring>::apply(os, *it);
+            wkt_sequence<ring>::apply(os, *it, force_closed);
         }
         os << ")";
     }

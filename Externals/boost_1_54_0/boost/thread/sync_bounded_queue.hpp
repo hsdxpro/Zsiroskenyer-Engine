@@ -31,7 +31,9 @@ namespace boost
   struct no_block_tag{};
   BOOST_CONSTEXPR_OR_CONST no_block_tag no_block = {};
 
-  struct sync_queue_is_closed : std::exception {};
+  struct sync_queue_is_closed : std::exception
+  {
+  };
 
   template <typename ValueType>
   class sync_bounded_queue
@@ -48,31 +50,31 @@ namespace boost
     ~sync_bounded_queue();
 
     // Observers
-    bool empty() const;
-    bool full() const;
-    size_type capacity() const;
-    size_type size() const;
-    bool closed() const;
+    inline bool empty() const;
+    inline bool full() const;
+    inline size_type capacity() const;
+    inline size_type size() const;
+    inline bool closed() const;
 
     // Modifiers
-    void close();
+    inline void close();
 
-    void push(const value_type& x);
-    void push(BOOST_THREAD_RV_REF(value_type) x);
-    bool try_push(const value_type& x);
-    bool try_push(BOOST_THREAD_RV_REF(value_type) x);
-    bool try_push(no_block_tag, const value_type& x);
-    bool try_push(no_block_tag, BOOST_THREAD_RV_REF(value_type) x);
+    inline void push(const value_type& x);
+    inline void push(BOOST_THREAD_RV_REF(value_type) x);
+    inline bool try_push(const value_type& x);
+    inline bool try_push(BOOST_THREAD_RV_REF(value_type) x);
+    inline bool try_push(no_block_tag, const value_type& x);
+    inline bool try_push(no_block_tag, BOOST_THREAD_RV_REF(value_type) x);
 
     // Observers/Modifiers
-    void pull(value_type&);
-    void pull(ValueType& elem, bool & closed);
+    inline void pull(value_type&);
+    inline void pull(ValueType& elem, bool & closed);
     // enable_if is_nothrow_copy_movable<value_type>
-    value_type pull();
-    shared_ptr<ValueType> ptr_pull();
-    bool try_pull(value_type&);
-    bool try_pull(no_block_tag,value_type&);
-    shared_ptr<ValueType> try_pull();
+    inline value_type pull();
+    inline shared_ptr<ValueType> ptr_pull();
+    inline bool try_pull(value_type&);
+    inline bool try_pull(no_block_tag,value_type&);
+    inline shared_ptr<ValueType> try_pull();
 
   private:
     mutable mutex mtx_;
@@ -86,42 +88,51 @@ namespace boost
     size_type capacity_;
     bool closed_;
 
-    size_type inc(size_type idx) const BOOST_NOEXCEPT
+    inline size_type inc(size_type idx) const BOOST_NOEXCEPT
     {
       return (idx + 1) % capacity_;
     }
 
-    bool empty(unique_lock<mutex>& ) const BOOST_NOEXCEPT
+    inline bool empty(unique_lock<mutex>& ) const BOOST_NOEXCEPT
     {
       return in_ == out_;
     }
-    bool empty(lock_guard<mutex>& ) const BOOST_NOEXCEPT
+    inline bool empty(lock_guard<mutex>& ) const BOOST_NOEXCEPT
     {
       return in_ == out_;
     }
-    size_type capacity(lock_guard<mutex>& ) const BOOST_NOEXCEPT
+    inline bool full(unique_lock<mutex>& ) const BOOST_NOEXCEPT
     {
-      return capacity;
+      return (inc(in_) == out_);
     }
-    size_type size(lock_guard<mutex>& ) const BOOST_NOEXCEPT
+    inline bool full(lock_guard<mutex>& ) const BOOST_NOEXCEPT
     {
-      return ((out_+capacity_-in_) % capacity_)-1;
+      return (inc(in_) == out_);
+    }
+    inline size_type capacity(lock_guard<mutex>& ) const BOOST_NOEXCEPT
+    {
+      return capacity_-1;
+    }
+    inline size_type size(lock_guard<mutex>& lk) const BOOST_NOEXCEPT
+    {
+      if (full(lk)) return capacity(lk);
+      return ((out_+capacity(lk)-in_) % capacity(lk));
     }
 
-    void throw_if_closed(unique_lock<mutex>&);
+    inline void throw_if_closed(unique_lock<mutex>&);
 
-    bool try_pull(value_type& x, unique_lock<mutex>& lk);
-    bool try_push(const value_type& x, unique_lock<mutex>& lk);
-    bool try_push(BOOST_THREAD_RV_REF(value_type) x, unique_lock<mutex>& lk);
-    shared_ptr<value_type> try_pull(unique_lock<mutex>& lk);
+    inline bool try_pull(value_type& x, unique_lock<mutex>& lk);
+    inline bool try_push(const value_type& x, unique_lock<mutex>& lk);
+    inline bool try_push(BOOST_THREAD_RV_REF(value_type) x, unique_lock<mutex>& lk);
+    inline shared_ptr<value_type> try_pull(unique_lock<mutex>& lk);
 
-    void wait_until_not_empty(unique_lock<mutex>& lk);
-    void wait_until_not_empty(unique_lock<mutex>& lk, bool&);
-    size_type wait_until_not_full(unique_lock<mutex>& lk);
-    size_type wait_until_not_full(unique_lock<mutex>& lk, bool&);
+    inline void wait_until_not_empty(unique_lock<mutex>& lk);
+    inline void wait_until_not_empty(unique_lock<mutex>& lk, bool&);
+    inline size_type wait_until_not_full(unique_lock<mutex>& lk);
+    inline size_type wait_until_not_full(unique_lock<mutex>& lk, bool&);
 
 
-    void notify_not_empty_if_needed(unique_lock<mutex>& lk)
+    inline void notify_not_empty_if_needed(unique_lock<mutex>& lk)
     {
       if (waiting_empty_ > 0)
       {
@@ -130,7 +141,7 @@ namespace boost
         not_empty_.notify_one();
       }
     }
-    void notify_not_full_if_needed(unique_lock<mutex>& lk)
+    inline void notify_not_full_if_needed(unique_lock<mutex>& lk)
     {
       if (waiting_full_ > 0)
       {
@@ -140,13 +151,20 @@ namespace boost
       }
     }
 
-    void pull(value_type& elem, unique_lock<mutex>& lk)
+    inline void pull(value_type& elem, unique_lock<mutex>& lk)
     {
       elem = boost::move(data_[out_]);
       out_ = inc(out_);
       notify_not_full_if_needed(lk);
     }
-    boost::shared_ptr<value_type> ptr_pull(unique_lock<mutex>& lk)
+    inline value_type pull(unique_lock<mutex>& lk)
+    {
+      value_type elem = boost::move(data_[out_]);
+      out_ = inc(out_);
+      notify_not_full_if_needed(lk);
+      return boost::move(elem);
+    }
+    inline boost::shared_ptr<value_type> ptr_pull(unique_lock<mutex>& lk)
     {
       shared_ptr<value_type> res = make_shared<value_type>(boost::move(data_[out_]));
       out_ = inc(out_);
@@ -154,26 +172,23 @@ namespace boost
       return res;
     }
 
-
-    void set_in(size_type in, unique_lock<mutex>& lk)
+    inline void set_in(size_type in, unique_lock<mutex>& lk)
     {
       in_ = in;
       notify_not_empty_if_needed(lk);
     }
 
-    void push_at(const value_type& elem, size_type in_p_1, unique_lock<mutex>& lk)
+    inline void push_at(const value_type& elem, size_type in_p_1, unique_lock<mutex>& lk)
     {
       data_[in_] = elem;
       set_in(in_p_1, lk);
     }
 
-    void push_at(BOOST_THREAD_RV_REF(value_type) elem, size_type in_p_1, unique_lock<mutex>& lk)
+    inline void push_at(BOOST_THREAD_RV_REF(value_type) elem, size_type in_p_1, unique_lock<mutex>& lk)
     {
       data_[in_] = boost::move(elem);
       set_in(in_p_1, lk);
     }
-
-
   };
 
   template <typename ValueType>
@@ -402,9 +417,9 @@ namespace boost
   {
     try
     {
-      value_type elem;
-      pull(elem);
-      return boost::move(elem);
+      unique_lock<mutex> lk(mtx_);
+      wait_until_not_empty(lk);
+      return pull(lk);
     }
     catch (...)
     {
@@ -523,7 +538,7 @@ namespace boost
     try
     {
       unique_lock<mutex> lk(mtx_);
-      return try_push(elem, lk);
+      return try_push(boost::move(elem), lk);
     }
     catch (...)
     {
@@ -542,7 +557,7 @@ namespace boost
       {
         return false;
       }
-      return try_push(elem, lk);
+      return try_push(boost::move(elem), lk);
     }
     catch (...)
     {
@@ -557,7 +572,7 @@ namespace boost
     try
     {
       unique_lock<mutex> lk(mtx_);
-      push_at(elem, wait_until_not_full(lk), lk);
+      push_at(boost::move(elem), wait_until_not_full(lk), lk);
     }
     catch (...)
     {
@@ -569,7 +584,7 @@ namespace boost
   template <typename ValueType>
   sync_bounded_queue<ValueType>& operator<<(sync_bounded_queue<ValueType>& sbq, BOOST_THREAD_RV_REF(ValueType) elem)
   {
-    sbq.push(boost::forward<ValueType>(elem));
+    sbq.push(boost::move(elem));
     return sbq;
   }
 

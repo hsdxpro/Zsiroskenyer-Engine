@@ -657,7 +657,6 @@ namespace boost
       {};
       virtual ~BOOST_SIGNALS2_SIGNAL_CLASS_NAME(BOOST_SIGNALS2_NUM_ARGS)()
       {
-        disconnect_all_slots();
       }
       connection connect(const slot_type &slot, connect_position position = at_back)
       {
@@ -737,7 +736,7 @@ namespace boost
         BOOST_SIGNALS2_SIGNAL_CLASS_NAME(BOOST_SIGNALS2_NUM_ARGS) <BOOST_SIGNALS2_SIGNAL_TEMPLATE_INSTANTIATION> &sig2 )
     {
       sig1.swap(sig2);
-    };
+    }
 #endif
 
     namespace detail
