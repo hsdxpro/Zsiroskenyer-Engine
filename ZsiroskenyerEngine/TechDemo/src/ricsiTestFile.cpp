@@ -46,7 +46,7 @@ int ricsiMain() {
 	cCamera cam(ZS_PIDIV2, (float)winDesc.clientWidth / winDesc.clientHeight, 0.01f, 5000.0f);
 	gEngine->SetActiveCamera(&cam);
 
-	// Create ophysics entity
+	// Create physics entity
 	const float mass = 0.0f;
 	cEntity* entity = core->AddEntity(L"objects/box.dae", L"objects/box.dae", L"materials/test.zsm", mass);
 	entity->SetPosition(Vec3(0, 50, 0));
@@ -64,11 +64,12 @@ int ricsiMain() {
 		// Render Scene
 		gEngine->RenderSceneForward();
 
-		core->DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
+		// Debug rendering
+		//core->DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
 
 		// (game logic) z rotation
 		static float zVal = 0.0f;
-		zVal += 0.007f;
+		zVal += 0.002f;
 		entity->SetRotation(Quat::EulerAnglesToQuat(0, 0, zVal));
 
 		// Present SwapChain

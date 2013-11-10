@@ -33,7 +33,7 @@ VS_OUT VS_MAIN(VS_IN In) {
 PS_OUT PS_MAIN(VS_OUT In) {
 	PS_OUT pout;
 //	pout.color = tex2D(diffuseTex, In.tex0);
-	float3 pointLightPos = float3(1, 0, 0);
+	float3 pointLightPos = float3(0, 0, -5);
 	float3 lightVec = normalize(pointLightPos - In.posW);
 	float intensity = dot(In.normalW, lightVec);
 	pout.color = float4(intensity, intensity, intensity, 1.0f);

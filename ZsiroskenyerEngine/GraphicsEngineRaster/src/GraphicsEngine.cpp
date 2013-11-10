@@ -86,7 +86,7 @@ void cGraphicsEngine::RenderSceneForward() {
 			IConstantBuffer* wvpBuffer = gApi->CreateBufferConstant(sizeof(Matrix44), eBufferUsage::DEFAULT, &wvp);
 			IConstantBuffer* worldBuffer= gApi->CreateBufferConstant(sizeof(Matrix44), eBufferUsage::DEFAULT, &world);
 				gApi->SetVSConstantBuffer(wvpBuffer, 0);
-				gApi->SetVSConstantBuffer(worldBuffer, 1);
+				gApi->SetVSConstantBuffer(worldBuffer, 4);
 			
 			// Draw entity..
 			gApi->DrawIndexed(ib->GetSize() / sizeof(unsigned));
