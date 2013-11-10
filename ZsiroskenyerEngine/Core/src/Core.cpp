@@ -63,7 +63,7 @@ void cCore::Update(float deltaT) {
 }
 
 cEntity* cCore::AddEntity(const zsString& graphGeomPath,const zsString& physicsGeom, const zsString& mtlPath, float mass) {
-	cGraphicsEntity* gEntity = graphicsEngine->GetGraphicsEntity(graphGeomPath, mtlPath);
+	cGraphicsEntity* gEntity = graphicsEngine->CreateEntity(graphGeomPath, mtlPath);
 	IPhysicsEntity* pEntity = physicsEngine->GetRigidEntity(physicsGeom, mass);
 
 	graphicsEntities.push_back(gEntity);

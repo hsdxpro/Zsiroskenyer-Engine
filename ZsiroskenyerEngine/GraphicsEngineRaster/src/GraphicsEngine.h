@@ -24,7 +24,7 @@ public:
 
 	void SetActiveCamera(cCamera* cam) override;
 
-	cGraphicsEntity* GetGraphicsEntity(const zsString& geomPath, const zsString& mtlPath) override;
+	cGraphicsEntity* CreateEntity(const zsString& geomPath, const zsString& mtlPath) override;
 
 	cSceneManager*		GetSceneManager();
 	cResourceManager*	GetResourceManager();

@@ -23,7 +23,7 @@ public:
 
 	virtual void SetActiveCamera(cCamera* cam) = 0;
 
-	virtual cGraphicsEntity* GetGraphicsEntity(const zsString& geomPath, const zsString& mtlPath) = 0;
+	virtual cGraphicsEntity* CreateEntity(const zsString& geomPath, const zsString& mtlPath) = 0;
 
 	virtual IGraphicsApi*		GetGraphicsApi() = 0;
 	virtual IShaderManager*		GetShaderManager() = 0;

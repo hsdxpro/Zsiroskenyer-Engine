@@ -102,8 +102,13 @@ void cGraphicsEngine::SetActiveCamera(cCamera* cam) {
 	sceneManager->SetActiveCamera(cam);
 }
 
-cGraphicsEntity* cGraphicsEngine::GetGraphicsEntity(const zsString& geomPath, const zsString& mtlPath) {
-	return sceneManager->AddEntity(resourceManager->GetGeometry(geomPath), resourceManager->GetMaterial(mtlPath));
+cGraphicsEntity* cGraphicsEngine::CreateEntity(const zsString& geomPath, const zsString& mtlPath) {
+	cGeometryRef geom = resourceManager->GetGeometry(geomPath);
+	cMaterialRef mtl = resourceManager->GetMaterial(mtlPath);
+	if (!geom || !mtl) {
+		return NULL;
+	}
+	return sceneManager->AddEntity(std::move(geom), std::move(mtl));
 }
 
 cSceneManager* cGraphicsEngine::GetSceneManager()  {
