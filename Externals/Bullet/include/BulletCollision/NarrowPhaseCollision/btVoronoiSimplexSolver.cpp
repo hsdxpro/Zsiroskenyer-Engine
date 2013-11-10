@@ -23,7 +23,6 @@ subject to the following restrictions:
 		
 */
 
-#pragma unmanaged
 
 #include "btVoronoiSimplexSolver.h"
 
