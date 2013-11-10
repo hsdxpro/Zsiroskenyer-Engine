@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <functional>
 #include <cassert>
+#include <ostream>
 
 
 template <class T>
@@ -142,6 +143,7 @@ zs_shared_ptr<T>& zs_shared_ptr<T>::operator=(const zs_shared_ptr& r) {
 	if (r.deleter)
 		deleter = r.deleter;
 	register_me();
+	return *this;
 }
 
 template <class T>
@@ -152,6 +154,7 @@ zs_shared_ptr<T>& zs_shared_ptr<T>::operator=(zs_shared_ptr&& r) {
 	r.ptr = nullptr;
 	if (r.deleter)
 		deleter = r.deleter;
+	return *this;
 }
 
 // observers
@@ -197,4 +200,108 @@ void zs_shared_ptr<T>::swap(zs_shared_ptr& r) {
 	auto ptr_tmp = ptr;
 	ptr = r.ptr;
 	r.ptr = ptr_tmp;
+}
+
+
+// comparison operators
+	// shared_ptr vs. shared_ptr
+template <class T, class U>
+bool operator==(const zs_shared_ptr<T>& lhs, const zs_shared_ptr<U>& rhs) {
+	return lhs.get()==rhs.get();
+}
+template <class T, class U>
+bool operator!=(const zs_shared_ptr<T>& lhs, const zs_shared_ptr<U>& rhs) {
+	return !(lhs == rhs);
+}
+template <class T, class U>
+bool operator>(const zs_shared_ptr<T>& lhs, const zs_shared_ptr<U>& rhs) {
+	return lhs.get() > rhs.get();
+}
+template <class T, class U>
+bool operator<(const zs_shared_ptr<T>& lhs, const zs_shared_ptr<U>& rhs) {
+	return lhs.get() < rhs.get();
+}
+template <class T, class U>
+bool operator>=(const zs_shared_ptr<T>& lhs, const zs_shared_ptr<U>& rhs) {
+	return lhs.get() >= lhs.get();
+}
+template <class T, class U>
+bool operator<=(const zs_shared_ptr<T>& lhs, const zs_shared_ptr<U>& rhs) {
+	return lhs.get() <= lhs.get();
+}
+	// nullptr vs. shared_ptr
+template <class T>
+bool operator==(std::nullptr_t lhs, const zs_shared_ptr<T>& rhs) {
+	return rhs.get() == nullptr;
+}
+template <class T>
+bool operator!=(std::nullptr_t lhs, const zs_shared_ptr<T>& rhs) {
+	return rhs.get() != nullptr;
+}
+template <class T>
+bool operator>(std::nullptr_t lhs, const zs_shared_ptr<T>& rhs) {
+	return (T*)(nullptr) > rhs.get();
+}
+template <class T>
+bool operator<(std::nullptr_t lhs, const zs_shared_ptr<T>& rhs) {
+	return (T*)(nullptr) < rhs.get();
+}
+template <class T>
+bool operator>=(std::nullptr_t lhs, const zs_shared_ptr<T>& rhs) {
+	return (T*)(nullptr) >= rhs.get();
+}
+template <class T>
+bool operator<=(std::nullptr_t lhs, const zs_shared_ptr<T>& rhs) {
+	return (T*)(nullptr) <= rhs.get();
+}
+	// shared_ptr vs. nullptr
+template <class T>
+bool operator==(const zs_shared_ptr<T>& lhs, std::nullptr_t rhs) {
+	return lhs.get() == nullptr;
+}
+template <class T>
+bool operator!=(const zs_shared_ptr<T>& lhs, std::nullptr_t rhs) {
+	return lhs.get() != nullptr;
+}
+template <class T>
+bool operator>(const zs_shared_ptr<T>& lhs, std::nullptr_t rhs) {
+	return lhs.get() > (T*)(nullptr);
+}
+template <class T>
+bool operator<(const zs_shared_ptr<T>& lhs, std::nullptr_t rhs) {
+	return lhs.get() < (T*)(nullptr);
+}
+template <class T>
+bool operator>=(const zs_shared_ptr<T>& lhs, std::nullptr_t rhs) {
+	return lhs.get() >= (T*)(nullptr);
+}
+template <class T>
+bool operator<=(const zs_shared_ptr<T>& lhs, std::nullptr_t rhs) {
+	return lhs.get() <= (T*)(nullptr);
+}
+
+
+// output stream
+template <class T>
+std::ostream& operator<<(std::ostream& os, const zs_shared_ptr<T>& p) {
+	os << p.get();
+	return os;
+}
+
+
+// algorithm
+namespace std {
+	// global swap function
+	template <class T>
+	void swap(zs_shared_ptr<T>& lhs, zs_shared_ptr<T>& rhs) {
+		lhs.swap(rhs);
+	}
+	// hasher
+	template <class T>
+	struct hash<zs_shared_ptr<T>> {
+		static /*thread_local*/ hash<T*> hasher_object;
+		size_t operator()(const zs_shared_ptr<T>& arg) const {
+			return hasher_object(arg);
+		}
+	};
 }

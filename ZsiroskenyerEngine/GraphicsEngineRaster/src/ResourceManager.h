@@ -12,6 +12,7 @@
 #include "..\..\Core\src\GeometryBuilder.h"
 #include "Geometry.h"
 #include "Material.h"
+#include "../../Core/src/shared_ptr.h"
 
 #include "..\..\Core\src\zsString.h"
 #include <memory>
@@ -60,7 +61,7 @@ private:
 //	References to resources
 
 // geometry reference
-class cGeometryRef : public std::shared_ptr<cGeometry> {
+class cGeometryRef : public zs_shared_ptr<cGeometry> {
 	friend struct std::hash<cGeometryRef>;
 public:
 	cGeometryRef();
@@ -76,7 +77,7 @@ private:
 };
 
 // material reference
-class cMaterialRef : public std::shared_ptr<cMaterial> {
+class cMaterialRef : public zs_shared_ptr<cMaterial> {
 	friend struct std::hash<cMaterialRef>;
 public:
 	cMaterialRef();
