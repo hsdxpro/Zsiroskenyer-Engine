@@ -122,58 +122,58 @@ void cResourceManager::UnloadMaterial(const cMaterial* material) {
 // geometry reference
 cGeometryRef::cGeometryRef(cResourceManager* rm, cGeometry* ptr)
 	:
-	shared_ptr(ptr, [this](cGeometry* g){this->rm->UnloadGeometry(g);} ), 
+	zs_shared_ptr(ptr, [this](cGeometry* g){this->rm->UnloadGeometry(g);} ), 
 	rm(rm)
 {
 }
 cGeometryRef::cGeometryRef(const cGeometryRef& other) 
-: shared_ptr(other), rm(other.rm) {
+: zs_shared_ptr(other), rm(other.rm) {
 }
 cGeometryRef::cGeometryRef()
-: shared_ptr(NULL), rm(NULL) {
+: zs_shared_ptr(NULL), rm(NULL) {
 }
 
 cGeometryRef& cGeometryRef::operator = (const cGeometryRef& other) {
-	shared_ptr<cGeometry>::operator=(other);
+	zs_shared_ptr<cGeometry>::operator=(other);
 	rm = other.rm;
 	return *this;
 }
 
 bool cGeometryRef::operator == (const cGeometryRef& other) {
-	return std::operator==(*this, other);
+	return ::operator==(*this, other);
 }
 
 cGeometry* cGeometryRef::get() const {
-	return shared_ptr<cGeometry>::get();
+	return zs_shared_ptr<cGeometry>::get();
 }
 
 
 // material reference
 cMaterialRef::cMaterialRef(cResourceManager* rm, cMaterial* ptr)
 	:
-	shared_ptr(ptr, [this](cMaterial* m){this->rm->UnloadMaterial(m);} ), 
+	zs_shared_ptr(ptr, [this](cMaterial* m){this->rm->UnloadMaterial(m); }),
 	rm(rm)
 {
 }
 
 cMaterialRef::cMaterialRef(const cMaterialRef& other) 
-: shared_ptr(other), rm(other.rm) {
+: zs_shared_ptr(other), rm(other.rm) {
 }
 
 cMaterialRef::cMaterialRef()
-:shared_ptr(NULL), rm(NULL) {
+: zs_shared_ptr(NULL), rm(NULL) {
 }
 
 cMaterialRef& cMaterialRef::operator = (const cMaterialRef& other) {
-	shared_ptr<cMaterial>::operator=(other);
+	zs_shared_ptr<cMaterial>::operator=(other);
 	rm = other.rm;
 	return *this;
 }
 
 bool cMaterialRef::operator == (const cMaterialRef& other) {
-	return std::operator==(*this, other);
+	return ::operator==(*this, other);
 }
 
 cMaterial* cMaterialRef::get() const {
-	return shared_ptr<cMaterial>::get();
+	return zs_shared_ptr<cMaterial>::get();
 }
