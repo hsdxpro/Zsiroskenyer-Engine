@@ -6,11 +6,11 @@
 //version 3.1.0.13
 //profile vs_5_0
 //program VS_MAIN
-//semantic wvp
-//semantic world
-//semantic diffuseTex
-//var float4x4 wvp :  : _wvp[0], 4 : -1 : 1
-//var float4x4 world :  : _world[0], 4 : -1 : 1
+//semantic wvp : C0
+//semantic world : C4
+//semantic diffuseTex : TEXUNIT0
+//var float4x4 wvp : C0 : _wvp[0], 4 : -1 : 1
+//var float4x4 world : C4 : _world[0], 4 : -1 : 1
 //var float3 In.posL : $vin.POSITION : POSITION : 0 : 1
 //var float3 In.normalL : $vin.NORMAL : NORMAL : 0 : 1
 //var float2 In.tex0 : $vin.TEXCOORD0 : TEXCOORD0 : 0 : 1
@@ -46,8 +46,8 @@ struct X1X {
 };
 
 static X1X cout;
-float4x4 _wvp;
-float4x4 _world;
+float4x4 _wvp : register(c0);
+float4x4 _world : register(c4);
 
  // main procedure, the original name was VS_MAIN
 X1X main(in VS_IN _In)
@@ -56,7 +56,7 @@ X1X main(in VS_IN _In)
     VS_OUT _vout;
 
     _vout._posW = _In._posL.x*_world._11_12_13 + _In._posL.y*_world._21_22_23 + _In._posL.z*_world._31_32_33 + _world._41_42_43;
-    _vout._normalW = _In._normalL.x*_wvp._11_12_13 + _In._normalL.y*_wvp._21_22_23 + _In._normalL.z*_wvp._31_32_33;
+    _vout._normalW = _In._normalL.x*_world._11_12_13 + _In._normalL.y*_world._21_22_23 + _In._normalL.z*_world._31_32_33;
     _vout._posH = _In._posL.x*_wvp._11_12_13_14 + _In._posL.y*_wvp._21_22_23_24 + _In._posL.z*_wvp._31_32_33_34 + _wvp._41_42_43_44;
     _vout._tex01 = _In._tex0;
     cout._SV_POSITION = _vout._posH;

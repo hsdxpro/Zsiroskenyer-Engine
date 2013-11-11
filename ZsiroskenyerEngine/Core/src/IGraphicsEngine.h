@@ -18,6 +18,7 @@ class cCamera;
 class IGraphicsEngine {
 public:
 	virtual void Release() = 0;
+	virtual void ReloadResources() = 0;
 
 	virtual void RenderSceneForward() = 0;
 

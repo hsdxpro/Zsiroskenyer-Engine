@@ -32,7 +32,7 @@ cGraphicsEngine::cGraphicsEngine() {
 	resourceManager = new cResourceManager(gApi);
 	sceneManager = new cSceneManager(resourceManager);
 
-	// Test renderning
+	// Basic 3D geom rendering
 	shaderManager->LoadShader(L"shaders/",L"test.cg");
 
 	// Now, For debugging
@@ -44,6 +44,11 @@ void cGraphicsEngine::Release() {
 	SAFE_DELETE(resourceManager)
 	SAFE_DELETE(shaderManager);
 	SAFE_RELEASE(gApi);
+}
+
+void cGraphicsEngine::ReloadResources() {
+	shaderManager->ReloadShader(L"shaders/", L"test.cg");
+	shaderManager->ReloadShader(L"shaders/", L"LINE_RENDERER.cg");
 }
 
 void cGraphicsEngine::RenderSceneForward() {

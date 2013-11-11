@@ -121,22 +121,22 @@ void cGraphicsApiD3D11::CreateMostAcceptableSwapChain(uint16 width, uint16 heigh
 
 	// create Graphic Infrastructure factory
 	IDXGIFactory* fact = NULL;
-	CreateDXGIFactory(__uuidof(IDXGIFactory),(void**)&fact);
+	CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&fact);
 
 	// enumerate adapters
 	IDXGIAdapter* mainAdapter = NULL;
 	UINT adapterIndex = 0;
-	fact->EnumAdapters(adapterIndex,&mainAdapter);
+	fact->EnumAdapters(adapterIndex, &mainAdapter);
 
 	// enumerate outputs
 	IDXGIOutput* mainOutput = NULL;
 	DXGI_MODE_DESC* modeDesc = NULL;
 	UINT outputIndex = 0;
-	mainAdapter->EnumOutputs(outputIndex,&mainOutput);
+	mainAdapter->EnumOutputs(outputIndex, &mainOutput);
 
 	// how many displayModes ?
 	UINT numModes = 0;
-	mainOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM,0,&numModes,0);
+	mainOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, 0, &numModes,0);
 
 	// get those displayModes
 	modeDesc = new DXGI_MODE_DESC[numModes];
@@ -144,7 +144,7 @@ void cGraphicsApiD3D11::CreateMostAcceptableSwapChain(uint16 width, uint16 heigh
 
 	// select displayModes that matches our renderWindow params and DirectX Config
 	// worst case sized array
-	DXGI_MODE_DESC** filteredVideoModes = new DXGI_MODE_DESC*[numModes];
+	DXGI_MODE_DESC** filteredVideoModes = new DXGI_MODE_DESC* [numModes];
 
 	UINT displayModeIndex = 0;
 	for(size_t i = 0; i < numModes; i++) {
@@ -199,13 +199,14 @@ void cGraphicsApiD3D11::CreateMostAcceptableSwapChain(uint16 width, uint16 heigh
 	if(!config.createDeviceFullScreen)
 		sdesc.Windowed = true;
 
-	HRESULT hr = fact->CreateSwapChain(d3ddev,&sdesc,&d3dsc);
+	HRESULT hr = fact->CreateSwapChain(d3ddev, &sdesc, &d3dsc);
 	if(FAILED(hr)) ILog::GetInstance()->MsgBox(L"Can't create DirectX's Swap Chain");
 
 	// free up everything
-	SAFE_RELEASE(fact);
-	SAFE_RELEASE(mainAdapter);
 	SAFE_RELEASE(mainOutput);
+	SAFE_RELEASE(mainAdapter);
+	SAFE_RELEASE(fact);
+	
 	delete[] filteredVideoModes;
 	delete[] modeDesc;
 }
@@ -215,7 +216,7 @@ void cGraphicsApiD3D11::CreateRenderTargetViewForBB(const tDxConfig& config) {
 	SAFE_RELEASE(backBufferDSV);
 
 	ID3D11Texture2D *backBuffer = NULL;
-	d3dsc->GetBuffer(NULL,__uuidof(ID3D11Resource*),(void**)&backBuffer);
+	d3dsc->GetBuffer(NULL, __uuidof(ID3D11Resource), (void**)&backBuffer);
 	d3ddev->CreateRenderTargetView(backBuffer, 0, &backBufferRTV);
 
 	D3D11_TEXTURE2D_DESC bbDesc;
@@ -248,8 +249,8 @@ void cGraphicsApiD3D11::CreateRenderTargetViewForBB(const tDxConfig& config) {
 	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	d3ddev->CreateDepthStencilView(depthTexture,&dsvDesc,&backBufferDSV);
 
-	depthTexture->Release();
-	backBuffer->Release();
+	SAFE_RELEASE(depthTexture);
+	SAFE_RELEASE(backBuffer);
 }
 
 
@@ -410,10 +411,12 @@ IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPat
 
 	IFile* cgFile = IFile::Create(cgFullPath);
 	if(cgFile->Find(L"VS_MAIN")) {
+		ILog::GetInstance()->Log(L"\nCompiling VertexShader for: " + cgFullPath);
 		cgHaveVS = true;
 		CompileCgToHLSL(cgFullPath, hlslVsFullPath, eProfileCG::VS_5_0);
 	}
 	if(cgFile->Find(L"PS_MAIN")) {
+		ILog::GetInstance()->Log(L"\nCompiling PixelShader for: " + cgFullPath);
 		cgHavePS = true;
 		CompileCgToHLSL(cgFullPath, hlslPsFullPath, eProfileCG::PS_5_0);
 	}
@@ -456,9 +459,9 @@ IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPat
 	auto iter = vsInStructLines.begin();
 	while(iter != vsInStructLines.end()) {
 		// not empty line... Parse Vertex Declaration
-		if(iter->size() != 0) {
+		if(iter->size() != 0)
 			nVertexAttributes++;
-		}
+
 		iter++;
 	}
 	
@@ -497,7 +500,7 @@ IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPat
 				attribType = eVertexAttribute::TANGENT;
 			}
 			else
-				ILog::GetInstance()->MsgBox(L"Cg compiling, can't math SEMANTIC NAME");
+				ILog::GetInstance()->MsgBox(L"Cg file parsing : " + cgFullPath + L", can't match SEMANTIC NAME");
 
 			// Add new Attribute
 			vertexFormat.AddAttribute(attribType);
@@ -519,7 +522,7 @@ IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPat
 				byteSize = 4;
 			} 
 			else
-				ILog::GetInstance()->MsgBox(L"Cg compiling, can't match Input Vertex FORMAT");
+				ILog::GetInstance()->MsgBox(L"Cg file parsing : " + cgFullPath + L", can't match Input Vertex FORMAT");
 
 			vertexDecl[attribIdx].SemanticName = semanticName;
 			vertexDecl[attribIdx].Format = format;

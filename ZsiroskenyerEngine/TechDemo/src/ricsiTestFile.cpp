@@ -19,6 +19,9 @@
 
 #include "..\..\Core\src\Timer.h"
 
+// TODO REMOVE THAT OR I KILL MYSELF
+#include <windows.h>
+
 int ricsiMain() {
 
 	// Create core
@@ -60,6 +63,10 @@ int ricsiMain() {
 	
 		// Update engine
 		core->Update(cTimer::getDeltaSeconds());
+
+		// Shader reloading
+		if (GetAsyncKeyState('R'))
+			gEngine->ReloadResources();
 
 		// Render Scene
 		gEngine->RenderSceneForward();
