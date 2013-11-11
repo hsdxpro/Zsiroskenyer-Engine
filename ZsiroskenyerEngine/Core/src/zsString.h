@@ -162,17 +162,66 @@ public:
 	static void UniToAnsi(const zsString& src, char* source, size_t nChars) {
 		wcstombs(source, src.c_str(), nChars);
 	}
-		
-	std::vector<float> GetFloats(size_t startIDx = 0) const {
-		std::vector<float> floats;
-		size_t offset = startIDx;
+	
+	void CutNumberFromEnd(char* src) {
+		// Move to end
+		while (*src != '\0')
+			src++;
+
+		// terminate in numbers (cutting)
+		while (isdigit(*--src))
+			*src = '\0';
+	}
+
+	void GetNumberFromEnd(char* src, char* buf_out) {
+		// Move to end
+		while (*src != '\0')
+			src++;
+
+		while (isdigit(*--src))
+			*buf_out++ = *src;
+		*buf_out = '\0';
+	}
+
+	void GetWordBetween(char left, char right, char* buf_out) {
+		wchar_t const* str = c_str();
+
+		// Leave spaces from left and try reach left bound
+		while ((char)*str == ' ' || (char)*str != left)
+			str++;
+		str++;
+
+		// TODO WRITE THE FUCKING ASSERT SOMEHOW
+
+		// Leave spaces
+		while ((char)*str == ' ')
+			str++;
+
+		// Copy characters while not end of string or right bound reached
+		while ((char)*str != right && (char)*str != '\0')
+			*buf_out++ = (char)*str++;
+
+		// Terminate string
+		*buf_out = '\0';
+	}
+
+	void zsString::GetFloats(std::vector<float>& floats_out) const {
+		// Clear output if it's not clear
+		if(floats_out.size() != 0) 
+			floats_out.clear();
+
+		wchar_t const* str = c_str();
+		while (!isdigit(*str))
+			str++;
+
+		size_t offset = 0;
 		wchar_t* end = NULL;
 		do {
-			floats.push_back((float)wcstod(c_str() + offset, &end));
-			offset = end - c_str();
-		}while(*end != '\0');
-		return floats;
+			floats_out.push_back((float)wcstod(str + offset, &end));
+			offset = end - str;
+		} while (*end != '\0' && end != NULL);
 	}
+
 
 	// constructors
 	zsString() : zsBasicString() {};

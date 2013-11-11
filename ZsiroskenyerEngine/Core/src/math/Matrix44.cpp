@@ -384,8 +384,8 @@ Matrix44& Matrix44::RotationQuat ( const Quat& q) {
 
 Matrix44 Matrix44::MatrixViewRH(const Vec3& eye, const Vec3& target, const Vec3& up) {
 	Vec3 zaxis = (target - eye).Normalize();		// The "look-at" vector.
-	Vec3 xaxis = Vec3::Cross(up,zaxis).Normalize();	// The "right" vector.
-	Vec3 yaxis = Vec3::Cross(zaxis, xaxis);			// The "up" vector.
+	Vec3 xaxis = Vec3::Cross(zaxis, up).Normalize();// The "right" vector.
+	Vec3 yaxis = Vec3::Cross(xaxis, zaxis);			// The "up" vector.
 
 	// Create a 4x4 orientation matrix from the right, up, and at vectors
 	Matrix44 orientation (	xaxis.x, yaxis.x, zaxis.x, 0,

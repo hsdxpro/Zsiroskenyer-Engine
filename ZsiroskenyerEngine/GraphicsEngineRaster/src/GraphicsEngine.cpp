@@ -77,6 +77,7 @@ void cGraphicsEngine::RenderSceneForward() {
 		// Set SubMaterials
 		for(size_t i = 0; i < (*group->mtl).GetNSubMaterials(); i++) {
 			gApi->SetTexture((*(group->mtl))[i].textureDiffuse, 0);
+			gApi->SetTexture((*(group->mtl))[i].textureNormal, 1);
 		}
 		
 		// Draw each entity
@@ -87,18 +88,31 @@ void cGraphicsEngine::RenderSceneForward() {
 			// WorldViewProj matrix
 			Matrix44 wvp = world * viewMat * projMat;
 
+			struct myBuffer
+			{
+				Matrix44 wvp;
+				Matrix44 world;
+
+			} buff;
+			buff.wvp = wvp;
+			buff.world = world;
+
+			IConstantBuffer* buffer = gApi->CreateBufferConstant(sizeof(buff), eBufferUsage::DEFAULT, &buff);
+			gApi->SetVSConstantBuffer(buffer, 0);
 			// Create, load constant buffers, World and WorldViewProj
-			IConstantBuffer* wvpBuffer = gApi->CreateBufferConstant(sizeof(Matrix44), eBufferUsage::DEFAULT, &wvp);
+			/*IConstantBuffer* wvpBuffer = gApi->CreateBufferConstant(sizeof(Matrix44), eBufferUsage::DEFAULT, &wvp);
 			IConstantBuffer* worldBuffer= gApi->CreateBufferConstant(sizeof(Matrix44), eBufferUsage::DEFAULT, &world);
 				gApi->SetVSConstantBuffer(wvpBuffer, 0);
 				gApi->SetVSConstantBuffer(worldBuffer, 4);
+				*/
 			
 			// Draw entity..
 			gApi->DrawIndexed(ib->GetSize() / sizeof(unsigned));
 
 			// Free up constantBuffer
-			wvpBuffer->Release();
-			worldBuffer->Release();
+			buffer->Release();
+			//wvpBuffer->Release();
+			//worldBuffer->Release();
 		}
 	}
 }

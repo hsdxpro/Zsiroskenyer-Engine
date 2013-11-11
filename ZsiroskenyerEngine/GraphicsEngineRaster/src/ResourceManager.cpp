@@ -71,20 +71,21 @@ cMaterialRef cResourceManager::GetMaterial(const zsString& filePath) {
 			// subMaterial ID, not used yet
 			const zsString& idLine = file->GetLine();
 
+			std::vector<float> floats;
 			// Diffuse
-			auto floats = file->GetLine().GetFloats(7);
+			file->GetLine().GetFloats(floats);
 			(*mtl)[i].diffuse = Vec4(floats[0], floats[1], floats[2], floats[3]);
 
 			// Specular
-			floats = file->GetLine().GetFloats(8);
+			file->GetLine().GetFloats(floats);
 			(*mtl)[i].specular = Vec4(floats[0], floats[1], floats[2], floats[3]);
 
 			// Emissive
-			floats = file->GetLine().GetFloats(8);
+			file->GetLine().GetFloats(floats);
 			(*mtl)[i].emissive = Vec4(floats[0], floats[1], floats[2], floats[3]);
 
 			// Glossiness
-			floats = file->GetLine().GetFloats(10);
+			file->GetLine().GetFloats(floats);
 			(*mtl)[i].glossiness = floats[0];
 
 			// Texture Diffuse

@@ -40,9 +40,9 @@ cPhysicsEngineBullet::cPhysicsEngineBullet() {
 	//m_physicsworld->getSolverInfo().m_numIterations = 20;
 }
 
-void cPhysicsEngineBullet::Release() {
+cPhysicsEngineBullet::~cPhysicsEngineBullet() {
 	int i;
-	for (i = physicsWorld->getNumCollisionObjects()-1; i>=0 ;i--) {
+	for (i = physicsWorld->getNumCollisionObjects() - 1; i >= 0; i--) {
 		btCollisionObject* obj = physicsWorld->getCollisionObjectArray()[i];
 		btRigidBody* body = btRigidBody::upcast(obj);
 		if (body && body->getMotionState())
@@ -55,6 +55,10 @@ void cPhysicsEngineBullet::Release() {
 	SAFE_DELETE(physicsWorld);
 
 	collisionShapes.clear();
+}
+
+void cPhysicsEngineBullet::Release() {
+	delete this;
 }
 
 void cPhysicsEngineBullet::SimulateWorld(float deltaT) {

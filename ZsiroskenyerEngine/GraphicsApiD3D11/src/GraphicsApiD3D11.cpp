@@ -22,7 +22,7 @@ cGraphicsApiD3D11::cGraphicsApiD3D11()
 	CreateDevice();
 
 	// Create default states
-	CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_FRONT, D3D11_FILL_MODE::D3D11_FILL_SOLID);
+	CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_BACK, D3D11_FILL_MODE::D3D11_FILL_SOLID);
 
 	// If you want WIREFRAME MODE
 	//CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_NONE,D3D11_FILL_MODE::D3D11_FILL_WIREFRAME);
@@ -226,25 +226,23 @@ void cGraphicsApiD3D11::CreateRenderTargetViewForBB(const tDxConfig& config) {
 	bbHeight = bbDesc.Height;
 
 	// create Depth texture
-	D3D11_TEXTURE2D_DESC tD;
-	memset(&tD,0,sizeof(tD));
-	tD.ArraySize = 1;
-	tD.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	tD.CPUAccessFlags = 0;
-	tD.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	tD.Width = bbWidth;
-	tD.Height = bbHeight;
-	tD.MipLevels = 1;
-	tD.MiscFlags = 0;
-	tD.SampleDesc.Count = config.multiSampleCount;
-	tD.SampleDesc.Quality = config.multiSampleQuality;
-	tD.Usage = D3D11_USAGE_DEFAULT;
 	ID3D11Texture2D *depthTexture = NULL;
+	D3D11_TEXTURE2D_DESC tD;
+		tD.ArraySize = 1;
+		tD.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+		tD.CPUAccessFlags = 0;
+		tD.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		tD.Width = bbWidth;
+		tD.Height = bbHeight;
+		tD.MipLevels = 1;
+		tD.MiscFlags = 0;
+		tD.SampleDesc.Count = config.multiSampleCount;
+		tD.SampleDesc.Quality = config.multiSampleQuality;
+		tD.Usage = D3D11_USAGE_DEFAULT;
 	d3ddev->CreateTexture2D(&tD,0,&depthTexture);
 
 	// create DepthStencilView
-	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
-	memset(&dsvDesc,0,sizeof(dsvDesc));
+	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
 	dsvDesc.Format = tD.Format;
 	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	d3ddev->CreateDepthStencilView(depthTexture,&dsvDesc,&backBufferDSV);
@@ -475,35 +473,12 @@ IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPat
 	while(iter != vsInStructLines.end()) {
 		// not empty line... Parse Vertex Declaration
 		if(iter->size() != 0) {
-			const char* semanticName;
-			eVertexAttribute attribType;
+			char semanticNames[10][32]; // Max 10 semantic, each 32 word length
+			char semanticIndex[3]; // 999 max
 
-			// Gather Semantic name
-			if(iter->find(L"POSITION") != std::wstring::npos) {
-				semanticName = "POSITION";
-				attribType = eVertexAttribute::POSITION;
-			}
-			else if(iter->find(L"NORMAL") != std::wstring::npos) {
-				semanticName = "NORMAL";
-				attribType = eVertexAttribute::NORMAL;
-			}
-			else if(iter->find(L"TEXCOORD") != std::wstring::npos) {
-				semanticName = "TEXCOORD";
-				attribType = eVertexAttribute::TEXCOORD;
-			}
-			else if(iter->find(L"COLOR") != std::wstring::npos) {
-				semanticName = "COLOR";
-				attribType = eVertexAttribute::COLOR;
-			}
-			else if(iter->find(L"TANGENT") != std::wstring::npos) {
-				semanticName = "TANGENT";
-				attribType = eVertexAttribute::TANGENT;
-			}
-			else
-				ILog::GetInstance()->MsgBox(L"Cg file parsing : " + cgFullPath + L", can't match SEMANTIC NAME");
-
-			// Add new Attribute
-			vertexFormat.AddAttribute(attribType);
+			iter->GetWordBetween(':', ';', semanticNames[attribIdx]);
+			iter->GetNumberFromEnd(semanticNames[attribIdx], semanticIndex);
+			iter->CutNumberFromEnd(semanticNames[attribIdx]);
 
 			// Gather format and size
 			DXGI_FORMAT format;
@@ -524,13 +499,14 @@ IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPat
 			else
 				ILog::GetInstance()->MsgBox(L"Cg file parsing : " + cgFullPath + L", can't match Input Vertex FORMAT");
 
-			vertexDecl[attribIdx].SemanticName = semanticName;
+
+			vertexDecl[attribIdx].SemanticName = semanticNames[attribIdx];
 			vertexDecl[attribIdx].Format = format;
 			vertexDecl[attribIdx].AlignedByteOffset = alignedByteOffset;
 			vertexDecl[attribIdx].InputSlot = 0;
 			vertexDecl[attribIdx].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 			vertexDecl[attribIdx].InstanceDataStepRate = 0;
-			vertexDecl[attribIdx].SemanticIndex = 0;
+			vertexDecl[attribIdx].SemanticIndex = (semanticIndex[0] == '\0') ? 0 : atoi(semanticIndex);
 
 			alignedByteOffset += byteSize;
 			attribIdx++;
@@ -546,7 +522,7 @@ IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPat
 	vsBlob->Release();
 	psBlob->Release();
 
-	return new cShaderProgramD3D11(vertexFormat, alignedByteOffset, inputLayout, vs, ps);
+	return new cShaderProgramD3D11( alignedByteOffset, inputLayout, vs, ps);
 }
 
 bool cGraphicsApiD3D11::WriteBuffer(IIndexBuffer* buffer , void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {

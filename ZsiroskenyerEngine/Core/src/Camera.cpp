@@ -3,7 +3,7 @@
 #include "../../Core/src/common.h"
 
 cCamera::cCamera(float fovRad, float aspectRatio, float nearPlane, float farPlane) 
-:fovRad(fovRad), aspectRatio(aspectRatio), nearPlane(nearPlane), farPlane(farPlane), target(0,1,0) {
+:fovRad(fovRad), aspectRatio(aspectRatio), nearPlane(nearPlane), farPlane(farPlane), target(0, 1, 0), pos(0, 0, 0) {
 }
 
 /*

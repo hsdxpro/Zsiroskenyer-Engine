@@ -22,6 +22,7 @@ public:
 	void GetCollisionShapeEdges(Vec3* edges, size_t size , size_t& nEdges) override;
 
 	cPhysicsEngineBullet();
+	~cPhysicsEngineBullet();
 	void Release() override;
 protected:
 	//Fizikai világ reprezentálója

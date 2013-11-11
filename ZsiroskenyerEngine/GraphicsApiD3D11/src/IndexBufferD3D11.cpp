@@ -11,8 +11,12 @@ cIndexBufferD3D11::cIndexBufferD3D11(ID3D11Buffer* buffer, size_t size, eBufferU
 :buffer(buffer), usage(usage), size(size) {
 }
 
-void cIndexBufferD3D11::Release() {
+cIndexBufferD3D11::~cIndexBufferD3D11() {
 	buffer->Release();
+}
+
+void cIndexBufferD3D11::Release() {
+	delete this;
 }
 
 size_t cIndexBufferD3D11::GetSize() const {

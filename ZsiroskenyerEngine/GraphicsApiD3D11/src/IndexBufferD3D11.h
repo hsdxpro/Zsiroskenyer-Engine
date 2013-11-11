@@ -18,6 +18,7 @@ public:
 	ID3D11Buffer* GetBufferPointer() const;
 
 	cIndexBufferD3D11(ID3D11Buffer* buffer, size_t size, eBufferUsage usage);
+	~cIndexBufferD3D11();
 	void Release() override;
 
 public:

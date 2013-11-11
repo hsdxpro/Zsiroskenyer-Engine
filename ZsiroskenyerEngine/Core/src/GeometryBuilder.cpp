@@ -31,7 +31,7 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 	// read up dae scene
 	char ansiFilePath[256];
 	zsString::UniToAnsi(filePath, ansiFilePath, 256);
-	const aiScene* scene = importer.ReadFile(ansiFilePath, (aiProcessPreset_TargetRealtime_Quality | aiProcess_MakeLeftHanded | aiProcess_FlipWindingOrder)^aiProcess_FindInvalidData);
+	const aiScene* scene = importer.ReadFile(ansiFilePath, ( aiProcessPreset_TargetRealtime_Quality ) ^ aiProcess_FindInvalidData);
 	if(scene == NULL) {
 		ILog::GetInstance()->MsgBox(L"Can found 3D model: " + filePath);
 		throw FileNotFoundException();
@@ -53,6 +53,7 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 	struct baseVertex {
 		Vec3 pos;
 		Vec3 normal;
+		Vec3 tangent;
 		Vec2 tex;
 		bool operator == (const baseVertex& v) {return pos == v.pos && normal == v.normal;}
 	};
@@ -67,10 +68,9 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 		aiMesh* mesh = meshes[i];
 		aiVector3D* currVertices = mesh->mVertices;
 		aiVector3D* currNormals	= mesh->mNormals;
-
+		aiVector3D* currTangents = mesh->mTangents;
 		// @TODO not general algorithm, wee need to handle more UV channels
 		aiVector3D* currTxcoords	= mesh->mTextureCoords[0];
-		//aiVector3D* currTangents	= mesh->mTangents;
 		
 
 		// Indices
@@ -87,13 +87,12 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 		for(size_t j = 0; j < mesh->mNumVertices; vertexI++, j++) {
 			aiVector3D pos = currVertices[j];
 			aiVector3D norm = currNormals[j];
+			aiVector3D tan = currTangents[j];
 			aiVector3D tex = currTxcoords[j];
-			//vertices[vertexI].pos = Vec3(pos.x, pos.y, pos.z);
-			//vertices[vertexI].normal = Vec3(norm.x, norm.y, norm.z);
 
 			vertices[vertexI].pos = Vec3(pos.x, pos.z, pos.y);
 			vertices[vertexI].normal = Vec3(norm.x, norm.z, norm.y);
-
+			vertices[vertexI].tangent = Vec3(tan.x, tan.z, tan.y);
 			vertices[vertexI].tex = Vec2(tex.x, tex.y);
 		}
 	}
@@ -110,6 +109,6 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 		geomDesc.nVertices = nVertices;
 		geomDesc.nIndices = nIndex;
 		geomDesc.vertexStride = sizeof(baseVertex);
-		geomDesc.indexStride= sizeof(unsigned);
+		geomDesc.indexStride = sizeof(unsigned);
 	return geomDesc;
 }

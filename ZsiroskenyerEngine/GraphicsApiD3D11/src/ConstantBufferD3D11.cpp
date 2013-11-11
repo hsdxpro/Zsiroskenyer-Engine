@@ -4,8 +4,12 @@ cConstantBufferD3D11::cConstantBufferD3D11(ID3D11Buffer* buffer, size_t size, eB
 :buffer(buffer), usage(usage), size(size) {	
 }
 
-void cConstantBufferD3D11::Release() {
+cConstantBufferD3D11::~cConstantBufferD3D11() {
 	buffer->Release();
+}
+
+void cConstantBufferD3D11::Release() {
+	delete this;
 }
 
 size_t cConstantBufferD3D11::GetSize() const {
