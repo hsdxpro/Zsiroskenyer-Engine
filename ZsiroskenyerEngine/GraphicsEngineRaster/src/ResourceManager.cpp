@@ -129,6 +129,9 @@ cGeometryRef::cGeometryRef(cResourceManager* rm, cGeometry* ptr)
 cGeometryRef::cGeometryRef(const cGeometryRef& other) 
 : zs_shared_ptr(other), rm(other.rm) {
 }
+cGeometryRef::cGeometryRef(cGeometryRef&& other)
+: zs_shared_ptr(other), rm(other.rm) {
+}
 cGeometryRef::cGeometryRef()
 : zs_shared_ptr(NULL), rm(NULL) {
 }
@@ -159,7 +162,9 @@ cMaterialRef::cMaterialRef(cResourceManager* rm, cMaterial* ptr)
 cMaterialRef::cMaterialRef(const cMaterialRef& other) 
 : zs_shared_ptr(other), rm(other.rm) {
 }
-
+cMaterialRef::cMaterialRef(cMaterialRef&& other)
+: zs_shared_ptr(other), rm(other.rm) {
+}
 cMaterialRef::cMaterialRef()
 : zs_shared_ptr(NULL), rm(NULL) {
 }

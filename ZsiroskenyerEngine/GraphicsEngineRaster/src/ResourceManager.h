@@ -67,7 +67,8 @@ public:
 	cGeometryRef();
 	cGeometryRef(cResourceManager* rm, cGeometry* ptr = NULL);
 	cGeometryRef(const cGeometryRef& other);
-
+	cGeometryRef(cGeometryRef&& other);
+	
 	cGeometryRef& operator = (const cGeometryRef& other);
 
 	bool operator == (const cGeometryRef& other);
@@ -83,6 +84,7 @@ public:
 	cMaterialRef();
 	cMaterialRef(cResourceManager* rm, cMaterial* ptr = NULL);
 	cMaterialRef(const cMaterialRef& other);
+	cMaterialRef(cMaterialRef&& other);
 
 	cMaterialRef& operator = (const cMaterialRef& other);
 

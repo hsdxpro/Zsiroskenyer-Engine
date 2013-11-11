@@ -53,6 +53,13 @@ int ricsiMain() {
 	const float mass = 0.0f;
 	cEntity* entity = core->AddEntity(L"objects/box.dae", L"objects/box.dae", L"materials/test.zsm", mass);
 	entity->SetPosition(Vec3(0, 50, 0));
+	
+	cEntity* ent;
+	for (int i = 0; i < 12; i++) {
+		ent = core->AddEntity(L"objects/box.dae", L"objects/box.dae", L"materials/test.zsm", mass);
+		ent->SetPosition(Vec3(sin(float(i))*60, 120, cos(float(i))*60));
+		ent->SetRotation(Quat(Vec3(0, 0, 1), 0));
+	}
 
 	// Main loop
 	while(window->IsOpened()) {
