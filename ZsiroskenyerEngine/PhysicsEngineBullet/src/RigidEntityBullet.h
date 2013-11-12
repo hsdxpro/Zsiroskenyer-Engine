@@ -9,15 +9,23 @@ public:
 	cRigidEntityBullet(btRigidBody* body);
 	void Release() override;
 
-	void SetPos(const Vec3& p);
-	void SetPos(float x, float y, float z);
+	void SetPos(const Vec3& p) override;
+	void SetPos(float x, float y, float z) override;
 
-	void SetRot(const Quat& r);
-	void SetRot(float x, float y, float z, float w);
+	void SetRot(const Quat& r) override;
+	void SetRot(float x, float y, float z, float w) override;
 
-	void SetScale(const Vec3& s);
-	void SetScale(float x, float y, float z);
+	void SetScale(const Vec3& s) override;
+	void SetScale(float x, float y, float z) override;
+
+	const cTransform3D& GetWorldTransform() const override;
+
+	const Vec3& GetPos() override;
+	const Quat& GetRot() override;
+	const Vec3& GetScale() override;
 
 protected:
 	btRigidBody* body;
+
+	cTransform3D worldTransform;
 };

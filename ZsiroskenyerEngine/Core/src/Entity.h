@@ -10,7 +10,7 @@ public:
 	cEntity(cGraphicsEntity* g, IPhysicsEntity* p);
 
 	void SetPos(const Vec3& pos);
-	void SetRotation(const Quat& rot);
+	void SetRot(const Quat& rot);
 
 	cGraphicsEntity* GetGraphicsEntity();
 	IPhysicsEntity* GetPhysicsEntity();

@@ -25,6 +25,14 @@ void cTransform3D::SetScale(float x, float y, float z) {
 	scale.x = x; scale.y = y; scale.z = z;
 }
 
+Matrix44 cTransform3D::GetWorldMatrix() const {
+	Matrix44 world;
+		world.RotationQuat(this->rot);
+		world.Scale(this->scale);
+		world.Translate(this->pos);
+	return world;
+}
+
 const Vec3& cTransform3D::GetPos  () const { return pos;  }
 const Quat& cTransform3D::GetRot  () const { return rot;  }
 const Vec3& cTransform3D::GetScale() const { return scale;}

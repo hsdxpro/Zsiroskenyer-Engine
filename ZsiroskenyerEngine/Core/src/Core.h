@@ -57,7 +57,8 @@ protected:
 
 	// Link between modules
 	struct tTransNode { 
-		cTransform3D* trans;
+		tTransNode(const cTransform3D& trans): trans(trans) {}
+		const cTransform3D& trans;
 		std::list<tTransNode> childs;
 	};
 	std::list<tTransNode> entityLinks;

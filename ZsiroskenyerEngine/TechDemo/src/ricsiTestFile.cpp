@@ -59,7 +59,7 @@ int ricsiMain() {
 	for (int i = 0; i < 12; i++) {
 		ent = core->AddEntity(L"objects/box.dae", L"objects/box.dae", L"materials/test.zsm", mass);
 		ent->SetPos(Vec3(sin(float(i))*60, 120, cos(float(i))*60));
-		ent->SetRotation(Quat(Vec3(0, 0, 1), 0));
+		ent->SetRot(Quat(Vec3(0, 0, 1), 0));
 		entities.push_back(ent);
 	}
 
@@ -82,16 +82,16 @@ int ricsiMain() {
 		gEngine->RenderSceneForward();
 
 		// Debug rendering
-		//core->DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
+		core->DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
 
 		// (game logic) z rotation
 		static float zVal = 0.0f;
 		zVal += ZS_PI / 4 * tDelta;
 		for each (auto e in entities)
 		{
-			e->SetRotation(Quat::EulerAnglesToQuat(0, 0, zVal));
+			e->SetRot(Quat::EulerAnglesToQuat(0, 0, zVal));
 		}
-		entity->SetRotation(Quat::EulerAnglesToQuat(0, 0, -zVal));
+		entity->SetRot(Quat::EulerAnglesToQuat(0, 0, -zVal));
 
 		// Present SwapChain
 		gApi->Present();

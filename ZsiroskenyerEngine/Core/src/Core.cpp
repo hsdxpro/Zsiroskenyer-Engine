@@ -66,12 +66,10 @@ cEntity* cCore::AddEntity(const zsString& graphGeomPath,const zsString& physicsG
 	IPhysicsEntity* pEntity = physicsEngine->CreateRigidEntity(physicsGeom, mass);
 
 	// Node for physics
-	tTransNode nodeRootPhysics;
-	nodeRootPhysics.trans = pEntity;
+	tTransNode nodeRootPhysics(pEntity->GetWorldTransform());
 
 	// Node for graphics
-	tTransNode nodeGraphics;
-	nodeGraphics.trans = gEntity;
+	tTransNode nodeGraphics(gEntity->GetWorldTransform());
 
 	// Link them
 	nodeRootPhysics.childs.push_back(nodeGraphics);

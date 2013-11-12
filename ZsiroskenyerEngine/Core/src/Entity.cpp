@@ -11,7 +11,7 @@ void cEntity::SetPos(const Vec3& pos) {
 	physicsEntity->SetPos(pos);
 }
 
-void cEntity::SetRotation(const Quat& rot) {
+void cEntity::SetRot(const Quat& rot) {
 	// Set rotation for graphics and Physics to
 	graphicsEntity->SetRot(rot);
 	physicsEntity->SetRot(rot);

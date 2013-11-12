@@ -11,13 +11,31 @@
 
 class cInstanceGroup;
 
-class cGraphicsEntity : public cTransform3D {
+class cGraphicsEntity {
 	friend class cSceneManager;
 public:
 	cGraphicsEntity();
 
-	Matrix44 GetWorldMatrix();
+	void SetPos(const Vec3& p);
+	void SetPos(float x, float y, float z);
+
+	void SetRot(const Quat& r);
+	void SetRot(float x, float y, float z, float w);
+
+	void SetScale(const Vec3& s);
+	void SetScale(float x, float y, float z);
+
+	Matrix44 GetWorldMatrix() const;
+
+	const cTransform3D& GetWorldTransform() const ;
+
+	const Vec3& GetPos() const;
+	const Quat& GetRot() const;
+	const Vec3& GetScale() const;
+
 protected:
+	cTransform3D worldTransform;
+
 	bool isVisible;
 
 	cInstanceGroup* instanceGroup;
