@@ -40,6 +40,9 @@
     <ClCompile Include="src\Geometry.cpp">
       <Filter>Geometry</Filter>
     </ClCompile>
+    <ClCompile Include="src\ResourceReference.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GraphicsEngine.h" />
@@ -60,6 +63,9 @@
     </ClInclude>
     <ClInclude Include="src\Geometry.h">
       <Filter>Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ResourceReference.h">
+      <Filter>Managers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -16,8 +16,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 //	ResourceManager
 
-// constructors
+
+//	Constructors
 cResourceManager::cResourceManager(IGraphicsApi* gApi) : gApi(gApi) {
+	validManagers.insert(this);
 }
 cResourceManager::~cResourceManager() {
 	// release all geometries
@@ -29,9 +31,16 @@ cResourceManager::~cResourceManager() {
 		delete it.right;
 	}
 	// release all textures
+	for (auto& it : textures) {
+		it.right->Release();
+	}
+	
+	validManagers.erase(this);
 }
 
-// load/unload geometries
+
+
+//	Load/unload geometries
 cGeometryRef cResourceManager::GetGeometry(const zsString& filePath) {
 	cGeometry* geom;
 
@@ -56,11 +65,13 @@ cGeometryRef cResourceManager::GetGeometry(const zsString& filePath) {
 }
 void cResourceManager::UnloadGeometry(const cGeometry* geometry) {
 	auto it = geometries.right.find(const_cast<cGeometry*>(geometry));
-	delete it->first;
-	geometries.right.erase(it);
+	if (it != geometries.right.end()) {
+		delete it->first;
+		geometries.right.erase(it);
+	}
 }
 
-// load/unload materials
+//	Load/unload materials
 cMaterialRef cResourceManager::GetMaterial(const zsString& filePath) {
 	cMaterial* mtl;
 
@@ -96,18 +107,19 @@ cMaterialRef cResourceManager::GetMaterial(const zsString& filePath) {
 			// Glossiness
 			file->GetLine().GetFloats(floats);
 			(*mtl)[i].glossiness = floats[0];
-
+			
 			// Texture Diffuse
-			(*mtl)[i].textureDiffuse = gApi->CreateTexture(file->GetLine().c_str() + 9);
+			(*mtl)[i].textureDiffuse = GetTexture(file->GetLine().c_str() + 9);
 
 			// Texture Normal
-			(*mtl)[i].textureNormal = gApi->CreateTexture(file->GetLine().c_str() + 8);
+			(*mtl)[i].textureNormal = GetTexture(file->GetLine().c_str() + 8);
 
 			// Texture Specular
-			(*mtl)[i].textureSpecular = gApi->CreateTexture(file->GetLine().c_str() + 10);
+			(*mtl)[i].textureSpecular = GetTexture(file->GetLine().c_str() + 10);
 
 			// Texture Displace
-			(*mtl)[i].textureDisplace = gApi->CreateTexture(file->GetLine().c_str() + 10);
+			(*mtl)[i].textureDisplace = GetTexture(file->GetLine().c_str() + 10);
+			
 		}
 
 		// insert into database
@@ -122,73 +134,48 @@ cMaterialRef cResourceManager::GetMaterial(const zsString& filePath) {
 
 void cResourceManager::UnloadMaterial(const cMaterial* material) {
 	auto it = materials.right.find(const_cast<cMaterial*>(material));
-	delete it->first;
-	materials.right.erase(it);
+	if (it != materials.right.end()) {
+		delete it->first;
+		materials.right.erase(it);
+	}
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//	References to resources
+//	Load/Unload textures
+cTextureRef cResourceManager::GetTexture(const zsString& filePath) {
+	ITexture2D* texture;
 
-// geometry reference
-cGeometryRef::cGeometryRef(cResourceManager* rm, cGeometry* ptr)
-	:
-	zs_shared_ptr(ptr, [this](cGeometry* g){this->rm->UnloadGeometry(g);} ), 
-	rm(rm)
-{
-}
-cGeometryRef::cGeometryRef(const cGeometryRef& other) 
-: zs_shared_ptr(other), rm(other.rm) {
-}
-cGeometryRef::cGeometryRef(cGeometryRef&& other)
-: zs_shared_ptr(other), rm(other.rm) {
-}
-cGeometryRef::cGeometryRef()
-: zs_shared_ptr(NULL), rm(NULL) {
-}
+	// lookup if already exists
+	auto it = textures.left.find(filePath);
+	if (it == textures.left.end()) {
+		// create texture
+		texture = gApi->CreateTexture(filePath.c_str());
+		if (texture == nullptr) {
+			return cTextureRef(this, nullptr);
+		}
 
-cGeometryRef& cGeometryRef::operator = (const cGeometryRef& other) {
-	zs_shared_ptr<cGeometry>::operator=(other);
-	rm = other.rm;
-	return *this;
+		// insert into database
+		textures.insert(TextureMapT::value_type(filePath, texture));
+	}
+	else {
+		texture = it->second;
+	}
+
+	return cTextureRef(this, texture);
 }
 
-bool cGeometryRef::operator == (const cGeometryRef& other) {
-	return ::operator==(*this, other);
-}
-
-cGeometry* cGeometryRef::get() const {
-	return zs_shared_ptr<cGeometry>::get();
+void cResourceManager::UnloadTexture(const ITexture2D* texture) {
+	auto it = textures.right.find(const_cast<ITexture2D*>(texture));
+	if (it != textures.right.end()) {
+		it->first->Release();
+		textures.right.erase(it);
+	}
 }
 
 
-// material reference
-cMaterialRef::cMaterialRef(cResourceManager* rm, cMaterial* ptr)
-	:
-	zs_shared_ptr(ptr, [this](cMaterial* m){this->rm->UnloadMaterial(m); }),
-	rm(rm)
-{
-}
 
-cMaterialRef::cMaterialRef(const cMaterialRef& other) 
-: zs_shared_ptr(other), rm(other.rm) {
+// register and unregister managers to see if they are valid
+bool cResourceManager::IsValid(cResourceManager* rm) {
+	auto it = validManagers.find(rm);
+	return it != validManagers.end();
 }
-cMaterialRef::cMaterialRef(cMaterialRef&& other)
-: zs_shared_ptr(other), rm(other.rm) {
-}
-cMaterialRef::cMaterialRef()
-: zs_shared_ptr(NULL), rm(NULL) {
-}
-
-cMaterialRef& cMaterialRef::operator = (const cMaterialRef& other) {
-	zs_shared_ptr<cMaterial>::operator=(other);
-	rm = other.rm;
-	return *this;
-}
-
-bool cMaterialRef::operator == (const cMaterialRef& other) {
-	return ::operator==(*this, other);
-}
-
-cMaterial* cMaterialRef::get() const {
-	return zs_shared_ptr<cMaterial>::get();
-}
+std::unordered_set<cResourceManager*> cResourceManager::validManagers;

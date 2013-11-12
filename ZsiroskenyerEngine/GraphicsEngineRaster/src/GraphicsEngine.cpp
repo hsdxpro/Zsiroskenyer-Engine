@@ -80,8 +80,8 @@ void cGraphicsEngine::RenderSceneForward() {
 
 		// Set SubMaterials
 		for(size_t i = 0; i < (*group->mtl).GetNSubMaterials(); i++) {
-			gApi->SetTexture((*(group->mtl))[i].textureDiffuse, 0);
-			gApi->SetTexture((*(group->mtl))[i].textureNormal, 1);
+			gApi->SetTexture((*(group->mtl))[i].textureDiffuse.get(), 0);
+			gApi->SetTexture((*(group->mtl))[i].textureNormal.get(), 1);
 		}
 		
 		// Draw each entity
