@@ -6,23 +6,18 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../../Core/src/math/math_all.h"
+#include "math/math_all.h"
+#include "Transform3D.h"
 
 class cInstanceGroup;
 
-class cGraphicsEntity {
+class cGraphicsEntity : public cTransform3D {
 	friend class cSceneManager;
 public:
-	Matrix44 GetWorldMatrix();
-
-	void SetPos(const Vec3& pos);
-	void SetRotation(const Quat& rot);
-
 	cGraphicsEntity();
+
+	Matrix44 GetWorldMatrix();
 protected:
-	Vec3 position;
-	Quat rotation;
-	Vec3 scale;
 	bool isVisible;
 
 	cInstanceGroup* instanceGroup;

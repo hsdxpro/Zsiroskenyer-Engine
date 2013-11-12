@@ -3,8 +3,6 @@
 #include "common.h"
 #include "Factory.h"
 
-#include "GeometryBuilder.h"
-
 // TMP @TODO remove it
 #include "Camera.h"
 #include "Entity.h"
@@ -33,9 +31,6 @@ cCore::~cCore() {
 	for(auto it = physicsEntities.begin(); it != physicsEntities.end(); it++)
 		SAFE_DELETE(*it);
 
-	for(auto it = entities.begin(); it != entities.end(); it++)
-		SAFE_DELETE(*it);
-
 	// Destroy engines
 	SAFE_RELEASE(graphicsEngine);
 	SAFE_RELEASE(physicsEngine);
@@ -59,17 +54,32 @@ void cCore::DebugRender(unsigned long renderFlags) {
 }
 
 void cCore::Update(float deltaT) {
+	// Simulate physics world
 	physicsEngine->SimulateWorld(deltaT);
+
+	// Update Links
 }
 
 cEntity* cCore::AddEntity(const zsString& graphGeomPath,const zsString& physicsGeom, const zsString& mtlPath, float mass) {
+	// Create entity module parts
 	cGraphicsEntity* gEntity = graphicsEngine->CreateEntity(graphGeomPath, mtlPath);
-	IPhysicsEntity* pEntity = physicsEngine->GetRigidEntity(physicsGeom, mass);
+	IPhysicsEntity* pEntity = physicsEngine->CreateRigidEntity(physicsGeom, mass);
 
+	// Node for physics
+	tTransNode nodeRootPhysics;
+	nodeRootPhysics.trans = pEntity;
+
+	// Node for graphics
+	tTransNode nodeGraphics;
+	nodeGraphics.trans = gEntity;
+
+	// Link them
+	nodeRootPhysics.childs.push_back(nodeGraphics);
+	entityLinks.push_back(nodeRootPhysics);
+	
 	graphicsEntities.push_back(gEntity);
 	physicsEntities.push_back(pEntity);
 	cEntity* e = new cEntity(gEntity, pEntity);
-	entities.push_back(e);
 	return e;
 }
 

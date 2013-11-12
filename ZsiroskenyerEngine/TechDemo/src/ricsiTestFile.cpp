@@ -70,7 +70,7 @@ int ricsiMain() {
 		// Clear BB
 		gApi->Clear(true, true);
 	
-		// Update engine
+		// Update everything
 		float tDelta = cTimer::getDeltaSeconds();
 		core->Update(tDelta);
 

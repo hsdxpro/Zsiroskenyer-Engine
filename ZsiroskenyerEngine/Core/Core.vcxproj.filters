@@ -138,6 +138,9 @@
     <ClInclude Include="src\IShaderManager.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="src\Transform3D.h">
+      <Filter>Transform3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\IDLLLoader.cpp">
@@ -211,6 +214,9 @@
       <Filter>Entity\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer.cpp" />
+    <ClCompile Include="src\Transform3D.cpp">
+      <Filter>Transform3D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Interfaces">
@@ -266,6 +272,9 @@
     </Filter>
     <Filter Include="Entity\Graphics">
       <UniqueIdentifier>{b142beff-a661-4798-8dc6-33c1525fdedd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Transform3D">
+      <UniqueIdentifier>{3e360f99-21ba-43af-aa40-56a54b6af809}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

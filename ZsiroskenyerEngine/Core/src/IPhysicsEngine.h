@@ -12,7 +12,7 @@ public:
 	virtual void SimulateWorld(float deltaT) = 0;
 
 	// Add new rigid entity to the physics world
-	virtual IPhysicsEntity *GetRigidEntity(const zsString& physicsGeom, float mass) = 0;
+	virtual IPhysicsEntity *CreateRigidEntity(const zsString& physicsGeom, float mass) = 0;
 
 	// Get all edges from the physics world
 	virtual void GetCollisionShapeEdges(Vec3* edges, size_t size, size_t& nEdges) = 0;
