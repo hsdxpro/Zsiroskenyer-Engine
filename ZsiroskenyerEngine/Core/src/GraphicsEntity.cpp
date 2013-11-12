@@ -17,7 +17,7 @@ cGraphicsEntity::cGraphicsEntity()
 {
 }
 
-void cGraphicsEntity::SetPosition(const Vec3& pos) {
+void cGraphicsEntity::SetPos(const Vec3& pos) {
 	position = pos;
 }
 

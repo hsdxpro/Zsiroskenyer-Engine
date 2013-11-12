@@ -8,8 +8,10 @@
 //program PS_MAIN
 //semantic wvp : C0
 //semantic world : C4
+//semantic camPos : C8
 //semantic diffuseTex : TEXUNIT0
 //semantic normalTex : TEXUNIT1
+//var float3 camPos : C8 : _camPos : -1 : 1
 //var sampler2D diffuseTex : TEXUNIT0 : _diffuseTex 0 : -1 : 1
 //var sampler2D normalTex : TEXUNIT1 : _normalTex 1 : -1 : 1
 //var float4 In.posH : $vin.SV_POSITION :  : 0 : 0
@@ -53,24 +55,26 @@ struct X1X {
     float3 _TEXCOORD6 : TEXCOORD6;
 };
 
-static float4 _TMP6;
+static float4 _TMP7;
+static float _TMP6;
 static float _TMP5;
 static float _TMP4;
-static float _TMP3;
-static float _TMP8;
-static float _TMP7;
-static float _TMP1;
 static float _TMP9;
+static float _TMP8;
+static float _TMP2;
 static float _TMP10;
+static float _TMP11;
+static float _TMP1;
 static float4 _TMP0;
-static float3 _v0012;
-static float3 _r0014;
-static float3 _v0016;
-static float _TMP17;
-static float3 _v0018;
-static float3 _v0022;
-Texture2D<float4> _TMP23 : register(t1);
-Texture2D<float4> _TMP24 : register(t0);
+static float3 _v0013;
+static float3 _r0015;
+static float3 _v0017;
+static float _TMP18;
+static float3 _v0019;
+static float3 _v0023;
+Texture2D<float4> _TMP24 : register(t1);
+Texture2D<float4> _TMP25 : register(t0);
+float3 _camPos : register(c8);
 SamplerState _diffuseTex : TEXUNIT0;
 SamplerState _normalTex : TEXUNIT1;
 
@@ -90,35 +94,36 @@ PS_OUT main( in X1X cin)
     _In._TBN[0] = cin._TEXCOORD4;
     _In._TBN[1] = cin._TEXCOORD5;
     _In._TBN[2] = cin._TEXCOORD6;
-    _TMP0 = _TMP23.Sample(_normalTex, _In._tex01);
-    _v0012 = _TMP0.xyz* 2.00000000000000000E000f -  1.00000000000000000E000f;
-    _TMP7 = dot(_v0012, _v0012);
-    _TMP8 = rsqrt(_TMP7);
-    _normalT = _TMP8*_v0012;
-    _r0014 = _normalT.x*_In._TBN._11_12_13;
-    _r0014 = _r0014 + _normalT.y*_In._TBN._21_22_23;
-    _r0014 = _r0014 + _normalT.z*_In._TBN._31_32_33;
-    _v0016 = float3(  7.00000000000000000E001f,  3.00000000000000000E001f,  0.00000000000000000E000f) - _In._posW;
-    _TMP7 = dot(_v0016, _v0016);
-    _TMP8 = rsqrt(_TMP7);
-    _lightVec = _TMP8*_v0016;
-    _TMP1 = dot(_r0014, _lightVec);
-    _v0018 = _In._posW - float3(  7.00000000000000000E001f,  3.00000000000000000E001f,  0.00000000000000000E000f);
-    _TMP9 = dot(_v0018, _v0018);
-    _TMP10 = rsqrt(_TMP9);
-    _TMP17 =  1.00000000000000000E000f/_TMP10;
-    _intensity = (_TMP1/_TMP17)* 8.00000000000000000E001f;
+    _TMP0 = _TMP24.Sample(_normalTex, _In._tex01);
+    _v0013 = _TMP0.xyz* 2.00000000000000000E000f -  1.00000000000000000E000f;
+    _TMP8 = dot(_v0013, _v0013);
+    _TMP9 = rsqrt(_TMP8);
+    _normalT = _TMP9*_v0013;
+    _r0015 = _normalT.x*_In._TBN._11_12_13;
+    _r0015 = _r0015 + _normalT.y*_In._TBN._21_22_23;
+    _r0015 = _r0015 + _normalT.z*_In._TBN._31_32_33;
+    _v0017 = float3(  7.00000000000000000E001f,  3.00000000000000000E001f,  0.00000000000000000E000f) - _In._posW;
+    _TMP8 = dot(_v0017, _v0017);
+    _TMP9 = rsqrt(_TMP8);
+    _lightVec = _TMP9*_v0017;
+    _TMP1 = dot(_r0015, _lightVec);
+    _TMP2 = saturate(_TMP1);
+    _v0019 = _In._posW - float3(  7.00000000000000000E001f,  3.00000000000000000E001f,  0.00000000000000000E000f);
+    _TMP10 = dot(_v0019, _v0019);
+    _TMP11 = rsqrt(_TMP10);
+    _TMP18 =  1.00000000000000000E000f/_TMP11;
+    _intensity = (_TMP2/_TMP18)* 8.00000000000000000E001f;
     if (_intensity >  0.00000000000000000E000f) { // if begin
-        _v0022 = _lightVec - _In._posW;
-        _TMP7 = dot(_v0022, _v0022);
-        _TMP8 = rsqrt(_TMP7);
-        _h1 = _TMP8*_v0022;
-        _TMP3 = dot(_r0014, _h1);
-        _TMP4 = saturate(_TMP3);
-        _TMP5 = pow(_TMP4,  1.50000000000000000E002f);
-        _intensity = _intensity + _TMP5;
+        _v0023 = (_lightVec + _camPos) - _In._posW;
+        _TMP8 = dot(_v0023, _v0023);
+        _TMP9 = rsqrt(_TMP8);
+        _h1 = _TMP9*_v0023;
+        _TMP4 = dot(_r0015, _h1);
+        _TMP5 = saturate(_TMP4);
+        _TMP6 = pow(_TMP5,  2.55000000000000000E002f);
+        _intensity = _intensity + _TMP6;
     } // end if
-    _TMP6 = _TMP24.Sample(_diffuseTex, _In._tex01);
-    _pout._color = _TMP6*float4(_intensity, _intensity, _intensity,  1.00000000000000000E000f);
+    _TMP7 = _TMP25.Sample(_diffuseTex, _In._tex01);
+    _pout._color = _TMP7*float4(_intensity, _intensity, _intensity,  1.00000000000000000E000f);
     return _pout;
 } // main end

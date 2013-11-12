@@ -6,10 +6,10 @@
 
 class cRigidEntityBullet : public IPhysicsEntity {
 public:
-	void SetPosition(const Vec3& pos) override;
+	void SetPos(const Vec3& pos) override;
 	void SetRotation(const Quat& rot) override;
 
-	Vec3 GetPosition() override;
+	Vec3 GetPos() override;
 	Quat GetRotation() override;
 
 	cRigidEntityBullet(btRigidBody* body);

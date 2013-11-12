@@ -4,7 +4,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "VertexFormat.h"
-
+/*
 cVertexFormat::cVertexFormat() : attribs(0) {
 }
 
@@ -23,3 +23,4 @@ void cVertexFormat::ClearAttribute(eVertexAttribute attrib) {
 unsigned cVertexFormat::Get() {
 	return attribs;
 }
+*/

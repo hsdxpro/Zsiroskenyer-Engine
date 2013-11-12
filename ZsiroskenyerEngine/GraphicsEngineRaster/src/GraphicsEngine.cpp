@@ -92,16 +92,18 @@ void cGraphicsEngine::RenderSceneForward() {
 			{
 				Matrix44 wvp;
 				Matrix44 world;
+				Vec3 camPos;
 
 			} buff;
 			buff.wvp = wvp;
 			buff.world = world;
+			buff.camPos = cam->GetPos();
 
-			IConstantBuffer* buffer = gApi->CreateBufferConstant(sizeof(buff), eBufferUsage::DEFAULT, &buff);
+			IConstantBuffer* buffer = gApi->CreateConstantBuffer(sizeof(buff), eBufferUsage::DEFAULT, &buff);
 			gApi->SetVSConstantBuffer(buffer, 0);
 			// Create, load constant buffers, World and WorldViewProj
-			/*IConstantBuffer* wvpBuffer = gApi->CreateBufferConstant(sizeof(Matrix44), eBufferUsage::DEFAULT, &wvp);
-			IConstantBuffer* worldBuffer= gApi->CreateBufferConstant(sizeof(Matrix44), eBufferUsage::DEFAULT, &world);
+			/*IConstantBuffer* wvpBuffer = gApi->CreateConstantBuffer(sizeof(Matrix44), eBufferUsage::DEFAULT, &wvp);
+			IConstantBuffer* worldBuffer= gApi->CreateConstantBuffer(sizeof(Matrix44), eBufferUsage::DEFAULT, &world);
 				gApi->SetVSConstantBuffer(wvpBuffer, 0);
 				gApi->SetVSConstantBuffer(worldBuffer, 4);
 				*/

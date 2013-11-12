@@ -6,10 +6,10 @@
 
 class IPhysicsEntity {
 public:
-	virtual void SetPosition(const Vec3& pos) = 0;
+	virtual void SetPos(const Vec3& pos) = 0;
 	virtual void SetRotation(const Quat& rot) = 0;
 
-	virtual Vec3 GetPosition() = 0;
+	virtual Vec3 GetPos() = 0;
 	virtual Quat GetRotation() = 0;
 
 	virtual void Release() = 0;

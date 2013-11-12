@@ -32,6 +32,8 @@ public:
 	Vec3 GetDirRight() const;
 	Vec3 GetDirLeft() const;
 
+	const Vec3& GetPos() const;
+
 	cCamera(float radFOV, float aspectRatio, float nearPlane, float farPlane);
 private:
 	// Pos, Rot

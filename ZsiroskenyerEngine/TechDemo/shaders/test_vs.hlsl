@@ -8,6 +8,7 @@
 //program VS_MAIN
 //semantic wvp : C0
 //semantic world : C4
+//semantic camPos : C8
 //semantic diffuseTex : TEXUNIT0
 //semantic normalTex : TEXUNIT1
 //var float4x4 wvp : C0 : _wvp[0], 4 : -1 : 1

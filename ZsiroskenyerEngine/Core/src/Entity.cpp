@@ -5,10 +5,10 @@ cEntity::cEntity(cGraphicsEntity* g, IPhysicsEntity* p)
 {
 }
 
-void cEntity::SetPosition(const Vec3& pos) {
+void cEntity::SetPos(const Vec3& pos) {
 	// Set Position for graphics and Physics to
-	graphicsEntity->SetPosition(pos);
-	physicsEntity->SetPosition(pos);
+	graphicsEntity->SetPos(pos);
+	physicsEntity->SetPos(pos);
 }
 
 void cEntity::SetRotation(const Quat& rot) {

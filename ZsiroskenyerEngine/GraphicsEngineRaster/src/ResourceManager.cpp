@@ -32,8 +32,8 @@ cGeometryRef cResourceManager::GetGeometry(const zsString& filePath) {
 			cGeometryBuilder b;
 			cGeometryBuilder::tGeometryDesc d = b.LoadGeometry(filePath);
 
-			IVertexBuffer *VB = gApi->CreateBufferVertex(d.nVertices, d.vertexStride, eBufferUsage::IMMUTABLE, d.vertices);
-			IIndexBuffer *IB = gApi->CreateBufferIndex(d.nIndices * d.indexStride, eBufferUsage::IMMUTABLE, d.indices);
+			IVertexBuffer *VB = gApi->CreateVertexBuffer(d.nVertices, d.vertexStride, eBufferUsage::IMMUTABLE, d.vertices);
+			IIndexBuffer *IB = gApi->CreateIndexBuffer(d.nIndices * d.indexStride, eBufferUsage::IMMUTABLE, d.indices);
 			geom = new cGeometry(VB, IB);
 		
 		// insert into database

@@ -6,6 +6,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+/* TEMPORARILY DEPRECATED 
 enum class eVertexAttribute : unsigned {
 	POSITION	= 1,
 	NORMAL		= 2,
@@ -28,3 +29,4 @@ public:
 private:
 	unsigned attribs;
 };
+*/

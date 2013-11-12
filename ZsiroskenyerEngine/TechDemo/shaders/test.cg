@@ -1,5 +1,6 @@
 float4x4 wvp : register(c0);
 float4x4 world : register(c4);
+float3 camPos : register(c8);
 
 sampler2D diffuseTex : register(s0);
 sampler2D normalTex : register(s1);
@@ -52,11 +53,11 @@ PS_OUT PS_MAIN(VS_OUT In) {
 
 	float3 pointLightPos = float3(70, 30, 0);
 	float3 lightVec = normalize(pointLightPos - In.posW);
-	float intensity = dot(normalW , lightVec) / distance(pointLightPos, In.posW) * 80;
+	float intensity = saturate(dot(normalW , lightVec)) / distance(pointLightPos, In.posW) * 80;
 	if(intensity > 0.0f) // ELIMINATE THAT BULLSHIT NOW !!!! Don't you hear ?
 	{
-		float3 h = normalize(lightVec + float3(0,0,0) - In.posW);
-		intensity += pow(saturate(dot(normalW , h)), 150);
+		float3 h = normalize(lightVec + camPos - In.posW);
+		intensity += pow(saturate(dot(normalW , h)), 255);
 	}
 	pout.color = tex2D(diffuseTex, In.tex0) * float4(intensity, intensity, intensity, 1.0f);
 	//pout.color = float4(mul(normalT, In.TBN), 1.0f);

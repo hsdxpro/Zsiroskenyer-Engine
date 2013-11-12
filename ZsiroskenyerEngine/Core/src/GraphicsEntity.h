@@ -15,7 +15,7 @@ class cGraphicsEntity {
 public:
 	Matrix44 GetWorldMatrix();
 
-	void SetPosition(const Vec3& pos);
+	void SetPos(const Vec3& pos);
 	void SetRotation(const Quat& rot);
 
 	cGraphicsEntity();

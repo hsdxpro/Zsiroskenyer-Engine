@@ -82,3 +82,7 @@ Vec3 cCamera::GetDirRight() const {
 Vec3 cCamera::GetDirLeft() const {
 	return Vec3::Cross(Vec3(0.0f, 0.0f, 1.0f), GetDirFront());
 }
+
+const Vec3& cCamera::GetPos() const {
+	return pos;
+}

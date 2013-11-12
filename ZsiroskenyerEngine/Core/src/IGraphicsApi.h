@@ -24,9 +24,9 @@ public:
 	virtual void Release() = 0;
 
 	//buffers
-	virtual IVertexBuffer*	CreateBufferVertex(size_t nVertices, size_t vertexStride, eBufferUsage usage, void* data = NULL) = 0;
-	virtual IIndexBuffer*	CreateBufferIndex(size_t size, eBufferUsage usage, void* data = NULL) = 0;
-	virtual IConstantBuffer*CreateBufferConstant(size_t size, eBufferUsage usage, void* data = NULL) = 0;
+	virtual IVertexBuffer*	CreateVertexBuffer(size_t nVertices, size_t vertexStride, eBufferUsage usage, void* data = NULL) = 0;
+	virtual IIndexBuffer*	CreateIndexBuffer(size_t size, eBufferUsage usage, void* data = NULL) = 0;
+	virtual IConstantBuffer*CreateConstantBuffer(size_t size, eBufferUsage usage, void* data = NULL) = 0;
 	virtual ITexture2D*		CreateTexture(const zsString& filePath) = 0;
 	virtual IShaderProgram* CreateShaderProgram(const zsString& shaderPath) = 0;
 

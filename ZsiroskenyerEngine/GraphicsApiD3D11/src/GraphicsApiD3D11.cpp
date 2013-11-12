@@ -280,7 +280,7 @@ void cGraphicsApiD3D11::SetRenderTargetDefault() {
 	d3dcon->OMSetRenderTargets(1, &backBufferRTV, backBufferDSV);
 }
 
-IVertexBuffer* cGraphicsApiD3D11::CreateBufferVertex(size_t nVertices, size_t vertexStride, eBufferUsage usage, void* data /*= NULL*/) {
+IVertexBuffer* cGraphicsApiD3D11::CreateVertexBuffer(size_t nVertices, size_t vertexStride, eBufferUsage usage, void* data /*= NULL*/) {
 	ID3D11Buffer* buffer = NULL;
 
 	D3D11_BUFFER_DESC desc;
@@ -309,7 +309,7 @@ IVertexBuffer* cGraphicsApiD3D11::CreateBufferVertex(size_t nVertices, size_t ve
 	}
 }
 
-IIndexBuffer* cGraphicsApiD3D11::CreateBufferIndex(size_t size , eBufferUsage usage, void* data /*= NULL*/) {
+IIndexBuffer* cGraphicsApiD3D11::CreateIndexBuffer(size_t size , eBufferUsage usage, void* data /*= NULL*/) {
 	ID3D11Buffer* buffer = NULL;
 
 	D3D11_BUFFER_DESC desc;
@@ -338,11 +338,11 @@ IIndexBuffer* cGraphicsApiD3D11::CreateBufferIndex(size_t size , eBufferUsage us
 	}
 }
 
-IConstantBuffer* cGraphicsApiD3D11::CreateBufferConstant(size_t size , eBufferUsage usage, void* data /*= NULL*/) {
+IConstantBuffer* cGraphicsApiD3D11::CreateConstantBuffer(size_t size , eBufferUsage usage, void* data /*= NULL*/) {
 	ID3D11Buffer* buffer = NULL;
 
 	D3D11_BUFFER_DESC desc;
-	desc.ByteWidth = (size < 16) ? 16 : size; // shader constants are 16 byte aligned ...
+	desc.ByteWidth = size - (size % 16) + 16; // shader constants are multiple of 16 byte
 	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = 0;
@@ -467,7 +467,6 @@ IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPat
 	D3D11_INPUT_ELEMENT_DESC *vertexDecl = new D3D11_INPUT_ELEMENT_DESC[nVertexAttributes];
 	size_t attribIdx = 0;
 	size_t alignedByteOffset = 0;
-	cVertexFormat vertexFormat;
 
 	iter = vsInStructLines.begin();
 	while(iter != vsInStructLines.end()) {
