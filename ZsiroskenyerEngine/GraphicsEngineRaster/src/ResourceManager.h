@@ -9,16 +9,16 @@
 #pragma once
 
 
-#include "..\..\Core\src\GeometryBuilder.h"
+#include "../../Core/src/GeometryBuilder.h"
 #include "Geometry.h"
 #include "Material.h"
 #include "../../Core/src/shared_ptr.h"
+#include "../../Core/src/zsString.h"
 
-#include "..\..\Core\src\zsString.h"
 #include <memory>
 
-#include <boost\bimap.hpp>
-#include <boost\bimap\unordered_set_of.hpp>
+#include <boost/bimap.hpp>
+#include <boost/bimap/unordered_set_of.hpp>
 
 
 class IGraphicsApi;

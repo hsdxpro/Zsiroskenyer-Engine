@@ -23,14 +23,14 @@
 #include "..\..\Core\src\math/Matrix44.h"
 #include "..\..\Core\src\common.h"
 
-// construction of the graphics engine
+// Construction of the graphics engine
 cGraphicsEngine::cGraphicsEngine() {
 	gApi = Factory.CreateGraphicsD3D11();
 	if (!gApi)
 		throw UnknownErrorException("failed to create graphics api");
 	shaderManager = new cShaderManager(gApi);
 	resourceManager = new cResourceManager(gApi);
-	sceneManager = new cSceneManager(resourceManager);
+	sceneManager = new cSceneManager();
 
 	// Basic 3D geom rendering
 	shaderManager->LoadShader(L"shaders/",L"test.cg");
@@ -38,14 +38,18 @@ cGraphicsEngine::cGraphicsEngine() {
 	// Now, For debugging
 	shaderManager->LoadShader(L"shaders/",L"LINE_RENDERER.cg");
 }
-
-void cGraphicsEngine::Release() {
+cGraphicsEngine::~cGraphicsEngine() {
 	SAFE_DELETE(sceneManager);
 	SAFE_DELETE(resourceManager)
 	SAFE_DELETE(shaderManager);
 	SAFE_RELEASE(gApi);
 }
 
+void cGraphicsEngine::Release() {
+	delete this;
+}
+
+// TODO: Reload all resources not only shaders
 void cGraphicsEngine::ReloadResources() {
 	shaderManager->ReloadShader(L"shaders/", L"test.cg");
 	shaderManager->ReloadShader(L"shaders/", L"LINE_RENDERER.cg");

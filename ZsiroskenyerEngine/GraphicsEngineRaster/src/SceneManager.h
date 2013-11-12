@@ -39,7 +39,7 @@ struct cInstGroupPtrCompare {
 // scene manager
 class cSceneManager {
 public:
-	cSceneManager(cResourceManager* rm);
+	cSceneManager();
 	~cSceneManager();
 
 	cGraphicsEntity* AddEntity(cGeometryRef geom, cMaterialRef mtl);
@@ -52,7 +52,6 @@ public:
 	const std::unordered_set<cInstanceGroup*, cInstGroupPtrHasher,cInstGroupPtrCompare>& GetInstanceGroups() const;
 private:
 	std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare> instanceGroups;
-	cResourceManager* managerResource;
 
 	cCamera* activeCamera;
 };
