@@ -15,13 +15,16 @@
 
 #include <cassert>
 
-cSceneManager::cSceneManager(cResourceManager* rm) 
-: managerResource(rm), activeCamera(NULL) {
+//	Constructor & Destructor
+cSceneManager::cSceneManager() 
+: activeCamera(NULL) {
 }
 
 cSceneManager::~cSceneManager() {
 }
 
+
+//	Creating scene entities
 cGraphicsEntity* cSceneManager::AddEntity(cGeometryRef geom, cMaterialRef mtl) {
 	cInstanceGroup* instGroup = NULL;
 	cInstanceGroup searchDummy;
@@ -67,6 +70,7 @@ void cSceneManager::RemoveEntity(const cGraphicsEntity& entity) {
 	}
 }
 
+//	Camera
 void cSceneManager::SetActiveCamera(cCamera *cam) {
 	activeCamera = cam;
 }
@@ -75,6 +79,7 @@ cCamera *cSceneManager::GetActiveCamera() const {
 	return activeCamera;
 }
 
+//	Get entity list
 const std::unordered_set<cInstanceGroup*, cInstGroupPtrHasher,cInstGroupPtrCompare>& cSceneManager::GetInstanceGroups() const {
 	return instanceGroups;
 }

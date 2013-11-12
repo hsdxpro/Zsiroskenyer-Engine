@@ -20,6 +20,15 @@
 cResourceManager::cResourceManager(IGraphicsApi* gApi) : gApi(gApi) {
 }
 cResourceManager::~cResourceManager() {
+	// release all geometries
+	for (auto& it : geometries) {
+		delete it.right;
+	}
+	// release all materials
+	for (auto& it : materials) {
+		delete it.right;
+	}
+	// release all textures
 }
 
 // load/unload geometries
@@ -29,12 +38,12 @@ cGeometryRef cResourceManager::GetGeometry(const zsString& filePath) {
 	// lookup if already exists
 	auto it = geometries.left.find(filePath);
 	if (it == geometries.left.end()) {
-			cGeometryBuilder b;
-			cGeometryBuilder::tGeometryDesc d = b.LoadGeometry(filePath);
+		cGeometryBuilder b;
+		cGeometryBuilder::tGeometryDesc d = b.LoadGeometry(filePath);
 
-			IVertexBuffer *VB = gApi->CreateVertexBuffer(d.nVertices, d.vertexStride, eBufferUsage::IMMUTABLE, d.vertices);
-			IIndexBuffer *IB = gApi->CreateIndexBuffer(d.nIndices * d.indexStride, eBufferUsage::IMMUTABLE, d.indices);
-			geom = new cGeometry(VB, IB);
+		IVertexBuffer *VB = gApi->CreateVertexBuffer(d.nVertices, d.vertexStride, eBufferUsage::IMMUTABLE, d.vertices);
+		IIndexBuffer *IB = gApi->CreateIndexBuffer(d.nIndices * d.indexStride, eBufferUsage::IMMUTABLE, d.indices);
+		geom = new cGeometry(VB, IB);
 		
 		// insert into database
 		geometries.insert(GeometryMapT::value_type(filePath, geom));

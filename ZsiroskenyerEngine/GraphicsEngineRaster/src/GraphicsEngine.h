@@ -18,6 +18,7 @@ class cResourceManager;
 class cGraphicsEngine : public IGraphicsEngine {
 public:
 	cGraphicsEngine();
+	~cGraphicsEngine();
 	void Release() override;
 	void ReloadResources() override;
 

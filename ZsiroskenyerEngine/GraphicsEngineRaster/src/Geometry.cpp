@@ -14,8 +14,8 @@ cGeometry::cGeometry(IVertexBuffer *VB, IIndexBuffer *IB)
 }
 
 cGeometry::~cGeometry() {
-	IB->Release();
-	VB->Release();
+	if (IB!=nullptr) IB->Release();
+	if (VB!=nullptr) VB->Release();
 }
 
 const IIndexBuffer* cGeometry::GetIndexBuffer() const {
