@@ -7,13 +7,14 @@
 
 class cEntity {
 public:
+	cEntity(cGraphicsEntity* g, IPhysicsEntity* p);
+
 	void SetPos(const Vec3& pos);
 	void SetRotation(const Quat& rot);
 
 	cGraphicsEntity* GetGraphicsEntity();
 	IPhysicsEntity* GetPhysicsEntity();
 
-	cEntity(cGraphicsEntity* g, IPhysicsEntity* p);
 protected:
 	cGraphicsEntity* graphicsEntity;
 	IPhysicsEntity* physicsEntity;

@@ -13,8 +13,8 @@ void cEntity::SetPos(const Vec3& pos) {
 
 void cEntity::SetRotation(const Quat& rot) {
 	// Set rotation for graphics and Physics to
-	graphicsEntity->SetRotation(rot);
-	physicsEntity->SetRotation(rot);
+	graphicsEntity->SetRot(rot);
+	physicsEntity->SetRot(rot);
 }
 
 cGraphicsEntity* cEntity::GetGraphicsEntity() {

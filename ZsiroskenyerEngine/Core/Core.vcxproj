@@ -58,6 +58,7 @@
     <ClInclude Include="src\storage\tree.h" />
     <ClInclude Include="src\Timer.h" />
     <ClInclude Include="src\tipsify.h" />
+    <ClInclude Include="src\Transform3D.h" />
     <ClInclude Include="src\VertexFormat.h" />
     <ClInclude Include="src\zsString.h" />
   </ItemGroup>
@@ -87,6 +88,7 @@
     <ClCompile Include="src\multithreading\spinlock.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\Timer.cpp" />
+    <ClCompile Include="src\Transform3D.cpp" />
     <ClCompile Include="src\VertexFormat.cpp" />
     <ClCompile Include="src\zsString.cpp" />
   </ItemGroup>

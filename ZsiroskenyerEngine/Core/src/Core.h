@@ -11,6 +11,8 @@
 // For debug rendering
 #include "Renderer.h"
 
+#include "Transform3D.h"
+
 #include <list>
 
 class cEntity;
@@ -23,6 +25,8 @@ public:
 		PHYSICS_COLPOINTS	= 1 << 2,
 	};
 
+	~cCore();
+
 	// Use eDebugRenderMode bit combinations
 	void DebugRender(unsigned long renderFlags);
 
@@ -34,20 +38,27 @@ public:
 	IPhysicsEngine* GetPhysicsEngine();
 
 	static cCore* GetInstance();
-	~cCore();
+
 protected:
 	cCore();
 	static cCore* instance;
 
+	// Modules
 	IGraphicsEngine* graphicsEngine;
 	IPhysicsEngine* physicsEngine;
 	cLogicEngine*	logicEngine;
+
+	// Debug renderer
 	cRenderer* debugRenderer;
 
+	// Entities from modules
 	std::list<cGraphicsEntity*> graphicsEntities;
 	std::list<IPhysicsEntity*> physicsEntities;
 
-
-	// TMP USAGE
-	std::list<cEntity*> entities;
+	// Link between modules
+	struct tTransNode { 
+		cTransform3D* trans;
+		std::list<tTransNode> childs;
+	};
+	std::list<tTransNode> entityLinks;
 };

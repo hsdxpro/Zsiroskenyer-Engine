@@ -65,7 +65,7 @@ void cPhysicsEngineBullet::SimulateWorld(float deltaT) {
 	physicsWorld->stepSimulation(deltaT, 1);
 }
 
-IPhysicsEntity* cPhysicsEngineBullet::GetRigidEntity(const zsString& physicsGeom, float mass) {
+IPhysicsEntity* cPhysicsEngineBullet::CreateRigidEntity(const zsString& physicsGeom, float mass) {
 	
 	btCollisionShape* colShape;
 	// Geom path alapján btCollisionShape kikeresése, ha nincs létrehozás...
@@ -88,7 +88,7 @@ IPhysicsEntity* cPhysicsEngineBullet::GetRigidEntity(const zsString& physicsGeom
 	// Create rigid body
 	btRigidBody* body = new btRigidBody(mass, new btDefaultMotionState(), colShape, localInertia);
 	physicsWorld->addRigidBody(body);
-	cRigidEntityBullet * r = new cRigidEntityBullet(body);
+	cRigidEntityBullet* r = new cRigidEntityBullet(body);
 	return r;
 }
 

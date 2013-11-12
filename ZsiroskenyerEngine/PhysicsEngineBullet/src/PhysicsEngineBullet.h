@@ -16,7 +16,7 @@ class cPhysicsEngineBullet : public IPhysicsEngine {
 public:
 	void SimulateWorld(float deltaT) override;
 
-	IPhysicsEntity* GetRigidEntity(const zsString& physicsGeom, float mass) override;
+	IPhysicsEntity* CreateRigidEntity(const zsString& physicsGeom, float mass) override;
 	btRigidBody* ShootBox(const Vec3& camPos,const Vec3& destination);
 
 	void GetCollisionShapeEdges(Vec3* edges, size_t size , size_t& nEdges) override;

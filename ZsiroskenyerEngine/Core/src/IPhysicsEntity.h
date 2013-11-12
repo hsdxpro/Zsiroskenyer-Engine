@@ -4,13 +4,9 @@
 #include "math\vec3.h"
 #include "math\quat.h"
 
-class IPhysicsEntity {
+#include "Transform3D.h"
+
+class IPhysicsEntity : public cTransform3D {
 public:
-	virtual void SetPos(const Vec3& pos) = 0;
-	virtual void SetRotation(const Quat& rot) = 0;
-
-	virtual Vec3 GetPos() = 0;
-	virtual Quat GetRotation() = 0;
-
 	virtual void Release() = 0;
 };
