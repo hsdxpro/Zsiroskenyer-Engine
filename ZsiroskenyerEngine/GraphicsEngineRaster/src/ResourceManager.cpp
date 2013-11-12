@@ -20,6 +20,15 @@
 cResourceManager::cResourceManager(IGraphicsApi* gApi) : gApi(gApi) {
 }
 cResourceManager::~cResourceManager() {
+	// release all geometries
+	for (auto& it : geometries) {
+		delete it.right;
+	}
+	// release all materials
+	for (auto& it : materials) {
+		delete it.right;
+	}
+	// release all textures
 }
 
 // load/unload geometries
