@@ -14,6 +14,9 @@
 #include <ostream>
 
 
+#pragma once
+
+
 template <class T>
 class zs_shared_ptr {
 public:

@@ -16,6 +16,7 @@
     <ClCompile Include="src\GraphicsEngine.cpp" />
     <ClCompile Include="src\InstanceGroup.cpp" />
     <ClCompile Include="src\ResourceManager.cpp" />
+    <ClCompile Include="src\ResourceReference.cpp" />
     <ClCompile Include="src\SceneManager.cpp" />
     <ClCompile Include="src\ShaderManager.cpp" />
     <ClCompile Include="src\Material.cpp" />
@@ -25,6 +26,7 @@
     <ClInclude Include="src\GraphicsEngine.h" />
     <ClInclude Include="src\InstanceGroup.h" />
     <ClInclude Include="src\ResourceManager.h" />
+    <ClInclude Include="src\ResourceReference.h" />
     <ClInclude Include="src\SceneManager.h" />
     <ClInclude Include="src\ShaderManager.h" />
     <ClInclude Include="src\Material.h" />

@@ -8,6 +8,7 @@
 
 #include "../../Core/src/ITexture2D.h"
 #include "../../Core/src/math/Vec4.h"
+#include "ResourceReference.h"
 
 class cMaterial {
 public:
@@ -18,10 +19,10 @@ public:
 	void SetSize(size_t nSubMaterials);
 
 	struct tSubMaterial {
-		ITexture2D* textureDiffuse;
-		ITexture2D* textureNormal;
-		ITexture2D* textureSpecular;
-		ITexture2D* textureDisplace;
+		cTextureRef textureDiffuse;
+		cTextureRef textureNormal;
+		cTextureRef textureSpecular;
+		cTextureRef textureDisplace;
 		Vec4 diffuse;
 		Vec4 specular;
 		Vec4 emissive;
