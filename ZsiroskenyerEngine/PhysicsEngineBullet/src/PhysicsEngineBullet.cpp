@@ -14,8 +14,8 @@ cPhysicsEngineBullet::cPhysicsEngineBullet() {
 	///use the default collision dispatcher. For parallel processing you can use a diffent dispatcher (see Extras/BulletMultiThreaded)
 	btCollisionDispatcher* dispatcher = new	btCollisionDispatcher(collisionConfiguration);
 
-	btVector3 worldMin(-1000, -1000, -1000);
-	btVector3 worldMax( 1000,  1000,  1000);
+	btVector3 worldMin(-100000, -100000, -100000);
+	btVector3 worldMax( 100000,  100000,  100000);
 
 	///btDbvtBroadphase is a good general purpose broadphase. You can also try out btAxis3Sweep.
 	btBroadphaseInterface* overlappingPairCache = new btAxisSweep3(worldMin, worldMax);
@@ -32,9 +32,9 @@ cPhysicsEngineBullet::cPhysicsEngineBullet() {
 	//drawer->setDebugMode(drawer->DBG_DrawAabb);
 	//m_physicsworld->setDebugDrawer(drawer);
 	
-	physicsWorld->setGravity(btVector3(0 ,0 ,-1.f));
+	physicsWorld->setGravity(btVector3(0 ,0 ,-10.0f));
 
-	physicsWorld->getDispatchInfo().m_useContinuous = true;
+	//physicsWorld->getDispatchInfo().m_useContinuous = true;
 	//Ragadós Spagetti effektus :D
 	//m_physicsworld->getSolverInfo().m_splitImpulse=true;
 	//m_physicsworld->getSolverInfo().m_numIterations = 20;
@@ -62,7 +62,7 @@ void cPhysicsEngineBullet::Release() {
 }
 
 void cPhysicsEngineBullet::SimulateWorld(float deltaT) {
-	physicsWorld->stepSimulation(deltaT, 1);
+	physicsWorld->stepSimulation(1.0f / 30.f);
 }
 
 IPhysicsEntity* cPhysicsEngineBullet::CreateRigidEntity(const zsString& physicsGeom, float mass) {

@@ -141,7 +141,6 @@
     <ClInclude Include="src\Transform3D.h">
       <Filter>Transform3D</Filter>
     </ClInclude>
-    <ClInclude Include="src\IBaseEntity.h" />
     <ClInclude Include="src\ITransformable3D.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
