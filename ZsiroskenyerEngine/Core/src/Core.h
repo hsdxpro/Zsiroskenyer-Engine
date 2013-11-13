@@ -8,10 +8,10 @@
 #include "IGraphicsEngine.h"
 #include "LogicEngine.h"
 
+#include "IBaseEntity.h"
+
 // For debug rendering
 #include "Renderer.h"
-
-#include "Transform3D.h"
 
 #include <list>
 
@@ -56,10 +56,14 @@ protected:
 	std::list<IPhysicsEntity*> physicsEntities;
 
 	// Link between modules
-	struct tTransNode { 
-		tTransNode(const cTransform3D& trans): trans(trans) {}
-		const cTransform3D& trans;
-		std::list<tTransNode> childs;
+	struct tLinkNode { 
+		tLinkNode(IBaseEntity* e) :entity(e) {}
+
+		// World transform
+		IBaseEntity* entity;
+
+		// Childs
+		std::list<tLinkNode> childs;
 	};
-	std::list<tTransNode> entityLinks;
+	std::list<tLinkNode> entityLinks;
 };

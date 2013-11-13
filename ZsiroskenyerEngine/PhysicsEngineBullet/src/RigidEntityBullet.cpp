@@ -8,9 +8,6 @@ void cRigidEntityBullet::Release() {
 	delete this;
 }
 
-void cRigidEntityBullet::SetPos(const Vec3& p) {
-	SetPos(p.x, p.y, p.z);
-}
 void cRigidEntityBullet::SetPos(float x, float y, float z) {
 	worldTransform.SetPos(x, y, z);
 
@@ -19,9 +16,6 @@ void cRigidEntityBullet::SetPos(float x, float y, float z) {
 	body->setWorldTransform(trans);
 }
 
-void cRigidEntityBullet::SetRot(const Quat& r) {
-	SetRot(r.x, r.y, r.z, r.w);
-}
 void cRigidEntityBullet::SetRot(float x, float y, float z, float w) {
 	worldTransform.SetRot(x, y, z, w);
 
@@ -30,33 +24,26 @@ void cRigidEntityBullet::SetRot(float x, float y, float z, float w) {
 	body->setWorldTransform(trans);
 }
 
-void cRigidEntityBullet::SetScale(const Vec3& s) {
-	SetScale(s.x, s.y, s.z);
-}
 void cRigidEntityBullet::SetScale(float x, float y, float z) {
 	worldTransform.SetScale(x, y, z);
 }
 
-const Vec3& cRigidEntityBullet::GetPos() {
+const Vec3& cRigidEntityBullet::GetPos() const {
 	btTransform trans;
 	body->getMotionState()->getWorldTransform(trans);
 	const btVector3& pos = trans.getOrigin();
-	worldTransform.SetPos(pos.x(), pos.y(), pos.z());
+	//worldTransform.SetPos(pos.x(), pos.y(), pos.z());
 	return worldTransform.GetPos();
 }
 
-const Quat& cRigidEntityBullet::GetRot() { 
+const Quat& cRigidEntityBullet::GetRot() const { 
 	btTransform trans;
 	body->getMotionState()->getWorldTransform(trans);
 	const btQuaternion& rot = trans.getRotation();
-	worldTransform.SetRot(rot.x(), rot.y(), rot.z(), rot.w());
-	return worldTransform.GetRot();	
+	//worldTransform.SetRot(rot.x(), rot.y(), rot.z(), rot.w());
+	return worldTransform.GetRot();
 }
 
-const Vec3& cRigidEntityBullet::GetScale() { 
+const Vec3& cRigidEntityBullet::GetScale() const { 
 	return worldTransform.GetScale();
-}
-
-const cTransform3D& cRigidEntityBullet::GetWorldTransform() const { 
-	return worldTransform; 
 }

@@ -58,6 +58,16 @@ void cCore::Update(float deltaT) {
 	physicsEngine->SimulateWorld(deltaT);
 
 	// Update Links
+	// For each Root link
+	/*for (auto it = entityLinks.begin(); it != entityLinks.end(); it++) {
+		auto childs = it->childs;
+	
+		// For each child
+		for (auto it2 = childs.begin(); it2 != childs.end(); it2++) {
+			it
+		}
+	}
+	*/
 }
 
 cEntity* cCore::AddEntity(const zsString& graphGeomPath,const zsString& physicsGeom, const zsString& mtlPath, float mass) {
@@ -66,10 +76,10 @@ cEntity* cCore::AddEntity(const zsString& graphGeomPath,const zsString& physicsG
 	IPhysicsEntity* pEntity = physicsEngine->CreateRigidEntity(physicsGeom, mass);
 
 	// Node for physics
-	tTransNode nodeRootPhysics(pEntity->GetWorldTransform());
+	tLinkNode nodeRootPhysics(pEntity);
 
 	// Node for graphics
-	tTransNode nodeGraphics(gEntity->GetWorldTransform());
+	tLinkNode nodeGraphics(gEntity);
 
 	// Link them
 	nodeRootPhysics.childs.push_back(nodeGraphics);

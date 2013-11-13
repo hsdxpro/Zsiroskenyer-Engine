@@ -8,34 +8,23 @@
 
 #include "math/math_all.h"
 #include "Transform3D.h"
+#include "IBaseEntity.h"
 
 class cInstanceGroup;
 
-class cGraphicsEntity {
+class cGraphicsEntity : public IBaseEntity {
 	friend class cSceneManager;
 public:
 	cGraphicsEntity();
 
-	void SetPos(const Vec3& p);
-	void SetPos(float x, float y, float z);
+	void SetPos(float x, float y, float z) override;
+	void SetRot(float x, float y, float z, float w) override;
+	void SetScale(float x, float y, float z) override;
 
-	void SetRot(const Quat& r);
-	void SetRot(float x, float y, float z, float w);
-
-	void SetScale(const Vec3& s);
-	void SetScale(float x, float y, float z);
-
-	Matrix44 GetWorldMatrix() const;
-
-	const cTransform3D& GetWorldTransform() const ;
-
-	const Vec3& GetPos() const;
-	const Quat& GetRot() const;
-	const Vec3& GetScale() const;
-
+	const Vec3& GetPos() const override;
+	const Quat& GetRot() const override;
+	const Vec3& GetScale() const override;
 protected:
-	cTransform3D worldTransform;
-
 	bool isVisible;
 
 	cInstanceGroup* instanceGroup;

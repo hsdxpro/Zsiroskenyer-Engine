@@ -50,7 +50,7 @@ int ricsiMain() {
 	gEngine->SetActiveCamera(&cam);
 
 	// Create physics entity
-	const float mass = 0.0f;
+	const float mass = 100.0f;
 	cEntity* entity = core->AddEntity(L"objects/box.dae", L"objects/box.dae", L"materials/test.zsm", mass);
 	entity->SetPos(Vec3(0, 50, 0));
 	

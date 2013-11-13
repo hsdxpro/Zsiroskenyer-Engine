@@ -141,6 +141,7 @@
     <ClInclude Include="src\Transform3D.h">
       <Filter>Transform3D</Filter>
     </ClInclude>
+    <ClInclude Include="src\IBaseEntity.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\IDLLLoader.cpp">
