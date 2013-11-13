@@ -82,11 +82,13 @@ IPhysicsEntity* cPhysicsEngineBullet::CreateRigidEntity(const zsString& physicsG
 	
 	// Dynamic Physics entity, calculate local inertia
 	btVector3 localInertia;
-	if(mass != 0)
+	if (mass != 0)
 		colShape->calculateLocalInertia(mass, localInertia);
+		
 
 	// Create rigid body
 	btRigidBody* body = new btRigidBody(mass, new btDefaultMotionState(), colShape, localInertia);
+	if (mass == 0) body->setCollisionFlags(btCollisionObject::CF_KINEMATIC_OBJECT);
 	physicsWorld->addRigidBody(body);
 	cRigidEntityBullet* r = new cRigidEntityBullet(body);
 	return r;

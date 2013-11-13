@@ -33,6 +33,6 @@ Matrix44 cTransform3D::GetWorldMatrix() const {
 	return world;
 }
 
-const Vec3& cTransform3D::GetPos  () const { return pos;  }
-const Quat& cTransform3D::GetRot  () const { return rot;  }
-const Vec3& cTransform3D::GetScale() const { return scale;}
+const Vec3& cTransform3D::GetPos  ()  { return pos;  }
+const Quat& cTransform3D::GetRot  ()  { return rot;  }
+const Vec3& cTransform3D::GetScale()  { return scale;}

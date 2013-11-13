@@ -1,20 +1,24 @@
 #include "Entity.h"
 
 cEntity::cEntity(cGraphicsEntity* g, IPhysicsEntity* p)
-:graphicsEntity(g), physicsEntity(p)
-{
+:graphicsEntity(g), physicsEntity(p) {
 }
 
 void cEntity::SetPos(const Vec3& pos) {
 	// Set Position for graphics and Physics to
-	((IBaseEntity*)graphicsEntity)->SetPos(pos);
-	((IBaseEntity*)physicsEntity)->SetPos(pos);
+	graphicsEntity->SetPos(pos);
+	physicsEntity->SetPos(pos);
 }
 
 void cEntity::SetRot(const Quat& rot) {
 	// Set rotation for graphics and Physics to
-	((IBaseEntity*)graphicsEntity)->SetRot(rot);
-	((IBaseEntity*)physicsEntity)->SetRot(rot);
+	graphicsEntity->SetRot(rot);
+	physicsEntity->SetRot(rot);
+}
+
+void cEntity::SetScale(const Vec3& scale) {
+	graphicsEntity->SetScale(scale);
+	physicsEntity->SetScale(scale);
 }
 
 cGraphicsEntity* cEntity::GetGraphicsEntity() {

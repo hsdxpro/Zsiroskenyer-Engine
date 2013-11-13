@@ -11,6 +11,7 @@ public:
 
 	void SetPos(const Vec3& pos);
 	void SetRot(const Quat& rot);
+	void SetScale(const Vec3& scale);
 
 	cGraphicsEntity* GetGraphicsEntity();
 	IPhysicsEntity* GetPhysicsEntity();

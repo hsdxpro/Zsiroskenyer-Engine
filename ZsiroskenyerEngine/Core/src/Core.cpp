@@ -59,15 +59,14 @@ void cCore::Update(float deltaT) {
 
 	// Update Links
 	// For each Root link
-	/*for (auto it = entityLinks.begin(); it != entityLinks.end(); it++) {
+	for (auto it = entityLinks.begin(); it != entityLinks.end(); it++) {
 		auto childs = it->childs;
 	
 		// For each child
 		for (auto it2 = childs.begin(); it2 != childs.end(); it2++) {
-			it
+			it2->entity->SetWorldTransform(it->entity);
 		}
 	}
-	*/
 }
 
 cEntity* cCore::AddEntity(const zsString& graphGeomPath,const zsString& physicsGeom, const zsString& mtlPath, float mass) {

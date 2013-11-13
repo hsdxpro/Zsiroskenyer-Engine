@@ -7,25 +7,33 @@
 #pragma once
 
 #include "math/math_all.h"
+#include "ITransformable3D.h"
 #include "Transform3D.h"
-#include "IBaseEntity.h"
 
 class cInstanceGroup;
 
-class cGraphicsEntity : public IBaseEntity {
+class cGraphicsEntity : public ITransformable3D {
 	friend class cSceneManager;
 public:
 	cGraphicsEntity();
 
+	void SetPos(const Vec3& p) override;
 	void SetPos(float x, float y, float z) override;
+
+	void SetRot(const Quat& r) override;
 	void SetRot(float x, float y, float z, float w) override;
-	void SetScale(float x, float y, float z) override;
 
-	const Vec3& GetPos() const override;
-	const Quat& GetRot() const override;
-	const Vec3& GetScale() const override;
+	void SetScale(const Vec3& s) override;
+	void SetScale(float x, float y, float z) override;	
+
+	const Vec3& GetPos() override;
+	const Quat& GetRot() override;
+	const Vec3& GetScale() override;
+
 protected:
-	bool isVisible;
-
 	cInstanceGroup* instanceGroup;
+
+	cTransform3D worldTransform;
+
+	bool isVisible;
 };

@@ -70,7 +70,6 @@ static float3 _v0013;
 static float3 _r0015;
 static float3 _v0017;
 static float _TMP18;
-static float3 _v0019;
 static float3 _v0023;
 Texture2D<float4> _TMP24 : register(t1);
 Texture2D<float4> _TMP25 : register(t0);
@@ -94,7 +93,7 @@ PS_OUT main( in X1X cin)
     _In._TBN[0] = cin._TEXCOORD4;
     _In._TBN[1] = cin._TEXCOORD5;
     _In._TBN[2] = cin._TEXCOORD6;
-    _TMP0 = _TMP24.Sample(_normalTex, _In._tex01);
+    _TMP0 = _TMP24.Sample(_normalTex, _In._tex01/ 1.00000000000000000E001f);
     _v0013 = _TMP0.xyz* 2.00000000000000000E000f -  1.00000000000000000E000f;
     _TMP8 = dot(_v0013, _v0013);
     _TMP9 = rsqrt(_TMP8);
@@ -102,17 +101,16 @@ PS_OUT main( in X1X cin)
     _r0015 = _normalT.x*_In._TBN._11_12_13;
     _r0015 = _r0015 + _normalT.y*_In._TBN._21_22_23;
     _r0015 = _r0015 + _normalT.z*_In._TBN._31_32_33;
-    _v0017 = float3(  7.00000000000000000E001f,  3.00000000000000000E001f,  0.00000000000000000E000f) - _In._posW;
+    _v0017 = float3(  0.00000000000000000E000f,  0.00000000000000000E000f,  0.00000000000000000E000f) - _In._posW;
     _TMP8 = dot(_v0017, _v0017);
     _TMP9 = rsqrt(_TMP8);
     _lightVec = _TMP9*_v0017;
     _TMP1 = dot(_r0015, _lightVec);
     _TMP2 = saturate(_TMP1);
-    _v0019 = _In._posW - float3(  7.00000000000000000E001f,  3.00000000000000000E001f,  0.00000000000000000E000f);
-    _TMP10 = dot(_v0019, _v0019);
+    _TMP10 = dot(_In._posW, _In._posW);
     _TMP11 = rsqrt(_TMP10);
     _TMP18 =  1.00000000000000000E000f/_TMP11;
-    _intensity = (_TMP2/_TMP18)* 8.00000000000000000E001f;
+    _intensity = (_TMP2/_TMP18)* 9.00000000000000000E001f;
     if (_intensity >  0.00000000000000000E000f) { // if begin
         _v0023 = (_lightVec + _camPos) - _In._posW;
         _TMP8 = dot(_v0023, _v0023);
@@ -123,7 +121,7 @@ PS_OUT main( in X1X cin)
         _TMP6 = pow(_TMP5,  2.55000000000000000E002f);
         _intensity = _intensity + _TMP6;
     } // end if
-    _TMP7 = _TMP25.Sample(_diffuseTex, _In._tex01);
+    _TMP7 = _TMP25.Sample(_diffuseTex, _In._tex01/ 1.00000000000000000E001f);
     _pout._color = _TMP7*float4(_intensity, _intensity, _intensity,  1.00000000000000000E000f);
     return _pout;
 } // main end

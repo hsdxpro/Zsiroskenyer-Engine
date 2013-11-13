@@ -12,18 +12,18 @@ public:
 
 	void SetPos(const Vec3& p);
 	void SetPos(float x, float y, float z);
-
+	
 	void SetRot(const Quat& r);
 	void SetRot(float x, float y, float z, float w);
-
+	
 	void SetScale(const Vec3& s);
 	void SetScale(float x, float y, float z);
-
+	
 	Matrix44 GetWorldMatrix() const;
-
-	const Vec3& GetPos() const;
-	const Quat& GetRot() const;
-	const Vec3& GetScale() const;
+	
+	const Vec3& GetPos();
+	const Quat& GetRot();
+	const Vec3& GetScale();
 
 protected:
 	Vec3 pos;

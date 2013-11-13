@@ -142,6 +142,9 @@
       <Filter>Transform3D</Filter>
     </ClInclude>
     <ClInclude Include="src\IBaseEntity.h" />
+    <ClInclude Include="src\ITransformable3D.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\IDLLLoader.cpp">
@@ -218,6 +221,7 @@
     <ClCompile Include="src\Transform3D.cpp">
       <Filter>Transform3D</Filter>
     </ClCompile>
+    <ClCompile Include="src\ITransformable3D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Interfaces">

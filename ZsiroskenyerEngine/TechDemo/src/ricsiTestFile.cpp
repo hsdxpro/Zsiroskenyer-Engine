@@ -49,11 +49,15 @@ int ricsiMain() {
 	cCamera cam(ZS_PIDIV2, (float)winDesc.clientWidth / winDesc.clientHeight, 0.01f, 5000.0f);
 	gEngine->SetActiveCamera(&cam);
 
-	// Create physics entity
-	const float mass = 100.0f;
-	cEntity* entity = core->AddEntity(L"objects/box.dae", L"objects/box.dae", L"materials/test.zsm", mass);
-	entity->SetPos(Vec3(0, 50, 0));
 	
+	const float mass = 500.0;
+
+	// Create floor lol:D
+	cEntity* entity = core->AddEntity(L"objects/plane.dae", L"objects/plane.dae", L"materials/test.zsm", 0.0);
+	entity->SetPos(Vec3(0, 250, 0));
+	//entity->SetScale(Vec3(100, 100, 1));
+
+	// Create cubes
 	std::vector<cEntity*> entities;
 	cEntity* ent;
 	for (int i = 0; i < 12; i++) {
@@ -62,6 +66,7 @@ int ricsiMain() {
 		ent->SetRot(Quat(Vec3(0, 0, 1), 0));
 		entities.push_back(ent);
 	}
+	
 
 	// Main loop
 	while(window->IsOpened()) {
@@ -82,7 +87,7 @@ int ricsiMain() {
 		gEngine->RenderSceneForward();
 
 		// Debug rendering
-		core->DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
+		//core->DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
 
 		// (game logic) z rotation
 		static float zVal = 0.0f;

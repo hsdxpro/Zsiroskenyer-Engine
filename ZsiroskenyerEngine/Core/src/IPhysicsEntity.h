@@ -3,10 +3,9 @@
 
 #include "math\vec3.h"
 #include "math\quat.h"
-#include "Transform3D.h"
-#include "IBaseEntity.h"
+#include "ITransformable3D.h"
 
-class IPhysicsEntity : public IBaseEntity {
+class IPhysicsEntity : public ITransformable3D {
 public:
 	virtual void Release() = 0;
 };

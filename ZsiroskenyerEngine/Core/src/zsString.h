@@ -237,6 +237,10 @@ public:
 	zsString(zsBasicString&& other) : zsBasicString(other) {}
 		// zsString(std::initializer_list<valut_type> init) : zsBasicString(init) {}
 
+	zsString(float val) {
+		// TODO MAKE IT WORK
+	}
+
 	// operators
 	zsString& operator = (const zsBasicString& str) {zsBasicString::operator=(str); return *this;}
 	zsString& operator = (zsBasicString&& str) {zsBasicString::operator=(str); return *this;}

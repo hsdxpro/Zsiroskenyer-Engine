@@ -8,7 +8,7 @@
 #include "IGraphicsEngine.h"
 #include "LogicEngine.h"
 
-#include "IBaseEntity.h"
+#include "ITransformable3D.h"
 
 // For debug rendering
 #include "Renderer.h"
@@ -57,10 +57,11 @@ protected:
 
 	// Link between modules
 	struct tLinkNode { 
-		tLinkNode(IBaseEntity* e) :entity(e) {}
+		tLinkNode(ITransformable3D* entity) 
+		:entity(entity) {}
 
-		// World transform
-		IBaseEntity* entity;
+		// Transformable entity
+		ITransformable3D* entity;
 
 		// Childs
 		std::list<tLinkNode> childs;

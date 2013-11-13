@@ -38,6 +38,7 @@
     <ClInclude Include="src\IShaderProgram.h" />
     <ClInclude Include="src\ISoundEngine.h" />
     <ClInclude Include="src\ITexture2D.h" />
+    <ClInclude Include="src\ITransformable3D.h" />
     <ClInclude Include="src\IVertexBuffer.h" />
     <ClInclude Include="src\IWindow.h" />
     <ClInclude Include="src\Level.h" />
@@ -75,6 +76,7 @@
     <ClCompile Include="src\IDLLLoader.cpp" />
     <ClCompile Include="src\IFile.cpp" />
     <ClCompile Include="src\ILog.cpp" />
+    <ClCompile Include="src\ITransformable3D.cpp" />
     <ClCompile Include="src\IWindow.cpp" />
     <ClCompile Include="src\Level.cpp" />
     <ClCompile Include="src\LogicEngine.cpp" />
