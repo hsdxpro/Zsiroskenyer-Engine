@@ -14,8 +14,8 @@ cPhysicsEngineBullet::cPhysicsEngineBullet() {
 	///use the default collision dispatcher. For parallel processing you can use a diffent dispatcher (see Extras/BulletMultiThreaded)
 	btCollisionDispatcher* dispatcher = new	btCollisionDispatcher(collisionConfiguration);
 
-	btVector3 worldMin(-100000, -100000, -100000);
-	btVector3 worldMax( 100000,  100000,  100000);
+	btVector3 worldMin(-10000, -10000, -10000);
+	btVector3 worldMax( 10000,  10000,  10000);
 
 	///btDbvtBroadphase is a good general purpose broadphase. You can also try out btAxis3Sweep.
 	btBroadphaseInterface* overlappingPairCache = new btAxisSweep3(worldMin, worldMax);
@@ -28,13 +28,11 @@ cPhysicsEngineBullet::cPhysicsEngineBullet() {
 	//GImpact Ütközés algot regizni kell a fizikai kontaktus végrehajtónál..hogy tudjon róla
 	//Még lehet hogy használok majd Gimpact ütkzést...
 	//btGImpactCollisionAlgorithm::registerAlgorithm(dispatcher);
-
-	//drawer->setDebugMode(drawer->DBG_DrawAabb);
-	//m_physicsworld->setDebugDrawer(drawer);
 	
-	physicsWorld->setGravity(btVector3(0 ,0 ,-10.0f));
+	physicsWorld->setGravity(btVector3(0 ,0 ,-200.0f));
 
-	//physicsWorld->getDispatchInfo().m_useContinuous = true;
+	physicsWorld->getDispatchInfo().m_useContinuous = true;
+
 	//Ragadós Spagetti effektus :D
 	//m_physicsworld->getSolverInfo().m_splitImpulse=true;
 	//m_physicsworld->getSolverInfo().m_numIterations = 20;
@@ -62,7 +60,7 @@ void cPhysicsEngineBullet::Release() {
 }
 
 void cPhysicsEngineBullet::SimulateWorld(float deltaT) {
-	physicsWorld->stepSimulation(1.0f / 30.f);
+	physicsWorld->stepSimulation(deltaT);
 }
 
 IPhysicsEntity* cPhysicsEngineBullet::CreateRigidEntity(const zsString& physicsGeom, float mass) {
@@ -88,7 +86,6 @@ IPhysicsEntity* cPhysicsEngineBullet::CreateRigidEntity(const zsString& physicsG
 
 	// Create rigid body
 	btRigidBody* body = new btRigidBody(mass, new btDefaultMotionState(), colShape, localInertia);
-	if (mass == 0) body->setCollisionFlags(btCollisionObject::CF_KINEMATIC_OBJECT);
 	physicsWorld->addRigidBody(body);
 	cRigidEntityBullet* r = new cRigidEntityBullet(body);
 	return r;
