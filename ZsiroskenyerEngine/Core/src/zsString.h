@@ -3,6 +3,7 @@
 #pragma warning(disable: 4996)
 
 #include <vector>
+#include <sstream>
 
 #ifdef STATIC_SIZE 
 #define ZSSTRING_STACK_SIZE 256
@@ -238,7 +239,15 @@ public:
 		// zsString(std::initializer_list<valut_type> init) : zsBasicString(init) {}
 
 	zsString(float val) {
-		// TODO MAKE IT WORK
+		std::wstringstream ss;
+		ss << val;
+		wchar_t const* ch = ss.str().c_str();
+		while (*ch != '\0')
+		{
+			zsBasicString::operator += (*ch);
+			ch++;
+		}
+			
 	}
 
 	// operators

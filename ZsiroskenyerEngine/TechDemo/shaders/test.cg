@@ -48,7 +48,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 
 	// Sample normal from texture
 	//NormalMap mintavételezés, eredmény [0,1]  ->	   //[0,1] to [-1,1]
-	float3 normalT = normalize(tex2D(normalTex, In.tex0 / 10).xyz * 2.0f - 1.0f);
+	float3 normalT = normalize(tex2D(normalTex, In.tex0).xyz * 2.0f - 1.0f);
 	float3 normalW = mul(normalT, In.TBN);
 
 	float3 pointLightPos = float3(0, 0, 0);
@@ -59,7 +59,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 		float3 h = normalize(lightVec + camPos - In.posW);
 		intensity += pow(saturate(dot(normalW , h)), 255);
 	}
-	pout.color = tex2D(diffuseTex, In.tex0 / 10) * float4(intensity, intensity, intensity, 1.0f);
+	pout.color = tex2D(diffuseTex, In.tex0);// * float4(intensity, intensity, intensity, 1.0f);
 	//pout.color = float4(mul(normalT, In.TBN), 1.0f);
 	return pout;
 };

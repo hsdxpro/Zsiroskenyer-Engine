@@ -148,7 +148,7 @@ void cWindow::Close() {
 }
 
 void cWindow::SetCaptionText(const zsString& str) {
-
+	SetWindowText(handle, str.c_str());
 }
 
 bool cWindow::IsOpened() const {

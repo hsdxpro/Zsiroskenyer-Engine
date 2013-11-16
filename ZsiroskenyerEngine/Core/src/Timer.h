@@ -10,4 +10,7 @@ public:
 
 	// Get delta seconds since last call (precise)
 	static double getDeltaSecondsPrecise();
+
+	// Get Frames per second
+	static size_t GetFps(float deltaSeconds);
 };
