@@ -3,15 +3,15 @@
 void cGraphicsApiGL::Release() {
 }
 
-IVertexBuffer* cGraphicsApiGL::CreateVertexBuffer(size_t nVertices, size_t vertexStride, eBufferUsage usage, void* data /*= NULL*/) {
+IVertexBuffer* cGraphicsApiGL::CreateVertexBuffer(size_t nVertices, size_t vertexStride, eUsage usage, void* data /*= NULL*/) {
 	return NULL;
 }
 
-IIndexBuffer* cGraphicsApiGL::CreateIndexBuffer(size_t size , eBufferUsage usage, void* data /*= NULL*/) {
+IIndexBuffer* cGraphicsApiGL::CreateIndexBuffer(size_t size , eUsage usage, void* data /*= NULL*/) {
 	return NULL;
 }
 
-IConstantBuffer* cGraphicsApiGL::CreateConstantBuffer(size_t size, eBufferUsage usage, void* data /*= NULL*/) {
+IConstantBuffer* cGraphicsApiGL::CreateConstantBuffer(size_t size, eUsage usage, void* data /*= NULL*/) {
 	return NULL;
 }
 

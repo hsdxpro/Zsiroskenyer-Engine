@@ -13,7 +13,6 @@
   <ItemGroup>
     <ClInclude Include="src\algorithms\sort.h" />
     <ClInclude Include="src\algorithms\statistics.h" />
-    <ClInclude Include="src\BufferCommon.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\common.h" />
     <ClInclude Include="src\Core.h" />

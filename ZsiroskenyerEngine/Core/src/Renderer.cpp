@@ -11,14 +11,14 @@ cRenderer::cRenderer(IGraphicsApi* gApi, IShaderManager* shaderManager)
 
 void cRenderer::RenderLines(const Matrix44& viewProj, const Vec3* lines, size_t nLines, const Vec3& color /*= Vec3(1.0f, 1.0f, 1.0f)*/) {
 	// Create, set VertexBuffer for lines
-	IVertexBuffer* linesBuffer = gApi->CreateVertexBuffer(nLines * 2, sizeof(Vec3), eBufferUsage::IMMUTABLE, (void*)lines);
+	IVertexBuffer* linesBuffer = gApi->CreateVertexBuffer(nLines * 2, sizeof(Vec3), eUsage::IMMUTABLE, (void*)lines);
 	gApi->SetVertexBuffer(linesBuffer, sizeof(Vec3));
 
 	// Set camera constants
-	IConstantBuffer* viewProjBuffer = gApi->CreateConstantBuffer(sizeof(Matrix44), eBufferUsage::DEFAULT, (void*)&viewProj);
+	IConstantBuffer* viewProjBuffer = gApi->CreateConstantBuffer(sizeof(Matrix44), eUsage::DEFAULT, (void*)&viewProj);
 	gApi->SetVSConstantBuffer(viewProjBuffer, 0);
 
-	IConstantBuffer* colorBuffer = gApi->CreateConstantBuffer(sizeof(Vec3), eBufferUsage::DEFAULT, (void*)&color);
+	IConstantBuffer* colorBuffer = gApi->CreateConstantBuffer(sizeof(Vec3), eUsage::DEFAULT, (void*)&color);
 	gApi->SetPSConstantBuffer(colorBuffer, 0);
 
 	// Set BackBuffer

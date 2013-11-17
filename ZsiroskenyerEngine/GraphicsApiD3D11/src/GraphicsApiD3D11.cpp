@@ -281,7 +281,7 @@ void cGraphicsApiD3D11::SetRenderTargetDefault() {
 	d3dcon->OMSetRenderTargets(1, &backBufferRTV, backBufferDSV);
 }
 
-IVertexBuffer* cGraphicsApiD3D11::CreateVertexBuffer(size_t nVertices, size_t vertexStride, eBufferUsage usage, void* data /*= NULL*/) {
+IVertexBuffer* cGraphicsApiD3D11::CreateVertexBuffer(size_t nVertices, size_t vertexStride, eUsage usage, void* data /*= NULL*/) {
 	ID3D11Buffer* buffer = NULL;
 
 	D3D11_BUFFER_DESC desc;
@@ -290,10 +290,10 @@ IVertexBuffer* cGraphicsApiD3D11::CreateVertexBuffer(size_t nVertices, size_t ve
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = vertexStride;
 	switch(usage) {
-	case eBufferUsage::DEFAULT:		desc.Usage = D3D11_USAGE_DEFAULT;		desc.CPUAccessFlags = 0;												break;
-	case eBufferUsage::IMMUTABLE:	desc.Usage = D3D11_USAGE_IMMUTABLE;		desc.CPUAccessFlags = 0;												break;
-	case eBufferUsage::DYNAMIC:		desc.Usage = D3D11_USAGE_DYNAMIC;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;							break;
-	case eBufferUsage::STAGING:		desc.Usage = D3D11_USAGE_STAGING;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ|D3D11_CPU_ACCESS_WRITE;		break;
+	case eUsage::DEFAULT:		desc.Usage = D3D11_USAGE_DEFAULT;		desc.CPUAccessFlags = 0;												break;
+	case eUsage::IMMUTABLE:	desc.Usage = D3D11_USAGE_IMMUTABLE;		desc.CPUAccessFlags = 0;												break;
+	case eUsage::DYNAMIC:		desc.Usage = D3D11_USAGE_DYNAMIC;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;							break;
+	case eUsage::STAGING:		desc.Usage = D3D11_USAGE_STAGING;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ|D3D11_CPU_ACCESS_WRITE;		break;
 	}
 
 	D3D11_SUBRESOURCE_DATA resData;
@@ -310,7 +310,7 @@ IVertexBuffer* cGraphicsApiD3D11::CreateVertexBuffer(size_t nVertices, size_t ve
 	}
 }
 
-IIndexBuffer* cGraphicsApiD3D11::CreateIndexBuffer(size_t size , eBufferUsage usage, void* data /*= NULL*/) {
+IIndexBuffer* cGraphicsApiD3D11::CreateIndexBuffer(size_t size , eUsage usage, void* data /*= NULL*/) {
 	ID3D11Buffer* buffer = NULL;
 
 	D3D11_BUFFER_DESC desc;
@@ -319,10 +319,10 @@ IIndexBuffer* cGraphicsApiD3D11::CreateIndexBuffer(size_t size , eBufferUsage us
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = sizeof(unsigned);
 	switch(usage){
-	case eBufferUsage::DEFAULT:		desc.Usage = D3D11_USAGE_DEFAULT;		desc.CPUAccessFlags = 0;											break;
-	case eBufferUsage::IMMUTABLE:	desc.Usage = D3D11_USAGE_IMMUTABLE;		desc.CPUAccessFlags = 0;											break;
-	case eBufferUsage::DYNAMIC:		desc.Usage = D3D11_USAGE_DYNAMIC;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;						break;
-	case eBufferUsage::STAGING:		desc.Usage = D3D11_USAGE_STAGING;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ|D3D11_CPU_ACCESS_WRITE;	break;
+	case eUsage::DEFAULT:		desc.Usage = D3D11_USAGE_DEFAULT;		desc.CPUAccessFlags = 0;											break;
+	case eUsage::IMMUTABLE:	desc.Usage = D3D11_USAGE_IMMUTABLE;		desc.CPUAccessFlags = 0;											break;
+	case eUsage::DYNAMIC:		desc.Usage = D3D11_USAGE_DYNAMIC;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;						break;
+	case eUsage::STAGING:		desc.Usage = D3D11_USAGE_STAGING;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ|D3D11_CPU_ACCESS_WRITE;	break;
 	}
 
 	D3D11_SUBRESOURCE_DATA resData;
@@ -339,7 +339,7 @@ IIndexBuffer* cGraphicsApiD3D11::CreateIndexBuffer(size_t size , eBufferUsage us
 	}
 }
 
-IConstantBuffer* cGraphicsApiD3D11::CreateConstantBuffer(size_t size , eBufferUsage usage, void* data /*= NULL*/) {
+IConstantBuffer* cGraphicsApiD3D11::CreateConstantBuffer(size_t size , eUsage usage, void* data /*= NULL*/) {
 	ID3D11Buffer* buffer = NULL;
 
 	D3D11_BUFFER_DESC desc;
@@ -348,10 +348,10 @@ IConstantBuffer* cGraphicsApiD3D11::CreateConstantBuffer(size_t size , eBufferUs
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = 0;
 	switch(usage) {
-	case eBufferUsage::DEFAULT:		desc.Usage = D3D11_USAGE_DEFAULT;		desc.CPUAccessFlags = 0;												break;
-	case eBufferUsage::IMMUTABLE:	desc.Usage = D3D11_USAGE_IMMUTABLE;		desc.CPUAccessFlags = 0;												break;
-	case eBufferUsage::DYNAMIC:		desc.Usage = D3D11_USAGE_DYNAMIC;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;							break;
-	case eBufferUsage::STAGING:		desc.Usage = D3D11_USAGE_STAGING;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;	break;
+	case eUsage::DEFAULT:		desc.Usage = D3D11_USAGE_DEFAULT;		desc.CPUAccessFlags = 0;												break;
+	case eUsage::IMMUTABLE:	desc.Usage = D3D11_USAGE_IMMUTABLE;		desc.CPUAccessFlags = 0;												break;
+	case eUsage::DYNAMIC:		desc.Usage = D3D11_USAGE_DYNAMIC;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;							break;
+	case eUsage::STAGING:		desc.Usage = D3D11_USAGE_STAGING;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;	break;
 	}
 
 	D3D11_SUBRESOURCE_DATA resData;

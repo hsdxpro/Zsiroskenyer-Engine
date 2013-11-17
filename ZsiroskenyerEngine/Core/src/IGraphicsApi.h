@@ -3,7 +3,7 @@
 #pragma once
 
 #include "../../Core/src/IWindow.h"
-#include "BufferCommon.h"
+#include "ResourceProperty.h"
 #include <climits>
 #include "../../Core/src/common.h"
 #include "../../Core/src/zsString.h"
@@ -24,9 +24,9 @@ public:
 	virtual void Release() = 0;
 
 	//buffers
-	virtual IVertexBuffer*	CreateVertexBuffer(size_t nVertices, size_t vertexStride, eBufferUsage usage, void* data = NULL) = 0;
-	virtual IIndexBuffer*	CreateIndexBuffer(size_t size, eBufferUsage usage, void* data = NULL) = 0;
-	virtual IConstantBuffer*CreateConstantBuffer(size_t size, eBufferUsage usage, void* data = NULL) = 0;
+	virtual IVertexBuffer*	CreateVertexBuffer(size_t nVertices, size_t vertexStride, eUsage usage, void* data = NULL) = 0;
+	virtual IIndexBuffer*	CreateIndexBuffer(size_t size, eUsage usage, void* data = NULL) = 0;
+	virtual IConstantBuffer*CreateConstantBuffer(size_t size, eUsage usage, void* data = NULL) = 0;
 	virtual ITexture2D*		CreateTexture(const zsString& filePath) = 0;
 	virtual IShaderProgram* CreateShaderProgram(const zsString& shaderPath) = 0;
 

@@ -6,8 +6,20 @@
 //	pipeline binding, and other bullshit.
 ////////////////////////////////////////////////////////////////////////////////
 
-
+#pragma once
 
 enum class eUsage {
+	DEFAULT = 1,
+	IMMUTABLE,
+	DYNAMIC,
+	STAGING
+};
+
+enum class eBind {
+
+
+};
+
+enum class eFormat {
 
 };

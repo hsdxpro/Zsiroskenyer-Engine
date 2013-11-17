@@ -2,12 +2,12 @@
 // Responsibility: Holding Mesh points of the 3D object
 #pragma once
 
-#include "BufferCommon.h"
+#include "ResourceProperty.h"
 
 class IVertexBuffer {
 public:
 	virtual size_t GetSize() const = 0;
-	virtual eBufferUsage GetUsage() const = 0;
+	virtual eUsage GetUsage() const = 0;
 
 	virtual void Release() = 0;
 };

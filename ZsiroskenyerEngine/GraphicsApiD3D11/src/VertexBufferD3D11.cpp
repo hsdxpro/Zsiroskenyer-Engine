@@ -15,7 +15,7 @@
 #include "VertexBufferD3D11.h"
 #include <d3d11.h>
 
-cVertexBufferD3D11::cVertexBufferD3D11(ID3D11Buffer* buffer, size_t size, eBufferUsage usage)
+cVertexBufferD3D11::cVertexBufferD3D11(ID3D11Buffer* buffer, size_t size, eUsage usage)
 :buffer(buffer), usage(usage), size(size) {		
 }
 
@@ -31,7 +31,7 @@ size_t cVertexBufferD3D11::GetSize() const {
 	return size;
 }
 
-eBufferUsage cVertexBufferD3D11::GetUsage() const {
+eUsage cVertexBufferD3D11::GetUsage() const {
 	return usage;
 }
 
