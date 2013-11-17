@@ -61,7 +61,7 @@ int ricsiMain() {
 	core->AddEntity(L"objects/demo_tunnel.dae", L"objects/demo_tunnel.dae", L"materials/test.zsm", mass);
 
 	// Our player
-	core->AddEntity(L"objects/character.obj", L"objects/character.obj", L"materials/character.zsm",  0.0);	
+	//core->AddEntity(L"objects/character.obj", L"objects/character.obj", L"materials/character.zsm",  0.0);	
 
 	// Main loop
 	while(window->IsOpened()) {

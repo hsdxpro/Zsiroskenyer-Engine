@@ -299,7 +299,7 @@ eGapiResult	cGraphicsApiD3D11::CreateVertexBuffer(IVertexBuffer** resource, size
 	desc.StructureByteStride = 0;
 	switch(usage) {
 	case eUsage::DEFAULT:		desc.Usage = D3D11_USAGE_DEFAULT;		desc.CPUAccessFlags = 0;												break;
-	case eUsage::IMMUTABLE:	desc.Usage = D3D11_USAGE_IMMUTABLE;		desc.CPUAccessFlags = 0;												break;
+	case eUsage::IMMUTABLE:		desc.Usage = D3D11_USAGE_IMMUTABLE;		desc.CPUAccessFlags = 0;												break;
 	case eUsage::DYNAMIC:		desc.Usage = D3D11_USAGE_DYNAMIC;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;							break;
 	case eUsage::STAGING:		desc.Usage = D3D11_USAGE_STAGING;		desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ|D3D11_CPU_ACCESS_WRITE;		break;
 	}
@@ -408,8 +408,6 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const zsStri
 		   *resource = new cTexture2DD3D11(width, height, srv);
 		   return eGapiResult::OK;
 		}
-		case D3D11_ERROR_FILE_NOT_FOUND:
-			return eGapiResult::ERROR_UNKNOWN;
 		default:
 			return eGapiResult::ERROR_UNKNOWN;
 	}
@@ -417,12 +415,93 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const zsStri
 
 eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, eBind bind) {
 
-	UINT bindFlag;
-	//switch (bind)
-	//D3D11_TEXTURE2D_DESC texDesc;
-	//texDesc.ArraySize = 1;
-	//texDesc.BindFlags = bindFlag;
-	return eGapiResult::ERROR_UNKNOWN;
+	ID3D11Texture2D* tex;
+	// Outputs
+	ID3D11RenderTargetView* rtv = NULL;
+	ID3D11ShaderResourceView* srv = NULL;
+	ID3D11DepthStencilView* dsv = NULL;
+
+	bool isRenderTarget = (int)bind & (int)eBind::RENDER_TARGET;
+	bool isShaderBindable = (int)bind & (int)eBind::SHADER_RESOURCE;
+	bool hasDepthStencil = (int)bind & (int)eBind::DEPTH_STENCIL;
+
+	UINT bindFlag = 0;
+	if (isRenderTarget)   bindFlag |= D3D11_BIND_RENDER_TARGET;
+	if (isShaderBindable) bindFlag |= D3D11_BIND_RENDER_TARGET;
+
+	if (!(isRenderTarget && isShaderBindable && hasDepthStencil))
+		return eGapiResult::ERROR_INVALID_ARG;
+
+	DXGI_FORMAT f = DXGI_FORMAT_R32G32B32A32_FLOAT; // TODO LOOOL :D YOU CAN JUST GET THAT SHIT :)
+	D3D11_TEXTURE2D_DESC texDesc;
+		texDesc.ArraySize = arraySize;
+		texDesc.BindFlags = bindFlag;
+		texDesc.CPUAccessFlags = 0; // TODO YOU CAN'T WRITE TEXTURES MUHAHA
+		texDesc.Format = f;
+		texDesc.Height = height;
+		texDesc.Width = width;
+		texDesc.MipLevels = mipLevels;
+		texDesc.MiscFlags = 0;
+		texDesc.SampleDesc.Count = 1;
+		texDesc.SampleDesc.Quality = 0;
+		texDesc.Usage = D3D11_USAGE_DEFAULT;
+	HRESULT hr = d3ddev->CreateTexture2D(&texDesc, NULL, &tex);
+	if (FAILED(hr))
+		return eGapiResult::ERROR_INVALID_ARG;
+	
+	// Create RenderTarget view
+	if (isRenderTarget) {
+		hr = d3ddev->CreateRenderTargetView(tex, NULL, &rtv);
+		if (FAILED(hr))
+			return eGapiResult::ERROR_INVALID_ARG;
+	}
+
+	// Create ShaderResource view
+	if (isShaderBindable) {
+		hr = d3ddev->CreateShaderResourceView(tex, NULL, &srv);
+		if (FAILED(hr))
+			return eGapiResult::ERROR_INVALID_ARG;
+	}
+
+	// Create DepthStencil texture
+	if (hasDepthStencil) {
+		/*
+		//Depth Texture
+		D3D11_TEXTURE2D_DESC dtexdesc;
+		ZeroMemory(&dtexdesc,sizeof(dtexdesc));
+		dtexdesc.Width = Width;
+		dtexdesc.Height = Height;
+		dtexdesc.MipLevels = 1;
+		dtexdesc.ArraySize = 1;
+		dtexdesc.Format = DepthFormat;
+		dtexdesc.SampleDesc.Count = 1;
+		dtexdesc.SampleDesc.Quality = 0;
+		dtexdesc.Usage = D3D11_USAGE_DEFAULT;
+		dtexdesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+		dtexdesc.CPUAccessFlags = 0;
+		dtexdesc.MiscFlags = 0;
+
+
+		//DepthMap(Mélység Textúra) létrehozása DSV,SRV
+		ID3D11Texture2D* dsvmap;
+		Printhr(d3ddev->CreateTexture2D(&dtexdesc,0,&dsvmap));
+
+		//DEPTH/STENCIL View leírása
+		D3D11_DEPTH_STENCIL_VIEW_DESC dsvdesc;
+		ZeroMemory(&dsvdesc,sizeof(dsvdesc));
+		dsvdesc.Format = DepthFormat;
+		dsvdesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		dsvdesc.Texture2D.MipSlice = 0;
+
+
+		//Depth/Stencil View létrehozása
+		Printhr(d3ddev->CreateDepthStencilView(dsvmap,&dsvdesc,&m_dsv));
+		dsvmap->Release();
+		*/
+	}
+
+	*resource = new cTexture2DD3D11(width, height, srv, rtv, dsv);
+	return eGapiResult::OK;
 }
 
 eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, const zsString& shaderPath) {
