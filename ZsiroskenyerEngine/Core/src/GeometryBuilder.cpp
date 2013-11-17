@@ -31,7 +31,10 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 	// read up dae scene
 	char ansiFilePath[256];
 	zsString::UniToAnsi(filePath, ansiFilePath, 256);
-	const aiScene* scene = importer.ReadFile(ansiFilePath, (aiProcessPreset_TargetRealtime_Quality )^ aiProcess_FindInvalidData );
+	const aiScene* scene = importer.ReadFile(ansiFilePath, aiProcess_CalcTangentSpace |
+		aiProcess_Triangulate |
+		aiProcess_JoinIdenticalVertices |
+		aiProcess_SortByPType);
 	if(scene == NULL) {
 		ILog::GetInstance()->MsgBox(L"Can found 3D model: " + filePath);
 		throw FileNotFoundException();
@@ -71,40 +74,38 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 	for(size_t i = 0; i < nMeshes;i++) {
 		aiMesh* mesh = meshes[i];
 
-		// Indices
-		aiFace* faces = mesh->mFaces;
-		size_t nFaces = mesh->mNumFaces;
-		for(size_t j = 0; j < nFaces; indexI += 3, j++) {
-			aiFace& face = faces[j];
-			indices[indexI]		= face.mIndices[0] + vertexI;
-			indices[indexI + 1]	= face.mIndices[1] + vertexI;
-			indices[indexI + 2]	= face.mIndices[2] + vertexI;
-		}
-
-		// Vertices
-		for(size_t j = 0; j < mesh->mNumVertices; vertexI++, j++) {
+		for (size_t j = 0; j < mesh->mNumFaces; indexI += 3, j++)
+		{
+			aiFace& face = mesh->mFaces[j];
 			
-			supTmpVec = &mesh->mNormals[j];
-			if (mesh->HasPositions()) {
-				supTmpVec = &mesh->mVertices[j];
-				vertices[vertexI].pos = Vec3(supTmpVec->x, supTmpVec->z, supTmpVec->y);
-			}
+			// For each face index
+			for (size_t k = 0; k < 3; k++)
+			{
+				unsigned vertIdx = face.mIndices[k];
 
-			if (mesh->HasNormals()) {
-				supTmpVec = &mesh->mNormals[j];
-				vertices[vertexI].normal = Vec3(supTmpVec->x, supTmpVec->z, supTmpVec->y);
-			}
+				// Index data
+				indices[indexI + k] = vertIdx;
 
-			if (mesh->HasTangentsAndBitangents()) {
-				supTmpVec = &mesh->mTangents[j];
-				vertices[vertexI].tangent = Vec3(supTmpVec->x, supTmpVec->z, supTmpVec->y);
+				// Vertex Data
+				if (mesh->HasPositions()) {
+					supTmpVec = &mesh->mVertices[vertIdx];
+					vertices[vertIdx].pos = Vec3(supTmpVec->x, supTmpVec->z, supTmpVec->y);
+				}
+
+				if (mesh->HasNormals()) {
+					supTmpVec = &mesh->mNormals[vertIdx];
+					vertices[vertIdx].normal = Vec3(supTmpVec->x, supTmpVec->z, supTmpVec->y);
+				}
+
+				if (mesh->HasTangentsAndBitangents()) {
+					supTmpVec = &mesh->mTangents[vertIdx];
+					vertices[vertIdx].tangent = Vec3(supTmpVec->x, supTmpVec->z, supTmpVec->y);
+				}
+
+				// @TODO not general algorithm, wee need to handle more UV channels
+				supTmpVec = &mesh->mTextureCoords[0][vertIdx];
+				vertices[vertIdx].tex = Vec2(supTmpVec->x, supTmpVec->y);
 			}
-			
-			// @TODO not general algorithm, wee need to handle more UV channels
-			if (mesh->HasTextureCoords(0)) {
-				supTmpVec = &mesh->mTextureCoords[0][j];
-				vertices[vertexI].tex = Vec2(supTmpVec->x, supTmpVec->y);
-			}			
 		}
 	}
 
