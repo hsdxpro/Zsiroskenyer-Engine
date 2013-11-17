@@ -100,7 +100,7 @@
     <ClCompile Include="src\DllMain.cpp" />
     <ClCompile Include="src\GraphicsApiD3D11.cpp" />
     <ClCompile Include="src\ShaderProgramD3D11.cpp" />
-    <ClCompile Include="src\Texture2DColorD3D11.cpp" />
+    <ClCompile Include="src\Texture2DD3D11.cpp" />
     <ClCompile Include="src\VertexBufferD3D11.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -108,7 +108,7 @@
     <ClInclude Include="src\GraphicsApiD3D11.h" />
     <ClInclude Include="src\IndexBufferD3D11.h" />
     <ClInclude Include="src\ShaderProgramD3D11.h" />
-    <ClInclude Include="src\Texture2DColorD3D11.h" />
+    <ClInclude Include="src\Texture2DD3D11.h" />
     <ClInclude Include="src\VertexBufferD3D11.h" />
   </ItemGroup>
   <ItemGroup>

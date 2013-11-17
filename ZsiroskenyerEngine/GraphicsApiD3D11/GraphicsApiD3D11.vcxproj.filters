@@ -28,11 +28,11 @@
     <ClCompile Include="src\VertexBufferD3D11.cpp">
       <Filter>Buffers</Filter>
     </ClCompile>
-    <ClCompile Include="src\Texture2DColorD3D11.cpp">
-      <Filter>Textures</Filter>
-    </ClCompile>
     <ClCompile Include="src\ShaderProgramD3D11.cpp">
       <Filter>ShaderProgram</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Texture2DD3D11.cpp">
+      <Filter>Textures</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -46,11 +46,11 @@
     <ClInclude Include="src\VertexBufferD3D11.h">
       <Filter>Buffers</Filter>
     </ClInclude>
-    <ClInclude Include="src\Texture2DColorD3D11.h">
-      <Filter>Textures</Filter>
-    </ClInclude>
     <ClInclude Include="src\ShaderProgramD3D11.h">
       <Filter>ShaderProgram</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Texture2DD3D11.h">
+      <Filter>Textures</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -5,6 +5,7 @@
 
 // For determining size of a file
 #include <sys/stat.h>
+#include <windows.h>
 
 cFile::cFile()
 :isEof(false) {
@@ -13,8 +14,7 @@ cFile::cFile()
 cFile::cFile(const zsString& filePath)
 :isEof(false), filePath(filePath) {
 	lines.clear();
-	stream.clear();
-	stream.close();
+
 	// Open stream
 	stream.open(filePath.c_str(), std::ios_base::in);
 	if(!stream.is_open()) {
@@ -32,13 +32,29 @@ cFile::cFile(const zsString& filePath)
 	getLineIterator = lines.begin();
 	if(getLineIterator == lines.end())
 		isEof = true;
-}
 
+	Close();
+}
+void cFile::Release() {
+	delete this;
+}
 
 void cFile::Clear() {
 	std::ofstream os(filePath.c_str(), std::ios::trunc);
+	ASSERT(os.is_open() == true);
+	
 	os.close();
 	lines.clear();
+}
+
+bool cFile::Clear(const zsString& path) {
+	std::ofstream os(path.c_str(), std::ios::trunc);
+	ASSERT(os.is_open() == true);
+	if (!os.is_open()) 	{
+		return false;
+	}
+	os.close();
+	return true;
 }
 
 void cFile::Close() {
@@ -46,22 +62,35 @@ void cFile::Close() {
 	stream.close();
 }
 
-void cFile::ReadBinary(const zsString path, void** data_out, size_t& dataSize_out) {
-	std::ifstream is(path.c_str(), std::ios_base::binary);
-	
+bool cFile::ReadBinary(const zsString& path, void* data_out, const size_t& dataSize) {
+	std::fstream is(path.c_str(), std::ios::in |std::ios::binary);
+	ASSERT(is.is_open() == true);
+
+	if (! is.is_open())
+		return false;
+
 	static char ansiPath[256];
 	zsString::UniToAnsi(path, ansiPath, 256);
 
-	//path.tozsString::
-	struct stat results;
-	if (stat(ansiPath, &results) == 0)
-		dataSize_out = results.st_size;
-	else
-		ILog::GetInstance()->MsgBox(L"cFile::ReadBinary -> can't get size of a file");
-
-	*data_out = new char[dataSize_out];
-	is.read((char*)*data_out, dataSize_out);
+	
+	is.read((char*)data_out, dataSize);
 	is.close();
+
+	return true;
+}
+
+bool cFile::WriteBinary(const zsString& path, void* data, const size_t& dataSize) {
+	std::ofstream os(path.c_str(), std::ofstream::binary | std::ofstream::trunc);
+	ASSERT(os.is_open() == true);
+
+	// Fail to open
+	if (!os.is_open()) {
+		return false;
+	}
+
+	os.write((char*)data, dataSize);
+	os.close();
+	return true;
 }
 
 void cFile::DeleteFirstLines(size_t nLines) {
@@ -144,6 +173,36 @@ size_t cFile::GetNLines() const {
 	return lines.size();
 }
 
+size_t cFile::GetSize() const {
+	static char ansiPath[256];
+	zsString::UniToAnsi(filePath, ansiPath, 256);
+
+	//path.tozsString::
+	struct stat results;
+	if (stat(ansiPath, &results) == 0)
+		return results.st_size;
+	else
+	{
+		ASSERT(0);
+		return 0;
+	}
+}
+
+size_t cFile::GetSize(const zsString& path) {
+	static char ansiPath[256];
+	zsString::UniToAnsi(path, ansiPath, 256);
+
+	//path.tozsString::
+	struct stat results;
+	if (stat(ansiPath, &results) == 0)
+		return results.st_size;
+	else
+	{
+		ASSERT(0);
+		return 0;
+	}
+}
+
 const zsString& cFile::GetLine() {
 	zsString& data = *getLineIterator;
 	getLineIterator++;
@@ -198,7 +257,6 @@ bool cFile::RemoveDuplicatedLines() {
 		iterI++;
 	}
 
-	
 
 	// Write to file
 	iterI = uniqLines.begin();

@@ -5,14 +5,14 @@
 
 struct ID3D11ShaderResourceView;
 
-class cTexture2DColorD3D11 : public ITexture2D {
+class cTexture2DD3D11 : public ITexture2D {
 public:
 	size_t GetWidth() override;
 	size_t GetHeight() override;
 
 	ID3D11ShaderResourceView* GetSRV();
 
-	cTexture2DColorD3D11(ID3D11ShaderResourceView* srv, size_t width, size_t height);
+	cTexture2DD3D11(ID3D11ShaderResourceView* srv, size_t width, size_t height);
 	void Release() override;
 private:
 	ID3D11ShaderResourceView* srv;
