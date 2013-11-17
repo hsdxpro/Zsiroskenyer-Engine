@@ -79,9 +79,6 @@
     <ClInclude Include="src\math\Vec4.h">
       <Filter>Common\math</Filter>
     </ClInclude>
-    <ClInclude Include="src\Camera.h">
-      <Filter>Engines\GraphicsEngine</Filter>
-    </ClInclude>
     <ClInclude Include="src\Node.h">
       <Filter>Engines\GraphicsEngine</Filter>
     </ClInclude>
@@ -144,6 +141,7 @@
     <ClInclude Include="src\ITransformable3D.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="src\Camera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\IDLLLoader.cpp">
@@ -185,9 +183,6 @@
     <ClCompile Include="src\math\Vec4.cpp">
       <Filter>Common\math</Filter>
     </ClCompile>
-    <ClCompile Include="src\Camera.cpp">
-      <Filter>Engines\GraphicsEngine</Filter>
-    </ClCompile>
     <ClCompile Include="src\VertexFormat.cpp">
       <Filter>Engines\GraphicsEngine</Filter>
     </ClCompile>
@@ -221,6 +216,7 @@
       <Filter>Transform3D</Filter>
     </ClCompile>
     <ClCompile Include="src\ITransformable3D.cpp" />
+    <ClCompile Include="src\Camera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Interfaces">

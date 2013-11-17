@@ -57,6 +57,3 @@ class Vec3 {
 // utility functions ///////////////////////////////
 std::ostream& operator<<(std::ostream& os, Vec3 v);
 
-
-
-

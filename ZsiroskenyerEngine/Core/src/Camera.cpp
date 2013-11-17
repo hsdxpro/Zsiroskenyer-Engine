@@ -6,32 +6,32 @@ cCamera::cCamera(float fovRad, float aspectRatio, float nearPlane, float farPlan
 :fovRad(fovRad), aspectRatio(aspectRatio), nearPlane(nearPlane), farPlane(farPlane), target(0, 1, 0), pos(0, 0, 0) {
 }
 
-/*
-void cCamera::Update(Vec3 pos, Vec3 target) {
-	this->pos = pos;
-	this->target = target;
+void cCamera::SetFOV(float rad) {
+	this->fovRad = rad;
 }
 
-void cCamera::Update(Vec3 pos, Quat rotation) {
-	this->pos = pos;
-	this->target = pos + Vec3(0.0f, 0.0f, 1.0f) * rotation;
-}
-*/
-
-void cCamera::SetFOV(float fovRad) {
-	this->fovRad = fovRad;
+void cCamera::SetAspectRatio(float r) {
+	aspectRatio = r;
 }
 
-void cCamera::SetAspectRatio(float aspectRatio) {
-	this->aspectRatio = aspectRatio;
+void cCamera::SetNearPlane(float nP) {
+	nearPlane = nP;
 }
 
-void cCamera::SetNearPlane(float nearPlane) {
-	this->nearPlane = nearPlane;
+void cCamera::SetFarPlane(float fP) {
+	farPlane = fP;
 }
 
-void cCamera::SetFarPlane(float farPlane) {
-	this->farPlane = farPlane;
+void cCamera::SetPos(const Vec3& p) {
+	pos = p;
+}
+
+void cCamera::SetTarget(const Vec3& p) {
+	target = p;
+}
+
+void cCamera::SetDir(const Vec3& p) {
+	target = pos + p;
 }
 
 float cCamera::GetFOV() const {
@@ -85,4 +85,8 @@ Vec3 cCamera::GetDirLeft() const {
 
 const Vec3& cCamera::GetPos() const {
 	return pos;
+}
+
+const Vec3& cCamera::GetTarget() const {
+	return target;
 }

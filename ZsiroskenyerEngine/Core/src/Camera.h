@@ -1,20 +1,21 @@
 // Camera.h By Zsíroskenyér Team 2013.10.13 0:14 last modified Richárd Németh
 #pragma once
 
-#include "../../Core/src/math/Vec3.h"
-#include "../../Core/src/math/Matrix44.h"
-#include "../../Core/src/math/Quat.h"
+// Math
+#include "math/Vec3.h"
+#include "math/Matrix44.h"
+#include "math/Quat.h"
 
 class cCamera {
 public:
+	void SetFOV(float rad);
+	void SetAspectRatio(float r);
+	void SetNearPlane(float nP);
+	void SetFarPlane(float fP);
 
-	//void Update(Vec3 pos, Vec3 target);
-	//void Update(Vec3 pos, Quat rotation);
-
-	void SetFOV(float radFOV);
-	void SetAspectRatio(float aspectRatio);
-	void SetNearPlane(float nearPlane);
-	void SetFarPlane(float farPlane);
+	void SetPos(const Vec3& p);
+	void SetTarget(const Vec3& p);
+	void SetDir(const Vec3& p);
 
 	float GetFOV() const;
 	float GetAspectRatio() const;
@@ -33,6 +34,7 @@ public:
 	Vec3 GetDirLeft() const;
 
 	const Vec3& GetPos() const;
+	const Vec3& GetTarget() const;
 
 	cCamera(float radFOV, float aspectRatio, float nearPlane, float farPlane);
 private:

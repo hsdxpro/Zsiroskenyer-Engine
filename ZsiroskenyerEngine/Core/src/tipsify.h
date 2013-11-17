@@ -23,8 +23,8 @@ typedef uint16_t TriangleIndexType;
 typedef uint16_t ArrayIndexType;
 */
 
-#define ISEMITTED(x)(emitted[(x)>>3]&(1<<(x&7)))
-#define SETEMITTED(x)(emitted[(x)>>3]|=(1<<(x&7)))
+#define ISEMITTED(x)(emitted[(x) >> 3]  & (1<<(x & 7)))
+#define SETEMITTED(x)(emitted[(x) >> 3] |= (1<<(x & 7)))
 
 // Find the next non − local vertex to cont inue from
 int skipDeadEnd(const AdjacencyType* liveTriangles, const VertexIndexType* deadEndStack,int& deadEndStackPos,int& deadEndStackStart,int nVertices,int& i)

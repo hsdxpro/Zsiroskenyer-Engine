@@ -22,6 +22,9 @@
 // TODO REMOVE THAT OR I KILL MYSELF
 #include <windows.h>
 
+#define CAM_MOVE_SPEED 120
+void freeCamUpdate(cCamera& cam, float tDelta);
+
 int ricsiMain() {
 
 	// Create core
@@ -65,12 +68,12 @@ int ricsiMain() {
 	// Create cubes
 	std::vector<cEntity*> entities;
 	cEntity* ent;
-	/*for (int i = 0; i < 12; i++) {
+	for (int i = 0; i < 12; i++) {
 		ent = core->AddEntity(L"objects/box.dae", L"objects/box.dae", L"materials/test.zsm", mass);
 		ent->SetPos(Vec3(sin(float(i))*60, 120, cos(float(i))*60));
 		entities.push_back(ent);
 	}
-	*/
+	
 
 	// Main loop
 	while(window->IsOpened()) {
@@ -81,11 +84,20 @@ int ricsiMain() {
 	
 		// Update everything
 		float tDelta = cTimer::getDeltaSeconds();
+		size_t fps = cTimer::GetFps(tDelta);
+		freeCamUpdate(cam, tDelta);
 		core->Update(tDelta);
 
-		// L"[Zsíroskenyér Engine 0.1 Beta]  FPS: " + cTimer::GetFps(tDelta)
-		// TODO ZsString::ZsSTring(float val) doesn't work...
-		window->SetCaptionText(L"[Zsíroskenyér Engine 0.1 Beta]");
+		static float timer1 = 0.0;
+		timer1 += tDelta;
+
+
+		// Don't hog with set caption text... Fucking slow operation
+		if (timer1 > 1.0f)
+		{
+			window->SetCaptionText(zsString(L"[Zsíroskenyér Engine 0.1 Beta]  FPS: ") + fps);
+			timer1 = 0.0f;
+		}
 
 		// Shader reloading
 		if (GetAsyncKeyState('R') && GetAsyncKeyState(VK_LCONTROL))
@@ -102,7 +114,7 @@ int ricsiMain() {
 		zVal += ZS_PI / 4 * tDelta;
 		for each (auto e in entities)
 		{
-			//e->SetRot(Quat::EulerAnglesToQuat(0, 0, zVal));
+			e->SetRot(Quat::EulerAnglesToQuat(0, 0, zVal));
 		}
 		entity->SetRot(Quat::EulerAnglesToQuat(0, 0, -zVal));
 
@@ -113,4 +125,22 @@ int ricsiMain() {
 	SAFE_DELETE(window);
 	SAFE_DELETE(core);
 	return 0;
+}
+
+void freeCamUpdate(cCamera& cam, float tDelta) {
+	Vec3 deltaMove(0, 0, 0);
+	if (GetAsyncKeyState('W'))
+		deltaMove += cam.GetDirFront() * (CAM_MOVE_SPEED * tDelta);
+	if (GetAsyncKeyState('S'))
+		deltaMove += cam.GetDirBack() * (CAM_MOVE_SPEED * tDelta);
+	if (GetAsyncKeyState('A'))
+		deltaMove += cam.GetDirLeft() * (CAM_MOVE_SPEED * tDelta);
+	if (GetAsyncKeyState('D'))
+		deltaMove += cam.GetDirRight() * (CAM_MOVE_SPEED * tDelta);
+	
+	// Set new position
+	cam.SetPos(cam.GetPos() + deltaMove);
+
+	// Hold direction
+	cam.SetDir(Vec3(0, 1, 0));
 }

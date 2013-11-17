@@ -155,7 +155,8 @@ Vec3 operator * (const Matrix44& m, const Vec3& v) {
 	return v2;
 };
 
-std::ostream& operator<<(std::ostream& os, Vec3 v) {
+
+std::ostream& operator << (std::ostream& os, Vec3 v) {
 	os << v.x << ',' << v.y << ',' << v.z;
 	return os;
 }

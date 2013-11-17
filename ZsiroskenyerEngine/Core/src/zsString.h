@@ -238,28 +238,28 @@ public:
 	zsString(zsBasicString&& other) : zsBasicString(other) {}
 		// zsString(std::initializer_list<valut_type> init) : zsBasicString(init) {}
 
-	zsString(float val) {
+	// Construct from numbers
+	template<class ValType>
+	zsString(ValType val) {
 		std::wstringstream ss;
 		ss << val;
-		wchar_t const* ch = ss.str().c_str();
-		while (*ch != '\0')
-		{
-			zsBasicString::operator += (*ch);
-			ch++;
-		}
-			
+		auto str = ss.str();
+		for (size_t i = 0; i < str.length(); i++)
+			zsBasicString::operator += (str[i]);
 	}
 
 	// operators
-	zsString& operator = (const zsBasicString& str) {zsBasicString::operator=(str); return *this;}
-	zsString& operator = (zsBasicString&& str) {zsBasicString::operator=(str); return *this;}
-	zsString& operator = (const value_type* s) {zsBasicString::operator=(s); return *this;}
-	zsString& operator = (value_type ch) {zsBasicString::operator=(ch); return *this;}
-		// zsString& operator=(std::initializer_list<CharT> ilist );
+	zsString& operator = (const zsBasicString& str) { zsBasicString::operator=(str); return *this; }
+	zsString& operator = (zsBasicString&& str)		{ zsBasicString::operator=(str); return *this; }
+	zsString& operator = (const value_type* s)		{ zsBasicString::operator=(s);	 return *this; }
+	zsString& operator = (value_type ch)			{ zsBasicString::operator=(ch);  return *this; }
 
-	zsString& operator += (const zsBasicString& str) {zsBasicString::operator+=(str); return *this;}
-	zsString& operator += (value_type ch) {zsBasicString::operator+=(ch); return *this;}
-	zsString& operator += (value_type* s) {zsBasicString::operator+=(s); return *this;}
+	zsString& operator += (const zsBasicString& str)	{ zsBasicString::operator+=(str); return *this; }
+	zsString& operator += (value_type ch)				{ zsBasicString::operator+=(ch);  return *this; }
+	zsString& operator += (value_type* s)				{ zsBasicString::operator+=(s);	  return *this; }
+
+	//template <class ValType>
+	zsString operator + (size_t val) { zsString str; str += zsString(val); return str; }
 };
 
 template <>

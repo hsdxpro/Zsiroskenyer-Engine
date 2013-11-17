@@ -180,7 +180,6 @@ void cGraphicsApiD3D11::CreateMostAcceptableSwapChain(uint16 width, uint16 heigh
 
 	// Use the selected display mode to fill swap chain description
 	DXGI_SWAP_CHAIN_DESC sdesc;
-	memset(&sdesc,0,sizeof(sdesc));
 	sdesc.BufferCount = 1;
 	if(selectedVideoMode != NULL) {
 		sdesc.BufferDesc = *selectedVideoMode; // Copy DisplayMode Data
@@ -224,7 +223,6 @@ void cGraphicsApiD3D11::CreateRenderTargetViewForBB(const tDxConfig& config) {
 	d3ddev->CreateRenderTargetView(backBuffer, 0, &backBufferRTV);
 
 	D3D11_TEXTURE2D_DESC bbDesc;
-	memset(&bbDesc,0,sizeof(bbDesc));
 	backBuffer->GetDesc(&bbDesc);
 	bbWidth = bbDesc.Width;
 	bbHeight = bbDesc.Height;
@@ -261,8 +259,7 @@ void cGraphicsApiD3D11::CreateDefaultStates(const D3D11_CULL_MODE& cullMode, con
 	d3dcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// default rasterizer state
-	D3D11_RASTERIZER_DESC rDesc;
-	memset(&rDesc,0,sizeof(rDesc));
+	static D3D11_RASTERIZER_DESC rDesc;
 	rDesc.AntialiasedLineEnable = false;
 	rDesc.CullMode = cullMode;
 	rDesc.DepthBias = 0;
@@ -772,7 +769,7 @@ void cGraphicsApiD3D11::CompileCgToHLSL(const zsString& cgFilePath, const zsStri
 	// Process infos
 	STARTUPINFO StartupInfo;
 	memset(&StartupInfo, 0, sizeof(StartupInfo));
-	StartupInfo.cb = sizeof StartupInfo;
+	StartupInfo.cb = sizeof(StartupInfo);
 	PROCESS_INFORMATION ProcessInfo;
 
 	// LPWCSTR to LPWSTR
