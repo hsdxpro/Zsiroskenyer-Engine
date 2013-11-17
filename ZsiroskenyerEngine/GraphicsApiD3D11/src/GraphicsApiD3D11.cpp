@@ -423,10 +423,10 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 	const size_t nShaders = 5;
 	zsString binPaths[nShaders] = { pathNoExt + L"_vs.bin",
-							pathNoExt + L"_ps.bin",
-							pathNoExt + L"_gs.bin",
-							pathNoExt + L"_ds.bin",
-							pathNoExt + L"_hs.bin"};
+									pathNoExt + L"_ps.bin",
+									pathNoExt + L"_gs.bin",
+									pathNoExt + L"_ds.bin",
+									pathNoExt + L"_hs.bin"};
 
 	bool binExistences[nShaders];
 	for (size_t i = 0; i < nShaders; i++)
@@ -592,7 +592,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			SAFE_RELEASE(blobs[i]);
 	SAFE_RELEASE(cgFile);
 
-	*resource = new cShaderProgramD3D11( alignedByteOffset, inputLayout, vs, ps);
+	*resource = new cShaderProgramD3D11( alignedByteOffset, inputLayout, vs, ps, gs, ds, hs);
 	return eGapiResult::OK;
 }
 
