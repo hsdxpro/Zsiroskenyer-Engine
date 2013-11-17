@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
-  <asset><contributor><author></author><authoring_tool>FBX COLLADA exporter</authoring_tool><comments></comments></contributor><created>2013-11-17T21:26:57Z</created><keywords></keywords><modified>2013-11-17T21:26:57Z</modified><revision></revision><subject></subject><title></title><unit meter="1.000000" name="centimeter"></unit><up_axis>Y_UP</up_axis></asset>
+  <asset><contributor><author></author><authoring_tool>FBX COLLADA exporter</authoring_tool><comments></comments></contributor><created>2013-11-17T22:20:21Z</created><keywords></keywords><modified>2013-11-17T22:20:21Z</modified><revision></revision><subject></subject><title></title><unit meter="1.000000" name="centimeter"></unit><up_axis>Z_UP</up_axis></asset>
   <library_materials>
     <material id="wall" name="wall">
       <instance_effect url="#wall-fx"/>
@@ -2126,7 +2126,7 @@
   </library_geometries>
   <library_visual_scenes>
     <visual_scene id="demo_house" name="demo_house">
-      <node name="house" id="house" sid="house"><matrix sid="matrix">1.000000 0.000000 0.000000 18.144012 0.000000 0.000000 1.000000 0.481345 0.000000 -1.000000 0.000000 -7.261690 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#house-lib"><bind_material><technique_common><instance_material symbol="wall" target="#wall"/><instance_material symbol="roof" target="#roof"/><instance_material symbol="wood" target="#wood"/><instance_material symbol="glass" target="#glass"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
+      <node name="house" id="house" sid="house"><matrix sid="matrix">1.000000 0.000000 0.000000 18.144012 0.000000 1.000000 0.000000 7.261690 0.000000 0.000000 1.000000 0.481345 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#house-lib"><bind_material><technique_common><instance_material symbol="wall" target="#wall"/><instance_material symbol="roof" target="#roof"/><instance_material symbol="wood" target="#wood"/><instance_material symbol="glass" target="#glass"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
       <extra><technique profile="MAX3D"><frame_rate>30.000000</frame_rate></technique><technique profile="FCOLLADA"><start_time>0.000000</start_time><end_time>3.333333</end_time></technique></extra>
     </visual_scene>
   </library_visual_scenes>
