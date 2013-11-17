@@ -1,42 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="src\INetworkEngine.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ISoundEngine.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="src\IDLLLoader.h">
-      <Filter>Interfaces\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="src\IFile.h">
-      <Filter>Interfaces\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ILog.h">
-      <Filter>Interfaces\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="src\IConstantBuffer.h">
-      <Filter>Interfaces\GraphicsApi</Filter>
-    </ClInclude>
-    <ClInclude Include="src\IGraphicsApi.h">
-      <Filter>Interfaces\GraphicsApi</Filter>
-    </ClInclude>
-    <ClInclude Include="src\IIndexBuffer.h">
-      <Filter>Interfaces\GraphicsApi</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ITexture2D.h">
-      <Filter>Interfaces\GraphicsApi</Filter>
-    </ClInclude>
-    <ClInclude Include="src\IVertexBuffer.h">
-      <Filter>Interfaces\GraphicsApi</Filter>
-    </ClInclude>
-    <ClInclude Include="src\IShaderProgram.h">
-      <Filter>Interfaces\GraphicsApi</Filter>
-    </ClInclude>
-    <ClInclude Include="src\IWindow.h">
-      <Filter>Interfaces\Common</Filter>
-    </ClInclude>
     <ClInclude Include="src\math\color.h">
       <Filter>Common\math</Filter>
     </ClInclude>
@@ -79,23 +43,11 @@
     <ClInclude Include="src\math\Vec4.h">
       <Filter>Common\math</Filter>
     </ClInclude>
-    <ClInclude Include="src\Node.h">
-      <Filter>Engines\GraphicsEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VertexFormat.h">
-      <Filter>Engines\GraphicsEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\BufferCommon.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="src\common.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="src\zsString.h">
-      <Filter>Common\String</Filter>
-    </ClInclude>
-    <ClInclude Include="src\shared_ptr.h">
-      <Filter>Common</Filter>
+      <Filter>Common\string</Filter>
     </ClInclude>
     <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\Factory.h" />
@@ -106,56 +58,90 @@
       <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="src\Core.h" />
-    <ClInclude Include="src\tipsify.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GeometryBuilder.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="src\LogicEngine.h">
-      <Filter>Engines\LogicEngine</Filter>
-    </ClInclude>
     <ClInclude Include="src\Timer.h" />
-    <ClInclude Include="src\IPhysicsEngine.h">
-      <Filter>Interfaces\Physics</Filter>
+    <ClInclude Include="src\Renderer.h" />
+    <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\ResourceProperty.h">
+      <Filter>M_GraphicsApi</Filter>
     </ClInclude>
-    <ClInclude Include="src\IPhysicsEntity.h">
-      <Filter>Interfaces\Physics</Filter>
+    <ClInclude Include="src\BufferCommon.h">
+      <Filter>M_GraphicsApi</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IConstantBuffer.h">
+      <Filter>M_GraphicsApi</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IGraphicsApi.h">
+      <Filter>M_GraphicsApi</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IIndexBuffer.h">
+      <Filter>M_GraphicsApi</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IShaderProgram.h">
+      <Filter>M_GraphicsApi</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ITexture2D.h">
+      <Filter>M_GraphicsApi</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IVertexBuffer.h">
+      <Filter>M_GraphicsApi</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IShaderManager.h">
+      <Filter>M_GraphicsEngine</Filter>
     </ClInclude>
     <ClInclude Include="src\IGraphicsEngine.h">
-      <Filter>Interfaces\Graphics</Filter>
+      <Filter>M_GraphicsEngine</Filter>
     </ClInclude>
-    <ClInclude Include="src\Entity.h">
-      <Filter>Entity</Filter>
+    <ClInclude Include="src\IPhysicsEntity.h">
+      <Filter>M_PhysicsEngine</Filter>
     </ClInclude>
-    <ClInclude Include="src\GraphicsEntity.h">
-      <Filter>Entity\Graphics</Filter>
+    <ClInclude Include="src\IPhysicsEngine.h">
+      <Filter>M_PhysicsEngine</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderer.h" />
-    <ClInclude Include="src\IShaderManager.h">
-      <Filter>Interfaces</Filter>
+    <ClInclude Include="src\INetworkEngine.h">
+      <Filter>M_NetworkEngine</Filter>
     </ClInclude>
-    <ClInclude Include="src\Transform3D.h">
-      <Filter>Transform3D</Filter>
+    <ClInclude Include="src\ISoundEngine.h">
+      <Filter>M_SoundEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GeometryBuilder.h">
+      <Filter>M_GraphicsEngine\Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shared_ptr.h">
+      <Filter>Common\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tipsify.h">
+      <Filter>M_GraphicsEngine\Classes</Filter>
     </ClInclude>
     <ClInclude Include="src\ITransformable3D.h">
-      <Filter>Interfaces</Filter>
+      <Filter>Common\Interface</Filter>
     </ClInclude>
-    <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\IDLLLoader.h">
+      <Filter>Common\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IFile.h">
+      <Filter>Common\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ILog.h">
+      <Filter>Common\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IWindow.h">
+      <Filter>Common\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VertexFormat.h">
+      <Filter>M_GraphicsEngine\Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GraphicsEntity.h">
+      <Filter>M_GraphicsEngine\Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Transform3D.h" />
+    <ClInclude Include="src\Entity.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LogicEngine.h">
+      <Filter>M_LogicEngine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\IDLLLoader.cpp">
-      <Filter>Interfaces\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="src\IFile.cpp">
-      <Filter>Interfaces\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ILog.cpp">
-      <Filter>Interfaces\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="src\IWindow.cpp">
-      <Filter>Interfaces\Common</Filter>
-    </ClCompile>
     <ClCompile Include="src\math\color.cpp">
       <Filter>Common\math</Filter>
     </ClCompile>
@@ -183,11 +169,8 @@
     <ClCompile Include="src\math\Vec4.cpp">
       <Filter>Common\math</Filter>
     </ClCompile>
-    <ClCompile Include="src\VertexFormat.cpp">
-      <Filter>Engines\GraphicsEngine</Filter>
-    </ClCompile>
     <ClCompile Include="src\zsString.cpp">
-      <Filter>Common\String</Filter>
+      <Filter>Common\string</Filter>
     </ClCompile>
     <ClCompile Include="src\Exception.cpp" />
     <ClCompile Include="src\Factory.cpp" />
@@ -198,43 +181,47 @@
       <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="src\Core.cpp" />
-    <ClCompile Include="src\GeometryBuilder.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="src\LogicEngine.cpp">
-      <Filter>Engines\LogicEngine</Filter>
-    </ClCompile>
     <ClCompile Include="src\Timer.cpp" />
-    <ClCompile Include="src\Entity.cpp">
-      <Filter>Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GraphicsEntity.cpp">
-      <Filter>Entity\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="src\Renderer.cpp" />
-    <ClCompile Include="src\Transform3D.cpp">
-      <Filter>Transform3D</Filter>
-    </ClCompile>
     <ClCompile Include="src\ITransformable3D.cpp" />
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\GeometryBuilder.cpp">
+      <Filter>M_GraphicsEngine\Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IDLLLoader.cpp">
+      <Filter>Common\Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IFile.cpp">
+      <Filter>Common\Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ILog.cpp">
+      <Filter>Common\Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IWindow.cpp">
+      <Filter>Common\Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VertexFormat.cpp">
+      <Filter>M_GraphicsEngine\Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GraphicsEntity.cpp">
+      <Filter>M_GraphicsEngine\Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Transform3D.cpp" />
+    <ClCompile Include="src\Entity.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LogicEngine.cpp">
+      <Filter>M_LogicEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Interfaces">
-      <UniqueIdentifier>{7e8751a5-0d86-414a-85ae-47d10491a8d0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Interfaces\Common">
-      <UniqueIdentifier>{4bc73b00-3b57-46c7-9b44-dbd07da9caaf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Interfaces\GraphicsApi">
-      <UniqueIdentifier>{f5a67912-c192-469d-84fc-411704c5d966}</UniqueIdentifier>
+    <Filter Include="Game">
+      <UniqueIdentifier>{51d87b20-2ddf-4b46-8c17-90fe40718315}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common">
       <UniqueIdentifier>{0a107637-8623-40da-a225-34f2b352d644}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game">
-      <UniqueIdentifier>{51d87b20-2ddf-4b46-8c17-90fe40718315}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Common\String">
+    <Filter Include="Common\string">
       <UniqueIdentifier>{a5589084-5a8f-40d5-b088-c90189345a87}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common\algorithms">
@@ -252,29 +239,29 @@
     <Filter Include="Common\storage">
       <UniqueIdentifier>{d62d650c-43dd-4e25-92ab-d29a4b57c16f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engines">
-      <UniqueIdentifier>{40e027b0-f6d3-466b-bbb3-2e2297c777a4}</UniqueIdentifier>
+    <Filter Include="Common\Interface">
+      <UniqueIdentifier>{34d472b2-a990-4467-9293-acb87007e81c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engines\GraphicsEngine">
-      <UniqueIdentifier>{abf5b4b3-b38b-4a21-9662-62beafbd15e2}</UniqueIdentifier>
+    <Filter Include="M_GraphicsApi">
+      <UniqueIdentifier>{e15c2704-6b96-46dd-ad8d-3348195d3bd5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engines\LogicEngine">
-      <UniqueIdentifier>{e16a7a0e-ef13-496d-b7a3-e5cf2a6ef465}</UniqueIdentifier>
+    <Filter Include="M_GraphicsEngine">
+      <UniqueIdentifier>{c5efdac4-6af5-474c-ac67-904dbc8f62b6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Interfaces\Physics">
-      <UniqueIdentifier>{37d7572c-b8a2-416f-aad7-95043da0d77b}</UniqueIdentifier>
+    <Filter Include="M_GraphicsEngine\Classes">
+      <UniqueIdentifier>{b456ff72-da4f-45e9-b5f4-db9a1841e6c9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Interfaces\Graphics">
-      <UniqueIdentifier>{35b2eaf9-eb59-4e98-9d7b-fca8cfe73aba}</UniqueIdentifier>
+    <Filter Include="M_PhysicsEngine">
+      <UniqueIdentifier>{0b0e3782-3675-4733-b706-115ee187fac1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Entity">
-      <UniqueIdentifier>{29c19143-504e-4600-b345-8ba1d28433e5}</UniqueIdentifier>
+    <Filter Include="M_NetworkEngine">
+      <UniqueIdentifier>{d5fae35e-469f-4e5b-a51c-5c1f6ef59b42}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Entity\Graphics">
-      <UniqueIdentifier>{b142beff-a661-4798-8dc6-33c1525fdedd}</UniqueIdentifier>
+    <Filter Include="M_SoundEngine">
+      <UniqueIdentifier>{dfd6070d-97ea-43d8-9865-806fa59dc7d0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Transform3D">
-      <UniqueIdentifier>{3e360f99-21ba-43af-aa40-56a54b6af809}</UniqueIdentifier>
+    <Filter Include="M_LogicEngine">
+      <UniqueIdentifier>{a5ee9273-3cbe-4848-bff9-522cf4e5cd9a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
