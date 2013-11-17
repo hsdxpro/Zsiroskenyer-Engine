@@ -83,6 +83,7 @@ public:
 	void DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex = 0, size_t idxStartInstance = 0) override;
 	void DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex = 0, size_t idxStartInstance = 0) override;
 
+	bool SetRenderTarget(ITexture2D* target, unsigned slotIdx) override;
 	void SetRenderTargetDefault() override;
 
 	void SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) override;

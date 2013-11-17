@@ -50,7 +50,7 @@ cGeometryRef cResourceManager::GetGeometry(const zsString& filePath) {
 		cGeometryBuilder b;
 		cGeometryBuilder::tGeometryDesc d = b.LoadGeometry(filePath);
 
-		IVertexBuffer *VB = gApi->CreateVertexBuffer(d.nVertices, d.vertexStride, eUsage::IMMUTABLE, d.vertices);
+		IVertexBuffer *VB = gApi->CreateVertexBuffer(d.nVertices * d.vertexStride, eUsage::IMMUTABLE, d.vertices);
 		IIndexBuffer *IB = gApi->CreateIndexBuffer(d.nIndices * d.indexStride, eUsage::IMMUTABLE, d.indices);
 		geom = new cGeometry(VB, IB);
 		

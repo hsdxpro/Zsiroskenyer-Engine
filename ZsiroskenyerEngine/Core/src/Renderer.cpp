@@ -11,7 +11,7 @@ cRenderer::cRenderer(IGraphicsApi* gApi, IShaderManager* shaderManager)
 
 void cRenderer::RenderLines(const Matrix44& viewProj, const Vec3* lines, size_t nLines, const Vec3& color /*= Vec3(1.0f, 1.0f, 1.0f)*/) {
 	// Create, set VertexBuffer for lines
-	IVertexBuffer* linesBuffer = gApi->CreateVertexBuffer(nLines * 2, sizeof(Vec3), eUsage::IMMUTABLE, (void*)lines);
+	IVertexBuffer* linesBuffer = gApi->CreateVertexBuffer(nLines * 2 * sizeof(Vec3), eUsage::IMMUTABLE, (void*)lines);
 	gApi->SetVertexBuffer(linesBuffer, sizeof(Vec3));
 
 	// Set camera constants

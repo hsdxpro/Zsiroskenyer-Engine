@@ -276,6 +276,10 @@ void cGraphicsApiD3D11::CreateDefaultStates(const D3D11_CULL_MODE& cullMode, con
 	rState->Release();
 }
 
+bool cGraphicsApiD3D11::SetRenderTarget(ITexture2D* target, unsigned slotIdx) {
+	return false;
+}
+
 void cGraphicsApiD3D11::SetRenderTargetDefault() {
 	d3dcon->RSSetViewports(1, &backBufferVP);
 	d3dcon->OMSetRenderTargets(1, &backBufferRTV, backBufferDSV);
@@ -394,6 +398,10 @@ ITexture2D*	cGraphicsApiD3D11::CreateTexture(const zsString& filePath) {
 	return new cTexture2DColorD3D11(srv, width, height);
 }
 
+ITexture2D*	cGraphicsApiD3D11::CreateTexture(unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, eBind bind) {
+	return NULL;
+}
+
 IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPath) {
 	// asd/asd/myShader    cut extension
 	zsString pathNoExt = shaderPath.substr(0, shaderPath.size() - 3);
@@ -422,16 +430,16 @@ IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPat
 	ID3D11HullShader* hs;
 
 	// Shader ByteCodes
-	ID3DBlob* blob;
+	ID3DBlob* blobs[nShaders]; memset(blobs, 0, sizeof(ID3DBlob)* nShaders);
 	void *byteCodes[nShaders]; memset(byteCodes, 0, sizeof(size_t) * nShaders);
 	size_t byteCodeSizes[nShaders];
 
 	IFile* cgFile = NULL;
 	for (size_t i = 0; i < nShaders; i++) {
 		// Found binary ... Read it
-		if (binExistences[i]) {
-			IFile::ReadBinary(binPaths[i], &byteCodes[i], byteCodeSizes[i]);
-		} else { // There is no binary
+		//if (binExistences[i]) {
+			//IFile::ReadBinary(binPaths[i], &byteCodes[i], byteCodeSizes[i]);
+		//} else { // There is no binary
 			// If cg File not opened open it
 			if (cgFile == NULL) cgFile = IFile::Create(shaderPath);
 
@@ -441,15 +449,14 @@ IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPat
 				CompileCgToHLSL(shaderPath, binPaths[i], (eProfileCG)((int)eProfileCG::SM_5_0_BEGIN + i));
 
 				// Compile hlsl to bytecode
-				HRESULT hr = CompileShaderFromFile(binPaths[i], L"main", profileNames[i], &blob);
+				HRESULT hr = CompileShaderFromFile(binPaths[i], L"main", profileNames[i], &blobs[i]);
 				ASSERT(hr == S_OK);
 
-				byteCodes[i] = blob->GetBufferPointer();
-				byteCodeSizes[i] = blob->GetBufferSize();
-			}
+				byteCodes[i] = blobs[i]->GetBufferPointer();
+				byteCodeSizes[i] = blobs[i]->GetBufferSize();
+		//	}
 		}
 	}
-	blob->Release();
 
 	HRESULT hr = S_OK;
 	if (byteCodes[0] != NULL) {
@@ -556,8 +563,10 @@ IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPat
 
 	// FREE UP
 	for (size_t i = 0; i < nShaders; i++) {
-		SAFE_DELETE(byteCodes[i]);
+		//SAFE_DELETE(byteCodes[i]);
+		SAFE_RELEASE(blobs[i]);
 	}
+	
 
 	return new cShaderProgramD3D11( alignedByteOffset, inputLayout, vs, ps);
 }
