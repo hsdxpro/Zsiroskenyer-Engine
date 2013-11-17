@@ -32,8 +32,8 @@ cGraphicsApiD3D11::cGraphicsApiD3D11()
 }
 
 void cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
-	uint32 clientWidth = renderWindow->GetClientWidth();
-	uint32 clientHeight = renderWindow->GetClientHeight();
+	size_t clientWidth = renderWindow->GetClientWidth();
+	size_t clientHeight = renderWindow->GetClientHeight();
 	// Same window size : don't need new swap chain
 	if(clientWidth == bbWidth && clientHeight == bbHeight)
 		return;
@@ -113,13 +113,13 @@ void cGraphicsApiD3D11::CreateDevice() {
 			break;
 	}
 
-	ZSASSERT_MSG( i != ARRAYSIZE(featurelevels), L"Can't create DirectX Device");
+	ASSERT_MSG( i != ARRAYSIZE(featurelevels), L"Can't create DirectX Device");
 
 	SAFE_RELEASE(fact);
 	SAFE_RELEASE(mainAdapter);
 }
 
-void cGraphicsApiD3D11::CreateMostAcceptableSwapChain(uint16 width, uint16 height, HWND windowHandle, const tDxConfig& config) {
+void cGraphicsApiD3D11::CreateMostAcceptableSwapChain(size_t width, size_t height, HWND windowHandle, const tDxConfig& config) {
 	if(d3dsc != NULL)
 		SAFE_RELEASE(d3dsc);
 
@@ -396,18 +396,41 @@ ITexture2D*	cGraphicsApiD3D11::CreateTexture(const zsString& filePath) {
 
 IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPath) {
 
-	// For example, test.cg  ->  test
+	// asd/asd/myShader
 	zsString shaderWithoutExtension = shaderPath;
-	shaderWithoutExtension = shaderWithoutExtension.substr(0, shaderWithoutExtension.size() - 3);
-	
+		shaderWithoutExtension = shaderWithoutExtension.substr(0, shaderWithoutExtension.size() - 3);
 
-	// detect that the .cg have VS_MAIN, PS_MAIN, ..... etc
-	zsString cgFullPath = shaderPath;
+	/*
+	// If we already have binary version load them
+	// VS BIN LOAD IF CAN
+	zsString hlslVSBinPath = shaderWithoutExtension + L"_vs.bin";
+	if (IFile::isFileExits(hlslVSBinPath) {
+		void* byteCode;
+		size_t size;
+		IFile::ReadBinary(hlslVSBinPath, &byteCode, size);
+		SAFE_DELETE(byteCode);
+	}
+
+	// PS BIN LOAD IF CAN
+	zsString hlslPSBinPath = shaderWithoutExtension + L"_ps.bin";
+	if (IFile::isFileExits(hlslPSBinPath) {
+		void* byteCode;
+		size_t size;
+		IFile::ReadBinary(hlslPSBinPath, &byteCode, size);
+		SAFE_DELETE(byteCode);
+	}
+	*/
 	zsString hlslVsFullPath = shaderWithoutExtension + L"_vs.hlsl";
 	zsString hlslPsFullPath = shaderWithoutExtension + L"_ps.hlsl";
+
+	
+
+	zsString cgFullPath = shaderPath;
+	
 	bool cgHaveVS = false;
 	bool cgHavePS = false;
 
+	// If CG has Shader entry defined, compile them
 	IFile* cgFile = IFile::Create(cgFullPath);
 	if(cgFile->Find(L"VS_MAIN")) {
 		ILog::GetInstance()->Log(L"\nCompiling VertexShader for: " + cgFullPath);
@@ -526,7 +549,7 @@ IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPat
 }
 
 bool cGraphicsApiD3D11::WriteBuffer(IIndexBuffer* buffer , void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
-	ZSASSERT(buffer!=NULL);
+	ASSERT(buffer!=NULL);
 
 	if (buffer->GetSize()<size+offset)
 		return false;
@@ -548,7 +571,7 @@ bool cGraphicsApiD3D11::WriteBuffer(IIndexBuffer* buffer , void* source, size_t 
 }
 
 bool cGraphicsApiD3D11::WriteBuffer(IVertexBuffer* buffer, void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
-	ZSASSERT(buffer!=NULL);
+	ASSERT(buffer!=NULL);
 
 	if (buffer->GetSize()<size+offset)
 		return false;
@@ -570,7 +593,7 @@ bool cGraphicsApiD3D11::WriteBuffer(IVertexBuffer* buffer, void* source, size_t 
 }
 
 bool cGraphicsApiD3D11::ReadBuffer(IIndexBuffer* buffer , void* dest, size_t size, size_t offset /*= 0*/) {
-	ZSASSERT(buffer!=NULL);
+	ASSERT(buffer!=NULL);
 
 	if (buffer->GetSize()<size+offset)
 		return false;
@@ -592,7 +615,7 @@ bool cGraphicsApiD3D11::ReadBuffer(IIndexBuffer* buffer , void* dest, size_t siz
 }
 
 bool cGraphicsApiD3D11::ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset /*= 0*/) {
-	ZSASSERT(buffer!=NULL);
+	ASSERT(buffer!=NULL);
 
 	if (buffer->GetSize()<size+offset)
 		return false;
@@ -646,7 +669,7 @@ void cGraphicsApiD3D11::Clear(bool target /*= true*/, bool depth /*= false*/, bo
 }
 
 void cGraphicsApiD3D11::Present() {
-	ZSASSERT_MSG(d3dsc != NULL, L"Need to set window for rendering");
+	ASSERT_MSG(d3dsc != NULL, L"Need to set window for rendering");
 	d3dsc->Present(0,0);
 }
 

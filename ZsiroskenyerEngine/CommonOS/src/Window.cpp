@@ -124,8 +124,8 @@ cWindow::cWindow(const IWindow::tDesc& winDesc)
 }
 
 void cWindow::MoveCenter() {
-	uint16 screenCenterX = GetSystemMetrics(SM_CXSCREEN)/2;
-	uint16 screenCenterY = GetSystemMetrics(SM_CXSCREEN)/2;
+	size_t screenCenterX = GetSystemMetrics(SM_CXSCREEN) / 2;
+	size_t screenCenterY = GetSystemMetrics(SM_CXSCREEN) / 2;
 	RECT rect; GetWindowRect(handle,&rect);
 	SetWindowPos(handle, 0, screenCenterX - rect.right/2, screenCenterY - rect.bottom/2, rect.right, rect.bottom, 0);
 }
@@ -167,12 +167,12 @@ Vec2 cWindow::GetCenter() const {
 	return Vec2();
 }
 
-uint32 cWindow::GetClientWidth() const {
+size_t cWindow::GetClientWidth() const {
 	RECT rect; GetClientRect(handle, &rect);
 	return rect.right - rect.left;
 }
 
-uint32 cWindow::GetClientHeight() const {
+size_t cWindow::GetClientHeight() const {
 	RECT rect; GetClientRect(handle,&rect);
 	return rect.bottom - rect.top;
 }

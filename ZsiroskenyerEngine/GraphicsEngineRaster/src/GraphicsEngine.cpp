@@ -57,7 +57,7 @@ void cGraphicsEngine::ReloadResources() {
 
 void cGraphicsEngine::RenderSceneForward() {
 
-	ZSASSERT(sceneManager->GetActiveCamera() != NULL);
+	ASSERT(sceneManager->GetActiveCamera() != NULL);
 
 	// Set BackBuffer
 	gApi->SetRenderTargetDefault();

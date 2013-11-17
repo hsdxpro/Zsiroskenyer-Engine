@@ -6,7 +6,7 @@
 
 struct Point {
 	
-	Point(int32 X, int32 Y);
+	Point(int X, int Y);
 
 	Point operator - (const Point& p) const;
 	Vec2 operator - (const Vec2& p) const;
@@ -15,6 +15,6 @@ struct Point {
 	Point operator / (const Point& p) const;
 	Point operator * (const Point& p) const;
 	
-	int32 x;
-	int32 y;
+	int x;
+	int y;
 };

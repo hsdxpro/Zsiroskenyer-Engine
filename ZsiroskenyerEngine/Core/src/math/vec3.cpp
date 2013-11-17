@@ -117,7 +117,7 @@ float Vec3::Lenght() const {
 }
 
 float Vec3::operator [](size_t idx) const {
-	ZSASSERT(idx >= 0 && idx <= 4);
+	ASSERT(idx >= 0 && idx <= 4);
 	return *((float*)this + idx);
 }
 

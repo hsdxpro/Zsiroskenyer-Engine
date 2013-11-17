@@ -13,9 +13,9 @@ typedef uint8_t AdjacencyType;
 #define MAX_ADJACENCY UINT8_MAX
 
 
-typedef uint32_t VertexIndexType;
-typedef uint32_t TriangleIndexType;
-typedef uint32_t ArrayIndexType;
+typedef size_t VertexIndexType;
+typedef size_t TriangleIndexType;
+typedef size_t ArrayIndexType;
 
 /*
 typedef uint16_t VertexIndexType;

@@ -38,7 +38,7 @@
 #include <intrin.h>
 
 // log2 and 2^n 
-inline unsigned log2(uint32_t n) {
+inline unsigned log2(size_t n) {
 	unsigned long idx;
 	_BitScanReverse(&idx, n);
 	return idx;
@@ -61,7 +61,7 @@ inline size_t exp2(unsigned y) {
 #endif
 
 // find first set
-inline unsigned ffs(uint32_t arg) {
+inline unsigned ffs(size_t arg) {
 	unsigned long idx;
 	_BitScanForward(&idx, arg);
 	return idx;
@@ -75,7 +75,7 @@ inline unsigned ffs(uint64_t arg) {
 #endif
 
 // set bits
-inline void set_bit(uint32_t* arg, unsigned char bit, bool val) {
+inline void set_bit(size_t* arg, unsigned char bit, bool val) {
 	if (val) {
 		_bittestandset(reinterpret_cast<long*>(arg), bit);
 	}
@@ -93,7 +93,7 @@ inline void set_bit(uint64_t* arg, unsigned char bit, bool val) {
 	}
 }
 #endif
-inline bool get_bit(uint32_t* arg, unsigned char bit) {
+inline bool get_bit(size_t* arg, unsigned char bit) {
 	return _bittest(reinterpret_cast<long*>(arg), bit) != 0;
 }
 #ifdef TLSF_X64

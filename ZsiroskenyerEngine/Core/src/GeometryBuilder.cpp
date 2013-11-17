@@ -58,7 +58,7 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 		Vec3 normal;
 		Vec3 tangent;
 		Vec2 tex;
-		bool operator == (const baseVertex& v) {return pos == v.pos && normal == v.normal;}
+		bool operator == (const baseVertex& v) {return pos == v.pos && normal == v.normal && tangent == v.tangent && tex == v.tex;}
 	};
 
 	// Geometry read up

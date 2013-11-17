@@ -20,7 +20,7 @@ zsString::zsString(int val)
 	std::wstringstream ss; ss<<val;
 	std::wstring& str = ss.str();
 	const WCHAR *dataToCopy = str.c_str();
-	uint32 idx = 0;
+	size_t idx = 0;
 	WCHAR ch = '\0';
 	while((ch = dataToCopy[idx]) != '\0') {
 		firstCharPtr[idx] = ch;
@@ -34,7 +34,7 @@ zsString::zsString(float val)
 	std::wstringstream ss; ss<<val;
 	std::wstring& str = ss.str();
 	const WCHAR *dataToCopy = str.c_str();
-	uint32 idx = 0;
+	size_t idx = 0;
 	WCHAR ch = '\0';
 	while((ch = dataToCopy[idx]) != '\0') {
 		firstCharPtr[idx] = ch;
@@ -45,7 +45,7 @@ zsString::zsString(float val)
 
 zsString::zsString(const WCHAR *str) 
 :firstCharPtr(staticData), lastCharPtr(staticData), dynamicData(NULL) {
-	uint32 idx = 0;
+	size_t idx = 0;
 	WCHAR ch = '\0';
 	while((ch = str[idx]) != '\0') {
 		firstCharPtr[idx] = ch;
@@ -61,7 +61,7 @@ zsString::zsString(const char *str)
 
 zsString::zsString(const zsString& str)
 :firstCharPtr(staticData), lastCharPtr(staticData), dynamicData(NULL) {
-	uint32 idx = 0;
+	size_t idx = 0;
 	WCHAR ch = '\0';
 	while((ch = str[idx]) != '\0') {
 		firstCharPtr[idx] = ch;
@@ -81,7 +81,7 @@ zsString& zsString::operator += (const zsString& str) {
 }
 
 zsString& zsString::operator += (const WCHAR *str) {
-	uint32 idx = 0;
+	size_t idx = 0;
 	WCHAR ch = '\0';
 	while((ch = str[idx]) != '\0') {
 		lastCharPtr[idx] = ch;
@@ -121,13 +121,13 @@ void *zsString::GetLine(std::wifstream& inStream) {
 }
 
 const WCHAR *zsString::GetDataAfterFirstChar(const WCHAR ch) const {
-	uint32 idx = 0;
+	size_t idx = 0;
 	while(firstCharPtr[idx] != ch)
 		idx++;
 	return &firstCharPtr[idx + 1];
 }
 
-const WCHAR zsString::operator [] (uint32 idx) const {
+const WCHAR zsString::operator [] (size_t idx) const {
 	if(idx < ZSSTRING_STACK_SIZE) {
 		return firstCharPtr[idx];
 	} else {
@@ -135,7 +135,7 @@ const WCHAR zsString::operator [] (uint32 idx) const {
 	}
 }
 
-WCHAR& zsString::operator [] (uint32 idx) {
+WCHAR& zsString::operator [] (size_t idx) {
 	if(idx < ZSSTRING_STACK_SIZE) {
 		return firstCharPtr[idx];
 	} else {
@@ -178,13 +178,13 @@ void zsString::AddToStart(WCHAR ch) {
 }
 
 bool zsString::FindStr(const WCHAR* str) {
-	uint32 mainIndex = 0;
+	size_t mainIndex = 0;
 	WCHAR ch = '\0';
 	while((ch = firstCharPtr[mainIndex]) != '\0') {
 		if(str[0] == ch) {
 			bool equal = true;
-			uint32 secIndex = 0;
-			uint32 fIndex = mainIndex;
+			size_t secIndex = 0;
+			size_t fIndex = mainIndex;
 			while(str[secIndex] != '\0') {
 				ch = firstCharPtr[fIndex];
 				if(str[secIndex] != ch) {
@@ -204,9 +204,9 @@ bool zsString::FindStr(const WCHAR* str) {
 }
 
 bool zsString::StrStr(const WCHAR *str, bool notCaseSensitive) {
-	uint32 mainIdx = 0;
-	uint32 str1Idx = 0;
-	uint32 str2Idx = 0;
+	size_t mainIdx = 0;
+	size_t str1Idx = 0;
+	size_t str2Idx = 0;
 	while(firstCharPtr[mainIdx] != '\0') {
 		str1Idx = mainIdx;
 		str2Idx = 0;
@@ -241,7 +241,7 @@ zsString& zsString::operator = (const zsString& str) {
 }
 
 zsString& zsString::operator = (const WCHAR *str) {
-	uint32 idx = 0;
+	size_t idx = 0;
 	WCHAR ch = '\0';
 	firstCharPtr = staticData;
 	while( (ch = str[idx]) != '\0') {
@@ -252,7 +252,7 @@ zsString& zsString::operator = (const WCHAR *str) {
 	return *this;
 }
 
-void zsString::Resize(uint32 newSize) {
+void zsString::Resize(size_t newSize) {
 	if(newSize > ZSSTRING_STACK_SIZE) {
 		dynamicData = (WCHAR*)realloc(dynamicData, newSize - ZSSTRING_STACK_SIZE);
 	}

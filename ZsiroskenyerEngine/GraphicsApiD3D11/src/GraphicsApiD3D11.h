@@ -57,8 +57,8 @@ public:
 	ITexture2D*		CreateTexture(const zsString& filePath);
 	IShaderProgram* CreateShaderProgram(const zsString& shaderPath) override;
 
-	bool WriteBuffer(IIndexBuffer* buffer , void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset = 0) override;
-	bool WriteBuffer(IVertexBuffer* buffer, void* source, size_t size = ZS_NUMLIMITMAX(size_t), size_t offset = 0) override;
+	bool WriteBuffer(IIndexBuffer* buffer , void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) override;
+	bool WriteBuffer(IVertexBuffer* buffer, void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) override;
 
 	bool ReadBuffer(IIndexBuffer* buffer , void* dest, size_t size, size_t offset = 0) override;
 	bool ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset = 0) override;
@@ -88,7 +88,7 @@ public:
 	void Release() override;
 private:
 	void CreateDevice();
-	void CreateMostAcceptableSwapChain(uint16 width, uint16 height, HWND windowHandle, const tDxConfig& config);
+	void CreateMostAcceptableSwapChain(size_t width, size_t height, HWND windowHandle, const tDxConfig& config);
 	void CreateRenderTargetViewForBB(const tDxConfig& config);
 	void CreateDefaultStates(const D3D11_CULL_MODE& cullMode, const D3D11_FILL_MODE& fillMode);
 	HRESULT CompileShaderFromFile(const zsString& fileName, const zsString& entry, const zsString& profile, ID3DBlob** ppBlobOut);
@@ -98,8 +98,8 @@ protected:
 	ID3D11RenderTargetView *backBufferRTV;
 	ID3D11DepthStencilView *backBufferDSV;
 	D3D11_VIEWPORT backBufferVP;
-	uint32 bbWidth;
-	uint32 bbHeight;
+	size_t bbWidth;
+	size_t bbHeight;
 
 	// Main Dx interfaces
 	ID3D11DeviceContext *d3dcon;

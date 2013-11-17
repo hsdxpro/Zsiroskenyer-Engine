@@ -22,8 +22,8 @@ public:
 	zsString GetCaptionText() const override;
 	Vec2 GetCenter() const override;
 	IWindow::Handle GetHandle() const override;
-	uint32 GetClientWidth() const override;
-	uint32 GetClientHeight() const override;
+	size_t GetClientWidth() const override;
+	size_t GetClientHeight() const override;
 	float GetClientAspectRatio() const override;
 
 protected:

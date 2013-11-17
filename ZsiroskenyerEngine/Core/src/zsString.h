@@ -26,7 +26,7 @@ public:
 	zsString& operator = (const WCHAR *str);
 
 	void Clear();
-	void Resize(uint32 newSize);
+	void Resize(size_t newSize);
 
 	void RemoveFromStart(uint16 numWCHARs);
 	void AddToStart(WCHAR ch);
@@ -47,8 +47,8 @@ public:
 	// @TODO now only check the first WCHARacter
 	bool operator < (const zsString& str) const;
 	bool operator ==(const zsString& str) const;
-	const WCHAR operator [] (uint32 idx) const;
-	WCHAR& operator [] (uint32 idx);
+	const WCHAR operator [] (size_t idx) const;
+	WCHAR& operator [] (size_t idx);
 
 	zsString(const zsString& str);
 	zsString(const WCHAR *str);

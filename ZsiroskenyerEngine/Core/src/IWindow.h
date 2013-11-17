@@ -9,7 +9,7 @@
 
 class IWindow {
 public:
-	typedef int32* Handle;
+	typedef int* Handle;
 
 	enum class eBrush {
 		WHITE,
@@ -50,12 +50,12 @@ public:
 		static tDesc defaultRenderWindow;
 
 		zsString captionName;
-		uint32 clientWidth;
-		uint32 clientHeight;
+		size_t clientWidth;
+		size_t clientHeight;
 		IWindow::eBrush brush;
 		IWindow::eStyle style;
 
-		tDesc(const zsString& captionName = L"default_window_caption", uint32 clientWidth = 0, uint32 clientHeight = 0, IWindow::eBrush brush = IWindow::eBrush::RENDER_, IWindow::eStyle style = IWindow::eStyle::OVERLAPPED)
+		tDesc(const zsString& captionName = L"default_window_caption", size_t clientWidth = 0, size_t clientHeight = 0, IWindow::eBrush brush = IWindow::eBrush::RENDER_, IWindow::eStyle style = IWindow::eStyle::OVERLAPPED)
 			:captionName(captionName), clientWidth(clientWidth), clientHeight(clientHeight), brush(brush), style(style) {
 		}
 	};
@@ -71,8 +71,8 @@ public:
 	virtual zsString GetCaptionText() const = 0;
 	virtual Vec2 GetCenter() const = 0;
 	virtual Handle GetHandle() const = 0;
-	virtual uint32 GetClientWidth() const = 0;
-	virtual uint32 GetClientHeight() const = 0;
+	virtual size_t GetClientWidth() const = 0;
+	virtual size_t GetClientHeight() const = 0;
 	virtual float GetClientAspectRatio() const = 0;
 
 	static IWindow* Create(const IWindow::tDesc& desc);
