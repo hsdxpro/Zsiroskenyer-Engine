@@ -8,10 +8,17 @@
 
 class cFile : public IFile {
 public:
+	void Release() override;
+	cFile(const zsString& file);
+	cFile();
+
 	void Close() override;
 	void Clear() override;
+	static bool Clear(const zsString& path);
 
-	static void ReadBinary(const zsString path, void** data_out, size_t& dataSize_out);
+	static bool ReadBinary(const zsString& path, void* data, const size_t& dataSize);
+
+	static bool WriteBinary(const zsString& path, void* data, const size_t& dataSize);
 
 	void DeleteFirstLines(size_t nLines) override;
 
@@ -29,12 +36,11 @@ public:
 	const zsString& GetLine() override;
 	const std::list<zsString>& GetLines() const override;
 	size_t  GetNLines() const override;
+	size_t GetSize() const override;
+	static size_t GetSize(const zsString& path);
 
 	bool IsEOF() const override;
 	static bool isFileExits(const zsString& str);
-
-	cFile(const zsString& file);
-	cFile();
 protected:
 	// The file stream, that we read up
 	std::wfstream stream;

@@ -7,6 +7,8 @@
 
 class IFile {
 public:
+	virtual void Release() = 0;
+
 	// Closes the file stream
 	virtual void Close() = 0; 
 
@@ -46,6 +48,9 @@ public:
 	// How many lines that file has
 	virtual size_t  GetNLines() const = 0;
 
+	// Get byte size of the file
+	virtual size_t GetSize() const = 0;
+
 	// We reach the end of the file stream ? It's possible with GetLine() func
 	virtual bool IsEOF() const = 0;
 
@@ -58,5 +63,14 @@ public:
 	static bool isFileExits(const zsString& str);
 
 	// Read up binary file to buffer
-	static void ReadBinary(const zsString path, void** data_out, size_t& dataSize_out);
+	static bool ReadBinary(const zsString& path, void* data_out, const size_t& dataSize);
+
+	// Write data to binary file
+	static bool WriteBinary(const zsString& path, void* data, const size_t& dataSize);
+
+	// Clear file to 0 bytes (empty it)
+	static bool Clear(const zsString& path);
+
+	// Get byte size of the file
+	static size_t GetSize(const zsString& path);
 };
