@@ -39,6 +39,11 @@ private:
 	IShaderManager* shaderManager;
 	cResourceManager* resourceManager;
 	cSceneManager* sceneManager;
+
+	class cDeferredRenderer {
+	public:
+	private:
+	};
 };
 
 

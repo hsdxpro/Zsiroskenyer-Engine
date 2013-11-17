@@ -30,6 +30,7 @@
     <ClInclude Include="src\SceneManager.h" />
     <ClInclude Include="src\ShaderManager.h" />
     <ClInclude Include="src\Material.h" />
+    <ClInclude Include="src\_GeometryBuilder.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{593438BA-D952-4A17-AD30-7C261AB425EC}</ProjectGuid>

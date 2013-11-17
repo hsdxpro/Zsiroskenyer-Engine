@@ -8,7 +8,7 @@
 class cGraphicsApiGL : public IGraphicsApi {
 public:
 	void Release() override;
-	IVertexBuffer*	CreateVertexBuffer(size_t nVertices, size_t vertexStride, eUsage usage, void* data = NULL) override;
+	IVertexBuffer*	CreateVertexBuffer(size_t size, eUsage usage, void* data = NULL) override;
 	IIndexBuffer*	CreateIndexBuffer(size_t size, eUsage usage, void* data = NULL) override;
 	IConstantBuffer*CreateConstantBuffer(size_t size, eUsage usage, void* data = NULL) override;
 
