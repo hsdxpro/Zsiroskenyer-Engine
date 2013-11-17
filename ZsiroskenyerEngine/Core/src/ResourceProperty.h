@@ -149,5 +149,4 @@ enum class eFormat {
 	P8 = 113,
 	A8P8 = 114,
 	B4G4R4A4_UNORM = 115,
-	FORCE_UINT = 0xffffffffUL
 };

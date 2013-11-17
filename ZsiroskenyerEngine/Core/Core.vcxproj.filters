@@ -137,6 +137,9 @@
     <ClInclude Include="src\LogicEngine.h">
       <Filter>M_LogicEngine</Filter>
     </ClInclude>
+    <ClInclude Include="src\GapiResult.h">
+      <Filter>M_GraphicsApi</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\math\color.cpp">

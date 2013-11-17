@@ -8,6 +8,7 @@
 #include <d3dcompiler.h>
 #include <dxgi.h>
 
+#undef ERROR_FILE_NOT_FOUND // fucking dx collides with eGapiResult::ERROR_FILE_NOT_FOUND
 #include "../../Core/src/IGraphicsApi.h"
 #include "../../Core/src/IWindow.h"
 #include "../../Core/src/common.h"
@@ -61,18 +62,18 @@ public:
 	};
 
 	// buffers
-	IVertexBuffer*	CreateVertexBuffer(size_t size, eUsage usage, void* data = NULL) override;
-	IIndexBuffer*	CreateIndexBuffer(size_t size, eUsage usage, void* data = NULL) override;
-	IConstantBuffer*CreateConstantBuffer(size_t size, eUsage usage, void* data = NULL) override;
-	ITexture2D*		CreateTexture(unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, eBind bind) override;
-	ITexture2D*		CreateTexture(const zsString& filePath);
-	IShaderProgram* CreateShaderProgram(const zsString& shaderPath) override;
+	eGapiResult	CreateVertexBuffer(IVertexBuffer** resource, size_t size, eUsage usage, void* data = NULL) override;
+	eGapiResult	CreateIndexBuffer(IIndexBuffer** resource, size_t size, eUsage usage, void* data = NULL) override;
+	eGapiResult CreateConstantBuffer(IConstantBuffer** resource, size_t size, eUsage usage, void* data = NULL) override;
+	eGapiResult CreateTexture(ITexture2D** resource, const zsString& filePath) override;
+	eGapiResult CreateTexture(ITexture2D** resource, unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, eBind bind) override;
+	eGapiResult CreateShaderProgram(IShaderProgram** resource, const zsString& shaderPath) override;
 
-	bool WriteBuffer(IIndexBuffer* buffer , void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) override;
-	bool WriteBuffer(IVertexBuffer* buffer, void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) override;
+	eGapiResult WriteBuffer(IIndexBuffer* buffer, void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) override;
+	eGapiResult WriteBuffer(IVertexBuffer* buffer, void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) override;
 
-	bool ReadBuffer(IIndexBuffer* buffer , void* dest, size_t size, size_t offset = 0) override;
-	bool ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset = 0) override;
+	eGapiResult ReadBuffer(IIndexBuffer* buffer, void* dest, size_t size, size_t offset = 0) override;
+	eGapiResult ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset = 0) override;
 
 	// draw
 	void Clear(bool target = true, bool depth = false, bool stencil = false) override;
@@ -83,7 +84,7 @@ public:
 	void DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex = 0, size_t idxStartInstance = 0) override;
 	void DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex = 0, size_t idxStartInstance = 0) override;
 
-	bool SetRenderTarget(ITexture2D* target, unsigned slotIdx) override;
+	eGapiResult SetRenderTarget(ITexture2D* target, unsigned slotIdx) override;
 	void SetRenderTargetDefault() override;
 
 	void SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) override;
@@ -97,6 +98,7 @@ public:
 	void SetWindow(IWindow *renderWindow) override;
 
 	cGraphicsApiD3D11();
+	~cGraphicsApiD3D11();
 	void Release() override;
 private:
 	void CreateDevice();

@@ -21,7 +21,7 @@ IShaderProgram* cShaderManager::LoadShader(const zsString& shaderDir, const zsSt
 	if (it != loadedShaders.right.end()) {
 		shProg = it->second;
 	} else {
-		shProg = gApi->CreateShaderProgram(shaderDir + shaderName);
+		gApi->CreateShaderProgram(&shProg, shaderDir + shaderName);
 		loadedShaders.insert(ShaderMapT::value_type(shProg, shaderName));
 	}
 	return shProg;

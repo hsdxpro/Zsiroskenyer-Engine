@@ -20,6 +20,7 @@
     <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\Factory.h" />
     <ClInclude Include="src\Game.h" />
+    <ClInclude Include="src\GapiResult.h" />
     <ClInclude Include="src\GeometryBuilder.h" />
     <ClInclude Include="src\GraphicsEntity.h" />
     <ClInclude Include="src\IConstantBuffer.h" />

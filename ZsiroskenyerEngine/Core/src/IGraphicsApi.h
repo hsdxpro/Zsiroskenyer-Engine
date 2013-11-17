@@ -3,17 +3,19 @@
 #pragma once
 
 #include "../../Core/src/IWindow.h"
-#include "ResourceProperty.h"
-#include <climits>
 #include "../../Core/src/common.h"
 #include "../../Core/src/zsString.h"
+
+#include "ResourceProperty.h"
+#include "GapiResult.h"
+
+#include <climits>
 
 class IVertexBuffer;
 class IIndexBuffer;
 class IConstantBuffer;
 class IShaderProgram;
 class ITexture2D;
-
 
 
 enum class ePrimitiveTopology {
@@ -26,18 +28,18 @@ public:
 	virtual void Release() = 0;
 
 	// resources
-	virtual IVertexBuffer*	CreateVertexBuffer(size_t size, eUsage usage, void* data = NULL) = 0;
-	virtual IIndexBuffer*	CreateIndexBuffer(size_t size, eUsage usage, void* data = NULL) = 0;
-	virtual IConstantBuffer*CreateConstantBuffer(size_t size, eUsage usage, void* data = NULL) = 0;
-	virtual ITexture2D*		CreateTexture(const zsString& filePath) = 0;
-	virtual ITexture2D*		CreateTexture(unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, eBind bind) = 0;
-	virtual IShaderProgram* CreateShaderProgram(const zsString& shaderPath) = 0;
+	virtual eGapiResult	CreateVertexBuffer(IVertexBuffer** resource, size_t size, eUsage usage, void* data = NULL) = 0;
+	virtual eGapiResult	CreateIndexBuffer(IIndexBuffer** resource, size_t size, eUsage usage, void* data = NULL) = 0;
+	virtual eGapiResult CreateConstantBuffer(IConstantBuffer** resource, size_t size, eUsage usage, void* data = NULL) = 0;
+	virtual eGapiResult CreateTexture(ITexture2D** resource, const zsString& filePath) = 0;
+	virtual eGapiResult CreateTexture(ITexture2D** resource, unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, eBind bind) = 0;
+	virtual eGapiResult CreateShaderProgram(IShaderProgram** resource, const zsString& shaderPath) = 0;
 
-	virtual bool WriteBuffer(IIndexBuffer* buffer , void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) = 0;
-	virtual bool WriteBuffer(IVertexBuffer* buffer, void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) = 0;
+	virtual eGapiResult WriteBuffer(IIndexBuffer* buffer , void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) = 0;
+	virtual eGapiResult WriteBuffer(IVertexBuffer* buffer, void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) = 0;
 
-	virtual bool ReadBuffer(IIndexBuffer* buffer , void* dest, size_t size, size_t offset = 0) = 0;
-	virtual bool ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset = 0) = 0;
+	virtual eGapiResult ReadBuffer(IIndexBuffer* buffer, void* dest, size_t size, size_t offset = 0) = 0;
+	virtual eGapiResult ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset = 0) = 0;
 
 	// rendering
 	virtual void Clear(bool target = true, bool depth = false, bool stencil = false) = 0;
@@ -48,7 +50,7 @@ public:
 	virtual void DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex = 0, size_t idxStartInstance = 0) = 0;
 	virtual void DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex = 0, size_t idxStartInstance = 0) = 0;
 
-	virtual bool SetRenderTarget(ITexture2D* target, unsigned slotIdx) = 0;
+	virtual eGapiResult SetRenderTarget(ITexture2D* target, unsigned slotIdx) = 0;
 	virtual void SetRenderTargetDefault() = 0;
 
 	virtual void SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) = 0;

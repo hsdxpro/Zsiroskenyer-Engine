@@ -103,7 +103,8 @@ void cGraphicsEngine::RenderSceneForward() {
 			buff.world = world;
 			buff.camPos = cam->GetPos();
 
-			IConstantBuffer* buffer = gApi->CreateConstantBuffer(sizeof(buff), eUsage::DEFAULT, &buff);
+			IConstantBuffer* buffer;
+			gApi->CreateConstantBuffer(&buffer, sizeof(buff), eUsage::DEFAULT, &buff);
 			gApi->SetVSConstantBuffer(buffer, 0);
 			// Create, load constant buffers, World and WorldViewProj
 			/*IConstantBuffer* wvpBuffer = gApi->CreateConstantBuffer(sizeof(Matrix44), eUsage::DEFAULT, &wvp);

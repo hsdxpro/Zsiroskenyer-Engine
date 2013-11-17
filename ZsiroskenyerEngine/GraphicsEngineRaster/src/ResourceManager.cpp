@@ -50,8 +50,10 @@ cGeometryRef cResourceManager::GetGeometry(const zsString& filePath) {
 		cGeometryBuilder b;
 		cGeometryBuilder::tGeometryDesc d = b.LoadGeometry(filePath);
 
-		IVertexBuffer *VB = gApi->CreateVertexBuffer(d.nVertices * d.vertexStride, eUsage::IMMUTABLE, d.vertices);
-		IIndexBuffer *IB = gApi->CreateIndexBuffer(d.nIndices * d.indexStride, eUsage::IMMUTABLE, d.indices);
+		IVertexBuffer *VB;
+		gApi->CreateVertexBuffer(&VB, d.nVertices * d.vertexStride, eUsage::IMMUTABLE, d.vertices);
+		IIndexBuffer *IB;
+		gApi->CreateIndexBuffer(&IB, d.nIndices * d.indexStride, eUsage::IMMUTABLE, d.indices);
 		geom = new cGeometry(VB, IB);
 		
 		// insert into database
@@ -148,8 +150,8 @@ cTextureRef cResourceManager::GetTexture(const zsString& filePath) {
 	auto it = textures.left.find(filePath);
 	if (it == textures.left.end()) {
 		// create texture
-		texture = gApi->CreateTexture(filePath.c_str());
-		if (texture == nullptr) {
+		auto result = gApi->CreateTexture(&texture, filePath.c_str());
+		if (result != eGapiResult::OK) {
 			return cTextureRef(this, nullptr);
 		}
 
