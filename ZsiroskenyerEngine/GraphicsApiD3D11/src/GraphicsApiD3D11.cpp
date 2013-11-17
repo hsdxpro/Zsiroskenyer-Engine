@@ -25,10 +25,10 @@ cGraphicsApiD3D11::cGraphicsApiD3D11()
 	CreateDevice();
 
 	// Create default states
-	CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_BACK, D3D11_FILL_MODE::D3D11_FILL_SOLID);
+	//CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_BACK, D3D11_FILL_MODE::D3D11_FILL_SOLID);
 
 	// If you want WIREFRAME MODE
-	//CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_NONE,D3D11_FILL_MODE::D3D11_FILL_WIREFRAME);
+	CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_NONE,D3D11_FILL_MODE::D3D11_FILL_WIREFRAME);
 }
 
 void cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
