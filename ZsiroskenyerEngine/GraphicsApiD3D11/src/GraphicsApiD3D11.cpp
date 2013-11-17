@@ -281,14 +281,14 @@ void cGraphicsApiD3D11::SetRenderTargetDefault() {
 	d3dcon->OMSetRenderTargets(1, &backBufferRTV, backBufferDSV);
 }
 
-IVertexBuffer* cGraphicsApiD3D11::CreateVertexBuffer(size_t nVertices, size_t vertexStride, eUsage usage, void* data /*= NULL*/) {
+IVertexBuffer* cGraphicsApiD3D11::CreateVertexBuffer(size_t size, eUsage usage, void* data /*= NULL*/) {
 	ID3D11Buffer* buffer = NULL;
 
 	D3D11_BUFFER_DESC desc;
-	desc.ByteWidth = nVertices * vertexStride;
+	desc.ByteWidth = size;
 	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	desc.MiscFlags = 0;
-	desc.StructureByteStride = vertexStride;
+	desc.StructureByteStride = 0;
 	switch(usage) {
 	case eUsage::DEFAULT:		desc.Usage = D3D11_USAGE_DEFAULT;		desc.CPUAccessFlags = 0;												break;
 	case eUsage::IMMUTABLE:	desc.Usage = D3D11_USAGE_IMMUTABLE;		desc.CPUAccessFlags = 0;												break;
@@ -317,7 +317,7 @@ IIndexBuffer* cGraphicsApiD3D11::CreateIndexBuffer(size_t size , eUsage usage, v
 	desc.ByteWidth = size;
 	desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	desc.MiscFlags = 0;
-	desc.StructureByteStride = sizeof(unsigned);
+	desc.StructureByteStride = 0;
 	switch(usage){
 	case eUsage::DEFAULT:		desc.Usage = D3D11_USAGE_DEFAULT;		desc.CPUAccessFlags = 0;											break;
 	case eUsage::IMMUTABLE:	desc.Usage = D3D11_USAGE_IMMUTABLE;		desc.CPUAccessFlags = 0;											break;
