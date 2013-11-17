@@ -11,6 +11,8 @@ public:
 	void Close() override;
 	void Clear() override;
 
+	static void ReadBinary(const zsString path, void** data_out, size_t& dataSize_out);
+
 	void DeleteFirstLines(size_t nLines) override;
 
 	void Append(const IFile& file) override;

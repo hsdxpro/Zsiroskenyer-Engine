@@ -49,8 +49,14 @@ public:
 	// We reach the end of the file stream ? It's possible with GetLine() func
 	virtual bool IsEOF() const = 0;
 
+
+// STATIC UTILITY
+	// Create new instance of file
+	static IFile* Create(const zsString& filePath);
+
 	// file Exists?
 	static bool isFileExits(const zsString& str);
 
-	static IFile* Create(const zsString& filePath);
+	// Read up binary file to buffer
+	static void ReadBinary(const zsString path, void** data_out, size_t& dataSize_out);
 };

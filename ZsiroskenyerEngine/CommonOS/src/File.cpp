@@ -3,6 +3,9 @@
 #include "../../Core/src/Exception.h"
 #include "../../Core/src/ILog.h"
 
+// For determining size of a file
+#include <sys/stat.h>
+
 cFile::cFile()
 :isEof(false) {
 }
@@ -41,6 +44,24 @@ void cFile::Clear() {
 void cFile::Close() {
 	stream.clear();
 	stream.close();
+}
+
+void cFile::ReadBinary(const zsString path, void** data_out, size_t& dataSize_out) {
+	std::ifstream is(path.c_str(), std::ios_base::binary);
+	
+	static char ansiPath[256];
+	zsString::UniToAnsi(path, ansiPath, 256);
+
+	//path.tozsString::
+	struct stat results;
+	if (stat(ansiPath, &results) == 0)
+		dataSize_out = results.st_size;
+	else
+		ILog::GetInstance()->MsgBox(L"cFile::ReadBinary -> can't get size of a file");
+
+	*data_out = new char[dataSize_out];
+	is.read((char*)*data_out, dataSize_out);
+	is.close();
 }
 
 void cFile::DeleteFirstLines(size_t nLines) {
