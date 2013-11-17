@@ -8,12 +8,14 @@
 
 #pragma once
 
+// enumerations
 enum class eUsage {
 	DEFAULT = 1,
 	IMMUTABLE,
 	DYNAMIC,
 	STAGING,
 };
+
 
 enum class eBind {
 	VERTEX_BUFFER	= 0x1,
@@ -23,6 +25,7 @@ enum class eBind {
 	RENDER_TARGET	= 0x20,
 	DEPTH_STENCIL	= 0x40,
 };
+
 
 enum class eCPUAccess {
 	WRITE = 1,
