@@ -49,7 +49,7 @@ private:
 		cDeferredRenderer(cGraphicsEngine& parent);
 		~cDeferredRenderer();
 	private:
-		ITexture2D* 
+		//ITexture2D* 
 	};
 };
 

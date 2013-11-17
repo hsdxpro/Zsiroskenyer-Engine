@@ -3,7 +3,8 @@
 
 class ITexture2D {
 public:
-	virtual size_t GetWidth() = 0;
-	virtual size_t GetHeight() = 0;
 	virtual void Release() = 0;
+
+	virtual size_t GetWidth() const = 0;
+	virtual size_t GetHeight() const = 0;
 };

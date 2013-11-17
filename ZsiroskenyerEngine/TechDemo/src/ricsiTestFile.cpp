@@ -52,28 +52,16 @@ int ricsiMain() {
 	cCamera cam(ZS_PIDIV2, (float)winDesc.clientWidth / winDesc.clientHeight, 0.01f, 5000.0f);
 	gEngine->SetActiveCamera(&cam);
 
-	
-	const float mass = 500.0;
+	// Static terrain
+	const float mass = 0.0;
+	core->AddEntity(L"objects/demo_cliff_fence.dae", L"objects/demo_cliff_fence.dae", L"materials/test.zsm", mass);
+	core->AddEntity(L"objects/demo_ground.dae", L"objects/demo_ground.dae", L"materials/test.zsm", mass);
+	core->AddEntity(L"objects/demo_house.dae", L"objects/demo_house.dae", L"materials/test.zsm", mass);
+	core->AddEntity(L"objects/demo_road.dae", L"objects/demo_road.dae", L"materials/test.zsm", mass);
+	core->AddEntity(L"objects/demo_tunnel.dae", L"objects/demo_tunnel.dae", L"materials/test.zsm", mass);
 
-	// Create character
-	cEntity* entity = core->AddEntity(L"objects/character.obj", L"objects/character.obj", L"materials/character.zsm", 0.0);
-	entity->SetPos(Vec3(0, 120, -130));
-
-	// Create floor lol:D
-	//cEntity* entity = core->AddEntity(L"objects/plane.dae", L"objects/plane.dae", L"materials/test.zsm", 0.0);
-	//entity->SetPos(Vec3(0, 250, -60));
-	//entity->SetScale(Vec3(100, 100, 1));
-	//entity->SetRot(Quat::EulerAnglesToQuat(ZS_PIDIV2, 0, 0));
-
-	// Create cubes
-	std::vector<cEntity*> entities;
-	cEntity* ent;
-	for (int i = 0; i < 12; i++) {
-		ent = core->AddEntity(L"objects/box.dae", L"objects/box.dae", L"materials/test.zsm", mass);
-		ent->SetPos(Vec3(sin(float(i))*60, 120, cos(float(i))*60));
-		entities.push_back(ent);
-	}
-	
+	// Our player
+	core->AddEntity(L"objects/character.obj", L"objects/character.obj", L"materials/character.zsm",  0.0);	
 
 	// Main loop
 	while(window->IsOpened()) {
@@ -108,15 +96,6 @@ int ricsiMain() {
 
 		// Debug rendering
 		//core->DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
-
-		// (game logic) z rotation
-		static float zVal = 0.0f;
-		zVal += ZS_PI / 4 * tDelta;
-		for each (auto e in entities)
-		{
-			e->SetRot(Quat::EulerAnglesToQuat(0, 0, zVal));
-		}
-		entity->SetRot(Quat::EulerAnglesToQuat(0, 0, -zVal));
 
 		// Present SwapChain
 		gApi->Present();
