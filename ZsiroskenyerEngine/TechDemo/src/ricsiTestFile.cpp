@@ -54,14 +54,15 @@ int ricsiMain() {
 
 	// Static terrain
 	const float mass = 0.0;
-	core->AddEntity(L"objects/demo_cliff_fence.dae", L"objects/demo_cliff_fence.dae", L"materials/test.zsm", mass);
-	core->AddEntity(L"objects/demo_ground.dae", L"objects/demo_ground.dae", L"materials/test.zsm", mass);
-	core->AddEntity(L"objects/demo_house.dae", L"objects/demo_house.dae", L"materials/test.zsm", mass);
-	core->AddEntity(L"objects/demo_road.dae", L"objects/demo_road.dae", L"materials/test.zsm", mass);
-	core->AddEntity(L"objects/demo_tunnel.dae", L"objects/demo_tunnel.dae", L"materials/test.zsm", mass);
+	zsString basePath = L"../../Game Assets/";
+	core->AddEntity(basePath + L"objects/demo_cliff_fence.dae",	basePath + L"objects/demo_cliff_fence.dae",	basePath + L"materials/test.zsm", mass);
+	core->AddEntity(basePath + L"objects/demo_ground.dae",		basePath + L"objects/demo_ground.dae",		basePath + L"materials/test.zsm", mass);
+	core->AddEntity(basePath + L"objects/demo_house.dae",		basePath + L"objects/demo_house.dae",		basePath + L"materials/test.zsm", mass);
+	core->AddEntity(basePath + L"objects/demo_road.dae",		basePath + L"objects/demo_road.dae",		basePath + L"materials/test.zsm", mass);
+	core->AddEntity(basePath + L"objects/demo_tunnel.dae",		basePath + L"objects/demo_tunnel.dae",		basePath + L"materials/test.zsm", mass);
 
 	// Our player
-	//core->AddEntity(L"objects/character.obj", L"objects/character.obj", L"materials/character.zsm",  0.0);	
+	core->AddEntity(basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 0.0);
 
 	// Main loop
 	while(window->IsOpened()) {
