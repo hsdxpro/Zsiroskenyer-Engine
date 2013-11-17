@@ -418,10 +418,10 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const zsStri
 eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, eBind bind) {
 
 	UINT bindFlag;
-	switch (bind)
-	D3D11_TEXTURE2D_DESC texDesc;
-	texDesc.ArraySize = 1;
-	texDesc.BindFlags = bindFlag;
+	//switch (bind)
+	//D3D11_TEXTURE2D_DESC texDesc;
+	//texDesc.ArraySize = 1;
+	//texDesc.BindFlags = bindFlag;
 	return eGapiResult::ERROR_UNKNOWN;
 }
 
