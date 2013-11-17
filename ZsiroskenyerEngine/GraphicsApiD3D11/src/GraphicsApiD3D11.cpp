@@ -423,17 +423,17 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 	const size_t nShaders = 5;
 	zsString binPaths[nShaders] = { pathNoExt + L"_vs.bin",
-									pathNoExt + L"_ps.bin",
-									pathNoExt + L"_gs.bin",
+									pathNoExt + L"_hs.bin",
 									pathNoExt + L"_ds.bin",
-									pathNoExt + L"_hs.bin"};
+									pathNoExt + L"_gs.bin",
+									pathNoExt + L"_ps.bin"};
 
 	bool binExistences[nShaders];
 	for (size_t i = 0; i < nShaders; i++)
 		binExistences[i] = IFile::isFileExits(binPaths[i]);
 
-	zsString entryNames[nShaders] = { "VS_MAIN", "PS_MAIN", "GS_MAIN", "DS_MAIN", "HS_MAIN" };
-	zsString profileNames[nShaders] = { "vs_5_0", "ps_5_0", "gs_5_0", "ds_5_0", "hs_5_0" };
+	zsString entryNames[nShaders] =   { "VS_MAIN", "HS_MAIN", "DS_MAIN", "GS_MAIN", "PS_MAIN" };
+	zsString profileNames[nShaders] = { "vs_5_0",  "hs_5_0",  "ds_5_0",  "gs_5_0",  "ps_5_0" };
 
 	// Shader Output data
 	ID3D11VertexShader* vs;
@@ -490,25 +490,25 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		hr = d3ddev->CreateVertexShader(byteCodes[0], byteCodeSizes[0], NULL, &vs);
 		ASSERT_MSG(hr == S_OK, L"Failed to create vertex shader from bytecode: " + binPaths[0]);
 	}
-	if (byteCodeSizes[1] != 0) {
+	if (byteCodeSizes[4] != 0) {
 		// Create PIXEL_SHADER from byteCode
-		hr = d3ddev->CreatePixelShader(byteCodes[1], byteCodeSizes[1], NULL, &ps);
-		ASSERT_MSG(hr == S_OK, L"Failed to create pixel shader from bytecode: " + binPaths[1]);
-	}
-	if (byteCodeSizes[2] != 0) {
-		// Create GEOMETRY_SHADER from byteCode
-		hr = d3ddev->CreateGeometryShader(byteCodes[2], byteCodeSizes[2], NULL, &gs);
-		ASSERT_MSG(hr == S_OK, L"Failed to create geometry shader from bytecode: " + binPaths[2]);
+		hr = d3ddev->CreatePixelShader(byteCodes[4], byteCodeSizes[4], NULL, &ps);
+		ASSERT_MSG(hr == S_OK, L"Failed to create pixel shader from bytecode: " + binPaths[4]);
 	}
 	if (byteCodeSizes[3] != 0) {
-		// Create DOMAIN_SHADER from byteCode
-		hr = d3ddev->CreateDomainShader(byteCodes[3], byteCodeSizes[3], NULL, &ds);
-		ASSERT_MSG(hr == S_OK, L"Failed to create vertex shader from bytecode: " + binPaths[3]);
+		// Create GEOMETRY_SHADER from byteCode
+		hr = d3ddev->CreateGeometryShader(byteCodes[3], byteCodeSizes[3], NULL, &gs);
+		ASSERT_MSG(hr == S_OK, L"Failed to create geometry shader from bytecode: " + binPaths[3]);
 	}
-	if (byteCodeSizes[4] != 0) {
+	if (byteCodeSizes[2] != 0) {
+		// Create DOMAIN_SHADER from byteCode
+		hr = d3ddev->CreateDomainShader(byteCodes[2], byteCodeSizes[2], NULL, &ds);
+		ASSERT_MSG(hr == S_OK, L"Failed to create vertex shader from bytecode: " + binPaths[2]);
+	}
+	if (byteCodeSizes[1] != 0) {
 		// Create HULL_SHADER from byteCode
-		hr = d3ddev->CreateHullShader(byteCodes[4], byteCodeSizes[4], NULL, &hs);
-		ASSERT_MSG(hr == S_OK, L"Failed to create vertex shader from bytecode: " + binPaths[4]);
+		hr = d3ddev->CreateHullShader(byteCodes[1], byteCodeSizes[1], NULL, &hs);
+		ASSERT_MSG(hr == S_OK, L"Failed to create vertex shader from bytecode: " + binPaths[1]);
 	}
 
 	// Parsing cg
@@ -592,7 +592,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			SAFE_RELEASE(blobs[i]);
 	SAFE_RELEASE(cgFile);
 
-	*resource = new cShaderProgramD3D11( alignedByteOffset, inputLayout, vs, ps, gs, ds, hs);
+	*resource = new cShaderProgramD3D11(alignedByteOffset, inputLayout, vs, hs, ds, gs, ps);
 	return eGapiResult::OK;
 }
 
