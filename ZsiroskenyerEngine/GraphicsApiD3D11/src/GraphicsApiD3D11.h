@@ -40,13 +40,24 @@ public:
 
 	// Compiling profiles for cg
 	enum class eProfileCG {
-		VS_5_0,
+		SM_5_0_BEGIN,
+		VS_5_0 = 0,
 		PS_5_0,
-		HS_5_0,
-		DS_5_0,
 		GS_5_0,
+		DS_5_0,
+		HS_5_0,
+		SM_4_0_BEGIN,
 		VS_4_0,
-		PS_4_0
+		PS_4_0,
+		GS_4_0,
+		DS_4_0,
+		HS_4_0,
+		SM_3_0_BEGIN,
+		VS_3_0,
+		PS_3_0,
+		SM_2_0_BEGIN,
+		VS_2_0,
+		PS_2_0,
 	};
 
 	// buffers
@@ -72,6 +83,7 @@ public:
 	void DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex = 0, size_t idxStartInstance = 0) override;
 	void DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex = 0, size_t idxStartInstance = 0) override;
 
+	bool SetRenderTarget(ITexture2D* target, unsigned slotIdx) override;
 	void SetRenderTargetDefault() override;
 
 	void SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) override;

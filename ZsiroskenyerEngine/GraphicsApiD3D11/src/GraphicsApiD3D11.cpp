@@ -276,6 +276,10 @@ void cGraphicsApiD3D11::CreateDefaultStates(const D3D11_CULL_MODE& cullMode, con
 	rState->Release();
 }
 
+bool cGraphicsApiD3D11::SetRenderTarget(ITexture2D* target, unsigned slotIdx) {
+	return false;
+}
+
 void cGraphicsApiD3D11::SetRenderTargetDefault() {
 	d3dcon->RSSetViewports(1, &backBufferVP);
 	d3dcon->OMSetRenderTargets(1, &backBufferRTV, backBufferDSV);
@@ -394,6 +398,10 @@ ITexture2D*	cGraphicsApiD3D11::CreateTexture(const zsString& filePath) {
 	return new cTexture2DColorD3D11(srv, width, height);
 }
 
+ITexture2D*	cGraphicsApiD3D11::CreateTexture(unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, eBind bind) {
+	return NULL;
+}
+
 IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPath) {
 	// asd/asd/myShader    cut extension
 	zsString pathNoExt = shaderPath.substr(0, shaderPath.size() - 3);
@@ -409,6 +417,9 @@ IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPat
 	for (size_t i = 0; i < nShaders; i++)
 		binExistences[i] = IFile::isFileExits(binPaths[i]);
 
+	zsString entryNames[nShaders] = { "VS_MAIN", "PS_MAIN", "GS_MAIN", "DS_MAIN", "HS_MAIN" };
+	zsString profileNames[nShaders] = { "vs_5_0", "ps_5_0", "gs_5_0", "ds_5_0", "hs_5_0" };
+
 	// Shader Output data
 	ID3D11VertexShader* vs;
 	ID3D11InputLayout* inputLayout;
@@ -419,105 +430,62 @@ IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPat
 	ID3D11HullShader* hs;
 
 	// Shader ByteCodes
-	ID3DBlob* blob;
-	void * byteCodes[nShaders];
+	ID3DBlob* blobs[nShaders]; memset(blobs, 0, sizeof(ID3DBlob)* nShaders);
+	void *byteCodes[nShaders]; memset(byteCodes, 0, sizeof(size_t) * nShaders);
 	size_t byteCodeSizes[nShaders];
 
 	IFile* cgFile = NULL;
 	for (size_t i = 0; i < nShaders; i++) {
-		// There is no binary for the shader
-		if (binExistences[i]) {
+		// Found binary ... Read it
+		//if (binExistences[i]) {
+			//IFile::ReadBinary(binPaths[i], &byteCodes[i], byteCodeSizes[i]);
+		//} else { // There is no binary
 			// If cg File not opened open it
 			if (cgFile == NULL) cgFile = IFile::Create(shaderPath);
-		} else {
 
-		}
-	}
-	// Not all binaries are found
-	IFile* cgFile = NULL;
-	if (! (binVsExists && binPsExists && binGsExists && binHsExists && binDsExists) )
-	{
-		// We need the CG File
-		cgFile = new IFile::Create(shaderPath);
+			// Found entry in cg
+			if (cgFile->Find(entryNames[i])) {
+				// Compile Cg to hlsl
+				CompileCgToHLSL(shaderPath, binPaths[i], (eProfileCG)((int)eProfileCG::SM_5_0_BEGIN + i));
 
-		HRESULT hr;
-		if (!binVsExists && cgFile->Find(L"VS_MAIN")) {
-			ILog::GetInstance()->Log(L"\nCompiling VertexShader for: " + shaderPath);
+				// Compile hlsl to bytecode
+				HRESULT hr = CompileShaderFromFile(binPaths[i], L"main", profileNames[i], &blobs[i]);
+				ASSERT(hr == S_OK);
 
-			// Compile Cg to hlsl
-			CompileCgToHLSL(shaderPath, binVsPath, eProfileCG::VS_5_0);
-
-			// Compile hlsl to bytecode
-			hr = CompileShaderFromFile(binVsPath, L"main", L"vs_5_0", &blob);
-			ASSERT(hr == S_OK);
-
-			vsByteCode = blob->GetBufferPointer();
-			vsByteCodeSize = blob->GetBufferSize();
-		}
-		if (!binPsExists && cgFile->Find(L"PS_MAIN")) {
-			ILog::GetInstance()->Log(L"\nCompiling PixelShader for: " + shaderPath);
-			// Compile Cg to hlsl
-			CompileCgToHLSL(shaderPath, binPsPath, eProfileCG::PS_5_0);
-
-			// Compile hlsl to bytecode
-			hr = CompileShaderFromFile(binPsPath, L"main", L"ps_5_0", &blob);
-			ASSERT(hr == S_OK);
-
-			psByteCode = blob->GetBufferPointer();
-			psByteCodeSize = blob->GetBufferSize();
-		}
-		if (!binGsExists && cgFile->Find(L"GS_MAIN")) {
-			ILog::GetInstance()->Log(L"\nCompiling GeometryShader for: " + shaderPath);
-			// Compile Cg to hlsl
-			CompileCgToHLSL(shaderPath, binGsPath, eProfileCG::GS_5_0);
-
-			// Compile hlsl to bytecode
-			hr = CompileShaderFromFile(binGsPath, L"main", L"gs_5_0", &blob);
-			ASSERT(hr == S_OK);
-
-			gsByteCode = blob->GetBufferPointer();
-			gsByteCodeSize = blob->GetBufferSize();
-		}
-		if (!binDsExists && cgFile->Find(L"DS_MAIN")) {
-			ILog::GetInstance()->Log(L"\nCompiling DomainShader for: " + shaderPath);
-			// Compile Cg to hlsl
-			CompileCgToHLSL(shaderPath, binDsPath, eProfileCG::DS_5_0);
-
-			// Compile hlsl to bytecode
-			hr = CompileShaderFromFile(binDsPath, L"main", L"ds_5_0", &blob);
-			ASSERT(hr == S_OK);
-
-			dsByteCode = blob->GetBufferPointer();
-			dsByteCodeSize = blob->GetBufferSize();
-		}
-		if (!binHsExists && cgFile->Find(L"HS_MAIN")) {
-			ILog::GetInstance()->Log(L"\nCompiling HullShader for: " + shaderPath);
-			// Compile Cg to hlsl
-			CompileCgToHLSL(shaderPath, binHsPath, eProfileCG::HS_5_0);
-
-			// Compile hlsl to bytecode
-			hr = CompileShaderFromFile(binHsPath, L"main", L"hs_5_0", &blob);
-			ASSERT(hr == S_OK);
+				byteCodes[i] = blobs[i]->GetBufferPointer();
+				byteCodeSizes[i] = blobs[i]->GetBufferSize();
+		//	}
 		}
 	}
 
-	// Compile, Create VERTEX_SHADER
-	while(FAILED(CompileShaderFromFile(hlslVsFullPath, L"main", L"vs_5_0", &vsBlob)))
-			ILog::GetInstance()->MsgBox(L".cg VERTEX SHADER parts are wrong, repair it i wait you: " + cgFullPath);
+	HRESULT hr = S_OK;
+	if (byteCodes[0] != NULL) {
+		// Create VERTEX_SHADER from byteCode
+		hr = d3ddev->CreateVertexShader(byteCodes[0], byteCodeSizes[0], NULL, &vs);
+		ASSERT_MSG(hr == S_OK, L"Failed to create vertex shader from bytecode: " + binPaths[0]);
+	}
+	if (byteCodes[1] != NULL) {
+		// Create PIXEL_SHADER from byteCode
+		hr = d3ddev->CreatePixelShader(byteCodes[1], byteCodeSizes[1], NULL, &ps);
+		ASSERT_MSG(hr == S_OK, L"Failed to create pixel shader from bytecode: " + binPaths[1]);
+	}
+	if (byteCodes[2] != NULL) {
+		// Create GEOMETRY_SHADER from byteCode
+		hr = d3ddev->CreateGeometryShader(byteCodes[2], byteCodeSizes[2], NULL, &gs);
+		ASSERT_MSG(hr == S_OK, L"Failed to create geometry shader from bytecode: " + binPaths[2]);
+	}
+	if (byteCodes[3] != NULL) {
+		// Create DOMAIN_SHADER from byteCode
+		hr = d3ddev->CreateDomainShader(byteCodes[3], byteCodeSizes[3], NULL, &ds);
+		ASSERT_MSG(hr == S_OK, L"Failed to create vertex shader from bytecode: " + binPaths[3]);
+	}
+	if (byteCodes[4] != NULL) {
+		// Create HULL_SHADER from byteCode
+		hr = d3ddev->CreateHullShader(byteCodes[4], byteCodeSizes[4], NULL, &hs);
+		ASSERT_MSG(hr == S_OK, L"Failed to create vertex shader from bytecode: " + binPaths[4]);
+	}
 
-	HRESULT hr = d3ddev->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), NULL, &vs);
-	if(FAILED(hr))
-		ILog::GetInstance()->MsgBox(L"Failed to create vertex shader from bytecode: " + hlslVsFullPath);
-
-	// Compile, Create PIXEL_SHADER
-	while(FAILED(CompileShaderFromFile(hlslPsFullPath, L"main", L"ps_5_0", &psBlob)))
-		ILog::GetInstance()->MsgBox(L".cg PIXEL SHADER parts are wrong, repair it i wait you: " + cgFullPath);
-
-	hr = d3ddev->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), NULL, &ps);
-	if(FAILED(hr))
-		ILog::GetInstance()->MsgBox(L"Failed to create vertex shader from bytecode: " + hlslPsFullPath);
-
-
+	// Parsing cg
 	// Parse input Layout... from VERTEX_SHADER
 	// 1. search for "VS_MAIN(", get return value, for example VS_OUT
 	// 2. search for VS_OUT, get lines under that, while line != "};"
@@ -571,7 +539,7 @@ IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPat
 				byteSize = 4;
 			} 
 			else
-				ILog::GetInstance()->MsgBox(L"Cg file parsing : " + cgFullPath + L", can't match Input Vertex FORMAT");
+				ILog::GetInstance()->MsgBox(L"Cg file parsing : " + shaderPath + L", can't match Input Vertex FORMAT");
 
 
 			vertexDecl[attribIdx].SemanticName = semanticNames[attribIdx];
@@ -589,12 +557,16 @@ IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPat
 	}
 
 	// Create input layout
-	hr = d3ddev->CreateInputLayout(vertexDecl , nVertexAttributes, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &inputLayout);
+	hr = d3ddev->CreateInputLayout(vertexDecl , nVertexAttributes, byteCodes[0], byteCodeSizes[0], &inputLayout);
 	if(FAILED(hr))
-		ILog::GetInstance()->MsgBox(L"cGraphicsApiD3D11::CreateShaderProgram -> Can't create input layout for vertexShader: " + hlslVsFullPath);
+		ILog::GetInstance()->MsgBox(L"cGraphicsApiD3D11::CreateShaderProgram -> Can't create input layout for vertexShader: " + binPaths[0]);
 
-	vsBlob->Release();
-	psBlob->Release();
+	// FREE UP
+	for (size_t i = 0; i < nShaders; i++) {
+		//SAFE_DELETE(byteCodes[i]);
+		SAFE_RELEASE(blobs[i]);
+	}
+	
 
 	return new cShaderProgramD3D11( alignedByteOffset, inputLayout, vs, ps);
 }

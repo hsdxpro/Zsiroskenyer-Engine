@@ -160,8 +160,8 @@ typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, TLSFAllocator<wcha
 
 class zsString : public zsBasicString {
 public:
-	static void UniToAnsi(const zsString& src, char* source, size_t nChars) {
-		wcstombs(source, src.c_str(), nChars);
+	static void UniToAnsi(const zsString& src, char* dst, size_t nChars) {
+		wcstombs(dst, src.c_str(), nChars);
 	}
 	
 	void CutNumberFromEnd(char* src) {

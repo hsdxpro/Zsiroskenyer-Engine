@@ -48,7 +48,7 @@ public:
 	virtual void DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex = 0, size_t idxStartInstance = 0) = 0;
 	virtual void DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex = 0, size_t idxStartInstance = 0) = 0;
 
-	virtual bool SetRenderTarget(ITexture2D* target, unsigned index);
+	virtual bool SetRenderTarget(ITexture2D* target, unsigned slotIdx) = 0;
 	virtual void SetRenderTargetDefault() = 0;
 
 	virtual void SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) = 0;

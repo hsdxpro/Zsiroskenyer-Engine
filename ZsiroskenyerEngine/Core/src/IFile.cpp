@@ -9,3 +9,7 @@ bool IFile::isFileExits(const zsString& str) {
 IFile* IFile::Create(const zsString& filePath) {
 	return new cFile(filePath);
 }
+
+void IFile::ReadBinary(const zsString path, void** data_out, size_t& dataSize_out) {
+	cFile::ReadBinary(path, data_out, dataSize_out);
+}
