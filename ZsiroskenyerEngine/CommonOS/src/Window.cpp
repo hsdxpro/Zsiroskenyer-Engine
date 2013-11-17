@@ -103,8 +103,8 @@ cWindow::cWindow(const IWindow::tDesc& winDesc)
 	RECT adjustedsize = {0};
 	AdjustWindowRect(&adjustedsize, (int)interpretedStyle, 0);
 
-	int wWidth = winDesc.clientWidth  - adjustedsize.left  + adjustedsize.right;
-	int wHeight = winDesc.clientHeight - adjustedsize.top	+ adjustedsize.bottom;
+	int wWidth  = winDesc.clientWidth  - adjustedsize.left + adjustedsize.right;
+	int wHeight = winDesc.clientHeight - adjustedsize.top  + adjustedsize.bottom;
 		
 	handle = CreateWindow(
 		_T("windowclass"),

@@ -8,8 +8,8 @@
 
 #include "../../Core/src/IVertexBuffer.h"
 #include "../../Core/src/BufferCommon.h"
-#include "Dx11_SDK/Include/D3D11.h"
-#include "Dx11_SDK/Include/D3DX11.h"
+
+struct ID3D11Buffer;
 
 class cVertexBufferD3D11 : public IVertexBuffer {
 public:

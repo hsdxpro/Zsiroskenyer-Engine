@@ -1,5 +1,7 @@
 #include "ConstantBufferD3D11.h"
 
+#include <d3d11.h>
+
 cConstantBufferD3D11::cConstantBufferD3D11(ID3D11Buffer* buffer, size_t size, eBufferUsage usage) 
 :buffer(buffer), usage(usage), size(size) {	
 }

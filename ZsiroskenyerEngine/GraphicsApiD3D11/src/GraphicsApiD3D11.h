@@ -4,21 +4,18 @@
 #pragma warning(disable: 4244)
 #pragma warning(disable: 4005)
 
-#include "Dx11_SDK/Include/D3D11.h"
+#include <d3d11.h>
+#include <d3dcompiler.h>
 #include <dxgi.h>
-#include "Dx11_SDK/Include/D3Dcompiler.h"
-#include "Dx11_SDK/Include/D3DX11.h"
 
 #include "../../Core/src/IGraphicsApi.h"
 #include "../../Core/src/IWindow.h"
 #include "../../Core/src/common.h"
 
-#include "../../Core/src/IVertexBuffer.h"
-#include "../../Core/src/IIndexBuffer.h"
-#include "../../Core/src/IConstantBuffer.h"
-#include "../../Core/src/IShaderProgram.h"
-
-#undef max
+class IVertexBuffer;
+class IIndexBuffer;
+class IConstantBuffer;
+class IShaderProgram;
 
 class cGraphicsApiD3D11 : public IGraphicsApi {
 public:

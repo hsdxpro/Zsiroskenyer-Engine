@@ -1,4 +1,7 @@
 #include "GraphicsApiD3D11.h"
+
+#include "Dx11_SDK/Include/d3dx11.h"
+
 #include "VertexBufferD3D11.h"
 #include "IndexBufferD3D11.h"
 #include "ConstantBufferD3D11.h"
@@ -45,7 +48,8 @@ void cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
 	CreateRenderTargetViewForBB(swapChainConfig);
 
 	// Create viewport for swapChain rendering
-	memset(&backBufferVP,0,sizeof(D3D11_VIEWPORT));
+	backBufferVP.TopLeftX = 0,
+	backBufferVP.TopLeftY = 0;
 	backBufferVP.Width = clientWidth;
 	backBufferVP.Height = clientHeight;
 	backBufferVP.MaxDepth = 1.0f;
@@ -776,7 +780,7 @@ void cGraphicsApiD3D11::CompileCgToHLSL(const zsString& cgFilePath, const zsStri
 	wcscpy(params, shellParams.c_str());
 
 	// Start cgc.exe and Generate .hlsl from .cg
-	bool appStarted = CreateProcessW(cgcExePath.c_str(), params, NULL, NULL, false, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
+	bool appStarted = (bool)CreateProcessW(cgcExePath.c_str(), params, NULL, NULL, false, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
 	if(appStarted) {
 		WaitForSingleObject( ProcessInfo.hProcess, INFINITE );
 	} else {

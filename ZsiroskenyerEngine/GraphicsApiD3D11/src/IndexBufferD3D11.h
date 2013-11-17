@@ -8,8 +8,8 @@
 
 #include "../../Core/src/IIndexBuffer.h"
 #include "../../Core/src/BufferCommon.h"
-#include "Dx11_SDK/Include/D3D11.h"
-#include "Dx11_SDK/Include/D3DX11.h"
+
+struct ID3D11Buffer;
 
 class cIndexBufferD3D11 : public IIndexBuffer {
 public:

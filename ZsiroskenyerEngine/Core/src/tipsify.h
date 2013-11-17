@@ -26,15 +26,15 @@ typedef uint16_t ArrayIndexType;
 #define ISEMITTED(x)(emitted[(x)>>3]&(1<<(x&7)))
 #define SETEMITTED(x)(emitted[(x)>>3]|=(1<<(x&7)))
 
-// Find the next non−localvertex to cont inue from
+// Find the next non − local vertex to cont inue from
 int skipDeadEnd(const AdjacencyType* liveTriangles, const VertexIndexType* deadEndStack,int& deadEndStackPos,int& deadEndStackStart,int nVertices,int& i)
 {
-	// Next in dead−endstack
+	// Next in dead − endstack
 	while ((deadEndStackPos&  DEAD_END_STACK_MASK)!=deadEndStackStart)
 	{
 		int d = deadEndStack[(--deadEndStackPos)&  DEAD_END_STACK_MASK];
 
-		// Check forlivetriangles
+		// Check for live triangles
 		if (liveTriangles[d] > 0)
 			return d;
 	}
@@ -55,7 +55,7 @@ int skipDeadEnd(const AdjacencyType* liveTriangles, const VertexIndexType* deadE
 }
 
 
-// Find the next v e r t e x to continue from
+// Find the next vertex to continue from
 int getNextVertex ( int nVertices, int& i, int k, const VertexIndexType* nextCandidates, int numNextCandidates, const ArrayIndexType* cacheTime, int s, const AdjacencyType* liveTriangles, const VertexIndexType* deadEndStack, int& deadEndStackPos, int& deadEndStackStart )
 {
 	// Best candidate
@@ -67,12 +67,11 @@ int getNextVertex ( int nVertices, int& i, int k, const VertexIndexType* nextCan
 	for ( int j = 0 ; j < numNextCandidates; j++)
 	{
 		int v = nextCandidates[j];
-		// Must have livetriangles
+		// Must have live triangles
 
 		if (liveTriangles[v] > 0) 
 		{
-			// Initialpriority
-
+			// Initial priority
 			int p = 0 ;
 
 			// In cache even after fanning ?
@@ -89,10 +88,10 @@ int getNextVertex ( int nVertices, int& i, int k, const VertexIndexType* nextCan
 		}
 	}
 
-	// Reached a dead−end?
+	// Reached a dead − end?
 	if (n == -1)
 	{
-		// Get non−localvertex
+		// Get non − local vertex
 		n = skipDeadEnd(liveTriangles,deadEndStack,deadEndStackPos, deadEndStackStart, nVertices,i) ;
 	}
 
@@ -102,9 +101,9 @@ int getNextVertex ( int nVertices, int& i, int k, const VertexIndexType* nextCan
 // The main reordering function
 VertexIndexType* tipsify (const VertexIndexType* indices, int nTriangles, int nVertices, int k)
 {
-	// Vertex−triangle adjacency
+	// Vertex − triangle adjacency
 
-	// Count the occur rances o f each vertex
+	// Count the occur rances of each vertex
 	AdjacencyType* numOccurrances = new AdjacencyType [nVertices];
 	memset ( numOccurrances , 0 , sizeof (AdjacencyType ) * nVertices );
 	for ( int i = 0 ; i < 3 * nTriangles ; i++) 
@@ -112,7 +111,7 @@ VertexIndexType* tipsify (const VertexIndexType* indices, int nTriangles, int nV
 		int v = indices[i];
 		if ( numOccurrances[v] == MAX_ADJACENCY)
 		{
-			// Unsupported mesh ,
+			// Unsupported mesh
 			// vertex shared by too many triangles
 			delete [ ] numOccurrances;
 			return NULL;
@@ -139,7 +138,7 @@ VertexIndexType* tipsify (const VertexIndexType* indices, int nTriangles, int nV
 
 	offsets[nVertices] = sum;
 
-	// Add the triangleindices to the vertices it refers to
+	// Add the triangle indices to the vertices it refers to
 	TriangleIndexType* adjacency = new TriangleIndexType [3 * nTriangles];
 
 	for(int i = 0 ; i < nTriangles ; i++) 
@@ -156,14 +155,14 @@ VertexIndexType* tipsify (const VertexIndexType* indices, int nTriangles, int nV
 		numOccurrances[vptr[2]]++;
 	}
 
-	// Per−vertexlivetriangle counts
+	// Per − vertex live triangle counts
 	AdjacencyType* liveTriangles = numOccurrances;
 
-	// Per−vertex caching time stamps
+	// Per − vertex caching time stamps
 	ArrayIndexType* cacheTime = new ArrayIndexType [nVertices];
 	memset(cacheTime,0,sizeof(ArrayIndexType) * nVertices);
 
-	// Dead−end vertex stack
+	// Dead − end vertex stack
 	VertexIndexType* deadEndStack = new VertexIndexType [DEAD_END_STACK_SIZE];
 	memset(deadEndStack,0, sizeof(VertexIndexType) * DEAD_END_STACK_SIZE);
 	int deadEndStackPos = 0 ;
@@ -186,13 +185,13 @@ VertexIndexType* tipsify (const VertexIndexType* indices, int nTriangles, int nV
 
 	VertexIndexType* nextCandidates = new VertexIndexType [3 * maxAdjacency];
 
-	// For allvalid fanning vertices
+	// For all valid fanning vertices
 	while ( f >= 0) 
 	{
-		// 1−r ing of next candidates
-		int numNextCandidates = 0 ;
+		// 1 − ring of next candidates
+		int numNextCandidates = 0;
 		int startOffset = offsets[f];
-		int endOffset = offsets[f+1];
+		int endOffset = offsets[f + 1];
 
 		for (int offset = startOffset; offset < endOffset; offset++)
 		{
@@ -208,19 +207,19 @@ VertexIndexType* tipsify (const VertexIndexType* indices, int nTriangles, int nV
 				{
 					int v = vptr[j];
 
-					// Add to dead−end stack
+					// Add to dead − end stack
 					deadEndStack[ ( deadEndStackPos++)&  DEAD_END_STACK_MASK] = v ;
 
 					if ( ( deadEndStackPos&  DEAD_END_STACK_MASK) == ( deadEndStackStart&  DEAD_END_STACK_MASK) )
 						deadEndStackStart = ( deadEndStackStart + 1)&  DEAD_END_STACK_MASK;
 
-					// Registeras candidate
+					// Register as candidate
 					nextCandidates[numNextCandidates++] = v;
 
-					// Decrease livetriangle count
+					// Decrease live triangle count
 					liveTriangles[v]--;
 
-					// I f not in cache
+					// If not in cache
 					if (s - cacheTime[v] > k)
 					{
 						// Set time stamp
@@ -249,7 +248,7 @@ VertexIndexType* tipsify (const VertexIndexType* indices, int nTriangles, int nV
 	delete [ ] offsets;
 	delete [ ] numOccurrances;
 
-	// Convert the triangle index array into a fulltriangle list
+	// Convert the triangle index array into a full triangle list
 	VertexIndexType* outputIndices = new VertexIndexType [3 * nTriangles];
 	outputPos = 0 ;
 

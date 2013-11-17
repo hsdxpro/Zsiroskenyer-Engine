@@ -2,7 +2,6 @@
 #pragma once
 
 #include <cassert>
-#include <iostream>
 #include "ILog.h"
 
 typedef unsigned int uint32;

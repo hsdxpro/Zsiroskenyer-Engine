@@ -1,4 +1,4 @@
-#include "RigidEntityBullet.h"h"
+#include "RigidEntityBullet.h"
 
 cRigidEntityBullet::cRigidEntityBullet(btRigidBody* body) 
 :body(body) {

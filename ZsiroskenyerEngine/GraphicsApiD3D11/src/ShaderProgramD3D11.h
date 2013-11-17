@@ -5,10 +5,14 @@
 //	IShaderProgram implementation
 #pragma once
 
-#include "../../Core/src/IShaderProgram.h"
-#include "Dx11_SDK/Include/D3D11.h"
-#include "Dx11_SDK/Include/D3DX11.h"
+#include "../../Core/src/IShaderProgram.h"	
+
+// TODO DO SOMETHING, I DON'T WANT TO INCLUDE THE WHOLE COMMON JUST FOR THE "NULL"
 #include "../../Core/src/common.h"
+
+struct ID3D11VertexShader;
+struct ID3D11PixelShader;
+struct ID3D11InputLayout;
 
 class cShaderProgramD3D11 : public IShaderProgram {
 public:

@@ -5,6 +5,7 @@
 //	Shader related stuff - not yet known
 
 #include "ShaderProgramD3D11.h"
+#include <d3d11.h>
 
 cShaderProgramD3D11::cShaderProgramD3D11( size_t vertexFormatSize,  ID3D11InputLayout* inputLayout /*= NULL*/, ID3D11VertexShader* vs /*= NULL*/, ID3D11PixelShader* ps /*= NULL*/)
 :vs(vs), ps(ps), inputLayout(inputLayout), vertexFormatSize(vertexFormatSize) {
