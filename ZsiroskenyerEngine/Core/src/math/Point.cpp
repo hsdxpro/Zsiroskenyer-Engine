@@ -1,6 +1,6 @@
 #include "Point.h"
 
-Point::Point(int32 X, int32 Y)
+Point::Point(int X, int Y)
 :x(X), y(Y) {
 }
 

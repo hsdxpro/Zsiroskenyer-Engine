@@ -23,3 +23,7 @@ Vec2 Vec2::operator / (const Vec2& p) const {
 Vec2 Vec2::operator * (const Vec2& p) const {
 	return Vec2(x * p.x, y * p.y);
 }
+
+bool Vec2::operator == (const Vec2& p) const {
+	return x == p.x && y == p.y;
+}

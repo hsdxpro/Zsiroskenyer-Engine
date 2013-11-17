@@ -136,7 +136,7 @@ void cPhysicsEngineBullet::GetCollisionShapeEdges(Vec3* edges, size_t size, size
 	size_t nObjs = physicsWorld->getNumCollisionObjects();
 
 	// Vec3* edges to small
-	ZSASSERT(size >= nObjs * sizeof(Vec3));
+	ASSERT(size >= nObjs * sizeof(Vec3));
 
 	size_t edgeIndex = 0;
 	nEdges = 0;
