@@ -17,32 +17,39 @@ class cResourceManager;
 
 class cGraphicsEngine : public IGraphicsEngine {
 public:
+	// lifecycle (creation, destruction)
 	cGraphicsEngine();
 	~cGraphicsEngine();
 	void Release() override;
+
+	// utlity
 	void ReloadResources() override;
-
-	void RenderSceneForward() override;
-
 	void SetActiveCamera(cCamera* cam) override;
-
 	cGraphicsEntity* CreateEntity(const zsString& geomPath, const zsString& mtlPath) override;
 
+	// rendering
+	void RenderSceneForward() override;
+	
+	// sub-component accessors
 	cSceneManager*		GetSceneManager();
 	cResourceManager*	GetResourceManager();
 	IGraphicsApi*		GetGraphicsApi() override;
 	IShaderManager*		GetShaderManager() override;
-
 	cCamera*			GetActiveCamera() override;
-private:	
+private:
+	// sub-compnents
 	IGraphicsApi* gApi;
 	IShaderManager* shaderManager;
 	cResourceManager* resourceManager;
 	cSceneManager* sceneManager;
 
+	// deferred renderer helper subclass
 	class cDeferredRenderer {
 	public:
+		cDeferredRenderer(cGraphicsEngine& parent);
+		~cDeferredRenderer();
 	private:
+		ITexture2D* 
 	};
 };
 
