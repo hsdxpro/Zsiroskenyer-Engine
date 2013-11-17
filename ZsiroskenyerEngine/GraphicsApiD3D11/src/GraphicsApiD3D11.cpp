@@ -60,11 +60,14 @@ void cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
 }
 
 void cGraphicsApiD3D11::Release() {
+	delete this;
+}
+cGraphicsApiD3D11::~cGraphicsApiD3D11() {
 	ID3D11RenderTargetView *nulltarget[] = {0};
 	d3dcon->OMSetRenderTargets(1, nulltarget, 0);
 
-	if(d3dcon)d3dcon->ClearState();
-	if(d3dcon)d3dcon->Flush();
+	if (d3dcon)d3dcon->ClearState();
+	if (d3dcon)d3dcon->Flush();
 
 	SAFE_RELEASE(backBufferRTV);
 	SAFE_RELEASE(backBufferDSV);
@@ -72,6 +75,7 @@ void cGraphicsApiD3D11::Release() {
 	SAFE_RELEASE(d3dcon);
 	SAFE_RELEASE(d3dsc);
 }
+
 
 void cGraphicsApiD3D11::CreateDevice() {
 	// create Graphic Infrastructure factory
@@ -276,8 +280,8 @@ void cGraphicsApiD3D11::CreateDefaultStates(const D3D11_CULL_MODE& cullMode, con
 	rState->Release();
 }
 
-bool cGraphicsApiD3D11::SetRenderTarget(ITexture2D* target, unsigned slotIdx) {
-	return false;
+eGapiResult cGraphicsApiD3D11::SetRenderTarget(ITexture2D* target, unsigned slotIdx) {
+	return eGapiResult::ERROR_UNKNOWN;
 }
 
 void cGraphicsApiD3D11::SetRenderTargetDefault() {
@@ -285,7 +289,7 @@ void cGraphicsApiD3D11::SetRenderTargetDefault() {
 	d3dcon->OMSetRenderTargets(1, &backBufferRTV, backBufferDSV);
 }
 
-IVertexBuffer* cGraphicsApiD3D11::CreateVertexBuffer(size_t size, eUsage usage, void* data /*= NULL*/) {
+eGapiResult	cGraphicsApiD3D11::CreateVertexBuffer(IVertexBuffer** resource, size_t size, eUsage usage, void* data/*= NULL*/) {
 	ID3D11Buffer* buffer = NULL;
 
 	D3D11_BUFFER_DESC desc;
@@ -306,15 +310,18 @@ IVertexBuffer* cGraphicsApiD3D11::CreateVertexBuffer(size_t size, eUsage usage, 
 	resData.SysMemSlicePitch = 0;
 
 	HRESULT hr = d3ddev->CreateBuffer(&desc, &resData, &buffer);
-	if (hr!=S_OK) {
-		return NULL;
-	}
-	else {
-		return new cVertexBufferD3D11(buffer, desc.ByteWidth, usage);
-	}
+	switch (hr) {
+		case S_OK: 
+			*resource = new cVertexBufferD3D11(buffer, desc.ByteWidth, usage);
+			eGapiResult::OK;
+		case E_OUTOFMEMORY:
+			return eGapiResult::ERROR_OUT_OF_MEMORY;
+		default:
+			return eGapiResult::ERROR_UNKNOWN;
+	}	
 }
 
-IIndexBuffer* cGraphicsApiD3D11::CreateIndexBuffer(size_t size , eUsage usage, void* data /*= NULL*/) {
+eGapiResult	cGraphicsApiD3D11::CreateIndexBuffer(IIndexBuffer** resource, size_t size, eUsage usage, void* data/*= NULL*/) {
 	ID3D11Buffer* buffer = NULL;
 
 	D3D11_BUFFER_DESC desc;
@@ -335,15 +342,18 @@ IIndexBuffer* cGraphicsApiD3D11::CreateIndexBuffer(size_t size , eUsage usage, v
 	resData.SysMemSlicePitch = 0;
 
 	HRESULT hr = d3ddev->CreateBuffer(&desc, &resData, &buffer);
-	if (hr != S_OK) {
-		return NULL;
-	}
-	else {
-		return new cIndexBufferD3D11(buffer, desc.ByteWidth, usage);
+	switch (hr) {
+		case S_OK:
+			*resource = new cIndexBufferD3D11(buffer, desc.ByteWidth, usage);
+			eGapiResult::OK;
+		case E_OUTOFMEMORY:
+			return eGapiResult::ERROR_OUT_OF_MEMORY;
+		default:
+			return eGapiResult::ERROR_UNKNOWN;
 	}
 }
 
-IConstantBuffer* cGraphicsApiD3D11::CreateConstantBuffer(size_t size , eUsage usage, void* data /*= NULL*/) {
+eGapiResult cGraphicsApiD3D11::CreateConstantBuffer(IConstantBuffer** resource, size_t size, eUsage usage, void* data/* = NULL*/) {
 	ID3D11Buffer* buffer = NULL;
 
 	D3D11_BUFFER_DESC desc;
@@ -364,45 +374,50 @@ IConstantBuffer* cGraphicsApiD3D11::CreateConstantBuffer(size_t size , eUsage us
 	resData.SysMemSlicePitch = 0;
 
 	HRESULT hr = d3ddev->CreateBuffer(&desc, &resData, &buffer);
-	if (hr != S_OK) {
-		return NULL;
-	}
-	else {
-		return new cConstantBufferD3D11(buffer, desc.ByteWidth, usage);
+	switch (hr) {
+		case S_OK:
+			*resource = new cConstantBufferD3D11(buffer, desc.ByteWidth, usage);
+			eGapiResult::OK;
+		case E_OUTOFMEMORY:
+			return eGapiResult::ERROR_OUT_OF_MEMORY;
+		default:
+			return eGapiResult::ERROR_UNKNOWN;
 	}
 }
 
-ITexture2D*	cGraphicsApiD3D11::CreateTexture(const zsString& filePath) {
+eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const zsString& filePath) {
 	// Shader Resource View of texture
 	ID3D11ShaderResourceView* srv;
-
-	size_t width;
-	size_t height;
-
 	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(d3ddev, filePath.c_str(), 0, 0, &srv, 0);
-	if(FAILED(hr)) {
-		ILog::GetInstance()->MsgBox(L"cGraphicsApiD3D11::CreateTexture Failed to load :" + filePath);
-	} else {
-		ILog::GetInstance()->Log(L"Texture Created: " + filePath);
 
-		// Get Width, Height
-		ID3D11Texture2D* tex2D;
-		srv->GetResource((ID3D11Resource**)&tex2D);
-		D3D11_TEXTURE2D_DESC texDesc;
-		tex2D->GetDesc(&texDesc);
-		width = texDesc.Width;
-		height = texDesc.Height;
-		tex2D->Release();
+	switch (hr) {
+		case S_OK: {
+		   // Get Width, Height
+		   size_t width;
+		   size_t height;
+		   ID3D11Texture2D* tex2D;
+		   srv->GetResource((ID3D11Resource**)&tex2D);
+		   D3D11_TEXTURE2D_DESC texDesc;
+		   tex2D->GetDesc(&texDesc);
+		   width = texDesc.Width;
+		   height = texDesc.Height;
+		   tex2D->Release();
+		   // return
+		   *resource = new cTexture2DColorD3D11(srv, width, height);
+		   return eGapiResult::OK;
+		}
+		case D3D11_ERROR_FILE_NOT_FOUND:
+			return eGapiResult::ERROR_UNKNOWN;
+		default:
+			return eGapiResult::ERROR_UNKNOWN;
 	}
-
-	return new cTexture2DColorD3D11(srv, width, height);
 }
 
-ITexture2D*	cGraphicsApiD3D11::CreateTexture(unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, eBind bind) {
-	return NULL;
+eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, eBind bind) {
+	return eGapiResult::ERROR_UNKNOWN;
 }
 
-IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPath) {
+eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, const zsString& shaderPath) {
 	// asd/asd/myShader    cut extension
 	zsString pathNoExt = shaderPath.substr(0, shaderPath.size() - 3);
 
@@ -577,80 +592,79 @@ IShaderProgram* cGraphicsApiD3D11::CreateShaderProgram(const zsString& shaderPat
 			SAFE_RELEASE(blobs[i]);
 	SAFE_RELEASE(cgFile);
 
-	return new cShaderProgramD3D11( alignedByteOffset, inputLayout, vs, ps);
+	*resource = new cShaderProgramD3D11( alignedByteOffset, inputLayout, vs, ps);
+	return eGapiResult::OK;
 }
 
-bool cGraphicsApiD3D11::WriteBuffer(IIndexBuffer* buffer , void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
+eGapiResult cGraphicsApiD3D11::WriteBuffer(IIndexBuffer* buffer , void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
 	ASSERT(buffer!=NULL);
 
 	if (buffer->GetSize()<size+offset)
-		return false;
+		return eGapiResult::ERROR_OUT_OF_RANGE;
+
+	HRESULT hr;
+	ID3D11Buffer* d3dBuffer = (ID3D11Buffer*)buffer;
+	D3D11_MAPPED_SUBRESOURCE mappedRes;
+
+	hr = d3dcon->Map(d3dBuffer, 0, D3D11_MAP_WRITE, 0, &mappedRes);
+	if (hr!=S_OK)
+		return eGapiResult::ERROR_INVALID_ARG;
+
+	memcpy((void*)(size_t(mappedRes.pData)+offset), source, size);
+
+	d3dcon->Unmap(d3dBuffer, 0);
+
+	return eGapiResult::OK;
+}
+
+eGapiResult cGraphicsApiD3D11::WriteBuffer(IVertexBuffer* buffer, void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
+	ASSERT(buffer!=NULL);
+
+	if (buffer->GetSize()<size+offset)
+		return eGapiResult::ERROR_OUT_OF_RANGE;
 
 	HRESULT hr = S_OK;
 	ID3D11Buffer* d3dBuffer = (ID3D11Buffer*)buffer;
 	D3D11_MAPPED_SUBRESOURCE mappedRes;
 
 	hr = d3dcon->Map(d3dBuffer, 0, D3D11_MAP_WRITE, 0, &mappedRes);
-	if (hr!=S_OK) {
-		return false;
-	}
+	if (hr!=S_OK)
+		return eGapiResult::ERROR_INVALID_ARG;
 
 	memcpy((void*)(size_t(mappedRes.pData)+offset), source, size);
 
 	d3dcon->Unmap(d3dBuffer, 0);
 
-	return true;
+	return eGapiResult::OK;
 }
 
-bool cGraphicsApiD3D11::WriteBuffer(IVertexBuffer* buffer, void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
+eGapiResult cGraphicsApiD3D11::ReadBuffer(IIndexBuffer* buffer , void* dest, size_t size, size_t offset /*= 0*/) {
 	ASSERT(buffer!=NULL);
 
 	if (buffer->GetSize()<size+offset)
-		return false;
-
-	HRESULT hr = S_OK;
-	ID3D11Buffer* d3dBuffer = (ID3D11Buffer*)buffer;
-	D3D11_MAPPED_SUBRESOURCE mappedRes;
-
-	hr = d3dcon->Map(d3dBuffer, 0, D3D11_MAP_WRITE, 0, &mappedRes);
-	if (hr!=S_OK) {
-		return false;
-	}
-
-	memcpy((void*)(size_t(mappedRes.pData)+offset), source, size);
-
-	d3dcon->Unmap(d3dBuffer, 0);
-
-	return true;
-}
-
-bool cGraphicsApiD3D11::ReadBuffer(IIndexBuffer* buffer , void* dest, size_t size, size_t offset /*= 0*/) {
-	ASSERT(buffer!=NULL);
-
-	if (buffer->GetSize()<size+offset)
-		return false;
+		return eGapiResult::ERROR_OUT_OF_RANGE;
 
 	HRESULT hr = S_OK;
 	ID3D11Buffer* d3dBuffer = (ID3D11Buffer*)buffer;
 	D3D11_MAPPED_SUBRESOURCE mappedRes;
 
 	hr = d3dcon->Map(d3dBuffer, 0, D3D11_MAP_READ, 0, &mappedRes);
-	if (hr!=S_OK) {
-		return false;
-	}
+	if (hr!=S_OK)
+		return eGapiResult::ERROR_INVALID_ARG;
+
 
 	memcpy(dest, (void*)(size_t(mappedRes.pData)+offset), size);
 
 	d3dcon->Unmap(d3dBuffer, 0);
 
-	return true;
+	return eGapiResult::OK;
 }
 
-bool cGraphicsApiD3D11::ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset /*= 0*/) {
+eGapiResult cGraphicsApiD3D11::ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset /*= 0*/) {
 	ASSERT(buffer!=NULL);
 
 	if (buffer->GetSize()<size+offset)
-		return false;
+		return eGapiResult::ERROR_OUT_OF_RANGE;
 
 	HRESULT hr = S_OK;
 	ID3D11Buffer* d3dBuffer = (ID3D11Buffer*)buffer;
@@ -658,14 +672,14 @@ bool cGraphicsApiD3D11::ReadBuffer(IVertexBuffer* buffer, void* dest, size_t siz
 
 	hr = d3dcon->Map(d3dBuffer, 0, D3D11_MAP_READ, 0, &mappedRes);
 	if (hr!=S_OK) {
-		return false;
+		return eGapiResult::ERROR_INVALID_ARG;
 	}
 
 	memcpy(dest, (void*)(size_t(mappedRes.pData) + offset), size);
 
 	d3dcon->Unmap(d3dBuffer, 0);
 
-	return true;
+	return eGapiResult::OK;
 }
 
 void cGraphicsApiD3D11::SetVSConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) {
