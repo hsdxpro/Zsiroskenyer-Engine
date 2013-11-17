@@ -26,11 +26,11 @@ public:
 	virtual void Release() = 0;
 
 	// resources
-	virtual IVertexBuffer*	CreateVertexBuffer(size_t nVertices, size_t vertexStride, eUsage usage, void* data = NULL) = 0;
+	virtual IVertexBuffer*	CreateVertexBuffer(size_t size, eUsage usage, void* data = NULL) = 0;
 	virtual IIndexBuffer*	CreateIndexBuffer(size_t size, eUsage usage, void* data = NULL) = 0;
 	virtual IConstantBuffer*CreateConstantBuffer(size_t size, eUsage usage, void* data = NULL) = 0;
 	virtual ITexture2D*		CreateTexture(const zsString& filePath) = 0;
-	virtual ITexture2D*		CreateTexture(unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, eBind bind);
+	virtual ITexture2D*		CreateTexture(unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, eBind bind) = 0;
 	virtual IShaderProgram* CreateShaderProgram(const zsString& shaderPath) = 0;
 
 	virtual bool WriteBuffer(IIndexBuffer* buffer , void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) = 0;
