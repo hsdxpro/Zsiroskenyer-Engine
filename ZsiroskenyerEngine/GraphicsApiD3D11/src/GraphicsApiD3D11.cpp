@@ -395,15 +395,17 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const zsStri
 		   // Get Width, Height
 		   size_t width;
 		   size_t height;
+
 		   ID3D11Texture2D* tex2D;
 		   srv->GetResource((ID3D11Resource**)&tex2D);
-		   D3D11_TEXTURE2D_DESC texDesc;
-		   tex2D->GetDesc(&texDesc);
-		   width = texDesc.Width;
-		   height = texDesc.Height;
+
+		   D3D11_TEXTURE2D_DESC texDesc; tex2D->GetDesc(&texDesc);
+			 width = texDesc.Width;
+			 height = texDesc.Height;
 		   tex2D->Release();
+
 		   // return
-		   *resource = new cTexture2DD3D11(srv, width, height);
+		   *resource = new cTexture2DD3D11(width, height, srv);
 		   return eGapiResult::OK;
 		}
 		case D3D11_ERROR_FILE_NOT_FOUND:
@@ -414,6 +416,12 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const zsStri
 }
 
 eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, eBind bind) {
+
+	UINT bindFlag;
+	switch (bind)
+	D3D11_TEXTURE2D_DESC texDesc;
+	texDesc.ArraySize = 1;
+	texDesc.BindFlags = bindFlag;
 	return eGapiResult::ERROR_UNKNOWN;
 }
 
@@ -750,8 +758,8 @@ void cGraphicsApiD3D11::SetInstanceData() {
 }
 
 void cGraphicsApiD3D11::SetTexture(const ITexture2D* tex, size_t slotIdx) {
-	ID3D11ShaderResourceView *srv = ((cTexture2DD3D11*)tex)->GetSRV();
-	d3dcon->PSSetShaderResources(slotIdx, 1, &srv);
+	const ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)tex)->GetSRV();
+	d3dcon->PSSetShaderResources(slotIdx, 1, (ID3D11ShaderResourceView**)&srv);
 }
 
 void cGraphicsApiD3D11::SetShaderProgram(IShaderProgram* shProg) {
@@ -822,17 +830,47 @@ void cGraphicsApiD3D11::CompileCgToHLSL(const zsString& cgFilePath, const zsStri
 		case eProfileCG::VS_5_0 :
 			entryAndProfile =  L"-profile vs_5_0 -entry VS_MAIN";
 			break;
+		case eProfileCG::HS_5_0:
+			entryAndProfile = L"-profile hs_5_0 -entry HS_MAIN";
+			break;
+		case eProfileCG::DS_5_0:
+			entryAndProfile = L"-profile ds_5_0 -entry DS_MAIN";
+			break;
+		case eProfileCG::GS_5_0:
+			entryAndProfile = L"-profile gs_5_0 -entry GS_MAIN";
+			break;
 		case eProfileCG::PS_5_0 :
-			entryAndProfile =  L"-profile ps_5_0 -entry PS_MAIN";
+			entryAndProfile = L"-profile ps_5_0 -entry PS_MAIN";
 			break;
-		case eProfileCG::VS_4_0 :
-			entryAndProfile =  L"-profile vs_4_0 -entry VS_MAIN";
+		case eProfileCG::VS_4_0:
+			entryAndProfile = L"-profile vs_4_0 -entry VS_MAIN";
 			break;
-		case eProfileCG::PS_4_0 :
-			entryAndProfile =  L"-profile ps_4_0 -entry PS_MAIN";
+		case eProfileCG::HS_4_0:
+			entryAndProfile = L"-profile hs_4_0 -entry HS_MAIN";
+			break;
+		case eProfileCG::DS_4_0:
+			entryAndProfile = L"-profile ds_4_0 -entry DS_MAIN";
+			break;
+		case eProfileCG::GS_4_0:
+			entryAndProfile = L"-profile gs_4_0 -entry GS_MAIN";
+			break;
+		case eProfileCG::PS_4_0:
+			entryAndProfile = L"-profile ps_4_0 -entry PS_MAIN";
+			break;
+		case eProfileCG::VS_3_0:
+			entryAndProfile = L"-profile vs_3_0 -entry VS_MAIN";
+			break;
+		case eProfileCG::PS_3_0:
+			entryAndProfile = L"-profile ps_3_0 -entry PS_MAIN";
+			break;
+		case eProfileCG::VS_2_0:
+			entryAndProfile = L"-profile vs_2_0 -entry VS_MAIN";
+			break;
+		case eProfileCG::PS_2_0:
+			entryAndProfile = L"-profile ps_2_0 -entry PS_MAIN";
 			break;
 	}
-	//cgc.exe proba.fx -profile vs_3_0 -entry MAIN -o proba.vs
+	//cgc.exe proba.fx -profile vs_5_0 -entry MAIN -o proba.vs
 	zsString shellParams = cgcExePath + L" " + cgFilePath + L" " + entryAndProfile + L" -o " + hlslFilePath;
 
 	// Process infos
