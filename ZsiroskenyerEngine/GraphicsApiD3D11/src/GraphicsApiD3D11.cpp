@@ -6,7 +6,7 @@
 #include "IndexBufferD3D11.h"
 #include "ConstantBufferD3D11.h"
 #include "ShaderProgramD3D11.h"
-#include "Texture2DColorD3D11.h"
+#include "Texture2DD3D11.h"
 
 #include "../../Core/src/IFile.h"
 
@@ -15,7 +15,7 @@ cGraphicsApiD3D11::tDxConfig cGraphicsApiD3D11::tDxConfig::MEDIUM = cGraphicsApi
 cGraphicsApiD3D11::tDxConfig cGraphicsApiD3D11::tDxConfig::HIGH = cGraphicsApiD3D11::tDxConfig();
 cGraphicsApiD3D11::tDxConfig cGraphicsApiD3D11::swapChainConfig = cGraphicsApiD3D11::tDxConfig::DEFAULT;
 
-cGraphicsApiD3D11::tDxConfig::tDxConfig() 
+cGraphicsApiD3D11::tDxConfig::tDxConfig()
 	:multiSampleQuality(0), multiSampleCount(1), createDeviceAtMaxResolution(false), createDeviceFullScreen(false) {
 }
 
@@ -403,7 +403,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const zsStri
 		   height = texDesc.Height;
 		   tex2D->Release();
 		   // return
-		   *resource = new cTexture2DColorD3D11(srv, width, height);
+		   *resource = new cTexture2DD3D11(srv, width, height);
 		   return eGapiResult::OK;
 		}
 		case D3D11_ERROR_FILE_NOT_FOUND:
@@ -750,7 +750,7 @@ void cGraphicsApiD3D11::SetInstanceData() {
 }
 
 void cGraphicsApiD3D11::SetTexture(const ITexture2D* tex, size_t slotIdx) {
-	ID3D11ShaderResourceView *srv = ((cTexture2DColorD3D11*)tex)->GetSRV();
+	ID3D11ShaderResourceView *srv = ((cTexture2DD3D11*)tex)->GetSRV();
 	d3dcon->PSSetShaderResources(slotIdx, 1, &srv);
 }
 
