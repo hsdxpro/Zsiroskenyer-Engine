@@ -8,16 +8,28 @@
 
 #pragma once
 
+// enumerations
 enum class eUsage {
 	DEFAULT = 1,
 	IMMUTABLE,
 	DYNAMIC,
-	STAGING
+	STAGING,
 };
 
+
 enum class eBind {
+	VERTEX_BUFFER	= 0x1,
+	INDEX_BUFFER	= 0x2,
+	CONSTANT_BUFFER	= 0x04,
+	SHADER_RESOURCE	= 0x8,
+	RENDER_TARGET	= 0x20,
+	DEPTH_STENCIL	= 0x40,
+};
 
 
+enum class eCPUAccess {
+	WRITE = 1,
+	READ,
 };
 
 enum class eFormat {

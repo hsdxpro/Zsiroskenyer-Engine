@@ -14,6 +14,8 @@ class IConstantBuffer;
 class IShaderProgram;
 class ITexture2D;
 
+
+
 enum class ePrimitiveTopology {
 	LINE_LIST,
 	TRIANGLE_LIST,
@@ -23,11 +25,12 @@ class IGraphicsApi {
 public:
 	virtual void Release() = 0;
 
-	//buffers
+	// resources
 	virtual IVertexBuffer*	CreateVertexBuffer(size_t nVertices, size_t vertexStride, eUsage usage, void* data = NULL) = 0;
 	virtual IIndexBuffer*	CreateIndexBuffer(size_t size, eUsage usage, void* data = NULL) = 0;
 	virtual IConstantBuffer*CreateConstantBuffer(size_t size, eUsage usage, void* data = NULL) = 0;
 	virtual ITexture2D*		CreateTexture(const zsString& filePath) = 0;
+	virtual ITexture2D*		CreateTexture(unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, eBind bind);
 	virtual IShaderProgram* CreateShaderProgram(const zsString& shaderPath) = 0;
 
 	virtual bool WriteBuffer(IIndexBuffer* buffer , void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) = 0;
@@ -36,7 +39,7 @@ public:
 	virtual bool ReadBuffer(IIndexBuffer* buffer , void* dest, size_t size, size_t offset = 0) = 0;
 	virtual bool ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset = 0) = 0;
 
-	// draw
+	// rendering
 	virtual void Clear(bool target = true, bool depth = false, bool stencil = false) = 0;
 	virtual void Present() = 0;
 
@@ -45,6 +48,7 @@ public:
 	virtual void DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex = 0, size_t idxStartInstance = 0) = 0;
 	virtual void DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex = 0, size_t idxStartInstance = 0) = 0;
 
+	virtual bool SetRenderTarget(ITexture2D* target, unsigned index);
 	virtual void SetRenderTargetDefault() = 0;
 
 	virtual void SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) = 0;
