@@ -53,8 +53,8 @@
     <ClInclude Include="src\memory\fixed_size_pool.h" />
     <ClInclude Include="src\memory\tlsf.h" />
     <ClInclude Include="src\multithreading\spinlock.h" />
-    <ClInclude Include="src\Node.h" />
     <ClInclude Include="src\Renderer.h" />
+    <ClInclude Include="src\ResourceProperty.h" />
     <ClInclude Include="src\shared_ptr.h" />
     <ClInclude Include="src\storage\tree.h" />
     <ClInclude Include="src\Timer.h" />
