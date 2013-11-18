@@ -64,4 +64,6 @@ public:
 
 	// misc
 	virtual void SetWindow(IWindow *renderWindow) = 0;
+
+	virtual ITexture2D* GetDefaultRenderTarget() const = 0;
 };

@@ -13,6 +13,7 @@
 #include "../../Core/src/IWindow.h"
 #include "../../Core/src/common.h"
 
+class cTexture2DD3D11;
 class IVertexBuffer;
 class IIndexBuffer;
 class IConstantBuffer;
@@ -61,6 +62,10 @@ public:
 
 	};
 
+	cGraphicsApiD3D11();
+	~cGraphicsApiD3D11();
+	void Release() override;
+
 	// buffers
 	eGapiResult	CreateVertexBuffer(IVertexBuffer** resource, size_t size, eUsage usage, void* data = NULL) override;
 	eGapiResult	CreateIndexBuffer(IIndexBuffer** resource, size_t size, eUsage usage, void* data = NULL) override;
@@ -97,30 +102,26 @@ public:
 	void SetPrimitiveTopology(ePrimitiveTopology t) override;
 	void SetWindow(IWindow *renderWindow) override;
 
-	cGraphicsApiD3D11();
-	~cGraphicsApiD3D11();
-	void Release() override;
+	ITexture2D* GetDefaultRenderTarget() const override;
+
 private:
-	void CreateDevice();
-	void CreateMostAcceptableSwapChain(size_t width, size_t height, HWND windowHandle, const tDxConfig& config);
-	void CreateRenderTargetViewForBB(const tDxConfig& config);
-	void CreateDefaultStates(const D3D11_CULL_MODE& cullMode, const D3D11_FILL_MODE& fillMode);
+	eGapiResult CreateDevice();
+	eGapiResult CreateMostAcceptableSwapChain(size_t width, size_t height, HWND windowHandle, const tDxConfig& config);
+	eGapiResult CreateRenderTargetViewForBB(const tDxConfig& config);
+	eGapiResult CreateDefaultStates(const D3D11_CULL_MODE& cullMode, const D3D11_FILL_MODE& fillMode);
 	HRESULT CompileShaderFromFile(const zsString& fileName, const zsString& entry, const zsString& profile, ID3DBlob** ppBlobOut);
-	void CompileCgToHLSL(const zsString& cgFileName, const zsString& hlslFileName, eProfileCG compileProfile);
+	eGapiResult CompileCgToHLSL(const zsString& cgFileName, const zsString& hlslFileName, eProfileCG compileProfile);
+
 protected:
 	// backBuffer will be the main render target
-	ID3D11RenderTargetView *backBufferRTV;
-	ID3D11DepthStencilView *backBufferDSV;
-	D3D11_VIEWPORT backBufferVP;
-	size_t bbWidth;
-	size_t bbHeight;
+	cTexture2DD3D11* defaultRenderTarget;
+	D3D11_VIEWPORT defaultVP;
 
 	// Main Dx interfaces
 	ID3D11DeviceContext *d3dcon;
 	ID3D11Device *d3ddev;
 	IDXGISwapChain *d3dsc;
 	static tDxConfig swapChainConfig;
-
 };
 
 // DLL accessor

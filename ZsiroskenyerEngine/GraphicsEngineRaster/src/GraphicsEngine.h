@@ -9,7 +9,7 @@
 
 #include "../../Core/src/IGraphicsEngine.h"
 
-
+class ITexture2D;
 class IGraphicsApi;
 class IShaderManager;
 class cSceneManager;
@@ -48,8 +48,12 @@ private:
 	public:
 		cDeferredRenderer(cGraphicsEngine& parent);
 		~cDeferredRenderer();
-	private:
-		//ITexture2D* 
+	protected:
+		ITexture2D* diffuse;
+		ITexture2D* normal;
+		ITexture2D* specular;	
+
+		cGraphicsEngine& gEngine;
 	};
 };
 

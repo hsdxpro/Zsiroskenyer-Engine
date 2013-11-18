@@ -156,3 +156,23 @@ IShaderManager* cGraphicsEngine::GetShaderManager() {
 cCamera* cGraphicsEngine::GetActiveCamera() {
 	return sceneManager->GetActiveCamera();
 }
+
+
+
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////DEFERRED RENDERER///////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
+:gEngine(parent) {
+	IGraphicsApi* gapi = parent.GetGraphicsApi();
+
+	ITexture2D* bb = gapi->GetDefaultRenderTarget();
+	//eGapiResult gr = gapi->CreateTexture(diffuse, )
+}
+
+cGraphicsEngine::cDeferredRenderer::~cDeferredRenderer() {
+	SAFE_RELEASE(diffuse);
+	SAFE_RELEASE(normal);
+	SAFE_RELEASE(specular);
+}
