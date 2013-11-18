@@ -25,8 +25,10 @@ using namespace std;
 
 
 cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
-: gBuffer{NULL, NULL, NULL}, shaderGBuffer(NULL), shaderComposition(NULL), parent(parent), gApi(parent.gApi)
+: shaderGBuffer(NULL), shaderComposition(NULL), parent(parent), gApi(parent.gApi)
 {	
+	for (auto& v : gBuffer)
+		v = NULL;
 	// create shaders
 	shaderGBuffer = parent.shaderManager->LoadShader(L"shaders/", L"deferred_gbuffer.cg");
 	shaderComposition =	parent.shaderManager->LoadShader(L"shaders/", L"deferred_compose.cg");
@@ -43,7 +45,7 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 	auto r3 = gApi->CreateTexture(&gBuffer[2], BUFFER_WIDTH, BUFFER_HEIGHT, 1, 1, eFormat::R8G8B8A8_UNORM, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
 	auto rc = gApi->CreateTexture(&compositionBuffer, BUFFER_WIDTH, BUFFER_HEIGHT, 1, 1, eFormat::R16G16B16A16_FLOAT, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
 	if (r1 != eGapiResult::OK || r2 != eGapiResult::OK || r3 != eGapiResult::OK || rc!=eGapiResult::OK) {
-		for (auto v : gBuffer)
+		for (auto& v : gBuffer)
 			SAFE_RELEASE(v);
 		SAFE_RELEASE(compositionBuffer);
 		parent.shaderManager->UnloadShader(shaderGBuffer);
@@ -53,7 +55,7 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 }
 
 cGraphicsEngine::cDeferredRenderer::~cDeferredRenderer() {
-	for (auto v : gBuffer)
+	for (auto& v : gBuffer)
 		SAFE_RELEASE(v);
 	SAFE_RELEASE(compositionBuffer);
 }
