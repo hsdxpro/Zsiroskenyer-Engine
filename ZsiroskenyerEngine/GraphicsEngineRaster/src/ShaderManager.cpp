@@ -34,7 +34,7 @@ void cShaderManager::UnloadShader(IShaderProgram* shader) {
 	if (it==loadedShaders.left.end())
 		return;
 
-	delete shader;
+	shader->Release();
 	loadedShaders.left.erase(it);
 }
 
@@ -43,7 +43,7 @@ void cShaderManager::UnloadShader(const zsString& shaderName) {
 	if (it==loadedShaders.right.end())
 		return;
 
-	delete it->second;
+	it->second->Release();
 	loadedShaders.right.erase(it);
 }
 

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+  <asset><contributor><author></author><authoring_tool>FBX COLLADA exporter</authoring_tool><comments></comments></contributor><created>2013-11-17T22:58:51Z</created><keywords></keywords><modified>2013-11-17T22:58:51Z</modified><revision></revision><subject></subject><title></title><unit meter="1.000000" name="centimeter"></unit><up_axis>Z_UP</up_axis></asset>
+  <library_images>
+    <image id="Map #7-image" name="Map #7"><init_from>file://D:\Programming\Zsiroskenyer-Engine\Game Assets\textures\fake_tunnel.tif</init_from></image>
+  </library_images>
+  <library_materials>
+    <material id="fake_tunnel" name="fake_tunnel">
+      <instance_effect url="#fake_tunnel-fx"/>
+    </material>
+  </library_materials>
+  <library_effects>
+    <effect id="fake_tunnel-fx" name="fake_tunnel">
+      <profile_COMMON>
+        <technique sid="standard">
+          <phong>
+            <emission>
+              <color sid="emission">0.000000  0.000000 0.000000 1.000000</color>
+            </emission>
+            <ambient>
+              <color sid="ambient">0.588235  0.588235 0.588235 1.000000</color>
+            </ambient>
+            <diffuse>
+              <texture texture="Map #7-image" texcoord="CHANNEL0">
+                <extra>
+                  <technique profile="MAYA">
+                    <wrapU sid="wrapU0">TRUE</wrapU>
+                    <wrapV sid="wrapV0">TRUE</wrapV>
+                    <blend_mode>ADD</blend_mode>
+                  </technique>
+                </extra>
+              </texture>
+            </diffuse>
+            <specular>
+              <color sid="specular">0.000000  0.000000 0.000000 1.000000</color>
+            </specular>
+            <shininess>
+              <float sid="shininess">2.000000</float>
+            </shininess>
+            <reflective>
+              <color sid="reflective">0.000000  0.000000 0.000000 1.000000</color>
+            </reflective>
+            <reflectivity>
+              <float sid="reflectivity">1.000000</float>
+            </reflectivity>
+            <transparent opaque="RGB_ZERO">
+              <texture texture="Map #7-image" texcoord="CHANNEL0">
+                <extra>
+                  <technique profile="MAYA">
+                    <wrapU sid="wrapU0">TRUE</wrapU>
+                    <wrapV sid="wrapV0">TRUE</wrapV>
+                    <blend_mode>ADD</blend_mode>
+                  </technique>
+                </extra>
+              </texture>
+            </transparent>
+            <transparency>
+              <float sid="transparency">0.000000</float>
+            </transparency>
+          </phong>
+        </technique>
+      </profile_COMMON>
+    </effect>
+  </library_effects>
+  <library_geometries>
+    <geometry id="fake_tunnel-lib" name="fake_tunnelMesh">
+      <mesh>
+        <source id="fake_tunnel-POSITION">
+          <float_array id="fake_tunnel-POSITION-array" count="12">
+-3.000000 -3.000000 0.000000
+3.000000 -3.000000 0.000000
+-3.000000 3.000000 0.000000
+3.000000 3.000000 0.000000
+</float_array>
+          <technique_common>
+            <accessor source="#fake_tunnel-POSITION-array" count="4" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="fake_tunnel-Normal0">
+          <float_array id="fake_tunnel-Normal0-array" count="18">
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+</float_array>
+          <technique_common>
+            <accessor source="#fake_tunnel-Normal0-array" count="6" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="fake_tunnel-UV0">
+          <float_array id="fake_tunnel-UV0-array" count="8">
+0.000000 0.000000
+1.000000 0.000000
+0.000000 1.000000
+1.000000 1.000000
+</float_array>
+          <technique_common>
+            <accessor source="#fake_tunnel-UV0-array" count="4" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="fake_tunnel-VERTEX">
+          <input semantic="POSITION" source="#fake_tunnel-POSITION"/>
+        </vertices>
+        <triangles count="2" material="fake_tunnel"><input semantic="VERTEX" offset="0" source="#fake_tunnel-VERTEX"/><input semantic="NORMAL" offset="1" source="#fake_tunnel-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#fake_tunnel-UV0"/><p> 0 0 0 1 1 1 3 2 3 3 3 3 2 4 2 0 5 0</p></triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_visual_scenes>
+    <visual_scene id="fake_tunnel" name="fake_tunnel">
+      <node name="fake_tunnel" id="fake_tunnel" sid="fake_tunnel"><matrix sid="matrix">0.993292 -0.000000 -0.115630 6.243967 -0.115630 -0.000000 -0.993292 30.186371 0.000000 1.000000 -0.000000 3.634373 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#fake_tunnel-lib"><bind_material><technique_common><instance_material symbol="fake_tunnel" target="#fake_tunnel"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
+      <extra><technique profile="MAX3D"><frame_rate>30.000000</frame_rate></technique><technique profile="FCOLLADA"><start_time>0.000000</start_time><end_time>3.333333</end_time></technique></extra>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#fake_tunnel"></instance_visual_scene>
+  </scene>
+</COLLADA>

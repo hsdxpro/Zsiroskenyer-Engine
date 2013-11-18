@@ -18,6 +18,8 @@ struct ID3D11PixelShader;
 class cShaderProgramD3D11 : public IShaderProgram {
 public:
 	cShaderProgramD3D11(size_t vertexFormatSize, ID3D11InputLayout* inputLayout = NULL, ID3D11VertexShader* vs = NULL, ID3D11HullShader* hs = NULL, ID3D11DomainShader* ds = NULL, ID3D11GeometryShader* gs = NULL, ID3D11PixelShader* ps = NULL);
+	~cShaderProgramD3D11();
+	void Release() override;
 
 	ID3D11VertexShader* GetVertexShader() const;
 	ID3D11HullShader* GetHullShader() const;
@@ -27,7 +29,7 @@ public:
 	ID3D11InputLayout* GetInputLayout() const;
 
 	size_t GetVertexFormatSize() const override;
-
+	
 private:
 	ID3D11InputLayout* inputLayout;
 	size_t vertexFormatSize;

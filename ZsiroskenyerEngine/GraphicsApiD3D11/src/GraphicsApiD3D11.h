@@ -66,7 +66,7 @@ public:
 	eGapiResult	CreateIndexBuffer(IIndexBuffer** resource, size_t size, eUsage usage, void* data = NULL) override;
 	eGapiResult CreateConstantBuffer(IConstantBuffer** resource, size_t size, eUsage usage, void* data = NULL) override;
 	eGapiResult CreateTexture(ITexture2D** resource, const zsString& filePath) override;
-	eGapiResult CreateTexture(ITexture2D** resource, unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, eBind bind) override;
+	eGapiResult CreateTexture(ITexture2D** resource, unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, unsigned bind) override;
 	eGapiResult CreateShaderProgram(IShaderProgram** resource, const zsString& shaderPath) override;
 
 	eGapiResult WriteBuffer(IIndexBuffer* buffer, void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) override;

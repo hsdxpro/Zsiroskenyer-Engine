@@ -43,6 +43,7 @@
     <ClCompile Include="src\ResourceReference.cpp">
       <Filter>Managers</Filter>
     </ClCompile>
+    <ClCompile Include="src\DeferredRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GraphicsEngine.h" />

@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\DeferredRenderer.cpp" />
     <ClCompile Include="src\DllMain.cpp" />
     <ClCompile Include="src\Geometry.cpp" />
     <ClCompile Include="src\GraphicsEngine.cpp" />

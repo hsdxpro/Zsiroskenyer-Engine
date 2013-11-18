@@ -14,8 +14,11 @@ class IGraphicsApi;
 class IShaderManager;
 class cSceneManager;
 class cResourceManager;
+class ITexture2D;
+class IShaderProgram;
 
 class cGraphicsEngine : public IGraphicsEngine {
+	class cDeferredRenderer;
 public:
 	// lifecycle (creation, destruction)
 	cGraphicsEngine();
@@ -42,6 +45,7 @@ private:
 	IShaderManager* shaderManager;
 	cResourceManager* resourceManager;
 	cSceneManager* sceneManager;
+	cDeferredRenderer* deferredRenderer;
 
 	// deferred renderer helper subclass
 	class cDeferredRenderer {
@@ -49,7 +53,12 @@ private:
 		cDeferredRenderer(cGraphicsEngine& parent);
 		~cDeferredRenderer();
 	private:
-		//ITexture2D* 
+		ITexture2D* gBuffer[3];
+		ITexture2D* compositionBuffer;
+		IGraphicsApi* gApi;
+		IShaderProgram* shaderGBuffer;
+		IShaderProgram* shaderComposition;
+		cGraphicsEngine& parent;
 	};
 };
 

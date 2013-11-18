@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+  <asset><contributor><author></author><authoring_tool>FBX COLLADA exporter</authoring_tool><comments></comments></contributor><created>2013-11-17T22:59:01Z</created><keywords></keywords><modified>2013-11-17T22:59:01Z</modified><revision></revision><subject></subject><title></title><unit meter="1.000000" name="centimeter"></unit><up_axis>Z_UP</up_axis></asset>
+  <library_images>
+    <image id="Map #9-image" name="Map #9"><init_from>file://D:\Programming\Zsiroskenyer-Engine\Game Assets\textures\coyote_alpha.tif</init_from></image>
+  </library_images>
+  <library_materials>
+    <material id="coyote" name="coyote">
+      <instance_effect url="#coyote-fx"/>
+    </material>
+  </library_materials>
+  <library_effects>
+    <effect id="coyote-fx" name="coyote">
+      <profile_COMMON>
+        <technique sid="standard">
+          <phong>
+            <emission>
+              <color sid="emission">0.000000  0.000000 0.000000 1.000000</color>
+            </emission>
+            <ambient>
+              <color sid="ambient">0.588235  0.588235 0.588235 1.000000</color>
+            </ambient>
+            <diffuse>
+              <texture texture="Map #9-image" texcoord="CHANNEL0">
+                <extra>
+                  <technique profile="MAYA">
+                    <wrapU sid="wrapU0">TRUE</wrapU>
+                    <wrapV sid="wrapV0">TRUE</wrapV>
+                    <blend_mode>ADD</blend_mode>
+                  </technique>
+                </extra>
+              </texture>
+            </diffuse>
+            <specular>
+              <color sid="specular">0.000000  0.000000 0.000000 1.000000</color>
+            </specular>
+            <shininess>
+              <float sid="shininess">2.000000</float>
+            </shininess>
+            <reflective>
+              <color sid="reflective">0.000000  0.000000 0.000000 1.000000</color>
+            </reflective>
+            <reflectivity>
+              <float sid="reflectivity">1.000000</float>
+            </reflectivity>
+            <transparent opaque="RGB_ZERO">
+              <texture texture="Map #9-image" texcoord="CHANNEL0">
+                <extra>
+                  <technique profile="MAYA">
+                    <wrapU sid="wrapU0">TRUE</wrapU>
+                    <wrapV sid="wrapV0">TRUE</wrapV>
+                    <blend_mode>ADD</blend_mode>
+                  </technique>
+                </extra>
+              </texture>
+            </transparent>
+            <transparency>
+              <float sid="transparency">0.000000</float>
+            </transparency>
+          </phong>
+        </technique>
+      </profile_COMMON>
+    </effect>
+  </library_effects>
+  <library_geometries>
+    <geometry id="coyote-lib" name="coyoteMesh">
+      <mesh>
+        <source id="coyote-POSITION">
+          <float_array id="coyote-POSITION-array" count="12">
+-0.450000 -1.100000 0.000000
+0.450000 -1.100000 0.000000
+-0.450000 1.100000 0.000000
+0.450000 1.100000 0.000000
+</float_array>
+          <technique_common>
+            <accessor source="#coyote-POSITION-array" count="4" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="coyote-Normal0">
+          <float_array id="coyote-Normal0-array" count="18">
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+0.000000 0.000000 1.000000
+</float_array>
+          <technique_common>
+            <accessor source="#coyote-Normal0-array" count="6" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="coyote-UV0">
+          <float_array id="coyote-UV0-array" count="8">
+0.000000 0.000000
+1.000000 0.000000
+0.000000 1.000000
+1.000000 1.000000
+</float_array>
+          <technique_common>
+            <accessor source="#coyote-UV0-array" count="4" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="coyote-VERTEX">
+          <input semantic="POSITION" source="#coyote-POSITION"/>
+        </vertices>
+        <triangles count="2" material="coyote"><input semantic="VERTEX" offset="0" source="#coyote-VERTEX"/><input semantic="NORMAL" offset="1" source="#coyote-Normal0"/><input semantic="TEXCOORD" offset="2" set="0" source="#coyote-UV0"/><p> 0 0 0 1 1 1 3 2 3 3 3 3 2 4 2 0 5 0</p></triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_visual_scenes>
+    <visual_scene id="coyote" name="coyote">
+      <node name="coyote" id="coyote" sid="coyote"><matrix sid="matrix">0.966411 -0.000000 -0.257001 3.723112 -0.257001 -0.000000 -0.966411 30.194109 -0.000000 1.000000 -0.000000 1.547949 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#coyote-lib"><bind_material><technique_common><instance_material symbol="coyote" target="#coyote"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
+      <extra><technique profile="MAX3D"><frame_rate>30.000000</frame_rate></technique><technique profile="FCOLLADA"><start_time>0.000000</start_time><end_time>3.333333</end_time></technique></extra>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#coyote"></instance_visual_scene>
+  </scene>
+</COLLADA>
