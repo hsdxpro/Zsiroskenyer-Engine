@@ -15,6 +15,4 @@ enum class eGapiResult : signed int {
 	ERROR_OUT_OF_RANGE,
 	ERROR_INVALID_CALL,
 	ERROR_INVALID_ARG,
-
-
 };

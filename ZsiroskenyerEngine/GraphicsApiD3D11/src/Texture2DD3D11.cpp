@@ -24,14 +24,14 @@ size_t cTexture2DD3D11::GetHeight() const {
 	return height;
 }
 
-const ID3D11ShaderResourceView* cTexture2DD3D11::GetSRV() const {
+ID3D11ShaderResourceView* cTexture2DD3D11::GetSRV() {
 	return srv;
 }
 
-const ID3D11RenderTargetView* cTexture2DD3D11::GetRTV() const {
+ID3D11RenderTargetView* cTexture2DD3D11::GetRTV() {
 	return rtv;
 }
 
-const ID3D11DepthStencilView* cTexture2DD3D11::GetDSV() const {
+ ID3D11DepthStencilView* cTexture2DD3D11::GetDSV()  {
 	return dsv;
 }
