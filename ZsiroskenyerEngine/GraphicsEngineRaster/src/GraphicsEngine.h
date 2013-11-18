@@ -9,7 +9,7 @@
 
 #include "../../Core/src/IGraphicsEngine.h"
 
-
+class ITexture2D;
 class IGraphicsApi;
 class IShaderManager;
 class cSceneManager;
@@ -52,6 +52,7 @@ private:
 	public:
 		cDeferredRenderer(cGraphicsEngine& parent);
 		~cDeferredRenderer();
+<<<<<<< ours
 	private:
 		ITexture2D* gBuffer[3];
 		ITexture2D* compositionBuffer;
@@ -59,6 +60,14 @@ private:
 		IShaderProgram* shaderGBuffer;
 		IShaderProgram* shaderComposition;
 		cGraphicsEngine& parent;
+=======
+	protected:
+		ITexture2D* diffuse;
+		ITexture2D* normal;
+		ITexture2D* specular;	
+
+		cGraphicsEngine& gEngine;
+>>>>>>> theirs
 	};
 };
 
