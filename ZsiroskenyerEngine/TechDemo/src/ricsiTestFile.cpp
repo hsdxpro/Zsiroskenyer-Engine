@@ -34,6 +34,10 @@ int ricsiMain() {
 	IGraphicsEngine* gEngine = core->GetGraphicsEngine();
 	IGraphicsApi* gApi = gEngine->GetGraphicsApi();
 
+	// TESZT
+	ITexture2D* testTex;
+	eGapiResult gr = gApi->CreateTexture(&testTex, 1024, 1024, 1, 1, eFormat::R32G32B32A32_FLOAT, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
+
 	// Window description
 	IWindow::tDesc winDesc;
 		winDesc.brush = IWindow::eBrush::RENDER_;
