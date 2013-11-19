@@ -129,13 +129,7 @@ Matrix44 Matrix44::operator / (const float& f) const {
 }
 
 bool Matrix44::operator == (const Matrix44& m2) const {
-	float *p1 = (float*)m, *p2 = (float*)m2.m;
-	for (int i=0; i<16; i++) {
-		if (p1[i] != p2[i]) {
-			return false;
-		}
-	}
-	return true;
+	return memcmp(this, &m2, sizeof(Matrix44)) == 0;
 }
 
 bool Matrix44::operator != (const Matrix44& m2) const {
@@ -143,10 +137,10 @@ bool Matrix44::operator != (const Matrix44& m2) const {
 }
 
 Matrix44& Matrix44::Identity() {
-	_11 = 1.f; _12 = 0.f; _13 = 0.f; _14 = 0.f;
-	_21 = 0.f; _22 = 1.f; _23 = 0.f; _24 = 0.f;
-	_31 = 0.f; _32 = 0.f; _33 = 1.f; _34 = 0.f;
-	_41 = 0.f; _42 = 0.f; _43 = 0.f; _44 = 1.f;
+	_11 = 1; _12 = 0; _13 = 0; _14 = 0;
+	_21 = 0; _22 = 1; _23 = 0; _24 = 0;
+	_31 = 0; _32 = 0; _33 = 1; _34 = 0;
+	_41 = 0; _42 = 0; _43 = 0; _44 = 1;
 	return *this;
 }
 
@@ -165,14 +159,6 @@ void Matrix44::SetColumn(size_t idx, const Vec4& v) {
 }
 
 Matrix44& Matrix44::Transpose() {
-
-	/*
-	Vec4 rows[4];
-	memcpy(rows, this, sizeof(Matrix44));
-	for(size_t i = 0; i < 4; i++)
-		SetColumn(i, rows[i]);
-	*/
-	
 	float t;
 	t=_12;	_12 = _21;	_21=t;
 	t=_13;	_13 = _31;	_31=t;
@@ -227,7 +213,7 @@ Matrix44& Matrix44::Inverse(Matrix44& out) {
 	out._31 =  (_21*B - _22*D + _24*F);
 	out._41 = -(_21*C - _22*E + _23*F);
 
-	det_A = 1.f/(_11*out._11 + _12 * out._21 + _13 * out._31 + _14 * out._41);
+	det_A = 1.0f / (_11*out._11 + _12 * out._21 + _13 * out._31 + _14 * out._41);
 
 	out._12 = -(_12*A - _13*B + _14*C) * det_A;
 	out._22 =  (_11*A - _13*D + _14*E) * det_A;
@@ -304,17 +290,17 @@ Matrix44& Matrix44::Translation(const Vec3& v) {
 }
 
 Matrix44 Matrix44::RotationEuler(const Vec3& rot) {
-	return Matrix44::RotationEulerZ(rot.z) * Matrix44::RotationEulerX(rot.x) * Matrix44::RotationEulerY(rot.y);
+	return Matrix44::RotationEulerX(rot.x) * Matrix44::RotationEulerY(rot.y) * Matrix44::RotationEulerZ(rot.z);
 }
 
 Matrix44 Matrix44::RotationEuler(float rotX, float rotY, float rotZ) {
-	return Matrix44::RotationEulerZ(rotZ) * Matrix44::RotationEulerX(rotX) * Matrix44::RotationEulerY(rotY);
+	return Matrix44::RotationEulerX(rotX) * Matrix44::RotationEulerY(rotY) * Matrix44::RotationEulerZ(rotZ);
 }
 
 Matrix44 Matrix44::RotationEulerX(float angle) {
 	Matrix44 m;
-		m._32 = m._23 = sin(angle); m._32 *= -1;
 		m._22 = m._33 = cos(angle);
+		m._32 = m._23 = sin(angle); m._32 *= -1;
 	return m;
 }
 

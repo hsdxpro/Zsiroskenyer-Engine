@@ -22,7 +22,7 @@
 // TODO REMOVE THAT OR I KILL MYSELF
 #include <windows.h>
 
-#define CAM_MOVE_SPEED 120
+#define CAM_MOVE_SPEED 20
 void freeCamUpdate(cCamera& cam, float tDelta);
 
 int ricsiMain() {
@@ -120,36 +120,6 @@ int ricsiMain() {
 }
 
 void freeCamUpdate(cCamera& cam, float tDelta) {
-	// CAMERA ROTATION...
-	// get delta mouse
-	static POINT lastMousePos;
-	static POINT currMousePos;
-
-	static bool firstRun = true;
-	if (firstRun) {
-		GetCursorPos(&lastMousePos);
-		firstRun = false;
-	}
-
-	GetCursorPos(&currMousePos);
-
-	const int pixelsPer360ROT = 600;
-
-	static float mouseDeltaX = 0;
-	static float mouseDeltaY = 0;
-
-	mouseDeltaX += (float)(currMousePos.x - lastMousePos.x) / pixelsPer360ROT * ZS_PI2;
-	mouseDeltaY += (float)(-currMousePos.y + lastMousePos.y) / pixelsPer360ROT * ZS_PI2;
-
-	lastMousePos = currMousePos;
-
-	// Camera rotation
-	Matrix44 camRotMat = Matrix44::RotationEuler(mouseDeltaY, 0, mouseDeltaX);
-
-	// Rot front vec with that. apply target
-	Vec3 frontVec(0, 1, 0);
-	frontVec = frontVec * camRotMat;
-	cam.SetTarget(cam.GetPos() + frontVec);
 
 // CAMERA MOVING
 	Vec3 deltaMove(0, 0, 0);
@@ -164,4 +134,37 @@ void freeCamUpdate(cCamera& cam, float tDelta) {
 	
 	// Set new position
 	cam.SetPos(cam.GetPos() + deltaMove);
+
+
+	// CAMERA ROTATION...
+	// get delta mouse
+	static POINT lastMousePos;
+	static POINT currMousePos;
+
+	static bool firstRun = true;
+	if (firstRun) {
+		GetCursorPos(&lastMousePos);
+		firstRun = false;
+	}
+	GetCursorPos(&currMousePos);
+
+	const int pixelsPer360ROT = 600;
+
+	static float mouseDeltaX = 0;
+	static float mouseDeltaY = 0;
+
+	mouseDeltaX += (float)(-currMousePos.x + lastMousePos.x) / pixelsPer360ROT * ZS_PI2;
+	mouseDeltaY += (float)(-currMousePos.y + lastMousePos.y) / pixelsPer360ROT * ZS_PI2;
+
+	lastMousePos = currMousePos;
+
+	// Camera rotation
+	Matrix44 camRotMat = Matrix44::RotationEuler(mouseDeltaY, 0, mouseDeltaX);
+
+	// Rot front vec with that. apply target
+	Vec3 frontVec(0, 1, 0);
+	frontVec = frontVec * camRotMat;
+	
+
+	cam.SetTarget(cam.GetPos() + frontVec);
 }
