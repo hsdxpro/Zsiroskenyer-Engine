@@ -31,7 +31,7 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 	// read up dae scene
 	char ansiFilePath[256];
 	zsString::ConvertUniToAnsi(filePath, ansiFilePath, 256);
-	const aiScene* scene = importer.ReadFile(ansiFilePath, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_ImproveCacheLocality | aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_FlipWindingOrder | aiProcess_MakeLeftHanded);
+	const aiScene* scene = importer.ReadFile(ansiFilePath, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_ImproveCacheLocality | aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_FlipWindingOrder);
 	if(scene == NULL) {
 		ILog::GetInstance()->MsgBox(L"Can found 3D model: " + filePath);
 		throw FileNotFoundException();
@@ -88,17 +88,17 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 				// Vertex Data
 				if (mesh->HasPositions()) {
 					supTmpVec = &mesh->mVertices[vertIdx];
-					vertices[vertIdx + vertexI].pos = Vec3(supTmpVec->x, supTmpVec->z, supTmpVec->y);
+					vertices[vertIdx + vertexI].pos = Vec3(supTmpVec->x, supTmpVec->y, supTmpVec->z);
 				}
 
 				if (mesh->HasNormals()) {
 					supTmpVec = &mesh->mNormals[vertIdx];
-					vertices[vertIdx + vertexI].normal = Vec3(supTmpVec->x, supTmpVec->z, supTmpVec->y);
+					vertices[vertIdx + vertexI].normal = Vec3(supTmpVec->x, supTmpVec->y, supTmpVec->z);
 				}
 
 				if (mesh->HasTangentsAndBitangents()) {
 					supTmpVec = &mesh->mTangents[vertIdx];
-					vertices[vertIdx + vertexI].tangent = Vec3(supTmpVec->x, supTmpVec->z, supTmpVec->y);
+					vertices[vertIdx + vertexI].tangent = Vec3(supTmpVec->x, supTmpVec->y, supTmpVec->z);
 				}
 
 				// @TODO not general algorithm, wee need to handle more UV channels

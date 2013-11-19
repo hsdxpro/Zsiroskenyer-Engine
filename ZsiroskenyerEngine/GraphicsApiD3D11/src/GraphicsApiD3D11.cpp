@@ -572,7 +572,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const zsStri
 	}
 }
 
-eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, unsigned bind) {
+eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, unsigned bind, eFormat depthStencilFormat /*= eFormat::UNKNOWN*/) {
 
 	ID3D11Texture2D* tex;
 	// Outputs
@@ -586,24 +586,33 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, unsigned wid
 
 	UINT colorBindFlag = 0;
 	if (isRenderTarget)   colorBindFlag |= D3D11_BIND_RENDER_TARGET;
-	if (isShaderBindable) colorBindFlag |= D3D11_BIND_RENDER_TARGET;
+	if (isShaderBindable) colorBindFlag |= D3D11_BIND_SHADER_RESOURCE;
 
-	if (!(isRenderTarget && isShaderBindable && hasDepthStencil))
+
+	// TODO REMOVE THAT SHIT, MAKE INTERFACE FUNCTION TO FORCE CONVERTING / API FROM GENERAL FORMAT TO HIS FORMAT
+	DXGI_FORMAT convertedFormat;
+	switch (format) {
+		case eFormat::R8G8B8A8_UNORM	: convertedFormat = DXGI_FORMAT_R8G8B8A8_UNORM;		break;
+		case eFormat::R16G16_SINT		: convertedFormat = DXGI_FORMAT_R16G16_SINT;		break;
+		case eFormat::R16G16B16A16_FLOAT: convertedFormat = DXGI_FORMAT_R16G16B16A16_FLOAT; break;
+		case eFormat::R32G32B32A32_FLOAT: convertedFormat = DXGI_FORMAT_R32G32B32A32_FLOAT; break;
+	default:
 		return eGapiResult::ERROR_INVALID_ARG;
-
-	DXGI_FORMAT f = DXGI_FORMAT_R32G32B32A32_FLOAT; // TODO LOOOL :D YOU CAN JUST GET THAT SHIT :)
+	}
+	
 	D3D11_TEXTURE2D_DESC texDesc;
 		texDesc.ArraySize = arraySize;
 		texDesc.BindFlags = colorBindFlag;
-		texDesc.CPUAccessFlags = 0; // TODO YOU CAN'T WRITE TEXTURES MUHAHA
-		texDesc.Format = f;
+		texDesc.CPUAccessFlags = 0; // TODO YOU CAN'T WRITE TEXTURES MUHAHA ( PARAMETERIZE )
+		texDesc.Format = convertedFormat;
 		texDesc.Height = height;
 		texDesc.Width = width;
 		texDesc.MipLevels = mipLevels;
 		texDesc.MiscFlags = 0;
 		texDesc.SampleDesc.Count = 1;
 		texDesc.SampleDesc.Quality = 0;
-		texDesc.Usage = D3D11_USAGE_DEFAULT;
+		texDesc.Usage = D3D11_USAGE_DEFAULT; // TODO ( PARAMETERIZE )
+	// Create texture
 	HRESULT hr = d3ddev->CreateTexture2D(&texDesc, NULL, &tex);
 	if (FAILED(hr)) {
 		ASSERT_MSG(false, L"Can't create texture2D");
@@ -613,7 +622,6 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, unsigned wid
 			return eGapiResult::ERROR_INVALID_ARG;
 	}
 		
-	
 	// Create RenderTarget view
 	if (isRenderTarget) {
 		hr = d3ddev->CreateRenderTargetView(tex, NULL, &rtv);
@@ -631,6 +639,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, unsigned wid
 		hr = d3ddev->CreateShaderResourceView(tex, NULL, &srv);
 		if (FAILED(hr)) {
 			SAFE_RELEASE(tex);
+			SAFE_RELEASE(rtv);
 			if (hr == E_OUTOFMEMORY)
 				return eGapiResult::ERROR_OUT_OF_MEMORY;
 			else
@@ -642,10 +651,23 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, unsigned wid
 
 	// Create DepthStencil texture
 	if (hasDepthStencil) {
+		// Convert depthStencil format
+		DXGI_FORMAT f;
+		switch (depthStencilFormat) {
+			case eFormat::D24_UNORM_S8_UINT	: f = DXGI_FORMAT_D24_UNORM_S8_UINT;	break;
+			case eFormat::D32_FLOAT			: f = DXGI_FORMAT_D32_FLOAT;			break;
+			default:
+				SAFE_RELEASE(tex);
+				SAFE_RELEASE(rtv);
+				SAFE_RELEASE(srv);
+				return eGapiResult::ERROR_INVALID_ARG;
+			break;
+		}
+
 		texDesc.ArraySize = arraySize;
 		texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 		texDesc.CPUAccessFlags = 0; // TODO YOU CAN'T WRITE TEXTURES MUHAHA
-		texDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		texDesc.Format = f;
 		texDesc.Height = height;
 		texDesc.Width = width;
 		texDesc.MipLevels = mipLevels;
