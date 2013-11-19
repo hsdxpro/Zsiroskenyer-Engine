@@ -283,9 +283,6 @@ eGapiResult cGraphicsApiD3D11::CreateRenderTargetViewForBB(const tDxConfig& conf
 	}
 
 	// create DepthStencilView
-	//D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-	//dsvDesc.Format = tD.Format;
-	//dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	hr = d3ddev->CreateDepthStencilView(depthTexture, NULL, &dsv);
 	SAFE_RELEASE(depthTexture);
 	SAFE_RELEASE(backBuffer);
@@ -1081,6 +1078,26 @@ void cGraphicsApiD3D11::SetRenderTargetDefault() {
 	d3dcon->RSSetViewports(1, &defaultVP);
 	ID3D11RenderTargetView* rtv = defaultRenderTarget->GetRTV();
 	d3dcon->OMSetRenderTargets(1, &rtv, (ID3D11DepthStencilView*)defaultRenderTarget->GetDSV());
+}
+
+eGapiResult cGraphicsApiD3D11::SetBackBufferSize(unsigned width, unsigned height) {
+
+	// Release default render target (BackBuffer)
+	SAFE_DELETE(defaultRenderTarget);
+
+	HRESULT hr = d3dsc->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_SWAP_EFFECT_DISCARD | DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
+	if (!FAILED(hr)) {
+		defaultVP.Width = width;
+		defaultVP.Height = height;
+		return CreateRenderTargetViewForBB(swapChainConfig);
+	}
+	switch (hr) {
+		case S_OK: return eGapiResult::OK;   break;
+		case E_OUTOFMEMORY: return eGapiResult::ERROR_OUT_OF_MEMORY; break;
+		case E_INVALIDARG:	return eGapiResult::ERROR_INVALID_ARG; break;
+		default:
+			return eGapiResult::ERROR_UNKNOWN;
+	}
 }
 
 ITexture2D* cGraphicsApiD3D11::GetDefaultRenderTarget() const {

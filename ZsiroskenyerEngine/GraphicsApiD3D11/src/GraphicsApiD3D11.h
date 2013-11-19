@@ -91,6 +91,7 @@ public:
 
 	eGapiResult SetRenderTarget(ITexture2D* target, unsigned slotIdx) override;
 	void SetRenderTargetDefault() override;
+	eGapiResult SetBackBufferSize(unsigned width, unsigned height) override;
 
 	void SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) override;
 	void SetIndexBuffer(const IIndexBuffer* indexBuffer) override;

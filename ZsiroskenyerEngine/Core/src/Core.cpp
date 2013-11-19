@@ -39,17 +39,15 @@ cCore::~cCore() {
 
 void cCore::DebugRender(unsigned long renderFlags) {
 	// Render Physics Triangles
+	static Vec3 edges[400000]; // TODO THIS IS NOT THE BEST FOR YOU :D
 	if(renderFlags & (unsigned long)eDebugRenderMode::PHYSICS_TRIANGLES) {
-		Vec3* edges = new Vec3[30000];
 		size_t nEdges;
-		physicsEngine->GetCollisionShapeEdges(edges, 30000, nEdges);
+		physicsEngine->GetCollisionShapeEdges(edges, 999999, nEdges);
 
 		// Render lines for physics..
 		cCamera* cam = graphicsEngine->GetActiveCamera();
 		Matrix44 viewProj = cam->GetViewMatrix() * cam->GetProjMatrix();
 		debugRenderer->RenderLines(viewProj, edges, nEdges, Vec3(1.0f, 0.0f, 0.0f));
-
-		delete[] edges;
 	}
 }
 

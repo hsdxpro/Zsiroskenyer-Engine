@@ -52,6 +52,7 @@ public:
 
 	virtual eGapiResult SetRenderTarget(ITexture2D* target, unsigned slotIdx) = 0;
 	virtual void SetRenderTargetDefault() = 0;
+	virtual eGapiResult SetBackBufferSize(unsigned width, unsigned height) = 0;
 
 	virtual void SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) = 0;
 	virtual void SetIndexBuffer(const IIndexBuffer* indexBuffer) = 0;

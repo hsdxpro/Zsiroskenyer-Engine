@@ -22,8 +22,10 @@
 // TODO REMOVE THAT OR I KILL MYSELF
 #include <windows.h>
 
+cEntity* player = NULL;
+
 #define CAM_MOVE_SPEED 20
-void freeCamUpdate(cCamera& cam, float tDelta);
+void updateDemo(cCamera& cam, float tDelta);
 
 int ricsiMain() {
 
@@ -33,10 +35,6 @@ int ricsiMain() {
 	// Get Modules
 	IGraphicsEngine* gEngine = core->GetGraphicsEngine();
 	IGraphicsApi* gApi = gEngine->GetGraphicsApi();
-
-	// TESZT
-	ITexture2D* testTex;
-	eGapiResult gr = gApi->CreateTexture(&testTex, 1024, 1024, 1, 1, eFormat::R32G32B32A32_FLOAT, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
 
 	// Window description
 	IWindow::tDesc winDesc;
@@ -78,7 +76,8 @@ int ricsiMain() {
 	}
 	
 	// Our player
-	core->AddEntity(basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 0.0);
+	player = core->AddEntity(basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 1.0);
+	player->SetPos(Vec3(9, 0, 4));
 
 	// Main loop
 	while(window->IsOpened()) {
@@ -90,7 +89,7 @@ int ricsiMain() {
 		// Update everything
 		float tDelta = cTimer::getDeltaSeconds();
 		size_t fps = cTimer::GetFps(tDelta);
-		freeCamUpdate(cam, tDelta);
+		updateDemo(cam, tDelta);
 		core->Update(tDelta);
 
 		static float timer1 = 0.0;
@@ -112,7 +111,7 @@ int ricsiMain() {
 		gEngine->RenderSceneForward();
 
 		// Debug rendering
-		//core->DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
+		core->DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
 
 		// Present SwapChain
 		gApi->Present();
@@ -123,10 +122,29 @@ int ricsiMain() {
 	return 0;
 }
 
-void freeCamUpdate(cCamera& cam, float tDelta) {
+void updateDemo(cCamera& cam, float tDelta) {
+	/*
+	static Quat playerRot;
+	Vec3 playerDir = Vec3(0, 1, 0) * playerRot;
+	const Vec3 up(0, 0, 1);
+	Vec3 playerPos(9, 0, 4);
 
-// CAMERA MOVING
+// Controlling player with WSAD
 	Vec3 deltaMove(0, 0, 0);
+	if (GetAsyncKeyState('W'))
+		deltaMove += playerDir  * tDelta;
+	if (GetAsyncKeyState('S'))
+		deltaMove += -playerDir  * tDelta;
+	if (GetAsyncKeyState('A'))
+		deltaMove += Vec3::Cross(playerDir, up)   * tDelta;
+	if (GetAsyncKeyState('D'))
+		deltaMove += Vec3::Cross(up, playerDir)   * tDelta;
+	playerPos += deltaMove;
+
+	player->SetPos(playerPos);
+	*/
+// CAMERA MOVING
+	Vec3 deltaMove = Vec3(0, 0, 0);
 	if (GetAsyncKeyState('W'))
 		deltaMove += cam.GetDirFront() * (CAM_MOVE_SPEED * tDelta);
 	if (GetAsyncKeyState('S'))
