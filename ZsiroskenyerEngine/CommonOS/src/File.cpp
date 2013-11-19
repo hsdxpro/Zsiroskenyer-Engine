@@ -70,7 +70,7 @@ bool cFile::ReadBinary(const zsString& path, void* data_out, const size_t& dataS
 		return false;
 
 	static char ansiPath[256];
-	zsString::UniToAnsi(path, ansiPath, 256);
+	zsString::ConvertUniToAnsi(path, ansiPath, 256);
 
 	
 	is.read((char*)data_out, dataSize);
@@ -175,7 +175,7 @@ size_t cFile::GetNLines() const {
 
 size_t cFile::GetSize() const {
 	static char ansiPath[256];
-	zsString::UniToAnsi(filePath, ansiPath, 256);
+	zsString::ConvertUniToAnsi(filePath, ansiPath, 256);
 
 	//path.tozsString::
 	struct stat results;
@@ -190,7 +190,7 @@ size_t cFile::GetSize() const {
 
 size_t cFile::GetSize(const zsString& path) {
 	static char ansiPath[256];
-	zsString::UniToAnsi(path, ansiPath, 256);
+	zsString::ConvertUniToAnsi(path, ansiPath, 256);
 
 	//path.tozsString::
 	struct stat results;

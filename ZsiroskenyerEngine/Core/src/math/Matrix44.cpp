@@ -166,12 +166,13 @@ void Matrix44::SetColumn(size_t idx, const Vec4& v) {
 
 Matrix44& Matrix44::Transpose() {
 
-	
+	/*
 	Vec4 rows[4];
 	memcpy(rows, this, sizeof(Matrix44));
 	for(size_t i = 0; i < 4; i++)
 		SetColumn(i, rows[i]);
-	/*
+	*/
+	
 	float t;
 	t=_12;	_12 = _21;	_21=t;
 	t=_13;	_13 = _31;	_31=t;
@@ -180,7 +181,7 @@ Matrix44& Matrix44::Transpose() {
 	t= _24;	_24 = _42;	_42=t;
 	t= _23;	_23 = _32;	_32=t;
 	t= _34;	_34 = _43;	_43=t;
-	*/
+	
 	return *this;
 };
 
@@ -302,53 +303,33 @@ Matrix44& Matrix44::Translation(const Vec3& v) {
 	return *this;
 }
 
-Matrix44& Matrix44::RotateEuler(const Vec3& rot) {
-	return RotationZ(rot.z) * RotationX(rot.x) * RotationY(rot.y);
+Matrix44 Matrix44::RotationEuler(const Vec3& rot) {
+	return Matrix44::RotationEulerZ(rot.z) * Matrix44::RotationEulerX(rot.x) * Matrix44::RotationEulerY(rot.y);
 }
 
-Matrix44& Matrix44::RotationX (float angle) {
-	Identity();
-	// compute sine and cosine
-	float sin_a, cos_a;
-	sin_a = sin(angle);
-	cos_a = cos(angle);
-	// set matrix
-	_22 = cos_a;
-	_23 = sin_a;
-	_32 = -sin_a;
-	_33 = cos_a;
-
-	return *this;
+Matrix44 Matrix44::RotationEuler(float rotX, float rotY, float rotZ) {
+	return Matrix44::RotationEulerZ(rotZ) * Matrix44::RotationEulerX(rotX) * Matrix44::RotationEulerY(rotY);
 }
 
-Matrix44& Matrix44::RotationY(float angle) {
-	Identity();
-	// compute sine and cosine
-	float sin_a, cos_a;
-	sin_a = sin(angle);
-	cos_a = cos(angle);
-	// set matrix
-	_11 = cos_a;
-	_13 = -sin_a;
-	_31 = sin_a;
-	_33 = cos_a;
-
-	return *this;
+Matrix44 Matrix44::RotationEulerX(float angle) {
+	Matrix44 m;
+		m._32 = m._23 = sin(angle); m._32 *= -1;
+		m._22 = m._33 = cos(angle);
+	return m;
 }
 
-Matrix44& Matrix44::RotationZ(float angle) {
-	Identity();
-	// compute sine and cosine
-	float sin_a, cos_a;
-	sin_a = sin(angle);
-	cos_a = cos(angle);
-	// set matrix
-	_11 = cos_a;
-	_12 = sin_a;
-	_21 = -sin_a;
-	_22 = cos_a;
+Matrix44 Matrix44::RotationEulerY(float angle) {
+	Matrix44 m;
+		m._11 = m._33 = cos(angle);
+		m._13 = m._31 = sin(angle); m._13 *= -1;
+	return m;
+}
 
-	return *this;
+Matrix44 Matrix44::RotationEulerZ(float angle) {
+	Matrix44 m;
+		m._11 = m._22 = cos(angle);
+		m._21 = m._12 = sin(angle); m._21 *= -1;
+	return m;
 }
 
 Matrix44& Matrix44::RotationAxisAngle(const Vec3& axis, float angle) {

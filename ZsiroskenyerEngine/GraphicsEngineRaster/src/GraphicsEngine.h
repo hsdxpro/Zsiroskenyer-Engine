@@ -46,7 +46,7 @@ private:
 	cResourceManager* resourceManager;
 	cSceneManager* sceneManager;
 	cDeferredRenderer* deferredRenderer;
-
+	/*
 	// deferred renderer helper subclass
 	class cDeferredRenderer {
 	public:
@@ -59,7 +59,7 @@ private:
 		IShaderProgram* shaderGBuffer;
 		IShaderProgram* shaderComposition;
 		cGraphicsEngine& parent;
-	};
+	};*/
 };
 
 

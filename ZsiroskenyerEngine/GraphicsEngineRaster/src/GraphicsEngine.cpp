@@ -73,19 +73,33 @@ void cGraphicsEngine::RenderSceneForward() {
 	
 	// Render each instanceGroup
 	for (auto& group : sceneManager->GetInstanceGroups()) {
+
 		// Set Geometry
 		const IIndexBuffer* ib = (*group->geom).GetIndexBuffer();
 		gApi->SetIndexBuffer(ib);
 		gApi->SetVertexBuffer((*(group->geom)).GetVertexBuffer(), shaderP->GetVertexFormatSize());
 
 		// Set SubMaterials
-		for(size_t i = 0; i < (*group->mtl).GetNSubMaterials(); i++) {
-			gApi->SetTexture((*(group->mtl))[i].textureDiffuse.get(), 0);
-			gApi->SetTexture((*(group->mtl))[i].textureNormal.get(), 1);
+		auto& mtl = *group->mtl;
+		for(size_t i = 0; i < mtl.GetNSubMaterials(); i++) {
+			ITexture2D* diffuse = mtl[i].textureDiffuse.get();
+			ITexture2D* normal = mtl[i].textureNormal.get();
+			ITexture2D* specular = mtl[i].textureSpecular.get();
+			ITexture2D* displace = mtl[i].textureDisplace.get();
+
+			if (diffuse != NULL)
+				gApi->SetTexture(diffuse, 0); // TODO NEVET KELLJEN BEÍRNI NE INDEXET WAWOOSOSOSO
+			if (normal != NULL)
+				gApi->SetTexture(normal, 1); // TODO NEVET KELLJEN BEÍRNI NE INDEXET, ÜDV :)
+			if (specular != NULL)
+				gApi->SetTexture(specular, 2); // TODO NEVET KELLJEN BEÍRNI NE INDEXET
+			if (displace != NULL)
+				gApi->SetTexture(displace, 3); // TODO NEVET KELLJEN BEÍRNI NE INDEXET
 		}
 		
 		// Draw each entity
 		for (auto& entity : group->entities) {
+
 			// Entity world matrix
 			Matrix44 world = entity->GetWorldMatrix();
 
@@ -106,20 +120,12 @@ void cGraphicsEngine::RenderSceneForward() {
 			IConstantBuffer* buffer;
 			gApi->CreateConstantBuffer(&buffer, sizeof(buff), eUsage::DEFAULT, &buff);
 			gApi->SetVSConstantBuffer(buffer, 0);
-			// Create, load constant buffers, World and WorldViewProj
-			/*IConstantBuffer* wvpBuffer = gApi->CreateConstantBuffer(sizeof(Matrix44), eUsage::DEFAULT, &wvp);
-			IConstantBuffer* worldBuffer= gApi->CreateConstantBuffer(sizeof(Matrix44), eUsage::DEFAULT, &world);
-				gApi->SetVSConstantBuffer(wvpBuffer, 0);
-				gApi->SetVSConstantBuffer(worldBuffer, 4);
-				*/
-			
+
 			// Draw entity..
 			gApi->DrawIndexed(ib->GetSize() / sizeof(unsigned));
 
 			// Free up constantBuffer
 			buffer->Release();
-			//wvpBuffer->Release();
-			//worldBuffer->Release();
 		}
 	}
 }

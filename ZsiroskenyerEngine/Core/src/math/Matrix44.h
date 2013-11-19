@@ -1,4 +1,4 @@
-// Matrix44.h By Zs�roskeny�r Engine 2013.10.09 23:17
+// Matrix44.h By Zsíroskenyér Engine 2013.10.09 23:17
 // Homogeneous matrix 4x4
 #pragma once
 
@@ -60,11 +60,13 @@ public:
 	Matrix44& Translate(float scX, float scY, float scZ);
 	Matrix44& Translate(const Vec3& t);
 
-	Matrix44& RotateEuler(const Vec3& rot);
+	static Matrix44 RotationEuler(const Vec3& rot);
+	static Matrix44 RotationEuler(float rotX, float rotY, float rotZ);
 
-	Matrix44& RotationX (float angle);
-	Matrix44& RotationY (float angle);
-	Matrix44& RotationZ (float angle);
+	static Matrix44 RotationEulerX (float angle);
+	static Matrix44 RotationEulerY(float angle);
+	static Matrix44 RotationEulerZ(float angle);
+
 	Matrix44& RotationAxisAngle (const Vec3& axis, float angle);
 	Matrix44& RotationQuat (const Quat&); // typecast ((Matrix44)quaternion) is possibly slower than this shit
 

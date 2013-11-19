@@ -53,14 +53,26 @@ int ricsiMain() {
 	gEngine->SetActiveCamera(&cam);
 
 	// Static terrain
+	zsString staticBaseNames[9] = { "coyote",
+									"crate",
+									"demo_cliff_fence",
+									"demo_ground",
+									"demo_house",
+									"demo_road",
+									"demo_tunnel",
+									"fake_tunnel",
+									"tower" 
+								  };
+
 	const float mass = 0.0;
 	zsString basePath = L"../../Game Assets/";
-	core->AddEntity(basePath + L"objects/demo_cliff_fence.dae",	basePath + L"objects/demo_cliff_fence.dae",	basePath + L"materials/test.zsm", mass);
-	core->AddEntity(basePath + L"objects/demo_ground.dae",		basePath + L"objects/demo_ground.dae",		basePath + L"materials/test.zsm", mass);
-	core->AddEntity(basePath + L"objects/demo_house.dae",		basePath + L"objects/demo_house.dae",		basePath + L"materials/test.zsm", mass);
-	core->AddEntity(basePath + L"objects/demo_road.dae",		basePath + L"objects/demo_road.dae",		basePath + L"materials/test.zsm", mass);
-	core->AddEntity(basePath + L"objects/demo_tunnel.dae",		basePath + L"objects/demo_tunnel.dae",		basePath + L"materials/test.zsm", mass);
 
+	ASSERT(sizeof(staticBaseNames) > 0);
+	for (size_t i = 0; i < sizeof(staticBaseNames) / sizeof(staticBaseNames[0]); i++) {
+		zsString geomPath = basePath + L"objects/" + staticBaseNames[i] + L".dae";
+		core->AddEntity(geomPath, geomPath, basePath + L"materials/" + staticBaseNames[i] + L".zsm", mass);
+	}
+	
 	// Our player
 	core->AddEntity(basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 0.0);
 
@@ -108,19 +120,48 @@ int ricsiMain() {
 }
 
 void freeCamUpdate(cCamera& cam, float tDelta) {
+	// CAMERA ROTATION...
+	// get delta mouse
+	static POINT lastMousePos;
+	static POINT currMousePos;
+
+	static bool firstRun = true;
+	if (firstRun) {
+		GetCursorPos(&lastMousePos);
+		firstRun = false;
+	}
+
+	GetCursorPos(&currMousePos);
+
+	const int pixelsPer360ROT = 600;
+
+	static float mouseDeltaX = 0;
+	static float mouseDeltaY = 0;
+
+	mouseDeltaX += (float)(currMousePos.x - lastMousePos.x) / pixelsPer360ROT * ZS_PI2;
+	mouseDeltaY += (float)(-currMousePos.y + lastMousePos.y) / pixelsPer360ROT * ZS_PI2;
+
+	lastMousePos = currMousePos;
+
+	// Camera rotation
+	Matrix44 camRotMat = Matrix44::RotationEuler(mouseDeltaY, 0, mouseDeltaX);
+
+	// Rot front vec with that. apply target
+	Vec3 frontVec(0, 1, 0);
+	frontVec = frontVec * camRotMat;
+	cam.SetTarget(cam.GetPos() + frontVec);
+
+// CAMERA MOVING
 	Vec3 deltaMove(0, 0, 0);
 	if (GetAsyncKeyState('W'))
 		deltaMove += cam.GetDirFront() * (CAM_MOVE_SPEED * tDelta);
 	if (GetAsyncKeyState('S'))
-		deltaMove += cam.GetDirBack() * (CAM_MOVE_SPEED * tDelta);
+		deltaMove += cam.GetDirBack()  * (CAM_MOVE_SPEED * tDelta);
 	if (GetAsyncKeyState('A'))
-		deltaMove += cam.GetDirLeft() * (CAM_MOVE_SPEED * tDelta);
+		deltaMove += cam.GetDirLeft()  * (CAM_MOVE_SPEED * tDelta);
 	if (GetAsyncKeyState('D'))
 		deltaMove += cam.GetDirRight() * (CAM_MOVE_SPEED * tDelta);
 	
 	// Set new position
 	cam.SetPos(cam.GetPos() + deltaMove);
-
-	// Hold direction
-	cam.SetDir(Vec3(0, 1, 0));
 }

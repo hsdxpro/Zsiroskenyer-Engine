@@ -160,7 +160,7 @@ typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, TLSFAllocator<wcha
 
 class zsString : public zsBasicString {
 public:
-	static void UniToAnsi(const zsString& src, char* dst, size_t nChars) {
+	static void ConvertUniToAnsi(const zsString& src, char* dst, size_t nChars) {
 		wcstombs(dst, src.c_str(), nChars);
 	}
 	
@@ -206,7 +206,7 @@ public:
 		*buf_out = '\0';
 	}
 
-	void zsString::GetFloats(std::vector<float>& floats_out) const {
+	void GetFloats(std::vector<float>& floats_out) const {
 		// Clear output if it's not clear
 		if(floats_out.size() != 0) 
 			floats_out.clear();
@@ -223,6 +223,23 @@ public:
 		} while (*end != '\0' && end != NULL);
 	}
 
+	zsString GetDirectory() const {
+		const wchar_t* str = c_str();
+		if (c_str()[0] == '\0')
+			return zsString();
+
+		
+		// Copy whole string
+		zsString directory = c_str();
+		
+		// Null terminate from right to left, while not reaching directory
+		size_t i = directory.size() - 1;
+		for ( ; directory[i] != '\\' && directory[i] != '/' && i >= 0; i--);
+
+		directory.resize(i + 1);
+
+		return directory;
+	}
 
 	// constructors
 	zsString() : zsBasicString() {};

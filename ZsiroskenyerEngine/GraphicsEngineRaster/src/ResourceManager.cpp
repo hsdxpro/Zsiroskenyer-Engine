@@ -84,11 +84,14 @@ cMaterialRef cResourceManager::GetMaterial(const zsString& filePath) {
 		IFile* file = IFile::Create(filePath);
 
 		// Number of subMaterials
-		size_t nSubMaterials = file->GetNLines() / 8;
+		size_t nSubMaterials = file->GetNLines() / 9;
 
 		// create material with nSubMaterials subMaterials
 		mtl = new cMaterial(nSubMaterials);
 		
+		// Texture path's relative to materials ;)
+		zsString mtlBasePath = filePath.GetDirectory();
+
 		for(size_t i = 0; i < nSubMaterials; i++) {
 			// subMaterial ID, not used yet
 			const zsString& idLine = file->GetLine();
@@ -111,17 +114,16 @@ cMaterialRef cResourceManager::GetMaterial(const zsString& filePath) {
 			(*mtl)[i].glossiness = floats[0];
 			
 			// Texture Diffuse
-			(*mtl)[i].textureDiffuse = GetTexture(file->GetLine().c_str() + 9);
+			(*mtl)[i].textureDiffuse = GetTexture(mtlBasePath + (file->GetLine().c_str() + 9));
 
 			// Texture Normal
-			(*mtl)[i].textureNormal = GetTexture(file->GetLine().c_str() + 8);
+			(*mtl)[i].textureNormal = GetTexture(mtlBasePath + (file->GetLine().c_str() + 8));
 
 			// Texture Specular
-			(*mtl)[i].textureSpecular = GetTexture(file->GetLine().c_str() + 10);
+			(*mtl)[i].textureSpecular = GetTexture(mtlBasePath + (file->GetLine().c_str() + 10));
 
 			// Texture Displace
-			(*mtl)[i].textureDisplace = GetTexture(file->GetLine().c_str() + 10);
-			
+			(*mtl)[i].textureDisplace = GetTexture(mtlBasePath + (file->GetLine().c_str() + 10));		
 		}
 
 		// insert into database

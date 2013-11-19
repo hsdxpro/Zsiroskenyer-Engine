@@ -5,7 +5,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-
+/*
 #include "GraphicsEngine.h"
 #include "SceneManager.h"
 
@@ -58,4 +58,4 @@ cGraphicsEngine::cDeferredRenderer::~cDeferredRenderer() {
 	for (auto& v : gBuffer)
 		SAFE_RELEASE(v);
 	SAFE_RELEASE(compositionBuffer);
-}
+}*/

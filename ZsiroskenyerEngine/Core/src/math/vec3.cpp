@@ -143,18 +143,11 @@ float Vec3::Lenght(const Vec3& v) {
 }
 
 
-Vec3 operator * (const Vec3& v, const Matrix44& m) {
-	Vec3 v2 = v;
+Vec3 Vec3::operator * (const Matrix44& m) const {
+	Vec3 v2 = *this;
 	v2 *= m;
 	return v2;
 }
-
-Vec3 operator * (const Matrix44& m, const Vec3& v) {
-	Vec3 v2 = v;
-	v2 *= m;
-	return v2;
-};
-
 
 std::ostream& operator << (std::ostream& os, Vec3 v) {
 	os << v.x << ',' << v.y << ',' << v.z;

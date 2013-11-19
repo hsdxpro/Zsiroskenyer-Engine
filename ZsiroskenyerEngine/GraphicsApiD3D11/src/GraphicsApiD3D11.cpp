@@ -25,10 +25,10 @@ cGraphicsApiD3D11::cGraphicsApiD3D11()
 	CreateDevice();
 
 	// Create default states
-	//CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_BACK, D3D11_FILL_MODE::D3D11_FILL_SOLID);
+	CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_BACK, D3D11_FILL_MODE::D3D11_FILL_SOLID);
 
 	// If you want WIREFRAME MODE
-	CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_NONE,D3D11_FILL_MODE::D3D11_FILL_WIREFRAME);
+	//CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_NONE,D3D11_FILL_MODE::D3D11_FILL_WIREFRAME);
 }
 
 void cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
@@ -330,6 +330,8 @@ eGapiResult cGraphicsApiD3D11::CreateDefaultStates(const D3D11_CULL_MODE& cullMo
 	}
 	d3dcon->RSSetState(rState);
 	rState->Release();
+
+	return eGapiResult::OK;
 }
 
 HRESULT cGraphicsApiD3D11::CompileShaderFromFile(const zsString& fileName, const zsString& entry, const zsString& profile, ID3DBlob** ppBlobOut) {
@@ -442,6 +444,7 @@ eGapiResult cGraphicsApiD3D11::CompileCgToHLSL(const zsString& cgFilePath, const
 	}
 
 	WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
+	return eGapiResult::OK;
 }
 
 eGapiResult	cGraphicsApiD3D11::CreateVertexBuffer(IVertexBuffer** resource, size_t size, eUsage usage, void* data/*= NULL*/) {
@@ -1015,6 +1018,7 @@ void cGraphicsApiD3D11::SetInstanceData() {
 }
 
 void cGraphicsApiD3D11::SetTexture(const ITexture2D* tex, size_t slotIdx) {
+	ASSERT(tex != NULL);
 	const ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)tex)->GetSRV();
 	d3dcon->PSSetShaderResources(slotIdx, 1, (ID3D11ShaderResourceView**)&srv);
 }
