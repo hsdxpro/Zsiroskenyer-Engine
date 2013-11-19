@@ -23,20 +23,50 @@
 #include "..\..\Core\src\math/Matrix44.h"
 #include "..\..\Core\src\common.h"
 
-// Construction of the graphics engine
-cGraphicsEngine::cGraphicsEngine() {
+#include <string>
+#include <stdexcept>
+#include <iostream>
+
+
+// DLL pure C interface
+extern "C"
+__declspec(dllexport) IGraphicsEngine* CreateGraphicsEngineRaster(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config) {
+	cGraphicsEngine* engine = NULL;
+	try {
+		engine = new cGraphicsEngine(targetWindow, screenWidth, screenHeight, config);
+	}
+	catch (std::exception& e) {
+		std::cerr << "[fatal] graphics engine creation failed with message: " << e.what() << std::endl;
+		delete engine;
+	}
+	return engine;
+}
+
+
+//	Construction of the graphics engine
+cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config) {
+	// create graphics api
 	gApi = Factory.CreateGraphicsD3D11();
 	if (!gApi)
-		throw UnknownErrorException("failed to create graphics api");
+		throw std::runtime_error("failed to create graphics api");
 	shaderManager = new cShaderManager(gApi);
 	resourceManager = new cResourceManager(gApi);
 	sceneManager = new cSceneManager();
 
-	// Basic 3D geom rendering
+	// create shader
+		// basic 3D geom rendering
 	shaderManager->LoadShader(L"shaders/",L"test.cg");
-
-	// Now, For debugging
+		// for debugging
 	shaderManager->LoadShader(L"shaders/",L"LINE_RENDERER.cg");
+
+	// create deferred renderer
+	try {
+		deferredRenderer = new cDeferredRenderer(*this);
+	}
+	catch (std::exception& e) {
+		std::cerr << "[non-fatal error (yet)] deferred renderer failed with message: " << e.what() << std::endl;
+		delete deferredRenderer;
+	}
 }
 cGraphicsEngine::~cGraphicsEngine() {
 	SAFE_DELETE(sceneManager);
@@ -49,12 +79,59 @@ void cGraphicsEngine::Release() {
 	delete this;
 }
 
-// TODO: Reload all resources not only shaders
-void cGraphicsEngine::ReloadResources() {
-	shaderManager->ReloadShader(L"shaders/", L"test.cg");
-	shaderManager->ReloadShader(L"shaders/", L"LINE_RENDERER.cg");
+
+//	Utility & Settings
+//	TODO: Reload all resources not only shaders
+eGraphicsResult cGraphicsEngine::ReloadResources() {
+	if (!shaderManager->ReloadShader(L"shaders/", L"test.cg")) {
+		return eGraphicsResult::ERROR_UNKNOWN;
+	}
+	if (!shaderManager->ReloadShader(L"shaders/", L"LINE_RENDERER.cg")) {
+		return eGraphicsResult::ERROR_UNKNOWN;
+	}
+	return eGraphicsResult::OK;
 }
 
+void cGraphicsEngine::SetActiveCamera(cCamera* cam) {
+	sceneManager->SetActiveCamera(cam);
+}
+
+eGraphicsResult cGraphicsEngine::SetConfig(tGraphicsConfig config) {
+	return eGraphicsResult::OK; // no config, no work
+}
+
+eGraphicsResult cGraphicsEngine::Resize(unsigned width, unsigned height) {
+	eGraphicsResult result = eGraphicsResult::OK;
+
+	screenWidth = width;
+	screenHeight = height;
+
+	// gApi->SetBackBufferSize(screenWidth, screenHeight); // majd ha lesz!
+	if (deferredRenderer) {
+		result = deferredRenderer->Resize(screenWidth, screenHeight);
+	}
+	return result;
+}
+
+cGraphicsEntity* cGraphicsEngine::CreateEntity(const zsString& geomPath, const zsString& mtlPath) {
+	cGeometryRef geom = resourceManager->GetGeometry(geomPath);
+	cMaterialRef mtl = resourceManager->GetMaterial(mtlPath);
+	if (!geom || !mtl) {
+		return NULL;
+	}
+	return sceneManager->AddEntity(std::move(geom), std::move(mtl));
+}
+
+
+
+//	Rendering
+eGraphicsResult cGraphicsEngine::Update() {
+	RenderSceneForward();
+	return eGraphicsResult::OK;
+}
+
+
+//	Internal private functionality
 void cGraphicsEngine::RenderSceneForward() {
 
 	ASSERT(sceneManager->GetActiveCamera() != NULL);
@@ -130,19 +207,8 @@ void cGraphicsEngine::RenderSceneForward() {
 	}
 }
 
-void cGraphicsEngine::SetActiveCamera(cCamera* cam) {
-	sceneManager->SetActiveCamera(cam);
-}
 
-cGraphicsEntity* cGraphicsEngine::CreateEntity(const zsString& geomPath, const zsString& mtlPath) {
-	cGeometryRef geom = resourceManager->GetGeometry(geomPath);
-	cMaterialRef mtl = resourceManager->GetMaterial(mtlPath);
-	if (!geom || !mtl) {
-		return NULL;
-	}
-	return sceneManager->AddEntity(std::move(geom), std::move(mtl));
-}
-
+//	Get sub-components where allowed
 cSceneManager* cGraphicsEngine::GetSceneManager()  {
 	return sceneManager;
 }

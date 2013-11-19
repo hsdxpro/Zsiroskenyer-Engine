@@ -8,6 +8,7 @@
 #pragma once
 
 #include "../../Core/src/IGraphicsEngine.h"
+#include "../../Core/src/IGraphicsApi.h"
 
 class ITexture2D;
 class IGraphicsApi;
@@ -16,23 +17,28 @@ class cSceneManager;
 class cResourceManager;
 class ITexture2D;
 class IShaderProgram;
+class IWindow;
 
 class cGraphicsEngine : public IGraphicsEngine {
 	class cDeferredRenderer;
 public:
 	// lifecycle (creation, destruction)
-	cGraphicsEngine();
+	cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config);
+	cGraphicsEngine(const cGraphicsEngine&) = delete;
 	~cGraphicsEngine();
+	cGraphicsEngine& operator=(const cGraphicsEngine&) = delete;
 	void Release() override;
 
-	// utlity
-	void ReloadResources() override;
+	// utlity & settings
+	eGraphicsResult ReloadResources() override;
+	eGraphicsResult SetConfig(tGraphicsConfig config) override;
+	eGraphicsResult Resize(unsigned width, unsigned height) override;
 	void SetActiveCamera(cCamera* cam) override;
 	cGraphicsEntity* CreateEntity(const zsString& geomPath, const zsString& mtlPath) override;
 
 	// rendering
-	void RenderSceneForward() override;
-	
+	eGraphicsResult Update() override;
+		
 	// sub-component accessors
 	cSceneManager*		GetSceneManager();
 	cResourceManager*	GetResourceManager();
@@ -40,18 +46,29 @@ public:
 	IShaderManager*		GetShaderManager() override;
 	cCamera*			GetActiveCamera() override;
 private:
+	// internal functions
+	void RenderSceneForward();
+
+	// state
+	unsigned screenWidth, screenHeight;
+
 	// sub-compnents
 	IGraphicsApi* gApi;
 	IShaderManager* shaderManager;
 	cResourceManager* resourceManager;
 	cSceneManager* sceneManager;
 	cDeferredRenderer* deferredRenderer;
-	/*
+	
 	// deferred renderer helper subclass
 	class cDeferredRenderer {
 	public:
+		// constructor
 		cDeferredRenderer(cGraphicsEngine& parent);
+		cDeferredRenderer(const cDeferredRenderer&) = delete;
 		~cDeferredRenderer();
+		cDeferredRenderer& operator=(const cDeferredRenderer&) = delete;
+		// usage
+		eGraphicsResult Resize(unsigned width, unsigned height);
 	private:
 		ITexture2D* gBuffer[3];
 		ITexture2D* compositionBuffer;
@@ -59,11 +76,13 @@ private:
 		IShaderProgram* shaderGBuffer;
 		IShaderProgram* shaderComposition;
 		cGraphicsEngine& parent;
-	};*/
+
+		eGapiResult ReallocBuffers();
+
+		unsigned bufferWidth, bufferHeight;
+	};
 };
 
 
 extern "C"
-__declspec(dllexport) IGraphicsEngine* CreateGraphicsEngineRaster() {
-	return new cGraphicsEngine();
-}
+__declspec(dllexport) IGraphicsEngine* CreateGraphicsEngineRaster(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config);
