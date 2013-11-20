@@ -15,12 +15,12 @@ class IGraphicsApi;
 
 class cShaderManager : public IShaderManager {
 public:
-	IShaderProgram* LoadShader(const zsString& shaderDir, const zsString& shaderName) override;
+	IShaderProgram* LoadShader(const zsString& shaderPath) override;
 															
 	void UnloadShader(const zsString& shaderName) override;
 	void UnloadShader(IShaderProgram* shader) override;
 
-	IShaderProgram* ReloadShader(const zsString& shaderDir, const zsString& shaderName)  override;
+	IShaderProgram* ReloadShader(const zsString& shaderPath)  override;
 	IShaderProgram* ReloadShader(const zsString& shaderDir, IShaderProgram* shader)  override;
 
 	IShaderProgram* GetShaderByName(const zsString& shaderName) override;

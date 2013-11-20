@@ -55,9 +55,9 @@ cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, un
 
 	// create shader
 		// basic 3D geom rendering
-	shaderManager->LoadShader(L"shaders/",L"test.cg");
+	shaderManager->LoadShader(L"shaders/test.cg");
 		// for debugging
-	shaderManager->LoadShader(L"shaders/",L"LINE_RENDERER.cg");
+	shaderManager->LoadShader(L"shaders/LINE_RENDERER.cg");
 
 	// create deferred renderer
 	try {
@@ -83,10 +83,10 @@ void cGraphicsEngine::Release() {
 //	Utility & Settings
 //	TODO: Reload all resources not only shaders
 eGraphicsResult cGraphicsEngine::ReloadResources() {
-	if (!shaderManager->ReloadShader(L"shaders/", L"test.cg")) {
+	if (!shaderManager->ReloadShader(L"shaders/test.cg")) {
 		return eGraphicsResult::ERROR_UNKNOWN;
 	}
-	if (!shaderManager->ReloadShader(L"shaders/", L"LINE_RENDERER.cg")) {
+	if (!shaderManager->ReloadShader(L"shaders/LINE_RENDERER.cg")) {
 		return eGraphicsResult::ERROR_UNKNOWN;
 	}
 	return eGraphicsResult::OK;

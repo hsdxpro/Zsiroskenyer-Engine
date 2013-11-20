@@ -174,6 +174,25 @@ public:
 			*src = '\0';
 	}
 
+	void CutDirectory() {
+		const wchar_t *str = c_str();
+		size_t nDelimIdx = 0;
+		size_t idx = 0;
+		while (str[idx] != '\0') {
+			idx++;
+
+			if (str[idx] == '\\' || str[idx] == '/')
+				nDelimIdx = idx;
+		}
+		nDelimIdx++; // go after delim..
+
+		// Okay so we found the index of the last '\\' or '/'
+		// do memove, resize
+		size_t newSize = size() - nDelimIdx;
+
+		*this = substr(nDelimIdx, newSize);
+	}
+
 	void GetNumberFromEnd(char* src, char* buf_out) {
 		// Move to end
 		while (*src != '\0')

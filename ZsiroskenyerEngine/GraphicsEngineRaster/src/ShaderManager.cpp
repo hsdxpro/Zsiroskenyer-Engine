@@ -14,14 +14,17 @@ cShaderManager::~cShaderManager() {
 	Reset();
 }
 
-IShaderProgram* cShaderManager::LoadShader(const zsString& shaderDir, const zsString& shaderName) {
+IShaderProgram* cShaderManager::LoadShader(const zsString& shaderPath) {
 	IShaderProgram* shProg = NULL;
+
+	zsString shaderName = shaderPath;
+	shaderName.CutDirectory();
 
 	auto it = loadedShaders.right.find(shaderName);
 	if (it != loadedShaders.right.end()) {
 		shProg = it->second;
 	} else {
-		gApi->CreateShaderProgram(&shProg, shaderDir + shaderName);
+		gApi->CreateShaderProgram(&shProg, shaderPath);
 		loadedShaders.insert(ShaderMapT::value_type(shProg, shaderName));
 	}
 	return shProg;
@@ -49,12 +52,15 @@ void cShaderManager::UnloadShader(const zsString& shaderName) {
 
 
 // reload a shader: it WILL load previously unloaded shaders as well
-IShaderProgram* cShaderManager::ReloadShader(const zsString& shaderDir, const zsString& shaderName) {
+IShaderProgram* cShaderManager::ReloadShader(const zsString& shaderPath) {
+	zsString shaderName = shaderPath;
+	shaderName.CutDirectory();
+
 	UnloadShader(shaderName);
-	return LoadShader(shaderDir, shaderName);
+	return LoadShader(shaderPath);
 }
 // this version won't load previously unloaded shaders, since it doesn't know the name
-IShaderProgram* cShaderManager::ReloadShader(const zsString& shaderDir, IShaderProgram* shader) {
+IShaderProgram* cShaderManager::ReloadShader(const zsString& shaderPath, IShaderProgram* shader) {
 	// get shader's name first
 	auto it = loadedShaders.left.find(shader);
 	if (it==loadedShaders.left.end())
@@ -63,7 +69,7 @@ IShaderProgram* cShaderManager::ReloadShader(const zsString& shaderDir, IShaderP
 	zsString name = it->second;
 
 	UnloadShader(shader);
-	return LoadShader(shaderDir, name);
+	return LoadShader(shaderPath);
 }
 
 

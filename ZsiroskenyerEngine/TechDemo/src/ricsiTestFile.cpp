@@ -108,7 +108,7 @@ int ricsiMain() {
 			gEngine->ReloadResources();
 
 		// Render Scene
-		gEngine->RenderSceneForward();
+		gEngine->Update();
 
 		// Debug rendering
 		core->DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
