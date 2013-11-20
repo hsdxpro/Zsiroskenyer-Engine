@@ -67,6 +67,9 @@ private:
 		cDeferredRenderer(const cDeferredRenderer&) = delete;
 		~cDeferredRenderer();
 		cDeferredRenderer& operator=(const cDeferredRenderer&) = delete;
+
+		void IDontKnowTheNameButDoFuckingRenderingLol();
+
 		// usage
 		eGraphicsResult Resize(unsigned width, unsigned height);
 	private:

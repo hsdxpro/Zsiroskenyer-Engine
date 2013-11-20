@@ -13,6 +13,11 @@
 #include "../../Core/src/IShaderManager.h"
 #include "../../Core/src/IShaderProgram.h"
 #include "../../Core/src/ITexture2D.h"
+#include "../../Core/src/IConstantBuffer.h"
+#include "../../Core/src/IIndexBuffer.h"
+
+#include "../../Core/src/GraphicsEntity.h"
+#include "../../Core/src/Camera.h"
 
 #include <string>
 #include <stdexcept>
@@ -35,6 +40,8 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 	// create shaders
 	shaderGBuffer = parent.shaderManager->LoadShader(L"shaders/deferred_gbuffer.cg");
 	shaderComposition =	parent.shaderManager->LoadShader(L"shaders/deferred_compose.cg");
+	parent.shaderManager->LoadShader(L"shaders/screen_copy.cg");
+
 	if (!shaderGBuffer || !shaderComposition) {
 		std::string msg = std::string("failed to create shaders:") + (shaderGBuffer ? "" : " g-buffer") + (shaderComposition ? "" : " composition");
 		if (shaderGBuffer) parent.shaderManager->UnloadShader(shaderGBuffer);
@@ -84,6 +91,100 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	return eGapiResult::OK;
 }
 
+void cGraphicsEngine::cDeferredRenderer::IDontKnowTheNameButDoFuckingRenderingLol() {
+	ASSERT(parent.sceneManager->GetActiveCamera() != NULL);
+
+	// Set BackBuffer
+	//parent.gApi->SetRenderTargetDefault();
+	parent.gApi->SetRenderTargets(3, &gBuffer[0], parent.gApi->GetDefaultRenderTarget());
+
+	// Set ShaderProgram
+	parent.gApi->SetShaderProgram(shaderGBuffer);
+
+	// Get camera params
+	cCamera* cam = parent.sceneManager->GetActiveCamera();
+	Matrix44 viewMat = cam->GetViewMatrix();
+	Matrix44 projMat = cam->GetProjMatrix();
+
+	// Render each instanceGroup
+	for (auto& group : parent.sceneManager->GetInstanceGroups()) {
+
+		// Set Geometry
+		const IIndexBuffer* ib = (*group->geom).GetIndexBuffer();
+		gApi->SetIndexBuffer(ib);
+		gApi->SetVertexBuffer((*(group->geom)).GetVertexBuffer(), shaderGBuffer->GetVertexFormatSize());
+
+		// Set SubMaterials
+		auto& mtl = *group->mtl;
+		for (size_t i = 0; i < mtl.GetNSubMaterials(); i++) {
+			ITexture2D* diffuse = mtl[i].textureDiffuse.get();
+			ITexture2D* normal = mtl[i].textureNormal.get();
+			ITexture2D* specular = mtl[i].textureSpecular.get();
+			ITexture2D* displace = mtl[i].textureDisplace.get();
+
+			if (diffuse != NULL)
+				gApi->SetTexture(diffuse, 0); // TODO NEVET KELLJEN BEÍRNI NE INDEXET WAWOOSOSOSO
+			if (normal != NULL)
+				gApi->SetTexture(normal, 1); // TODO NEVET KELLJEN BEÍRNI NE INDEXET, ÜDV :)
+			if (specular != NULL)
+				gApi->SetTexture(specular, 2); // TODO NEVET KELLJEN BEÍRNI NE INDEXET
+			if (displace != NULL)
+				gApi->SetTexture(displace, 3); // TODO NEVET KELLJEN BEÍRNI NE INDEXET
+		}
+
+		// Draw each entity
+		for (auto& entity : group->entities) {
+
+			// Entity world matrix
+			Matrix44 world = entity->GetWorldMatrix();
+
+			// WorldViewProj matrix
+			Matrix44 wvp = world * viewMat * projMat;
+
+			struct myBuffer
+			{
+				Matrix44 wvp;
+				Matrix44 world;
+				Vec3 camPos;
+
+			} buff;
+			buff.wvp = wvp;
+			buff.world = world;
+			buff.camPos = cam->GetPos();
+
+			IConstantBuffer* buffer;
+			gApi->CreateConstantBuffer(&buffer, sizeof(buff), eUsage::DEFAULT, &buff);
+			gApi->SetVSConstantBuffer(buffer, 0);
+
+			// Draw entity..
+			gApi->DrawIndexed(ib->GetSize() / sizeof(unsigned));
+
+			// Free up constantBuffer
+			buffer->Release();
+		}
+	}
+
+	// Compose pass
+	// Clear compose buffer
+	parent.gApi->SetRenderTargets(1, &compositionBuffer, NULL);
+
+	// Set ShaderProgram
+	parent.gApi->SetShaderProgram(shaderComposition);
+
+	// Load up gBuffers to compposition shader
+	for (unsigned i = 0; i < 3; i++)
+		parent.gApi->SetTexture(gBuffer[i], i);
+	
+	// Draw triangle, hardware will quadify them automatically :)
+	parent.gApi->Draw(3);
+
+
+	// COPY THAT BULL SHIT TO BACKBUFFER
+	parent.gApi->SetRenderTargetDefault();
+	IShaderProgram* screenCopyShader = parent.shaderManager->GetShaderByName(L"screen_copy.cg");
+	parent.gApi->SetTexture(compositionBuffer, 0);
+	parent.gApi->Draw(3);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //	Public usage

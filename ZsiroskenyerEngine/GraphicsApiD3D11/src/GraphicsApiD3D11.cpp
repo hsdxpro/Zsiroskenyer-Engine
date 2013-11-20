@@ -716,13 +716,13 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	zsString profileNames[nShaders] = { "vs_5_0",  "hs_5_0",  "ds_5_0",  "gs_5_0",  "ps_5_0" };
 
 	// Shader Output data
-	ID3D11VertexShader* vs;
-	ID3D11InputLayout* inputLayout;
+	ID3D11VertexShader* vs = NULL;
+	ID3D11InputLayout* inputLayout = NULL;
 
-	ID3D11PixelShader* ps;
-	ID3D11GeometryShader* gs;
-	ID3D11DomainShader* ds;
-	ID3D11HullShader* hs;
+	ID3D11PixelShader*		ps = NULL;
+	ID3D11GeometryShader*	gs = NULL;
+	ID3D11DomainShader*		ds = NULL;
+	ID3D11HullShader*		hs = NULL;
 
 	// Shader ByteCodes
 	ID3DBlob* blobs[nShaders];
@@ -1071,14 +1071,26 @@ void cGraphicsApiD3D11::SetPSConstantBuffer(IConstantBuffer* buffer, size_t slot
 	d3dcon->PSSetConstantBuffers(slotIdx, 1, &cBuffer);
 }
 
-eGapiResult cGraphicsApiD3D11::SetRenderTarget(ITexture2D* target, unsigned slotIdx) {
-	return eGapiResult::ERROR_UNKNOWN;
+eGapiResult cGraphicsApiD3D11::SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget) {
+	// RTVS
+	static ID3D11RenderTargetView* rtvS[16];
+	for (unsigned i = 0; i < nTargets; i++)
+		rtvS[i] = ((const cTexture2DD3D11*)(renderTargets[i]))->GetRTV();
+
+	// DSV
+	ID3D11DepthStencilView* dsv = NULL;
+	if (depthStencilTarget) dsv = ((cTexture2DD3D11*)depthStencilTarget)->GetDSV();
+
+	// Set them
+	d3dcon->OMSetRenderTargets(nTargets, rtvS, dsv);
+	return eGapiResult::OK;
 }
 
-void cGraphicsApiD3D11::SetRenderTargetDefault() {
+eGapiResult cGraphicsApiD3D11::SetRenderTargetDefault() {
 	d3dcon->RSSetViewports(1, &defaultVP);
 	ID3D11RenderTargetView* rtv = defaultRenderTarget->GetRTV();
 	d3dcon->OMSetRenderTargets(1, &rtv, (ID3D11DepthStencilView*)defaultRenderTarget->GetDSV());
+	return eGapiResult::OK;
 }
 
 eGapiResult cGraphicsApiD3D11::SetBackBufferSize(unsigned width, unsigned height) {

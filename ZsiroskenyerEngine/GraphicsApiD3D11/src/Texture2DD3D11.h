@@ -17,9 +17,9 @@ public:
 	size_t GetWidth() const override;
 	size_t GetHeight() const override;
 
-	ID3D11ShaderResourceView* GetSRV();
-	ID3D11RenderTargetView* GetRTV();
-	ID3D11DepthStencilView* GetDSV();
+	ID3D11ShaderResourceView* const GetSRV() const;
+	ID3D11RenderTargetView* const GetRTV() const;
+	ID3D11DepthStencilView* const GetDSV() const;
 protected:
 	size_t width;
 	size_t height;

@@ -89,8 +89,8 @@ public:
 	void DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex = 0, size_t idxStartInstance = 0) override;
 	void DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex = 0, size_t idxStartInstance = 0) override;
 
-	eGapiResult SetRenderTarget(ITexture2D* target, unsigned slotIdx) override;
-	void SetRenderTargetDefault() override;
+	eGapiResult SetRenderTargetDefault() override;
+	eGapiResult SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget) override;
 	eGapiResult SetBackBufferSize(unsigned width, unsigned height) override;
 
 	void SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) override;

@@ -73,14 +73,15 @@ IPhysicsEntity* cPhysicsEngineBullet::CreateRigidEntity(const zsString& physicsG
 		cGeometryBuilder::tGeometryDesc d = b.LoadGeometry(physicsGeom);
 
 				// Static object
-		if (mass == 0) {
+		//if (mass == 0) {
+			// TODO GÁZ VAN
 			// Bullet bhv opt container
-			btTriangleIndexVertexArray* VBIB = new btTriangleIndexVertexArray(d.nIndices / 3, (int*)d.indices, d.indexStride, d.nVertices, (btScalar*)d.vertices, d.vertexStride);
+			//btTriangleIndexVertexArray* VBIB = new btTriangleIndexVertexArray(d.nIndices / 3, (int*)d.indices, d.indexStride, d.nVertices, (btScalar*)d.vertices, d.vertexStride);
 																				
-			colShape = new btBvhTriangleMeshShape(VBIB, true);
-		} else { // Dynamic object
+			//colShape = new btBvhTriangleMeshShape(VBIB, true);
+		//} else { // Dynamic object
 			colShape = new btConvexHullShape((btScalar*)d.vertices, d.nVertices, d.vertexStride);
-		}
+		//}
 
 		
 		collisionShapes[physicsGeom] = colShape;

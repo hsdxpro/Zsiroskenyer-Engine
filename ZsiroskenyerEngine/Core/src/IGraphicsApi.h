@@ -50,8 +50,8 @@ public:
 	virtual void DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex = 0, size_t idxStartInstance = 0) = 0;
 	virtual void DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex = 0, size_t idxStartInstance = 0) = 0;
 
-	virtual eGapiResult SetRenderTarget(ITexture2D* target, unsigned slotIdx) = 0;
-	virtual void SetRenderTargetDefault() = 0;
+	virtual eGapiResult SetRenderTargetDefault() = 0;
+	virtual eGapiResult SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget) = 0;
 	virtual eGapiResult SetBackBufferSize(unsigned width, unsigned height) = 0;
 
 	virtual void SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) = 0;

@@ -77,7 +77,7 @@ int ricsiMain() {
 	
 	// Our player
 	player = core->AddEntity(basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 1.0);
-	player->SetPos(Vec3(9, 0, 4));
+	player->SetPos(Vec3(9, 0, 40));
 
 	// Main loop
 	while(window->IsOpened()) {
