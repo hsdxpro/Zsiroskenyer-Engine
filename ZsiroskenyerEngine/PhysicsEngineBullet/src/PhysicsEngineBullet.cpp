@@ -72,16 +72,23 @@ IPhysicsEntity* cPhysicsEngineBullet::CreateRigidEntity(const zsString& physicsG
 		cGeometryBuilder b;
 		cGeometryBuilder::tGeometryDesc d = b.LoadGeometry(physicsGeom);
 
-				// Static object
-		//if (mass == 0) {
+		// Static object
+		if (mass == 0) {
 			// TODO GÁZ VAN
 			// Bullet bhv opt container
-			//btTriangleIndexVertexArray* VBIB = new btTriangleIndexVertexArray(d.nIndices / 3, (int*)d.indices, d.indexStride, d.nVertices, (btScalar*)d.vertices, d.vertexStride);
+			static btScalar tmpVerticesPos[100000]; // tmp Vertex holder
+			char* pVerts = (char*)d.vertices;
+			size_t scalarIndex = 0;
+			for (size_t i = 0; i < d.nVertices; i++, pVerts += d.vertexStride, scalarIndex += 3) {
+				memcpy(tmpVerticesPos + scalarIndex, pVerts, sizeof(btScalar)* 3);
+			}
+
+			btTriangleIndexVertexArray* VBIB = new btTriangleIndexVertexArray(d.nIndices / 3, (int*)d.indices, d.indexStride * 3, d.nVertices, tmpVerticesPos, sizeof(btScalar) * 3);
 																				
-			//colShape = new btBvhTriangleMeshShape(VBIB, true);
-		//} else { // Dynamic object
+			colShape = new btBvhTriangleMeshShape(VBIB, true);
+		} else { // Dynamic object
 			colShape = new btConvexHullShape((btScalar*)d.vertices, d.nVertices, d.vertexStride);
-		//}
+		}
 
 		
 		collisionShapes[physicsGeom] = colShape;
@@ -180,7 +187,62 @@ void cPhysicsEngineBullet::GetCollisionShapeEdges(Vec3* edges, size_t size, size
 			}
 			
 		} else {
+			/*
 			//@TODO CONCAVE CollisionObject extraction to edge list...
+			btBvhTriangleMeshShape* concCol = (btBvhTriangleMeshShape*)colShape;
+			const Vec3* vertPos;
+			int nVerts;
+			int vertStride;
+
+			const int* indices;
+			int indexStride;
+			int nFaces;
+	
+			PHY_ScalarType verticesType;
+			PHY_ScalarType indicesType;
+
+			// Get concave mesh description ...
+			concCol->getMeshInterface()->getLockedReadOnlyVertexIndexBase((const unsigned char**)&vertPos, nVerts, verticesType, vertStride, (const unsigned char**)&indices, indexStride, nFaces, indicesType);
+
+			nEdges += nFaces * 3;
+
+			// For each triangle..
+			btVector3 verticesPos[3];
+			for (size_t j = 0; j < nFaces; j++) {
+
+				// Get vertices
+				for (size_t z = 0; z < 3; z++) {
+					// At the end of the index " * 3 " because btVector3 size needed.
+					memcpy(&verticesPos[z], &vertPos[indices[j * 3 + z]], sizeof(btScalar)* 3);
+				}
+				
+				// Transform vertices to world space
+				for (size_t z = 0; z < 3; z++) {
+					verticesPos[i] = worldTrans * verticesPos[z];
+				}
+
+				// 0-1, 1-2 edges
+				for (size_t z = 0; z < 2; z++) {
+					for (size_t y = 0; y < 2; y++) {
+						edges[edgeIndex].x = verticesPos[y + z].x();
+						edges[edgeIndex].y = verticesPos[y + z].y();
+						edges[edgeIndex].z = verticesPos[y + z].z();
+						edgeIndex++;
+					}
+				}
+
+				// Finally 2,0 edges
+				edges[edgeIndex].x = verticesPos[2].x();
+				edges[edgeIndex].y = verticesPos[2].y();
+				edges[edgeIndex].z = verticesPos[2].z();
+				edgeIndex++;
+
+				edges[edgeIndex].x = verticesPos[0].x();
+				edges[edgeIndex].y = verticesPos[0].y();
+				edges[edgeIndex].z = verticesPos[0].z();
+				edgeIndex++;
+				
+			}*/
 		}
 	}
 }

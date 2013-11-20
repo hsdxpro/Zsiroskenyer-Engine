@@ -127,8 +127,8 @@ cGraphicsEntity* cGraphicsEngine::CreateEntity(const zsString& geomPath, const z
 
 //	Rendering
 eGraphicsResult cGraphicsEngine::Update() {
-	//RenderSceneForward();
-	deferredRenderer->IDontKnowTheNameButDoFuckingRenderingLol();
+	RenderSceneForward();
+	//deferredRenderer->IDontKnowTheNameButDoFuckingRenderingLol();
 	return eGraphicsResult::OK;
 }
 
