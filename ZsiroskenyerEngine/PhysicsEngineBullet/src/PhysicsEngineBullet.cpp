@@ -7,6 +7,9 @@
 #include "..\..\Core\src\GeometryBuilder.h"
 #include <algorithm>
 #include <list>
+
+#include "BulletCollision/Gimpact/btGImpactCollisionAlgorithm.h"
+
 cPhysicsEngineBullet::cPhysicsEngineBullet() {
 	///collision configuration contains default setup for memory, collision setup. Advanced users can create their own configuration.
 	btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
@@ -25,9 +28,8 @@ cPhysicsEngineBullet::cPhysicsEngineBullet() {
 
 	physicsWorld = new btSoftRigidDynamicsWorld(dispatcher,overlappingPairCache,solver,collisionConfiguration);
 	
-	//GImpact Ütközés algot regizni kell a fizikai kontaktus végrehajtónál..hogy tudjon róla
-	//Még lehet hogy használok majd Gimpact ütkzést...
-	//btGImpactCollisionAlgorithm::registerAlgorithm(dispatcher);
+	// GImpact dispatching registering, need for some special collision variances
+	btGImpactCollisionAlgorithm::registerAlgorithm(dispatcher);
 	
 	physicsWorld->setGravity(btVector3(0 ,0 ,-200.0f));
 
