@@ -73,6 +73,7 @@ cGraphicsEngine::~cGraphicsEngine() {
 	SAFE_DELETE(resourceManager)
 	SAFE_DELETE(shaderManager);
 	SAFE_RELEASE(gApi);
+	SAFE_DELETE(deferredRenderer);
 }
 
 void cGraphicsEngine::Release() {
