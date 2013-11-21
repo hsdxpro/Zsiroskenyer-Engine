@@ -16,10 +16,13 @@
 #include "..\..\Core\src\Factory.h"
 #include "..\..\Core\src\math/Quat.h"
 #include <vector>
+#include <cstdlib>
+#include <iostream>
 
 #include "..\..\Core\src\Timer.h"
 
 // TODO REMOVE THAT OR I KILL MYSELF
+#define NOMINMAX
 #include <windows.h>
 #include <tchar.h> // even worse
 
@@ -29,12 +32,6 @@ cEntity* player = NULL;
 void updateDemo(cCamera& cam, float tDelta);
 
 int ricsiMain() {
-	MessageBox(NULL,
-		_T("A jobb gombot le kell nyomni és csak úgy forog a camera.\nEzt a szart meg töröld ki! :D"),
-		_T("He, Ricsi!"),
-		MB_ICONWARNING);
-
-
 	// Create core
 	cCore* core = cCore::GetInstance();
 
@@ -57,7 +54,7 @@ int ricsiMain() {
 	gApi->SetWindow(window);
 
 	// Create Camera
-	cCamera cam(ZS_PIDIV2, (float)winDesc.clientWidth / winDesc.clientHeight, 0.01f, 5000.0f);
+	cCamera cam(/*0.5*3.141592653589*/1.15, (float)winDesc.clientWidth / winDesc.clientHeight, 0.01f, 5000.0f);
 	gEngine->SetActiveCamera(&cam);
 
 	// Static terrain
@@ -128,6 +125,8 @@ int ricsiMain() {
 	return 0;
 }
 
+
+bool noJump = false; // don't commit suicide upon seeing this :D
 void updateDemo(cCamera& cam, float tDelta) {
 	/*
 	static Quat playerRot;
@@ -162,12 +161,10 @@ void updateDemo(cCamera& cam, float tDelta) {
 	
 	// Set new position
 	cam.SetPos(cam.GetPos() + deltaMove);
+	cam.SetTarget(cam.GetTarget() + deltaMove);
 
 
 	// CAMERA ROTATION...
-	if (!GetAsyncKeyState(VK_RBUTTON)) {
-		return;
-	}
 	// get delta mouse
 	static POINT lastMousePos;
 	static POINT currMousePos;
@@ -184,12 +181,29 @@ void updateDemo(cCamera& cam, float tDelta) {
 	static float mouseDeltaX = 0;
 	static float mouseDeltaY = 0;
 
+	if (GetAsyncKeyState(VK_RBUTTON)) {
+		if (!noJump) {
+			noJump = true;
+			lastMousePos = currMousePos;
+			return;
+		}
+	}
+	else {
+		noJump = false;
+		return;
+	}
+
 	mouseDeltaX += (float)(-currMousePos.x + lastMousePos.x) / pixelsPer360ROT * ZS_PI2;
 	mouseDeltaY += (float)(-currMousePos.y + lastMousePos.y) / pixelsPer360ROT * ZS_PI2;
-
+	
 	lastMousePos = currMousePos;
 
 	// Camera rotation
+	float maxLimit = 85.0 / 180.0 * ZS_PI;
+	if (mouseDeltaY < -maxLimit)
+		mouseDeltaY = -maxLimit;
+	if (mouseDeltaY > maxLimit)
+		mouseDeltaY = maxLimit;
 	Matrix44 camRotMat = Matrix44::RotationEuler(mouseDeltaY, 0, mouseDeltaX);
 
 	// Rot front vec with that. apply target
