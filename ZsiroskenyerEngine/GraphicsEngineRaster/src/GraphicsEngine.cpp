@@ -67,6 +67,14 @@ cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, un
 		std::cerr << "[non-fatal error (yet)] deferred renderer failed with message: " << e.what() << std::endl;
 		delete deferredRenderer;
 	}
+
+	// create hdr post-processor
+	try {
+		hdrProcessor = new cHDRProcessor(*this);
+	}
+	catch (std::exception& e) {
+		std::cerr << "[non-fatal error (yet)] HDR post-processor failed with message. " << e.what() << std::endl;
+	}
 }
 cGraphicsEngine::~cGraphicsEngine() {
 	SAFE_DELETE(sceneManager);
@@ -207,6 +215,25 @@ void cGraphicsEngine::RenderSceneForward() {
 			buffer->Release();
 		}
 	}
+}
+
+
+// Render scene in deferred mode w/ post-processing
+void cGraphicsEngine::RenderSceneDeferred() {
+	ASSERT(deferredRenderer);
+
+	// render the scene to the composition buffer w/ deferredRenderer
+	deferredRenderer->RenderComposition();
+	ITexture2D* composedBuffer = deferredRenderer->GetCompositionBuffer();
+
+	// post-processing will be run here
+	/* post-process */
+
+	// for now post-process & further rendering equals to copying the composed texture to BB
+	gApi->SetRenderTargetDefault();
+	IShaderProgram* screenCopyShader = shaderManager->GetShaderByName(L"screen_copy.cg");
+	gApi->SetTexture(composedBuffer, 0);
+	gApi->Draw(3);	
 }
 
 

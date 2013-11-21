@@ -44,6 +44,7 @@
       <Filter>Managers</Filter>
     </ClCompile>
     <ClCompile Include="src\DeferredRenderer.cpp" />
+    <ClCompile Include="src\HDRProcessor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GraphicsEngine.h" />

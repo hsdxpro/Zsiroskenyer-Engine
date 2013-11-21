@@ -21,6 +21,7 @@ class IWindow;
 
 class cGraphicsEngine : public IGraphicsEngine {
 	class cDeferredRenderer;
+	class cHDRProcessor;
 public:
 	// lifecycle (creation, destruction)
 	cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config);
@@ -48,6 +49,7 @@ public:
 private:
 	// internal functions
 	void RenderSceneForward();
+	void RenderSceneDeferred();
 
 	// state
 	unsigned screenWidth, screenHeight;
@@ -58,6 +60,7 @@ private:
 	cResourceManager* resourceManager;
 	cSceneManager* sceneManager;
 	cDeferredRenderer* deferredRenderer;
+	cHDRProcessor* hdrProcessor;
 	
 	// deferred renderer helper subclass
 	class cDeferredRenderer {
@@ -68,7 +71,9 @@ private:
 		~cDeferredRenderer();
 		cDeferredRenderer& operator=(const cDeferredRenderer&) = delete;
 
-		void IDontKnowTheNameButDoFuckingRenderingLol();
+		// rendering
+		void RenderComposition();
+		ITexture2D* GetCompositionBuffer();
 
 		// usage
 		eGraphicsResult Resize(unsigned width, unsigned height);
@@ -83,6 +88,15 @@ private:
 		eGapiResult ReallocBuffers();
 
 		unsigned bufferWidth, bufferHeight;
+	};
+
+	// HDR post-processor helper class
+	class cHDRProcessor {
+	public:
+		cHDRProcessor(cGraphicsEngine& parent);
+		~cHDRProcessor();
+	private:
+		cGraphicsEngine& parent;
 	};
 };
 

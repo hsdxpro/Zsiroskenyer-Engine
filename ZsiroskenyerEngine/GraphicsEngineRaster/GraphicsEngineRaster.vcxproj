@@ -15,6 +15,7 @@
     <ClCompile Include="src\DllMain.cpp" />
     <ClCompile Include="src\Geometry.cpp" />
     <ClCompile Include="src\GraphicsEngine.cpp" />
+    <ClCompile Include="src\HDRProcessor.cpp" />
     <ClCompile Include="src\InstanceGroup.cpp" />
     <ClCompile Include="src\ResourceManager.cpp" />
     <ClCompile Include="src\ResourceReference.cpp" />

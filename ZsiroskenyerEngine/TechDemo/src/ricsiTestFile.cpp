@@ -21,6 +21,7 @@
 
 // TODO REMOVE THAT OR I KILL MYSELF
 #include <windows.h>
+#include <tchar.h> // even worse
 
 cEntity* player = NULL;
 
@@ -28,6 +29,11 @@ cEntity* player = NULL;
 void updateDemo(cCamera& cam, float tDelta);
 
 int ricsiMain() {
+	MessageBox(NULL,
+		_T("A jobb gombot le kell nyomni és csak úgy forog a camera.\nEzt a szart meg töröld ki! :D"),
+		_T("He, Ricsi!"),
+		MB_ICONWARNING);
+
 
 	// Create core
 	cCore* core = cCore::GetInstance();
@@ -159,6 +165,9 @@ void updateDemo(cCamera& cam, float tDelta) {
 
 
 	// CAMERA ROTATION...
+	if (!GetAsyncKeyState(VK_RBUTTON)) {
+		return;
+	}
 	// get delta mouse
 	static POINT lastMousePos;
 	static POINT currMousePos;

@@ -91,11 +91,11 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	return eGapiResult::OK;
 }
 
-void cGraphicsEngine::cDeferredRenderer::IDontKnowTheNameButDoFuckingRenderingLol() {
+// Render the scene to composition buffer
+void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	ASSERT(parent.sceneManager->GetActiveCamera() != NULL);
 
 	// Set BackBuffer
-	//parent.gApi->SetRenderTargetDefault();
 	parent.gApi->SetRenderTargets(3, &gBuffer[0], parent.gApi->GetDefaultRenderTarget());
 
 	// Set ShaderProgram
@@ -134,10 +134,8 @@ void cGraphicsEngine::cDeferredRenderer::IDontKnowTheNameButDoFuckingRenderingLo
 
 		// Draw each entity
 		for (auto& entity : group->entities) {
-
 			// Entity world matrix
 			Matrix44 world = entity->GetWorldMatrix();
-
 			// WorldViewProj matrix
 			Matrix44 wvp = world * viewMat * projMat;
 
@@ -171,20 +169,21 @@ void cGraphicsEngine::cDeferredRenderer::IDontKnowTheNameButDoFuckingRenderingLo
 	// Set ShaderProgram
 	parent.gApi->SetShaderProgram(shaderComposition);
 
-	// Load up gBuffers to compposition shader
+	// Load up gBuffers to composition shader
 	for (unsigned i = 0; i < 3; i++)
 		parent.gApi->SetTexture(gBuffer[i], i);
 	
 	// Draw triangle, hardware will quadify them automatically :)
 	parent.gApi->Draw(3);
-
-
-	// COPY THAT BULL SHIT TO BACKBUFFER
-	parent.gApi->SetRenderTargetDefault();
-	IShaderProgram* screenCopyShader = parent.shaderManager->GetShaderByName(L"screen_copy.cg");
-	parent.gApi->SetTexture(compositionBuffer, 0);
-	parent.gApi->Draw(3);
 }
+
+// Access to composition buffer for further processing like post-process & whatever
+ITexture2D* cGraphicsEngine::cDeferredRenderer::GetCompositionBuffer() {
+	return compositionBuffer;
+}
+
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //	Public usage
