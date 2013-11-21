@@ -35,12 +35,12 @@ void cRenderer::RenderLines(const Matrix44& viewProj, const Vec3* lines, size_t 
 	gApi->SetPrimitiveTopology(ePrimitiveTopology::LINE_LIST);
 
 	// Draw lines
-	gApi->Draw(nLines * 2);
+	gApi->Draw( nLines * 2);
 
 	// Free up buffers
-	linesBuffer->Release();
-	colorBuffer->Release();
-	viewProjBuffer->Release();
+	SAFE_RELEASE(linesBuffer);
+	SAFE_RELEASE(colorBuffer);
+	SAFE_RELEASE(viewProjBuffer);
 
 	// // Set TRIANGLE primitives for pipeline
 	gApi->SetPrimitiveTopology(ePrimitiveTopology::TRIANGLE_LIST);

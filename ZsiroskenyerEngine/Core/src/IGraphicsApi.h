@@ -17,7 +17,6 @@ class IConstantBuffer;
 class IShaderProgram;
 class ITexture2D;
 
-
 enum class ePrimitiveTopology {
 	LINE_LIST,
 	TRIANGLE_LIST,

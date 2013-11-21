@@ -17,7 +17,8 @@ public:
 	void SimulateWorld(float deltaT) override;
 
 	IPhysicsEntity* CreateRigidEntity(const zsString& physicsGeom, float mass) override;
-	btRigidBody* ShootBox(const Vec3& camPos,const Vec3& destination);
+
+	void ShootBox(float size, const Vec3& pos, const Vec3& dir, float power);
 
 	void GetCollisionShapeEdges(Vec3* edges, size_t size , size_t& nEdges) override;
 

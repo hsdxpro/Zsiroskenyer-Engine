@@ -112,16 +112,17 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 
 	// Finally Index reordering for optimal post vertex cache
 	size_t* reorderedIndices = new size_t[nIndex];
-	reorderedIndices = tipsify(indices, nIndex / 3, nVertices, 16); // for vertexCache size 16
-	delete[] indices;
+	reorderedIndices = tipsify(indices, nIndex / 3, nVertices, 16); // For vertexCache size 16 . I think it's ideal
+	SAFE_DELETE_ARRAY(indices);
 
-	// return geometric description about loaded DAE
+	// Return geometric description about loaded DAE
 	cGeometryBuilder::tGeometryDesc geomDesc;
 		geomDesc.vertices = vertices;
-		geomDesc.indices = reorderedIndices;
 		geomDesc.nVertices = nVertices;
-		geomDesc.nIndices = nIndex;
 		geomDesc.vertexStride = sizeof(baseVertex);
+
+		geomDesc.indices = reorderedIndices;
+		geomDesc.nIndices = nIndex;
 		geomDesc.indexStride = sizeof(unsigned);
 	return geomDesc;
 }

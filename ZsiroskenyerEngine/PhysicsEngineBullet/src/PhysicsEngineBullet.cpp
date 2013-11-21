@@ -76,17 +76,20 @@ IPhysicsEntity* cPhysicsEngineBullet::CreateRigidEntity(const zsString& physicsG
 
 		// Static object
 		if (mass == 0) {
-			// TODO GÁZ VAN
 			// Bullet bhv opt container
-			static btScalar tmpVerticesPos[100000]; // tmp Vertex holder
-			char* pVerts = (char*)d.vertices;
-			size_t scalarIndex = 0;
-			for (size_t i = 0; i < d.nVertices; i++, pVerts += d.vertexStride, scalarIndex += 3) {
-				memcpy(tmpVerticesPos + scalarIndex, pVerts, sizeof(btScalar)* 3);
+			static btVector3 tmpVerticesPos[100000]; // tmp Vertex holder
+
+			for (size_t i = 0; i < d.nVertices; i++) {
+				memcpy(&tmpVerticesPos[i], ((unsigned char*)d.vertices) + i * d.vertexStride, sizeof(Vec3));
 			}
 
-			btTriangleIndexVertexArray* VBIB = new btTriangleIndexVertexArray(d.nIndices / 3, (int*)d.indices, d.indexStride * 3, d.nVertices, tmpVerticesPos, sizeof(btScalar) * 3);
-																				
+			btTriangleIndexVertexArray* VBIB = new btTriangleIndexVertexArray(d.nIndices / 3, (int*)d.indices, d.indexStride * 3, d.nVertices / 3, (btScalar*)tmpVerticesPos, sizeof(btVector3));
+			/*
+			btTriangleIndexVertexArray* VBIB = new btTriangleIndexVertexArray(d.nIndices / 3,
+				(int*)d.indices,
+				3 * sizeof(unsigned),
+				d.nVertices, (btScalar*)d.vertices, 44);
+			*/
 			colShape = new btBvhTriangleMeshShape(VBIB, true);
 		} else { // Dynamic object
 			colShape = new btConvexHullShape((btScalar*)d.vertices, d.nVertices, d.vertexStride);
@@ -99,11 +102,10 @@ IPhysicsEntity* cPhysicsEngineBullet::CreateRigidEntity(const zsString& physicsG
 	}
 	
 	// Dynamic Physics entity, calculate local inertia
-	btVector3 localInertia;
+	btVector3 localInertia(0,0,0);
 	if (mass != 0)
 		colShape->calculateLocalInertia(mass, localInertia);
 		
-
 	// Create rigid body
 	btRigidBody* body = new btRigidBody(mass, new btDefaultMotionState(), colShape, localInertia);
 	physicsWorld->addRigidBody(body);
@@ -111,61 +113,54 @@ IPhysicsEntity* cPhysicsEngineBullet::CreateRigidEntity(const zsString& physicsG
 	return r;
 }
 
-btRigidBody* cPhysicsEngineBullet::ShootBox(const Vec3& camPos,const Vec3& destination)
-{
-	if (physicsWorld) {
-		btTransform asd;
-		asd.setIdentity();
-		asd.setOrigin(btVector3(camPos.x, camPos.y, camPos.z));
+void cPhysicsEngineBullet::ShootBox(float size, const Vec3& pos, const Vec3& dir, float power) {
+	btTransform asd;
+	asd.setIdentity();
+	asd.setOrigin(btVector3(pos.x, pos.y, pos.z));
 
-		float mass = 1.0f;
-		btMotionState* motionstate = new btDefaultMotionState(asd);
-		btCollisionShape* colshape = new btBoxShape(btVector3(10.0f,10.0f,10.0f));
-		btVector3 localinertia(0.0f,0.0f,0.0f);
-		btRigidBody* body = new btRigidBody(mass,motionstate,colshape,localinertia);
-		
-		//Érdekes észrevétel sajnos...
-		//Csak azoknak a rigidbodykra lehet új erõt stb késztetni, amelyikeknek utoljára
-		//adtuk hozzá a RigidBody ját a világhoz...
+	float mass = 1.0f;
+	btMotionState* motionstate = new btDefaultMotionState(asd);
+	btCollisionShape* colshape = new btBoxShape(btVector3(size, size, size));
+	btVector3 localinertia(0.0f, 0.0f, 0.0f);
+	btRigidBody* body = new btRigidBody(mass, motionstate, colshape, localinertia);
 
-		physicsWorld->addRigidBody(body);
+	//Érdekes észrevétel sajnos...
+	//Csak azoknak a rigidbodykra lehet új erõt stb késztetni, amelyikeknek utoljára
+	//adtuk hozzá a RigidBody ját a világhoz...
 
-		body->setLinearFactor(btVector3(1,1,1));
-	
-		btVector3 linVel(destination[0]-camPos[0],destination[1]-camPos[1],destination[2]-camPos[2]);
+	physicsWorld->addRigidBody(body);
 
-		body->setLinearVelocity(linVel);
-		body->setAngularVelocity(btVector3(0,0,0));
-		body->setContactProcessingThreshold(1e30);
+	body->setLinearFactor(btVector3(1, 1, 1));
 
-		///when using m_ccdMode, disable regular CCD
-		body->setCcdMotionThreshold(2.5f);
-		body->setCcdSweptSphereRadius(0.4f);
-		
-		return body;
-	}
-	return NULL;
+	btVector3 linVel(dir.x, dir.y, dir.z);
+	body->setLinearVelocity(linVel * power);
+
+	body->setContactProcessingThreshold(1e30);
+
+	///when using m_ccdMode, disable regular CCD
+	body->setCcdMotionThreshold(2.5f);
+	body->setCcdSweptSphereRadius(0.4f);
+
 }
 
 void cPhysicsEngineBullet::GetCollisionShapeEdges(Vec3* edges, size_t size, size_t& nEdges) {
 	// Edge points
 	btVector3 p1, p2;
-	Vec3 fP1, fP2;
 
 	auto colObjArray = physicsWorld->getCollisionWorld()->getCollisionObjectArray();
 	size_t nObjs = physicsWorld->getNumCollisionObjects();
 
 	// Vec3* edges to small
-	ASSERT(size >= nObjs * sizeof(Vec3));
+	//ASSERT(size >= nObjs * sizeof(Vec3));
 
 	size_t edgeIndex = 0;
 	nEdges = 0;
-	for(size_t i = 0; i < nObjs; i++) {
+	for (size_t i = 0; i < nObjs; i++) {
 		btCollisionShape* colShape = colObjArray[i]->getCollisionShape();
 		btTransform worldTrans = colObjArray[i]->getWorldTransform();
 
 		// Add each edge from convex Shape to the list
-		if(colObjArray[i]->getCollisionShape()->isConvex()) {
+		if(colShape->isConvex()) {
 			btConvexHullShape* convCol = (btConvexHullShape*)colShape;
 			size_t nEdgesOnColShape = convCol->getNumEdges();
 			nEdges += nEdgesOnColShape;
@@ -189,62 +184,62 @@ void cPhysicsEngineBullet::GetCollisionShapeEdges(Vec3* edges, size_t size, size
 			}
 			
 		} else {
-			/*
-			//@TODO CONCAVE CollisionObject extraction to edge list...
 			btBvhTriangleMeshShape* concCol = (btBvhTriangleMeshShape*)colShape;
-			const Vec3* vertPos;
-			int nVerts;
-			int vertStride;
-
-			const int* indices;
-			int indexStride;
-			int nFaces;
-	
-			PHY_ScalarType verticesType;
-			PHY_ScalarType indicesType;
 
 			// Get concave mesh description ...
-			concCol->getMeshInterface()->getLockedReadOnlyVertexIndexBase((const unsigned char**)&vertPos, nVerts, verticesType, vertStride, (const unsigned char**)&indices, indexStride, nFaces, indicesType);
+			const IndexedMeshArray& iMa = ((btTriangleIndexVertexArray*)concCol->getMeshInterface())->getIndexedMeshArray();
+			
+			// For each mesh in concave object
+			for (size_t j = 0; j < iMa.size(); j++) {
+				const btIndexedMesh& mesh = iMa.at(j);
 
-			nEdges += nFaces * 3;
+				nEdges += mesh.m_numTriangles * 3;
 
-			// For each triangle..
-			btVector3 verticesPos[3];
-			for (size_t j = 0; j < nFaces; j++) {
+				// IB, VB
+				int* indices = (int*)mesh.m_triangleIndexBase;
+				btVector3* vertices = (btVector3*)mesh.m_vertexBase;
 
-				// Get vertices
-				for (size_t z = 0; z < 3; z++) {
-					// At the end of the index " * 3 " because btVector3 size needed.
-					memcpy(&verticesPos[z], &vertPos[indices[j * 3 + z]], sizeof(btScalar)* 3);
+				// For each triangle
+				btVector3 verticesPos[3];
+				for (size_t k = 0; k < mesh.m_numTriangles; k++) {
+					
+					// Define three vertices in world space
+					for (size_t l = 0; l < 3; l++)
+						verticesPos[l] = worldTrans * vertices[indices[k * 3 + l]];
+
+					// Edge 1
+					edges[edgeIndex].x = verticesPos[0].x();
+					edges[edgeIndex].y = verticesPos[0].y();
+					edges[edgeIndex].z = verticesPos[0].z();
+					edgeIndex++;
+					
+					edges[edgeIndex].x = verticesPos[1].x();
+					edges[edgeIndex].y = verticesPos[1].y();
+					edges[edgeIndex].z = verticesPos[1].z();
+					edgeIndex++;
+					
+					
+					// Edge 1
+					edges[edgeIndex].x = verticesPos[1].x();
+					edges[edgeIndex].y = verticesPos[1].y();
+					edges[edgeIndex].z = verticesPos[1].z();
+					edgeIndex++;
+					edges[edgeIndex].x = verticesPos[2].x();
+					edges[edgeIndex].y = verticesPos[2].y();
+					edges[edgeIndex].z = verticesPos[2].z();
+					edgeIndex++;
+
+					// Edge 2
+					edges[edgeIndex].x = verticesPos[2].x();
+					edges[edgeIndex].y = verticesPos[2].y();
+					edges[edgeIndex].z = verticesPos[2].z();
+					edgeIndex++;
+					edges[edgeIndex].x = verticesPos[0].x();
+					edges[edgeIndex].y = verticesPos[0].y();
+					edges[edgeIndex].z = verticesPos[0].z();
+					edgeIndex++;
 				}
-				
-				// Transform vertices to world space
-				for (size_t z = 0; z < 3; z++) {
-					verticesPos[i] = worldTrans * verticesPos[z];
-				}
-
-				// 0-1, 1-2 edges
-				for (size_t z = 0; z < 2; z++) {
-					for (size_t y = 0; y < 2; y++) {
-						edges[edgeIndex].x = verticesPos[y + z].x();
-						edges[edgeIndex].y = verticesPos[y + z].y();
-						edges[edgeIndex].z = verticesPos[y + z].z();
-						edgeIndex++;
-					}
-				}
-
-				// Finally 2,0 edges
-				edges[edgeIndex].x = verticesPos[2].x();
-				edges[edgeIndex].y = verticesPos[2].y();
-				edges[edgeIndex].z = verticesPos[2].z();
-				edgeIndex++;
-
-				edges[edgeIndex].x = verticesPos[0].x();
-				edges[edgeIndex].y = verticesPos[0].y();
-				edges[edgeIndex].z = verticesPos[0].z();
-				edgeIndex++;
-				
-			}*/
+			}
 		}
 	}
 }

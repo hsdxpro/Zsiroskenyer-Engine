@@ -96,18 +96,12 @@ eGapiResult cGraphicsApiD3D11::CreateDevice() {
 		D3D_FEATURE_LEVEL_9_1
 	};
 
-	// Dx debug Mode if needed
-	UINT flags = 0;
-#if defined(DEBUG) || defined(_DEBUG)
-	flags |= D3D11_CREATE_DEVICE_DEBUG;
-#endif
-
 	// go from high feature level to lower, try to create device with each
 	D3D_FEATURE_LEVEL featurelevel;
 	int i = 0;
 	const int nFeatureLevels = ARRAYSIZE(featurelevels);
 	for(; i < nFeatureLevels; i++, featurelevel = featurelevels[i]) {
-		HRESULT hr = D3D11CreateDevice(mainAdapter, D3D_DRIVER_TYPE_UNKNOWN , 0, flags, featurelevels, nFeatureLevels, D3D11_SDK_VERSION, &d3ddev, &featurelevel, &d3dcon);
+		HRESULT hr = D3D11CreateDevice(mainAdapter, D3D_DRIVER_TYPE_UNKNOWN , 0, 0, featurelevels, nFeatureLevels, D3D11_SDK_VERSION, &d3ddev, &featurelevel, &d3dcon);
 
 		// Wrap mode... for gpu's not supporting hardware accelerated D3D11
 		//HRESULT hr = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_WARP , 0, flags, featurelevels, nFeatureLevels, D3D11_SDK_VERSION, &d3ddev, &featurelevel, &d3dcon); // For dx9 machines
@@ -305,6 +299,7 @@ eGapiResult cGraphicsApiD3D11::CreateDefaultStates(const D3D11_CULL_MODE& cullMo
 	// default geometry topology!!
 	d3dcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+	/*
 	// default rasterizer state
 	static D3D11_RASTERIZER_DESC rDesc;
 	rDesc.AntialiasedLineEnable = false;
@@ -327,8 +322,33 @@ eGapiResult cGraphicsApiD3D11::CreateDefaultStates(const D3D11_CULL_MODE& cullMo
 			return eGapiResult::ERROR_UNKNOWN;
 	}
 	d3dcon->RSSetState(rState);
-	rState->Release();
+	//rState->Release();
+	*/
 
+	ID3D11SamplerState* sampler;
+	D3D11_SAMPLER_DESC d;
+		d.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		d.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		d.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		d.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+		d.Filter = D3D11_FILTER_ANISOTROPIC;
+		d.MaxAnisotropy = 16;
+		d.MaxLOD = 0;
+		d.MinLOD = 0;
+		d.MipLODBias = 0;
+
+	HRESULT hr = d3ddev->CreateSamplerState(&d, &sampler);
+
+	if (FAILED(hr)) {
+		ASSERT_MSG(false, "Failed to create default sampler state");
+		if (hr == E_OUTOFMEMORY)
+			return eGapiResult::ERROR_OUT_OF_MEMORY;
+		else
+			return eGapiResult::ERROR_UNKNOWN;
+	}
+
+	d3dcon->PSSetSamplers(0, 1, (ID3D11SamplerState**)&sampler);
+	SAFE_RELEASE(sampler);
 	return eGapiResult::OK;
 }
 

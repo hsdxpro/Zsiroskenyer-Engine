@@ -25,8 +25,8 @@
 #define NOMINMAX
 #include <windows.h>
 #include <tchar.h> // even worse
-
-cEntity* player = NULL;
+cEntity* player;
+IPhysicsEngine* pEngine;
 
 #define CAM_MOVE_SPEED 20
 void updateDemo(cCamera& cam, float tDelta);
@@ -38,7 +38,8 @@ int ricsiMain() {
 	// Get Modules
 	IGraphicsEngine* gEngine = core->GetGraphicsEngine();
 	IGraphicsApi* gApi = gEngine->GetGraphicsApi();
-
+	pEngine = core->GetPhysicsEngine();
+	
 	// Window description
 	IWindow::tDesc winDesc;
 		winDesc.brush = IWindow::eBrush::RENDER_;
@@ -79,8 +80,8 @@ int ricsiMain() {
 	}
 	
 	// Our player
-	player = core->AddEntity(basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 1.0);
-	player->SetPos(Vec3(9, 0, 40));
+	player = core->AddEntity(basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 0.0);
+	//player->SetPos(Vec3(9, 0, 40));
 
 	// Main loop
 	while(window->IsOpened()) {
@@ -91,15 +92,14 @@ int ricsiMain() {
 	
 		// Update everything
 		float tDelta = cTimer::getDeltaSeconds();
-		size_t fps = cTimer::GetFps(tDelta);
+
 		updateDemo(cam, tDelta);
 		core->Update(tDelta);
 
+		// Don't hog with set caption text... Fucking slow operation
 		static float timer1 = 0.0;
 		timer1 += tDelta;
-
-
-		// Don't hog with set caption text... Fucking slow operation
+		size_t fps = cTimer::GetFps(tDelta);
 		if (timer1 > 1.0f)
 		{
 			window->SetCaptionText(zsString(L"[Zsíroskenyér Engine 0.1 Beta]  FPS: ") + fps);
@@ -148,8 +148,13 @@ void updateDemo(cCamera& cam, float tDelta) {
 
 	player->SetPos(playerPos);
 	*/
+// Shooting boxes
+	//if (((short)GetAsyncKeyState(VK_LBUTTON)) & 0x80) // Press detect doesn't work :(
+	if (GetAsyncKeyState(VK_LBUTTON))
+		pEngine->ShootBox(0.5f, cam.GetPos(), cam.GetDirFront(), 400); // This function in the interface is just for test purposes
+
 // CAMERA MOVING
-	Vec3 deltaMove = Vec3(0, 0, 0);
+	Vec3 deltaMove(0, 0, 0);
 	if (GetAsyncKeyState('W'))
 		deltaMove += cam.GetDirFront() * (CAM_MOVE_SPEED * tDelta);
 	if (GetAsyncKeyState('S'))

@@ -42,12 +42,14 @@ void cCore::DebugRender(unsigned long renderFlags) {
 	static Vec3 edges[400000]; // TODO THIS IS NOT THE BEST FOR YOU :D
 	if(renderFlags & (unsigned long)eDebugRenderMode::PHYSICS_TRIANGLES) {
 		size_t nEdges;
-		physicsEngine->GetCollisionShapeEdges(edges, 999999, nEdges);
+		physicsEngine->GetCollisionShapeEdges(edges, 400000, nEdges);
 
-		// Render lines for physics..
-		cCamera* cam = graphicsEngine->GetActiveCamera();
-		Matrix44 viewProj = cam->GetViewMatrix() * cam->GetProjMatrix();
-		debugRenderer->RenderLines(viewProj, edges, nEdges, Vec3(1.0f, 0.0f, 0.0f));
+		if (nEdges != 0) {
+			// Render lines for physics..
+			cCamera* cam = graphicsEngine->GetActiveCamera();
+			Matrix44 viewProj = cam->GetViewMatrix() * cam->GetProjMatrix();
+			debugRenderer->RenderLines(viewProj, edges, nEdges, Vec3(1.0f, 0.0f, 0.0f));
+		}
 	}
 }
 

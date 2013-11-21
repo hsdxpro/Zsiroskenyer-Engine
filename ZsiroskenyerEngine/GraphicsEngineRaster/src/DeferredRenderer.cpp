@@ -37,19 +37,19 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 	for (auto& v : gBuffer)
 		v = NULL;
 
-	// create shaders
+	// Create shaders
 	shaderGBuffer = parent.shaderManager->LoadShader(L"shaders/deferred_gbuffer.cg");
 	shaderComposition =	parent.shaderManager->LoadShader(L"shaders/deferred_compose.cg");
 	parent.shaderManager->LoadShader(L"shaders/screen_copy.cg");
 
 	if (!shaderGBuffer || !shaderComposition) {
-		std::string msg = std::string("failed to create shaders:") + (shaderGBuffer ? "" : " g-buffer") + (shaderComposition ? "" : " composition");
+		std::string msg = std::string("Failed to create shaders:") + (shaderGBuffer ? "" : " g-buffer") + (shaderComposition ? "" : " composition");
 		if (shaderGBuffer) parent.shaderManager->UnloadShader(shaderGBuffer);
 		if (shaderComposition) parent.shaderManager->UnloadShader(shaderComposition);
 		shaderGBuffer = shaderComposition = NULL;
 		throw std::runtime_error(msg);
 	}
-	// create buffers
+	// Create buffers
 	if (ReallocBuffers() != eGapiResult::OK) {
 		parent.shaderManager->UnloadShader(shaderGBuffer);
 		parent.shaderManager->UnloadShader(shaderComposition);
@@ -163,7 +163,6 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	}
 
 	// Compose pass
-	// Clear compose buffer
 	parent.gApi->SetRenderTargets(1, &compositionBuffer, NULL);
 
 	// Set ShaderProgram

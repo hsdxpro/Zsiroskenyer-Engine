@@ -45,7 +45,7 @@ __declspec(dllexport) IGraphicsEngine* CreateGraphicsEngineRaster(IWindow* targe
 
 //	Construction of the graphics engine
 cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config) {
-	// create graphics api
+	// Create graphics api
 	gApi = Factory.CreateGraphicsD3D11();
 	if (!gApi)
 		throw std::runtime_error("failed to create graphics api");
@@ -53,13 +53,13 @@ cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, un
 	resourceManager = new cResourceManager(gApi);
 	sceneManager = new cSceneManager();
 
-	// create shader
-		// basic 3D geom rendering
+	// Create shader
+		// Basic 3D geom rendering
 	shaderManager->LoadShader(L"shaders/test.cg");
-		// for debugging
+		// For debugging
 	shaderManager->LoadShader(L"shaders/LINE_RENDERER.cg");
 
-	// create deferred renderer
+	// Create deferred renderer
 	try {
 		deferredRenderer = new cDeferredRenderer(*this);
 	}
@@ -68,7 +68,7 @@ cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, un
 		delete deferredRenderer;
 	}
 
-	// create hdr post-processor
+	// Create hdr post-processor
 	try {
 		hdrProcessor = new cHDRProcessor(*this);
 	}
@@ -92,12 +92,12 @@ void cGraphicsEngine::Release() {
 //	Utility & Settings
 //	TODO: Reload all resources not only shaders
 eGraphicsResult cGraphicsEngine::ReloadResources() {
-	if (!shaderManager->ReloadShader(L"shaders/test.cg")) {
+	if(!shaderManager->ReloadShader(L"shaders/test.cg"))
 		return eGraphicsResult::ERROR_UNKNOWN;
-	}
-	if (!shaderManager->ReloadShader(L"shaders/LINE_RENDERER.cg")) {
+
+	if (!shaderManager->ReloadShader(L"shaders/LINE_RENDERER.cg"))
 		return eGraphicsResult::ERROR_UNKNOWN;
-	}
+
 	return eGraphicsResult::OK;
 }
 
@@ -115,7 +115,7 @@ eGraphicsResult cGraphicsEngine::Resize(unsigned width, unsigned height) {
 	screenWidth = width;
 	screenHeight = height;
 
-	// gApi->SetBackBufferSize(screenWidth, screenHeight); // majd ha lesz!
+	gApi->SetBackBufferSize(screenWidth, screenHeight); // majd ha lesz!
 	if (deferredRenderer) {
 		result = deferredRenderer->Resize(screenWidth, screenHeight);
 	}
@@ -125,9 +125,10 @@ eGraphicsResult cGraphicsEngine::Resize(unsigned width, unsigned height) {
 cGraphicsEntity* cGraphicsEngine::CreateEntity(const zsString& geomPath, const zsString& mtlPath) {
 	cGeometryRef geom = resourceManager->GetGeometry(geomPath);
 	cMaterialRef mtl = resourceManager->GetMaterial(mtlPath);
-	if (!geom || !mtl) {
+
+	if (!geom || !mtl)
 		return NULL;
-	}
+
 	return sceneManager->AddEntity(std::move(geom), std::move(mtl));
 }
 
@@ -136,7 +137,7 @@ cGraphicsEntity* cGraphicsEngine::CreateEntity(const zsString& geomPath, const z
 //	Rendering
 eGraphicsResult cGraphicsEngine::Update() {
 	RenderSceneForward();
-	//deferredRenderer->IDontKnowTheNameButDoFuckingRenderingLol();
+	//RenderSceneDeferred();
 	return eGraphicsResult::OK;
 }
 
@@ -232,8 +233,9 @@ void cGraphicsEngine::RenderSceneDeferred() {
 	// for now post-process & further rendering equals to copying the composed texture to BB
 	gApi->SetRenderTargetDefault();
 	IShaderProgram* screenCopyShader = shaderManager->GetShaderByName(L"screen_copy.cg");
+	gApi->SetShaderProgram(screenCopyShader);
 	gApi->SetTexture(composedBuffer, 0);
-	gApi->Draw(3);	
+	gApi->Draw(3);
 }
 
 
