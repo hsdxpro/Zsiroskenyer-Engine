@@ -116,7 +116,7 @@ int ricsiMain() {
 		gEngine->Update();
 
 		// Debug rendering
-		core->DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
+		//core->DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
 
 		// Present SwapChain
 		gApi->Present();
@@ -130,7 +130,7 @@ int ricsiMain() {
 
 bool noJump = false; // don't commit suicide upon seeing this :D
 void updateDemo(cCamera& cam, float tDelta) {
-	
+/*
 	static Quat playerRot;
 	Vec3 playerDir = Vec3(0, 1, 0) * playerRot;
 	const Vec3 up(0, 0, 1);
@@ -149,10 +149,8 @@ void updateDemo(cCamera& cam, float tDelta) {
 	Vec3 playerPos = player->GetPos();
 	player->SetPos(playerPos + deltaMove);
 	cam.SetPos(playerPos + Vec3(0, -0.75, 2));
+*/
 
-	//player->SetRot(cam.GetRot());
-	//cam.SetTarget(playerDir);
-/*
 // Shooting boxes
 	//if (((short)GetAsyncKeyState(VK_LBUTTON)) & 0x80) // Press detect doesn't work :(
 	if (GetAsyncKeyState(VK_LBUTTON))
@@ -173,7 +171,7 @@ void updateDemo(cCamera& cam, float tDelta) {
 	// Set new position
 	cam.SetPos(cam.GetPos() + deltaMove);
 	cam.SetTarget(cam.GetTarget() + deltaMove);
-*/
+
 
 	// CAMERA ROTATION...
 	// get delta mouse

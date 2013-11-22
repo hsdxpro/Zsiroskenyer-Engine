@@ -3,7 +3,7 @@ diffuse 0.9 0.9 0.9 1
 specular 1 1 1 1
 emissive 0 0 0 0
 glossiness 0.5
-tdiffuse ../textures/road_tileable.jpg
+tdiffuse ../textures/terrain_colormap.tif
 tnormal
 tspecular
 tdisplace

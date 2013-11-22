@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\HagymaBox.cpp" />
+    <ClCompile Include="src\hagymaMain.cpp" />
+    <ClCompile Include="src\GuiSystem.cpp">
+      <Filter>TESZT_ASD</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GuiImage.cpp">
+      <Filter>TESZT_ASD\Controls</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\HagymaBox.h" />
+    <ClInclude Include="src\GuiSystem.h">
+      <Filter>TESZT_ASD</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GuiImage.h">
+      <Filter>TESZT_ASD\Controls</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="TESZT_ASD">
+      <UniqueIdentifier>{2ea69e85-f3e2-4952-8ad8-6d744eef7eff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TESZT_ASD\Controls">
+      <UniqueIdentifier>{2caaccec-a2f1-4936-bd05-a0ad817f2211}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
