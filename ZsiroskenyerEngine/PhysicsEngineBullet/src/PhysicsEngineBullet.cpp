@@ -77,25 +77,27 @@ IPhysicsEntity* cPhysicsEngineBullet::CreateRigidEntity(const zsString& physicsG
 		// Static object
 		if (mass == 0) {
 			// Bullet bhv opt container
-			static btVector3 tmpVerticesPos[100000]; // tmp Vertex holder
 
+			int* indices = new int[d.nIndices];
+			memcpy(indices, d.indices, d.indexStride * d.nIndices);
+
+			btVector3* vertices = new btVector3[d.nVertices];
 			for (size_t i = 0; i < d.nVertices; i++) {
-				memcpy(&tmpVerticesPos[i], ((unsigned char*)d.vertices) + i * d.vertexStride, sizeof(Vec3));
+				memcpy(vertices[i], (unsigned char*)d.vertices + i * d.vertexStride, sizeof(Vec3));
 			}
 
-			btTriangleIndexVertexArray* VBIB = new btTriangleIndexVertexArray(d.nIndices / 3, (int*)d.indices, d.indexStride * 3, d.nVertices / 3, (btScalar*)tmpVerticesPos, sizeof(btVector3));
-			/*
+			//Bullet Tároló feltöltése, általunk kigyüjtött adatokkal
 			btTriangleIndexVertexArray* VBIB = new btTriangleIndexVertexArray(d.nIndices / 3,
-				(int*)d.indices,
-				3 * sizeof(unsigned),
-				d.nVertices, (btScalar*)d.vertices, 44);
-			*/
+				(int*)indices,
+				3 * d.indexStride,
+				d.nVertices, (btScalar*)vertices, sizeof(btVector3));
+
 			colShape = new btBvhTriangleMeshShape(VBIB, true);
+			
 		} else { // Dynamic object
 			colShape = new btConvexHullShape((btScalar*)d.vertices, d.nVertices, d.vertexStride);
 		}
 
-		
 		collisionShapes[physicsGeom] = colShape;
 	} else {
 		colShape = collisionShapes[physicsGeom];

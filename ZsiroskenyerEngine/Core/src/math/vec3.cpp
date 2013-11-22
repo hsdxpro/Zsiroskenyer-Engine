@@ -134,10 +134,16 @@ float Vec3::Dot(const Vec3& v1, const Vec3& v2) {
 }
 
 Vec3 Vec3::Cross(const Vec3& v1, const Vec3& v2) {
-	Vec3 ret(	v1.y*v2.z - v1.z*v2.y,
-				v1.z*v2.x - v1.x*v2.z,
-				v1.x*v2.y - v1.y*v2.x );
-	return ret;
+	return Vec3 (	v1.y * v2.z - v1.z * v2.y,
+					v1.z * v2.x - v1.x * v2.z,
+					v1.x * v2.y - v1.y * v2.x );
+}
+
+Vec3 Vec3::Cross(const Vec3& v) const {
+	return Vec3 (	y * v.z - z * v.y,
+					z * v.x - x * v.z,
+					x * v.y - y * v.x	);
+
 }
 
 float Vec3::Lenght(const Vec3& v) {

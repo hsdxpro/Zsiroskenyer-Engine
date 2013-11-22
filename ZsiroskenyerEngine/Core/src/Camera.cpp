@@ -87,6 +87,11 @@ const Vec3& cCamera::GetPos() const {
 	return pos;
 }
 
+const Quat& cCamera::GetRot() const {
+	const Vec3 up(0, 0, 1);
+	return Quat::DirToRot(target - pos, up);
+}
+
 const Vec3& cCamera::GetTarget() const {
 	return target;
 }

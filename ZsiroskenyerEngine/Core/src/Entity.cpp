@@ -21,6 +21,10 @@ void cEntity::SetScale(const Vec3& scale) {
 	physicsEntity->SetScale(scale);
 }
 
+const Vec3& cEntity::GetPos() {
+	return physicsEntity->GetPos();
+}
+
 cGraphicsEntity* cEntity::GetGraphicsEntity() {
 	return graphicsEntity;
 }

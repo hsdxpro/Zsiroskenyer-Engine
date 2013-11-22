@@ -34,6 +34,7 @@ public:
 	Vec3 GetDirLeft() const;
 
 	const Vec3& GetPos() const;
+	const Quat& GetRot() const;
 	const Vec3& GetTarget() const;
 
 	cCamera(float radFOV, float aspectRatio, float nearPlane, float farPlane);

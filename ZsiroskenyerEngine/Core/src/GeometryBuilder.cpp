@@ -116,7 +116,7 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 	SAFE_DELETE_ARRAY(indices);
 
 	// Return geometric description about loaded DAE
-	cGeometryBuilder::tGeometryDesc geomDesc;
+	tGeometryDesc geomDesc;
 		geomDesc.vertices = vertices;
 		geomDesc.nVertices = nVertices;
 		geomDesc.vertexStride = sizeof(baseVertex);

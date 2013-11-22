@@ -20,6 +20,8 @@ class Vec3 {
 		static Vec3 Normalize(const Vec3& v);
 		static float Dot(const Vec3& v1, const Vec3& v2);
 		static Vec3 Cross(const Vec3& v1, const Vec3& v2);
+		Vec3 Cross(const Vec3& v) const;
+
 		static float Lenght(const Vec3& v);
 
 		float Lenght() const;

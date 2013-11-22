@@ -32,6 +32,9 @@ class Quat {
 		static Quat EulerAnglesToQuat(float rotX, float rotY, float rotZ);
 		static Vec3 QuatToEulerAngles(const Quat& quaternion);
 
+		// Rotation Quaternion from a direction, and an up vector
+		static Quat	DirToRot(const Vec3& dir, const Vec3& up);
+
 		Quat& operator*=(const Quat& q2);		
 		const Quat operator~() const;
 		Quat operator*(const Quat& q2) const;

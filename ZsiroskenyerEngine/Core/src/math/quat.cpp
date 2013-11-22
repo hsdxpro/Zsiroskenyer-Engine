@@ -166,6 +166,26 @@ Vec3 Quat::QuatToEulerAngles(const Quat& q) {
 	return eulerAngles;
 }
 
+Quat Quat::DirToRot(const Vec3&dir, const Vec3& up) {
+	// Create basis for the matrix
+	Vec3 right = up.Cross(dir);
+	Vec3 realUp = dir.Cross(right);
+
+	Matrix44 bMat(	right.x	, right.y	, right.z	, 0,
+					realUp.x, realUp.y	, realUp.z	, 0,
+					dir.x	, dir.y		, dir.z		, 0,
+					0		, 0			, 0			, 1		);
+
+	// Build quat from matrix
+	Quat rot;
+		rot.w = (float)sqrt(1 + bMat._11 + bMat._22 + bMat._33) / 2;
+		double dfWScale = rot.w * 4;
+		rot.x = (bMat._32 - bMat._23) / dfWScale;
+		rot.y = (bMat._13 - bMat._31) / dfWScale;
+		rot.z = (bMat._21 - bMat._12) / dfWScale;
+	return rot;
+}
+
 std::ostream& operator<<(std::ostream& os, Quat q) {
 	os << q.w << ':' << q.x << ',' << q.y << ',' << q.z;
 	return os;

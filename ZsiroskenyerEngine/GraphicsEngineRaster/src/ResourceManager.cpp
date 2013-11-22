@@ -55,7 +55,7 @@ cGeometryRef cResourceManager::GetGeometry(const zsString& filePath) {
 		IIndexBuffer *IB;
 		gApi->CreateIndexBuffer(&IB, d.nIndices * d.indexStride, eUsage::IMMUTABLE, d.indices);
 		geom = new cGeometry(VB, IB);
-		
+
 		// insert into database
 		geometries.insert(GeometryMapT::value_type(filePath, geom));
 	}

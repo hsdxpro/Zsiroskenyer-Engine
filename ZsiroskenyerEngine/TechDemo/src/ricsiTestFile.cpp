@@ -29,6 +29,8 @@ cEntity* player;
 IPhysicsEngine* pEngine;
 
 #define CAM_MOVE_SPEED 20
+#define PLAYER_MOVE_SPEED 4
+
 void updateDemo(cCamera& cam, float tDelta);
 
 int ricsiMain() {
@@ -80,8 +82,8 @@ int ricsiMain() {
 	}
 	
 	// Our player
-	player = core->AddEntity(basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 0.0);
-	//player->SetPos(Vec3(9, 0, 40));
+	player = core->AddEntity(basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 70.0);
+	player->SetPos(Vec3(9, 0, 2));
 
 	// Main loop
 	while(window->IsOpened()) {
@@ -128,30 +130,34 @@ int ricsiMain() {
 
 bool noJump = false; // don't commit suicide upon seeing this :D
 void updateDemo(cCamera& cam, float tDelta) {
-	/*
+	
 	static Quat playerRot;
 	Vec3 playerDir = Vec3(0, 1, 0) * playerRot;
 	const Vec3 up(0, 0, 1);
-	Vec3 playerPos(9, 0, 4);
 
 // Controlling player with WSAD
 	Vec3 deltaMove(0, 0, 0);
 	if (GetAsyncKeyState('W'))
-		deltaMove += playerDir  * tDelta;
+		deltaMove += playerDir * tDelta;
 	if (GetAsyncKeyState('S'))
-		deltaMove += -playerDir  * tDelta;
+		deltaMove += -playerDir * tDelta;
 	if (GetAsyncKeyState('A'))
-		deltaMove += Vec3::Cross(playerDir, up)   * tDelta;
+		deltaMove += Vec3::Cross(up, playerDir)  * tDelta;
 	if (GetAsyncKeyState('D'))
-		deltaMove += Vec3::Cross(up, playerDir)   * tDelta;
-	playerPos += deltaMove;
+		deltaMove += Vec3::Cross(playerDir, up)  * tDelta;
 
-	player->SetPos(playerPos);
-	*/
+	Vec3 playerPos = player->GetPos();
+	player->SetPos(playerPos + deltaMove);
+	cam.SetPos(playerPos + Vec3(0, -0.75, 2));
+
+	//player->SetRot(cam.GetRot());
+	//cam.SetTarget(playerDir);
+/*
 // Shooting boxes
 	//if (((short)GetAsyncKeyState(VK_LBUTTON)) & 0x80) // Press detect doesn't work :(
 	if (GetAsyncKeyState(VK_LBUTTON))
 		pEngine->ShootBox(0.5f, cam.GetPos(), cam.GetDirFront(), 400); // This function in the interface is just for test purposes
+
 
 // CAMERA MOVING
 	Vec3 deltaMove(0, 0, 0);
@@ -167,7 +173,7 @@ void updateDemo(cCamera& cam, float tDelta) {
 	// Set new position
 	cam.SetPos(cam.GetPos() + deltaMove);
 	cam.SetTarget(cam.GetTarget() + deltaMove);
-
+*/
 
 	// CAMERA ROTATION...
 	// get delta mouse
@@ -215,6 +221,5 @@ void updateDemo(cCamera& cam, float tDelta) {
 	Vec3 frontVec(0, 1, 0);
 	frontVec = frontVec * camRotMat;
 	
-
 	cam.SetTarget(cam.GetPos() + frontVec);
 }

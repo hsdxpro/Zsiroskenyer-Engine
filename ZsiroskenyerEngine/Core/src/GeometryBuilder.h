@@ -11,6 +11,7 @@
 class cGeometryBuilder {
 public:
 	struct tGeometryDesc {
+
 		void* indices;
 		void* vertices;
 
@@ -21,7 +22,7 @@ public:
 		size_t vertexStride;
 	};
 
-	// Loading .DAE geometry with Assimp 3d library
-	cGeometryBuilder::tGeometryDesc LoadGeometry(const zsString& filePath);
+	// Free up dynamic memory in the result !
+	tGeometryDesc LoadGeometry(const zsString& filePath);
 	cGeometryBuilder();
 };
