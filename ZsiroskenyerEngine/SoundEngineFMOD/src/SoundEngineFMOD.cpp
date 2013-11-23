@@ -48,22 +48,26 @@ bool cSoundEngineFMOD::GenWavFromMicrophone(const zsString& filePath, float stop
 	FMOD_RESULT result = soundSystem->setOutput(FMOD_OUTPUTTYPE_DSOUND);
 	if (result != FMOD_OK) {
 		ILog::GetInstance()->MsgBox("[cSoundEngineFMOD] Failed to set DirectSound Output for recording");
+		return false;
 	}
 
 	int nDrivers;
 	result = soundSystem->getNumDrivers(&nDrivers);
 	if (result != FMOD_OK || nDrivers < 1) {
 		ILog::GetInstance()->MsgBox("[cSoundEngineFMOD] There is no available sound Driver");
+		return false;
 	}
 
 	result = soundSystem->setDriver(0);
 	if (result != FMOD_OK) {
 		ILog::GetInstance()->MsgBox("[cSoundEngineFMOD] Failed to set sound driver for the system");
+		return false;
 	}
 
 	result = soundSystem->getRecordNumDrivers(&nDrivers);
 	if (result != FMOD_OK || nDrivers < 1) {
 		ILog::GetInstance()->MsgBox("[cSoundEngineFMOD] There is no available sound recording Driver");
+		return false;
 	}
 
 	// Create sound that we record into
@@ -75,14 +79,18 @@ bool cSoundEngineFMOD::GenWavFromMicrophone(const zsString& filePath, float stop
 		exinfo.defaultfrequency = 44100;
 		exinfo.length = exinfo.defaultfrequency * sizeof(short)* exinfo.numchannels * MAX_SOUND_RECORD_SEC_LENGTH;
 	result = soundSystem->createSound(0, FMOD_2D | FMOD_SOFTWARE | FMOD_OPENUSER, &exinfo, &sound);
-	if (result != FMOD_OK)
+	if (result != FMOD_OK) {
 		ILog::GetInstance()->MsgBox("[cSoundEngineFMOD] Failed creating FMOD::sound for recording");
+		return false;
+	}
 
 
 	// start recording...
 	result = soundSystem->recordStart(0, sound, false);
-	if (result != FMOD_OK)
+	if (result != FMOD_OK) {
 		ILog::GetInstance()->MsgBox("[cSoundEngineFMOD::GenWavFromMicrophone] Failed to start recording");
+		return false;
+	}
 
 	cTimer t;
 	static float timer = 0.0f;
@@ -95,8 +103,10 @@ bool cSoundEngineFMOD::GenWavFromMicrophone(const zsString& filePath, float stop
 	result = soundSystem->recordStop(0);
 	if (result != FMOD_OK) {
 		ILog::GetInstance()->MsgBox("Failed stop sound recording");
+		return false;
 	}
 	SaveToWav(sound, filePath);
+	return true;
 }
 
 void cSoundEngineFMOD::SaveToWav(FMOD::Sound *sound, const zsString& filePath) {
