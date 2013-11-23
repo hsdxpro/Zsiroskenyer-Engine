@@ -33,7 +33,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // helper functions:
 
-#ifdef WIN32 // WIN32 instrinsics
+#ifdef _MSC_VER // WIN32 instrinsics
 
 #include <intrin.h>
 

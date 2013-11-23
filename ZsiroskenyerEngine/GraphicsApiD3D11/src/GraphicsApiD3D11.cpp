@@ -11,6 +11,15 @@
 #include "../../Core/src/IFile.h"
 
 
+
+extern "C"
+__declspec(dllexport)
+IGraphicsApi* CreateGraphicsApiD3D11() {
+	return new cGraphicsApiD3D11();
+}
+
+
+
 cGraphicsApiD3D11::tDxConfig cGraphicsApiD3D11::tDxConfig::DEFAULT = cGraphicsApiD3D11::tDxConfig();
 cGraphicsApiD3D11::tDxConfig cGraphicsApiD3D11::tDxConfig::MEDIUM = cGraphicsApiD3D11::tDxConfig();
 cGraphicsApiD3D11::tDxConfig cGraphicsApiD3D11::tDxConfig::HIGH = cGraphicsApiD3D11::tDxConfig();

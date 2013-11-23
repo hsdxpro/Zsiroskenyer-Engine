@@ -18,6 +18,15 @@ class IVertexBuffer;
 class IIndexBuffer;
 class IConstantBuffer;
 class IShaderProgram;
+class IGraphicsApi;
+
+
+// DLL accessor
+extern "C"
+__declspec(dllexport)
+IGraphicsApi* CreateGraphicsApiD3D11();
+
+
 
 class cGraphicsApiD3D11 : public IGraphicsApi {
 public:
@@ -124,10 +133,3 @@ protected:
 	IDXGISwapChain *d3dsc;
 	static tDxConfig swapChainConfig;
 };
-
-// DLL accessor
-extern "C"
-	__declspec(dllexport)
-	IGraphicsApi* CreateGraphicsApiD3D11() {
-		return new cGraphicsApiD3D11();
-}

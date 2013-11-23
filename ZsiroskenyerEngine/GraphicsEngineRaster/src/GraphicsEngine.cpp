@@ -115,7 +115,7 @@ eGraphicsResult cGraphicsEngine::Resize(unsigned width, unsigned height) {
 	screenWidth = width;
 	screenHeight = height;
 
-	gApi->SetBackBufferSize(screenWidth, screenHeight); // majd ha lesz!
+	gApi->SetBackBufferSize(screenWidth, screenHeight);
 	if (deferredRenderer) {
 		result = deferredRenderer->Resize(screenWidth, screenHeight);
 	}
