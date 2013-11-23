@@ -103,7 +103,7 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 
 				// @TODO not general algorithm, wee need to handle more UV channels
 				supTmpVec = &mesh->mTextureCoords[0][vertIdx];
-				vertices[vertIdx + vertexI].tex = Vec2(supTmpVec->x, supTmpVec->y);
+				vertices[vertIdx + vertexI].tex = Vec2(supTmpVec->x, -supTmpVec->y); // Fucking hate Assimp
 			}
 		}
 
