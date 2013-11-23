@@ -140,6 +140,9 @@
     <ClInclude Include="src\GapiResult.h">
       <Filter>M_GraphicsApi</Filter>
     </ClInclude>
+    <ClInclude Include="src\TagParser.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\math\color.cpp">
@@ -212,6 +215,9 @@
     </ClCompile>
     <ClCompile Include="src\LogicEngine.cpp">
       <Filter>M_LogicEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TagParser.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

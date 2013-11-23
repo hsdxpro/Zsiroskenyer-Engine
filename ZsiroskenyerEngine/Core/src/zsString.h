@@ -164,6 +164,10 @@ public:
 		wcstombs(dst, src.c_str(), nChars);
 	}
 	
+	void ConvertUniToAnsi(char* dst, size_t nChars) const {
+		wcstombs(dst, c_str(), nChars);
+	}
+
 	void CutNumberFromEnd(char* src) {
 		// Move to end
 		while (*src != '\0')
