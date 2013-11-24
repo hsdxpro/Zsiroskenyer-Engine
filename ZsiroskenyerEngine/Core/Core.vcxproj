@@ -16,11 +16,14 @@
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\common.h" />
     <ClInclude Include="src\Core.h" />
+    <ClInclude Include="src\CreateGAPI.h" />
+    <ClInclude Include="src\CreateGraphicsEngine.h" />
     <ClInclude Include="src\DynamicLibrary.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\Factory.h" />
     <ClInclude Include="src\Game.h" />
+    <ClInclude Include="src\GAPI.h" />
     <ClInclude Include="src\GapiResult.h" />
     <ClInclude Include="src\GeometryBuilder.h" />
     <ClInclude Include="src\GraphicsEntity.h" />
@@ -68,6 +71,8 @@
   <ItemGroup>
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Core.cpp" />
+    <ClCompile Include="src\CreateGAPI.cpp" />
+    <ClCompile Include="src\CreateGraphicsEngine.cpp" />
     <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\Exception.cpp" />
     <ClCompile Include="src\Factory.cpp" />

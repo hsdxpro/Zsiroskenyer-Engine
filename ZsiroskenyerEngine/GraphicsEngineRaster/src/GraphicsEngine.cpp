@@ -3,7 +3,6 @@
 //	2013.oct.10, Zsiroskenyer Team, Péter Kardos
 ////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsEngine.h"
-#include "../../Core/src/Factory.h"
 
 #include "SceneManager.h"
 #include "ResourceManager.h"
@@ -13,13 +12,8 @@
 #include "..\..\Core\src\GraphicsEntity.h"
 #include "..\..\Core\src\Camera.h"
 
-#include "..\..\Core\src\IGraphicsApi.h"
-#include "..\..\Core\src\IShaderProgram.h"
-#include "..\..\Core\src\IConstantBuffer.h"
-#include "..\..\Core\src\IVertexBuffer.h"
-#include "..\..\Core\src\IIndexBuffer.h"
+#include "..\..\Core\src\GAPI.h"
 
-#include "..\..\Core\src\Exception.h"
 #include "..\..\Core\src\math/Matrix44.h"
 #include "..\..\Core\src\common.h"
 
@@ -46,7 +40,16 @@ __declspec(dllexport) IGraphicsEngine* CreateGraphicsEngineRaster(IWindow* targe
 //	Construction of the graphics engine
 cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config) {
 	// Create graphics api
-	gApi = Factory.CreateGraphicsD3D11();
+	switch (config.rasterEngine.gxApi) {
+		case tGraphicsConfig::eGraphicsApi::D3D11:
+			gApi = CreateGraphicsApi(targetWindow, screenWidth, screenHeight, eGraphicsApiType::GRAPHICS_API_D3D11);
+			break;
+		case tGraphicsConfig::eGraphicsApi::OPENGL_43:
+			gApi = CreateGraphicsApi(targetWindow, screenWidth, screenHeight, eGraphicsApiType::GRAPHICS_API_OPENGL43);
+			break;
+		default:
+			gApi = NULL;
+	}
 	if (!gApi)
 		throw std::runtime_error("failed to create graphics api");
 	shaderManager = new cShaderManager(gApi);

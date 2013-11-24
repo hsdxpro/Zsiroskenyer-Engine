@@ -8,7 +8,7 @@
 #pragma once
 
 #include "../../Core/src/IGraphicsEngine.h"
-#include "../../Core/src/IGraphicsApi.h"
+#include "../../Core/src/GAPI.h"
 
 class ITexture2D;
 class IGraphicsApi;
@@ -18,6 +18,10 @@ class cResourceManager;
 class ITexture2D;
 class IShaderProgram;
 class IWindow;
+
+extern "C"
+__declspec(dllexport) IGraphicsEngine* CreateGraphicsEngineRaster(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config);
+
 
 class cGraphicsEngine : public IGraphicsEngine {
 	class cDeferredRenderer;
@@ -99,7 +103,3 @@ private:
 		cGraphicsEngine& parent;
 	};
 };
-
-
-extern "C"
-__declspec(dllexport) IGraphicsEngine* CreateGraphicsEngineRaster(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config);

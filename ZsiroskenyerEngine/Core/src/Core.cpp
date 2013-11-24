@@ -16,6 +16,7 @@ cCore* cCore::GetInstance() {
 }
 
 cCore::cCore() {
+	static_assert(false, "CSINALJ VALAMIT A CORE-RAL MERT: CreateGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config)");
 	graphicsEngine = Factory.CreateGraphicsEngine();
 	physicsEngine = Factory.CreatePhysicsEngineBullet();
 	logicEngine = new cLogicEngine();

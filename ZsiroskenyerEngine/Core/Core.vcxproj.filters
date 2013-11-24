@@ -146,6 +146,15 @@
     <ClInclude Include="src\DynamicLibrary.h">
       <Filter>Common\Interface</Filter>
     </ClInclude>
+    <ClInclude Include="src\GAPI.h">
+      <Filter>M_GraphicsApi</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CreateGAPI.h">
+      <Filter>M_GraphicsApi</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CreateGraphicsEngine.h">
+      <Filter>M_GraphicsEngine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\math\color.cpp">
@@ -221,6 +230,12 @@
     </ClCompile>
     <ClCompile Include="src\TagParser.cpp">
       <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CreateGAPI.cpp">
+      <Filter>M_GraphicsApi</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CreateGraphicsEngine.cpp">
+      <Filter>M_GraphicsEngine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

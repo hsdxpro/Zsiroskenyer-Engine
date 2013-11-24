@@ -27,4 +27,5 @@ void UnloadDynamicLibrary(DllHandle module) {
 void* GetFunctionAddress(DllHandle module, const char* funcName) {
 	HMODULE hModule = (HMODULE)module;
 	void* address = GetProcAddress(hModule, funcName);
+	return address;
 }

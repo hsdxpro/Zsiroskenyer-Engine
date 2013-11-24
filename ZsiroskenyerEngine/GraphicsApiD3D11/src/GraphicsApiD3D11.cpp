@@ -14,8 +14,18 @@
 
 extern "C"
 __declspec(dllexport)
-IGraphicsApi* CreateGraphicsApiD3D11() {
-	return new cGraphicsApiD3D11();
+IGraphicsApi* CreateGraphicsApiD3D11(IWindow* targetWindow, unsigned backBufferWidth, unsigned backBufferHeight) {
+	cGraphicsApiD3D11* gApi = NULL;
+	try {
+		gApi = new cGraphicsApiD3D11();
+		gApi->SetWindow(targetWindow);
+		gApi->SetBackBufferSize(backBufferWidth, backBufferHeight);
+		return gApi;
+	}
+	catch (std::exception& e) {
+		delete gApi;
+		return NULL;
+	}
 }
 
 
