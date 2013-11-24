@@ -91,12 +91,14 @@ public:
 
 	// draw
 	void Clear(bool target = true, bool depth = false, bool stencil = false) override;
-	void Present() override;
+	void ClearTexture(ITexture2D* t, unsigned clearFlag = 0, const Vec4& clearColor = Vec4(), float depthVal = 1.0f, size_t stencilVal = 0);
 
 	void Draw(size_t nVertices, size_t idxStartVertex = 0) override;
 	void DrawIndexed(size_t nIndices, size_t idxStartIndex = 0) override;
 	void DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex = 0, size_t idxStartInstance = 0) override;
 	void DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex = 0, size_t idxStartInstance = 0) override;
+
+	void Present() override;
 
 	eGapiResult SetRenderTargetDefault() override;
 	eGapiResult SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget) override;

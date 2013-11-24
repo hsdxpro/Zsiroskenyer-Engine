@@ -100,6 +100,9 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	ASSERT(parent.sceneManager->GetActiveCamera() != NULL);
 
+	// Clear buffers
+	parent.gApi->ClearTexture(depthBuffer);
+
 	// Set BackBuffer
 	parent.gApi->SetRenderTargets(3, &gBuffer[0], depthBuffer);
 

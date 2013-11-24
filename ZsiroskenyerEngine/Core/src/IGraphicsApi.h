@@ -5,6 +5,7 @@
 #include "../../Core/src/IWindow.h"
 #include "../../Core/src/common.h"
 #include "../../Core/src/zsString.h"
+#include "../../Core/src/math/Vec4.h"
 
 #include "ResourceProperty.h"
 #include "GapiResult.h"
@@ -42,12 +43,14 @@ public:
 
 	// rendering
 	virtual void Clear(bool target = true, bool depth = false, bool stencil = false) = 0;
-	virtual void Present() = 0;
+	virtual void ClearTexture(ITexture2D* t, unsigned clearFlag = 0, const Vec4& clearColor = Vec4(), float depthVal = 1.0f, size_t stencilVal = 0) = 0;
 
 	virtual void Draw(size_t nVertices, size_t idxStartVertex = 0) = 0;
 	virtual void DrawIndexed(size_t nIndices, size_t idxStartIndex = 0) = 0;
 	virtual void DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex = 0, size_t idxStartInstance = 0) = 0;
 	virtual void DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex = 0, size_t idxStartInstance = 0) = 0;
+
+	virtual void Present() = 0;
 
 	virtual eGapiResult SetRenderTargetDefault() = 0;
 	virtual eGapiResult SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget) = 0;
