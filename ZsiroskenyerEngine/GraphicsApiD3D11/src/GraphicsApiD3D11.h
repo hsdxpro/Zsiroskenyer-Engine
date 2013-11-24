@@ -24,7 +24,7 @@ class IGraphicsApi;
 // DLL accessor
 extern "C"
 __declspec(dllexport)
-IGraphicsApi* CreateGraphicsApiD3D11();
+IGraphicsApi* CreateGraphicsApiD3D11(IWindow* targetWindow, unsigned backBufferWidth, unsigned backBufferHeight);
 
 
 

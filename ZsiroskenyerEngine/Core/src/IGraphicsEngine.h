@@ -24,9 +24,9 @@ union tGraphicsConfig {
 		OPENGL_43 = 1,
 		D3D11 = 2,
 	};
-	struct RasterEngine {
+	struct tRasterEngine {
 		eGraphicsApi gxApi;
-	};
+	} rasterEngine;
 };
 
 
