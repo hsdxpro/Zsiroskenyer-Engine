@@ -13,6 +13,9 @@
     <ClCompile Include="src\Window.cpp">
       <Filter>Window</Filter>
     </ClCompile>
+    <ClCompile Include="src\DynamicLibrary.cpp">
+      <Filter>DLLLoader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\DLLLoader.h">

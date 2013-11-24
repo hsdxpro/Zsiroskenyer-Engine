@@ -143,7 +143,7 @@
     <ClInclude Include="src\TagParser.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="DynamicLibrary.h">
+    <ClInclude Include="src\DynamicLibrary.h">
       <Filter>Common\Interface</Filter>
     </ClInclude>
   </ItemGroup>

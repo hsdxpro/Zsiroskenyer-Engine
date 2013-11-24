@@ -11,12 +11,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DynamicLibrary.h" />
     <ClInclude Include="src\algorithms\sort.h" />
     <ClInclude Include="src\algorithms\statistics.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\common.h" />
     <ClInclude Include="src\Core.h" />
+    <ClInclude Include="src\DynamicLibrary.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\Factory.h" />
