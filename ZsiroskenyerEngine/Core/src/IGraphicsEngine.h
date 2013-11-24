@@ -20,7 +20,7 @@ class IWindow;
 ////////////////////////////////////////////////////////////////////////////////
 //	Configuration
 union tGraphicsConfig {
-	enum eGraphicsApi : uint32_t {
+	static enum eGraphicsApi : uint32_t {
 		OPENGL_43 = 1,
 		D3D11 = 2,
 	};

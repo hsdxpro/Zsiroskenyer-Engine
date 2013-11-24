@@ -144,12 +144,10 @@ Matrix44& Matrix44::Identity() {
 	return *this;
 }
 
-Matrix44& Matrix44::Transpose(const Matrix44& in) {
-	_11 = in._11;	_12 = in._21;	_13 = in._31;	_14 = in._41;
-	_21 = in._12;	_22 = in._22;	_23 = in._32;	_24 = in._42;
-	_31 = in._13;	_32 = in._23;	_33 = in._33;	_34 = in._43;
-	_41 = in._14;	_42 = in._24;	_43 = in._34;	_44 = in._44;
-	return *this;
+Matrix44 Matrix44::Transpose(const Matrix44& in) {
+	Matrix44 out = in;
+	out.Transpose();
+	return out;
 }
 
 void Matrix44::SetColumn(size_t idx, const Vec4& v) {
@@ -179,58 +177,59 @@ float Matrix44::Determinant() {
 		- _14 * ( _21 * (_32 * _43 - _42 * _33) - _22 * (_31 * _43 - _41 * _33) + _23 * (_31 * _42 - _32 * _41) );
 }
 
-Matrix44& Matrix44::Inverse(Matrix44& out) const {
+Matrix44 Matrix44::Inverse(const Matrix44& in) {
+	Matrix44 out;
 	// determinant
 	float det_A;
 	// partial computations for speed optimizations (hopefully faster, should be tested)
 	float 
-		A = _33 * _44 - _43 * _34,
-		B = _32 * _44 - _42 * _34,
-		C = _32 * _43 - _42 * _33,
-		D = _31 * _44 - _41 * _34,
-		E = _31 * _43 - _41 * _33,
-		F = _31 * _42 - _41 * _32,
+		A = in._33 * in._44 - in._43 * in._34,
+		B = in._32 * in._44 - in._42 * in._34,
+		C = in._32 * in._43 - in._42 * in._33,
+		D = in._31 * in._44 - in._41 * in._34,
+		E = in._31 * in._43 - in._41 * in._33,
+		F = in._31 * in._42 - in._41 * in._32,
 
 
-		G = _23 * _44 - _43 * _24,
-		H = _22 * _44 - _42 * _24,
-		I = _22 * _43 - _42 * _23,
-		J = _21 * _44 - _41 * _24,
-		K = _21 * _43 - _41 * _23,
-		L = _21 * _42 - _41 * _22,
+		G = in._23 * in._44 - in._43 * in._24,
+		H = in._22 * in._44 - in._42 * in._24,
+		I = in._22 * in._43 - in._42 * in._23,
+		J = in._21 * in._44 - in._41 * in._24,
+		K = in._21 * in._43 - in._41 * in._23,
+		L = in._21 * in._42 - in._41 * in._22,
 
 
-		M = _23 * _34 - _33 * _24,
-		N = _22 * _34 - _32 * _24,
-		O = _22 * _33 - _32 * _23,
-		P = _21 * _34 - _31 * _24,
-		Q = _21 * _33 - _31 * _23,
-		R = _21 * _32 - _31 * _22;	
+		M = in._23 * in._34 - in._33 * in._24,
+		N = in._22 * in._34 - in._32 * in._24,
+		O = in._22 * in._33 - in._32 * in._23,
+		P = in._21 * in._34 - in._31 * in._24,
+		Q = in._21 * in._33 - in._31 * in._23,
+		R = in._21 * in._32 - in._31 * in._22;
 
 	// A; B; C; D; E; F
-	out._11 =  (_22*A - _23*B + _24*C);
-	out._21 = -(_21*A - _23*D + _24*E);
-	out._31 =  (_21*B - _22*D + _24*F);
-	out._41 = -(_21*C - _22*E + _23*F);
+	out._11 = (in._22*A - in._23*B + in._24*C);
+	out._21 = -(in._21*A - in._23*D + in._24*E);
+	out._31 = (in._21*B - in._22*D + in._24*F);
+	out._41 = -(in._21*C - in._22*E + in._23*F);
 
-	det_A = 1.0f / (_11*out._11 + _12 * out._21 + _13 * out._31 + _14 * out._41);
+	det_A = 1.0f / (in._11*out._11 + in._12 * out._21 + in._13 * out._31 + in._14 * out._41);
 
-	out._12 = -(_12*A - _13*B + _14*C) * det_A;
-	out._22 =  (_11*A - _13*D + _14*E) * det_A;
-	out._32 = -(_11*B - _12*D + _14*F) * det_A;
-	out._42 =  (_11*C - _12*E + _13*F) * det_A;
+	out._12 = -(in._12*A - in._13*B + in._14*C) * det_A;
+	out._22 = (in._11*A - in._13*D + in._14*E) * det_A;
+	out._32 = -(in._11*B - in._12*D + in._14*F) * det_A;
+	out._42 = (in._11*C - in._12*E + in._13*F) * det_A;
 
 	// G, H, I, J, K, L
-	out._13 =  (_12*G - _13*H + _14*I) * det_A;
-	out._23 = -(_11*G - _13*J + _14*K) * det_A;
-	out._33 =  (_11*H - _12*J + _14*L) * det_A;
-	out._43 = -(_11*I - _12*K + _13*L) * det_A;
+	out._13 = (in._12*G - in._13*H + in._14*I) * det_A;
+	out._23 = -(in._11*G - in._13*J + in._14*K) * det_A;
+	out._33 = (in._11*H - in._12*J + in._14*L) * det_A;
+	out._43 = -(in._11*I - in._12*K + in._13*L) * det_A;
 
 	// M, N, O, P, Q, R
-	out._14 = -(_12*M - _13*N + _14*O) * det_A;
-	out._24 =  (_11*M - _13*P + _14*Q) * det_A;
-	out._34 = -(_11*N - _12*P + _14*R) * det_A;
-	out._44 =  (_11*O - _12*Q + _13*R) * det_A;
+	out._14 = -(in._12*M - in._13*N + in._14*O) * det_A;
+	out._24 = (in._11*M - in._13*P + in._14*Q) * det_A;
+	out._34 = -(in._11*N - in._12*P + in._14*R) * det_A;
+	out._44 = (in._11*O - in._12*Q + in._13*R) * det_A;
 
 	// post multiplication by det_A, cause det_a was not available when these were computed
 	out._11 *= det_A; 
@@ -242,7 +241,8 @@ Matrix44& Matrix44::Inverse(Matrix44& out) const {
 }
 
 Matrix44& Matrix44::Inverse() {
-	return Inverse(*this);
+	*this = Matrix44::Inverse(*this);
+	return *this;
 }
 
 Matrix44& Matrix44::Scale(float scX, float scY, float scZ) {
