@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DLLLoader.cpp" />
+    <ClCompile Include="src\DynamicLibrary.cpp" />
     <ClCompile Include="src\File.cpp" />
     <ClCompile Include="src\Log.cpp" />
     <ClCompile Include="src\Window.cpp" />
