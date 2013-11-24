@@ -101,6 +101,8 @@ eGraphicsResult cGraphicsEngine::ReloadResources() {
 	if (!shaderManager->ReloadShader(L"shaders/LINE_RENDERER.cg"))
 		return eGraphicsResult::ERROR_UNKNOWN;
 
+	deferredRenderer->ReloadShaders();
+
 	return eGraphicsResult::OK;
 }
 
