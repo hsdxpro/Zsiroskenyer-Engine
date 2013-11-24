@@ -38,6 +38,10 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 	for (auto& v : gBuffer)
 		v = NULL;
 
+	// set size
+	bufferWidth = parent.screenWidth;
+	bufferHeight = parent.screenHeight;
+
 	// Create shaders
 	shaderGBuffer = parent.shaderManager->LoadShader(L"shaders/deferred_gbuffer.cg");
 	shaderComposition =	parent.shaderManager->LoadShader(L"shaders/deferred_compose.cg");
@@ -78,11 +82,11 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 
 	// create new buffers
 	eGapiResult results[] = {
-		gApi->CreateTexture(&gBuffer[0],		BUFFER_WIDTH, BUFFER_HEIGHT, 1, 1, eFormat::R8G8B8A8_UNORM,		(int)eBind::RENDER_TARGET   | (int)eBind::SHADER_RESOURCE),
-		gApi->CreateTexture(&gBuffer[1],		BUFFER_WIDTH, BUFFER_HEIGHT, 1, 1, eFormat::R16G16_SINT,		(int)eBind::RENDER_TARGET   | (int)eBind::SHADER_RESOURCE),
-		gApi->CreateTexture(&gBuffer[2],		BUFFER_WIDTH, BUFFER_HEIGHT, 1, 1, eFormat::R8G8B8A8_UNORM,		(int)eBind::RENDER_TARGET   | (int)eBind::SHADER_RESOURCE),
-		gApi->CreateTexture(&compositionBuffer, BUFFER_WIDTH, BUFFER_HEIGHT, 1, 1, eFormat::R16G16B16A16_FLOAT, (int)eBind::RENDER_TARGET   | (int)eBind::SHADER_RESOURCE),
-		gApi->CreateTexture(&depthBuffer,		BUFFER_WIDTH, BUFFER_HEIGHT, 1, 1, eFormat::UNKNOWN,			(int)eBind::SHADER_RESOURCE | (int)eBind::DEPTH_STENCIL, eFormat::D24_UNORM_S8_UINT),
+		gApi->CreateTexture(&gBuffer[0], bufferWidth, bufferHeight, 1, 1, eFormat::R8G8B8A8_UNORM, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE),
+		gApi->CreateTexture(&gBuffer[1], bufferWidth, bufferHeight, 1, 1, eFormat::R16G16_SINT, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE),
+		gApi->CreateTexture(&gBuffer[2], bufferWidth, bufferHeight, 1, 1, eFormat::R8G8B8A8_UNORM, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE),
+		gApi->CreateTexture(&compositionBuffer, bufferWidth, bufferHeight, 1, 1, eFormat::R16G16B16A16_FLOAT, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE),
+		gApi->CreateTexture(&depthBuffer, bufferWidth, bufferHeight, 1, 1, eFormat::UNKNOWN, (int)eBind::SHADER_RESOURCE | (int)eBind::DEPTH_STENCIL, eFormat::D24_UNORM_S8_UINT),
 	};
 
 	for (int i = 0; i < sizeof(results) / sizeof(results[0]); i++) {
