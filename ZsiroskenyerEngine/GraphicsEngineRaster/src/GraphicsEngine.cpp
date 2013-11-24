@@ -136,8 +136,8 @@ cGraphicsEntity* cGraphicsEngine::CreateEntity(const zsString& geomPath, const z
 
 //	Rendering
 eGraphicsResult cGraphicsEngine::Update() {
-	RenderSceneForward();
-	//RenderSceneDeferred();
+	//RenderSceneForward();
+	RenderSceneDeferred();
 	return eGraphicsResult::OK;
 }
 

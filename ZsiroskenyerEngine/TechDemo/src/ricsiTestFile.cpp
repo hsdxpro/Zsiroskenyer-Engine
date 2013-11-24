@@ -69,7 +69,7 @@ int ricsiMain() {
 									"demo_road",
 									"demo_tunnel",
 									"fake_tunnel",
-									"tower" 
+									"tower"
 								  };
 
 	const float mass = 0.0;
@@ -82,8 +82,11 @@ int ricsiMain() {
 	}
 	
 	// Our player
-	player = core->AddEntity(basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 10.0, true);
+	player = core->AddEntity(basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 10.0, false);
 	player->SetPos(Vec3(9, 0, 20));
+
+	cEntity* crate =  core->AddEntity(basePath + L"objects/crate.dae", basePath + L"objects/crate.dae", basePath + L"materials/crate.zsm", 10.0, true);
+	crate->SetPos(Vec3(9, 0, 40));
 
 	// Main loop
 	while(window->IsOpened()) {

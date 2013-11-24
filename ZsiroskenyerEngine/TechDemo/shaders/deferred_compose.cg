@@ -2,6 +2,8 @@ sampler2D gBuffer0 : register(s0);
 sampler2D gBuffer1 : register(s1);
 sampler2D gBuffer2 : register(s2);
 
+float4 camPos : register(c0);
+
 struct VS_IN {
 	float3 posL 	: POSITION;
 	float2 tex0 	: TEXCOORD0;
@@ -24,7 +26,11 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 }
 
 PS_OUT PS_MAIN(VS_OUT In) {
-	PS_OUT pout;
-	pout.color = tex2D(gBuffer0, In.tex0);
-	return pout;
+	PS_OUT Out;
+
+	// Freakin world space position calculation from depth :)
+	float3 posW = float3(0,0,0);
+
+	Out.color = tex2D(gBuffer0, In.tex0) * (1.0f / distance(posW, camPos));
+	return Out;
 };

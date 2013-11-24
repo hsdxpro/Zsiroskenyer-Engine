@@ -134,7 +134,7 @@ IPhysicsEntity* cPhysicsEngineBullet::CreateRigidEntity(const zsString& physicsG
 		colShape = collisionShapes[physicsGeom];
 	}
 	
-	colShape->setMargin(1.0f); // TODO TMP TEST BECAUSE SOFT BODIES
+	//colShape->setMargin(1.0f); // TODO TMP TEST BECAUSE SOFT BODIES
 
 	// Dynamic Physics entity, calculate local inertia
 	btVector3 localInertia(0,0,0);
@@ -150,18 +150,29 @@ IPhysicsEntity* cPhysicsEngineBullet::CreateRigidEntity(const zsString& physicsG
 
 IPhysicsEntity* cPhysicsEngineBullet::CreateSoftEntity(const zsString& physicsGeom, float mass)  {
 	// Read geometry, save infos
+	
 	cGeometryBuilder::tGeometryDesc d = cGeometryBuilder::LoadGeometry(physicsGeom);
-	int* indices = new int[d.nIndices];
-		memcpy(indices, d.indices, d.indexStride * d.nIndices);
+	
+	// FUcking btSoftBodyHelpers::CreateFromTriMesh need arrayed indices[triNum][3]
+	static int indices[10000][3];
+	for (size_t i = 0; i < d.nIndices / 3; i++) {
+		indices[i][0] = ((int*)d.indices)[i * 3 + 0];
+		indices[i][1] = ((int*)d.indices)[i * 3 + 1];
+		indices[i][2] = ((int*)d.indices)[i * 3 + 2];
+	}
+	//int* indices = new int[d.nIndices];
+		//memcpy(indices, d.indices, d.indexStride * d.nIndices);
 
-	btVector3* vertices = new btVector3[d.nVertices];
+	btScalar* vertices = new btScalar[d.nVertices * 3];
+
+	//Vec3* vertices = new Vec3[d.nVertices];
 	for (size_t i = 0; i < d.nVertices; i++)
-		memcpy(vertices[i], (unsigned char*)d.vertices + i * d.vertexStride, sizeof(Vec3));
-
+		memcpy(&vertices[i * 3], (unsigned char*)d.vertices + i * d.vertexStride, sizeof(btScalar) * 3);
+	
 	// Create soft body from geometry
-	//btSoftBody* body = btSoftBodyHelpers::CreateFromTriMesh(softBodyWorldInfo, (btScalar*)vertices, (int*)indices, d.nIndices / 3);
+	btSoftBody* body = btSoftBodyHelpers::CreateFromTriMesh(softBodyWorldInfo, vertices, &indices[0][0], d.nIndices / 3);
 
-	btSoftBody* body = btSoftBodyHelpers::CreateEllipsoid(softBodyWorldInfo, btVector3(0, 0, 0), btVector3(2, 2, 2), 50);
+	//btSoftBody* body = btSoftBodyHelpers::CreateEllipsoid(softBodyWorldInfo, btVector3(0, 0, 0), btVector3(2, 2, 2), 50);
 	physicsWorld->addSoftBody(body);
 
 	body->setVolumeMass(mass);
@@ -177,7 +188,7 @@ IPhysicsEntity* cPhysicsEngineBullet::CreateSoftEntity(const zsString& physicsGe
 	body->m_materials[0]->m_kLST = pm->m_kLST;
 
 	//constraint
-	body->generateBendingConstraints(1, pm);
+	body->generateBendingConstraints(2, pm);
 	body->randomizeConstraints();
 
 	// Friction and solver

@@ -168,12 +168,20 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// Set ShaderProgram
 	parent.gApi->SetShaderProgram(shaderComposition);
 
+	// Campos for toying with camera attached lights
+	IConstantBuffer* camPosBuffer;
+	parent.gApi->CreateConstantBuffer(&camPosBuffer, sizeof(Vec3), eUsage::IMMUTABLE, (void*)&cam->GetPos());
+	parent.gApi->SetPSConstantBuffer(camPosBuffer, 0);
+	
 	// Load up gBuffers to composition shader
 	for (unsigned i = 0; i < 3; i++)
 		parent.gApi->SetTexture(gBuffer[i], i);
 	
 	// Draw triangle, hardware will quadify them automatically :)
 	parent.gApi->Draw(3);
+
+	// Free up mem
+	SAFE_RELEASE(camPosBuffer);
 }
 
 // Access to composition buffer for further processing like post-process & whatever
