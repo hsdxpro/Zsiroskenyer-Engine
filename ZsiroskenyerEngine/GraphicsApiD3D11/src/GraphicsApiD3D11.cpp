@@ -11,7 +11,7 @@
 #include "../../Core/src/IFile.h"
 
 
-
+// GraphicsApi instance creation
 extern "C"
 __declspec(dllexport)
 IGraphicsApi* CreateGraphicsApiD3D11(IWindow* targetWindow, unsigned backBufferWidth, unsigned backBufferHeight) {
@@ -29,7 +29,16 @@ IGraphicsApi* CreateGraphicsApiD3D11(IWindow* targetWindow, unsigned backBufferW
 }
 
 
+// Internal helper functions
+DXGI_FORMAT FormatToNative(eFormat fmt);
+unsigned BindToNative(unsigned flags);
+D3D11_USAGE UsageToNative(eUsage usage);
 
+
+
+
+
+// Config
 cGraphicsApiD3D11::tDxConfig cGraphicsApiD3D11::tDxConfig::DEFAULT = cGraphicsApiD3D11::tDxConfig();
 cGraphicsApiD3D11::tDxConfig cGraphicsApiD3D11::tDxConfig::MEDIUM = cGraphicsApiD3D11::tDxConfig();
 cGraphicsApiD3D11::tDxConfig cGraphicsApiD3D11::tDxConfig::HIGH = cGraphicsApiD3D11::tDxConfig();
@@ -39,6 +48,8 @@ cGraphicsApiD3D11::tDxConfig::tDxConfig()
 :multiSampleQuality(0), multiSampleCount(1), createDeviceAtMaxResolution(false), createDeviceFullScreen(false) {
 }
 
+
+// Construction
 cGraphicsApiD3D11::cGraphicsApiD3D11()
 : d3ddev(NULL), d3dcon(NULL), d3dsc(NULL), defaultRenderTarget(NULL) {
 	// Create d3ddevice, d3dcontext
@@ -618,6 +629,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, unsigned wid
 		case eFormat::R16G16B16A16_FLOAT: convertedFormat = DXGI_FORMAT_R16G16B16A16_FLOAT; break;
 		case eFormat::R32G32B32A32_FLOAT: convertedFormat = DXGI_FORMAT_R32G32B32A32_FLOAT; break;
 		case eFormat::UNKNOWN			: convertedFormat = DXGI_FORMAT_UNKNOWN;			break;
+		case eFormat::R16G16_SNORM		: convertedFormat = DXGI_FORMAT_R16G16_SNORM;		break;
 	default:
 		return eGapiResult::ERROR_INVALID_ARG;
 	}
@@ -1183,4 +1195,43 @@ eGapiResult cGraphicsApiD3D11::SetBackBufferSize(unsigned width, unsigned height
 
 ITexture2D* cGraphicsApiD3D11::GetDefaultRenderTarget() const {
 	return defaultRenderTarget;
+}
+
+
+
+
+// Internal helper functions
+unsigned BindToNative(unsigned flags) {
+	unsigned ret = 0;
+	ret |= (D3D11_BIND_CONSTANT_BUFFER*(flags&(unsigned)eBind::CONSTANT_BUFFER));
+	ret |= (D3D11_BIND_INDEX_BUFFER*(flags&(unsigned)eBind::INDEX_BUFFER));
+	ret |= (D3D11_BIND_DEPTH_STENCIL*(flags&(unsigned)eBind::DEPTH_STENCIL));
+	ret |= (D3D11_BIND_RENDER_TARGET*(flags&(unsigned)eBind::RENDER_TARGET));
+	ret |= (D3D11_BIND_SHADER_RESOURCE*(flags&(unsigned)eBind::SHADER_RESOURCE));
+	ret |= (D3D11_BIND_VERTEX_BUFFER*(flags&(unsigned)eBind::VERTEX_BUFFER));
+
+	return ret;
+}
+
+/* constexpr */ const static struct _tMapTableUsage {
+	eUsage usg;
+	D3D11_USAGE native;
+} _mapTableUsage[] = {
+	eUsage::DEFAULT, D3D11_USAGE_DEFAULT,
+	eUsage::DYNAMIC, D3D11_USAGE_DYNAMIC,
+	eUsage::IMMUTABLE, D3D11_USAGE_IMMUTABLE,
+	eUsage::STAGING, D3D11_USAGE_STAGING,
+};
+/* constexpr */ const static size_t _tableSizeUsage = sizeof(_mapTableUsage) / sizeof(_mapTableUsage[0]);
+/* constexpr */ D3D11_USAGE _RecLookup(eUsage usage, size_t index) {
+	//static_assert(index>=_tableSizeUsage, "999999 usaget támogatunk, de te pont ezt írtad be bazmeg!");
+	(_mapTableUsage[index].usg == usage) ? _mapTableUsage[index].native : _RecLookup(usage, index + 1);
+}
+D3D11_USAGE UsageToNative(eUsage usage) {
+	return _RecLookup(usage, 0);
+}
+
+
+DXGI_FORMAT FormatToNative(eFormat fmt) {
+
 }

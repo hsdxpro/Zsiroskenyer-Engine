@@ -41,7 +41,9 @@ __declspec(dllexport) IGraphicsEngine* CreateGraphicsEngineRaster(IWindow* targe
 cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config) 
 	:
 	screenWidth(screenWidth),
-	screenHeight(screenHeight)
+	screenHeight(screenHeight),
+	deferredRenderer(NULL),
+	hdrProcessor(NULL)
 {
 	// Create graphics api
 	switch (config.rasterEngine.gxApi) {
@@ -72,7 +74,6 @@ cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, un
 	}
 	catch (std::exception& e) {
 		std::cerr << "[non-fatal error (yet)] Deferred renderer failed with message: " << e.what() << std::endl;
-		delete deferredRenderer;
 	}
 
 	// Create hdr post-processor

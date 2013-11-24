@@ -34,15 +34,32 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	float4 gBuff0 = tex2D(gBuffer0, In.tex0);
 	float z = tex2D(depthBuffer , In.tex0).r;
 
-	// Freakin world space position calculation from depth :)
-	// Determine projected position
+	// calculate world space position of pixel
+	// clip space position
 	float4 posH = float4(In.tex0.x * 2 - 1, (1 - In.tex0.y) * 2 - 1, z, 1.0f);
-	// Inverse transform that to view space
+	// transfrom from clip space to world space w/ inverse proj matrix
 	float4 posW = mul(posH, invProj);
 	posW.xyz /= posW.w;
 	posW.w = 1.0f;
 	posW = mul(posW, invView);
 
+	// get normal
+	float2 packedNormal = tex2D(gBuffer1, In.tex0);
+	float3 normal;
+	normal.x = packedNormal.r;
+	normal.y = 2.0f*(packedNormal.g>0.0f ? packedNormal.g-0.5f:packedNormal.g+0.5f);
+	normal.z = sqrt(1.0f - normal.x*normal.x - normal.y*normal.y) * (packedNormal.g>0.0f ? 1.0f:-1.0f);
+	
+	// calculate outputs color
 	Out.color = 20.0f / distance(camPos.xyz, posW.xyz) * tex2D(gBuffer0, In.tex0);// * (20.0f / distance(camPos, posW));//posW;//tex2D(gBuffer0, In.tex0);
+	
+	/*
+	Out.color = tex2D(gBuffer0, In.tex0);
+	
+	float lightness = Out.color.r*0.27+Out.color.g*0.67+Out.color.b*0.06;
+	float3 lightnessColor = float3(lightness, lightness, lightness)*0.4f;
+	Out.color = float4(normal+lightnessColor, 1.f);
+	*/
+	
 	return Out;
 };

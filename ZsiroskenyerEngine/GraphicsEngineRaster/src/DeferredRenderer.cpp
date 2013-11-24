@@ -81,13 +81,12 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	SAFE_RELEASE(depthBuffer);
 
 	// create new buffers
-	eGapiResult results[] = {
-		gApi->CreateTexture(&gBuffer[0], bufferWidth, bufferHeight, 1, 1, eFormat::R8G8B8A8_UNORM, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE),
-		gApi->CreateTexture(&gBuffer[1], bufferWidth, bufferHeight, 1, 1, eFormat::R16G16_SINT, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE),
-		gApi->CreateTexture(&gBuffer[2], bufferWidth, bufferHeight, 1, 1, eFormat::R8G8B8A8_UNORM, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE),
-		gApi->CreateTexture(&compositionBuffer, bufferWidth, bufferHeight, 1, 1, eFormat::R16G16B16A16_FLOAT, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE),
-		gApi->CreateTexture(&depthBuffer, bufferWidth, bufferHeight, 1, 1, eFormat::UNKNOWN, (int)eBind::SHADER_RESOURCE | (int)eBind::DEPTH_STENCIL, eFormat::D24_UNORM_S8_UINT),
-	};
+	eGapiResult results[5];
+	results[0] = gApi->CreateTexture(&gBuffer[0], bufferWidth, bufferHeight, 1, 1, eFormat::R8G8B8A8_UNORM, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
+	results[1] = gApi->CreateTexture(&gBuffer[1], bufferWidth, bufferHeight, 1, 1, eFormat::R16G16_SNORM, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
+	results[2] = gApi->CreateTexture(&gBuffer[2], bufferWidth, bufferHeight, 1, 1, eFormat::R8G8B8A8_UNORM, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
+	results[3] = gApi->CreateTexture(&compositionBuffer, bufferWidth, bufferHeight, 1, 1, eFormat::R16G16B16A16_FLOAT, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
+	results[4] = gApi->CreateTexture(&depthBuffer, bufferWidth, bufferHeight, 1, 1, eFormat::UNKNOWN, (int)eBind::SHADER_RESOURCE | (int)eBind::DEPTH_STENCIL, eFormat::D24_UNORM_S8_UINT);
 
 	for (int i = 0; i < sizeof(results) / sizeof(results[0]); i++) {
 		if (results[i] != eGapiResult::OK) {
@@ -184,10 +183,10 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		Matrix44 invProj;
 		Matrix44 invView;
 		Vec4	 camPos;
-	}buffer;
+	} buffer;
 	buffer.invView = Matrix44::Inverse(cam->GetViewMatrix());
 	buffer.invProj = Matrix44::Inverse(cam->GetProjMatrix());
-	 buffer.camPos = Vec4(cam->GetPos(),1);
+	buffer.camPos = Vec4(cam->GetPos(),1);
 
 	IConstantBuffer* camPosBuffer;
 	parent.gApi->CreateConstantBuffer(&camPosBuffer, sizeof(buffStruct), eUsage::IMMUTABLE, (void*)&buffer);

@@ -59,8 +59,14 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	//NormalMap mintavételezés, eredmény [0,1]  ->	   //[0,1] to [-1,1]
 	float3 normalT = normalize(tex2D(normalTex, In.tex0).xyz * 2.0f - 1.0f);
 
-	// Storing normal tis is wrong, we store in another MODE
-	Out.gBuffer1 = float4(mul(normalT, In.TBN),1.0f);
+	// Pack normals
+	float3 n = mul(normalT, In.TBN);
+	n = normalize(n);
+	Out.gBuffer1.r = n.x;
+	Out.gBuffer1.g = 0.5f*n.y + (n.z>0.f ? 0.5f:-0.5f);
+
+	
+	// Buffer2 reserved for future use
 	Out.gBuffer2 = float4(0,0,1,1); // NOT USED YET
 
 	/*
