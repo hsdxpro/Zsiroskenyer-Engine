@@ -46,7 +46,10 @@ int ricsiMain() {
 	IWindow* window = IWindow::Create(winDesc);
 
 	// Create core
-	cCore core(window, window->GetClientWidth(), window->GetClientHeight(), tGraphicsConfig());
+	tGraphicsConfig gCfg;
+	gCfg.rasterEngine.gxApi = tGraphicsConfig::eGraphicsApi::D3D11; // MERT AZT AKAROK HASZNÁLNI BAZDMEG :D
+
+	cCore core(window, window->GetClientWidth(), window->GetClientHeight(), gCfg);
 
 	// Get Modules
 	IGraphicsEngine* gEngine = core.GetGraphicsEngine();
