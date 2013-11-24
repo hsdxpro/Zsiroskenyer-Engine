@@ -38,7 +38,11 @@ __declspec(dllexport) IGraphicsEngine* CreateGraphicsEngineRaster(IWindow* targe
 
 
 //	Construction of the graphics engine
-cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config) {
+cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config) 
+	:
+	screenWidth(screenWidth),
+	screenHeight(screenHeight)
+{
 	// Create graphics api
 	switch (config.rasterEngine.gxApi) {
 		case tGraphicsConfig::eGraphicsApi::D3D11:
