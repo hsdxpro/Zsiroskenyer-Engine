@@ -108,7 +108,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	parent.gApi->ClearTexture(depthBuffer);
 
 	// Set BackBuffer
-	parent.gApi->SetRenderTargets(3, &gBuffer[0], depthBuffer);
+	parent.gApi->SetRenderTargets(3, gBuffer, depthBuffer);
 
 	// Set ShaderProgram
 	parent.gApi->SetShaderProgram(shaderGBuffer);
@@ -156,7 +156,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 				Matrix44 world;
 				Vec3 camPos;
 
-			} buff;
+			}buff;
 			buff.wvp = wvp;
 			buff.world = world;
 			buff.camPos = cam->GetPos();
@@ -183,14 +183,11 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	struct buffStruct {
 		Matrix44 invProj;
 		Matrix44 invView;
-
-		Vec3	 camPos;
-		bool	 padding0; // padding yeah for Vec3
+		Vec4	 camPos;
 	}buffer;
-
 	buffer.invView = Matrix44::Inverse(cam->GetViewMatrix());
 	buffer.invProj = Matrix44::Inverse(cam->GetProjMatrix());
-	buffer.camPos = cam->GetPos();
+	 buffer.camPos = Vec4(cam->GetPos(),1);
 
 	IConstantBuffer* camPosBuffer;
 	parent.gApi->CreateConstantBuffer(&camPosBuffer, sizeof(buffStruct), eUsage::IMMUTABLE, (void*)&buffer);
@@ -199,6 +196,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// Load up gBuffers to composition shader
 	for (unsigned i = 0; i < 3; i++)
 		parent.gApi->SetTexture(gBuffer[i], i);
+
+	// Load up depth buffer
 	parent.gApi->SetTexture(depthBuffer, 3);
 
 	// Draw triangle, hardware will quadify them automatically :)
@@ -206,6 +205,12 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 	// Free up mem
 	SAFE_RELEASE(camPosBuffer);
+}
+
+void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {
+	shaderGBuffer = parent.shaderManager->ReloadShader(L"shaders/deferred_gbuffer.cg");
+	shaderComposition = parent.shaderManager->ReloadShader(L"shaders/deferred_compose.cg");
+	parent.shaderManager->ReloadShader(L"shaders/screen_copy.cg");
 }
 
 // Access to composition buffer for further processing like post-process & whatever

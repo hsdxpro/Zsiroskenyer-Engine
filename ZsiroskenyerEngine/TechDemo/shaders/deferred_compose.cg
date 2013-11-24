@@ -40,8 +40,9 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	// Inverse transform that to view space
 	float4 posW = mul(posH, invProj);
 	posW.xyz /= posW.w;
+	posW.w = 1.0f;
 	posW = mul(posW, invView);
-	
-	Out.color = posW;//float4(z, z, z, 1.0f);//posW;//tex2D(gBuffer0, In.tex0);
+
+	Out.color = 20.0f / distance(camPos.xyz, posW.xyz) * tex2D(gBuffer0, In.tex0);// * (20.0f / distance(camPos, posW));//posW;//tex2D(gBuffer0, In.tex0);
 	return Out;
 };

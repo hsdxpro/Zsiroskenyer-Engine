@@ -75,12 +75,13 @@ private:
 		~cDeferredRenderer();
 		cDeferredRenderer& operator=(const cDeferredRenderer&) = delete;
 
-		// rendering
 		void RenderComposition();
-		ITexture2D* GetCompositionBuffer();
 
-		// usage
+		void ReloadShaders();
+
 		eGraphicsResult Resize(unsigned width, unsigned height);
+
+		ITexture2D* GetCompositionBuffer();
 	private:
 		ITexture2D* gBuffer[3];
 		ITexture2D* compositionBuffer;

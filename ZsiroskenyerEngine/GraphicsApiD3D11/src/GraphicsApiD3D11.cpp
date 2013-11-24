@@ -81,8 +81,16 @@ void cGraphicsApiD3D11::Release() {
 	delete this;
 }
 cGraphicsApiD3D11::~cGraphicsApiD3D11() {
-	ID3D11RenderTargetView *nulltarget[] = {0};
-	d3dcon->OMSetRenderTargets(1, nulltarget, 0);
+	ID3D11ShaderResourceView* nullSrvS[16] = { 0 };
+	d3dcon->PSSetShaderResources(0, 16, nullSrvS);
+	d3dcon->VSSetShaderResources(0, 16, nullSrvS);
+
+	ID3D11SamplerState* nullSamplers[16] = { 0 };
+	d3dcon->VSSetSamplers(0, 16, nullSamplers);
+	d3dcon->PSSetSamplers(0, 16, nullSamplers);
+
+	ID3D11RenderTargetView *nulltarget[4] = {0};
+	d3dcon->OMSetRenderTargets(4, nulltarget, 0);
 
 	if (d3dcon)d3dcon->ClearState();
 	if (d3dcon)d3dcon->Flush();
@@ -315,47 +323,22 @@ eGapiResult cGraphicsApiD3D11::CreateRenderTargetViewForBB(const tDxConfig& conf
 
 
 eGapiResult cGraphicsApiD3D11::CreateDefaultStates(const D3D11_CULL_MODE& cullMode, const D3D11_FILL_MODE& fillMode) {
-	// default geometry topology!!
+	
+	// Default geometry topology
 	d3dcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	/*
-	// default rasterizer state
-	static D3D11_RASTERIZER_DESC rDesc;
-	rDesc.AntialiasedLineEnable = false;
-	rDesc.CullMode = cullMode;
-	rDesc.DepthBias = 0;
-	rDesc.DepthBiasClamp = 0.0f;
-	rDesc.DepthClipEnable = true;
-	rDesc.FillMode = fillMode;
-	rDesc.FrontCounterClockwise = false;
-	rDesc.MultisampleEnable = false;
-	rDesc.ScissorEnable = false;
-	rDesc.SlopeScaledDepthBias = 0.0f;
-	ID3D11RasterizerState *rState = NULL;
-	HRESULT hr = d3ddev->CreateRasterizerState(&rDesc,&rState);
-	if (FAILED(hr)) {
-		ASSERT_MSG(false, "Failed to create default rasterizer state");
-		if (hr == E_OUTOFMEMORY)
-			return eGapiResult::ERROR_OUT_OF_MEMORY;
-		else
-			return eGapiResult::ERROR_UNKNOWN;
-	}
-	d3dcon->RSSetState(rState);
-	//rState->Release();
-	*/
-
+	// Default sampler
 	ID3D11SamplerState* sampler;
 	D3D11_SAMPLER_DESC d;
 		d.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 		d.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 		d.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 		d.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
-		d.Filter =  D3D11_FILTER_ANISOTROPIC;
+		d.Filter = D3D11_FILTER_ANISOTROPIC;
 		d.MaxAnisotropy = 16;
 		d.MaxLOD = 0;
 		d.MinLOD = 0;
 		d.MipLODBias = 0;
-
 	HRESULT hr = d3ddev->CreateSamplerState(&d, &sampler);
 
 	if (FAILED(hr)) {
@@ -367,7 +350,9 @@ eGapiResult cGraphicsApiD3D11::CreateDefaultStates(const D3D11_CULL_MODE& cullMo
 	}
 
 	d3dcon->PSSetSamplers(0, 1, (ID3D11SamplerState**)&sampler);
+
 	SAFE_RELEASE(sampler);
+
 	return eGapiResult::OK;
 }
 
@@ -784,8 +769,10 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 									pathNoExt + L"_ps.bin"};
 
 	bool binExistences[nShaders];
-	for (size_t i = 0; i < nShaders; i++)
-		binExistences[i] = IFile::isFileExits(binPaths[i]);
+	for (size_t i = 0; i < nShaders; i++) {
+		//binExistences[i] = IFile::isFileExits(binPaths[i]);
+		binExistences[i] = false; // FORCING ALWAYS GENERATE SHADERS FROM CG's TODO TMP STATE
+	}
 
 	zsString entryNames[nShaders] =   { "VS_MAIN", "HS_MAIN", "DS_MAIN", "GS_MAIN", "PS_MAIN" };
 	zsString profileNames[nShaders] = { "vs_5_0",  "hs_5_0",  "ds_5_0",  "gs_5_0",  "ps_5_0" };
