@@ -70,10 +70,15 @@ void cCore::Update(float deltaT) {
 	}
 }
 
-cEntity* cCore::AddEntity(const zsString& graphGeomPath,const zsString& physicsGeom, const zsString& mtlPath, float mass) {
+cEntity* cCore::AddEntity(const zsString& graphGeomPath,const zsString& physicsGeom, const zsString& mtlPath, float mass, bool soft /*= false*/ ) {
 	// Create entity module parts
 	cGraphicsEntity* gEntity = graphicsEngine->CreateEntity(graphGeomPath, mtlPath);
-	IPhysicsEntity* pEntity = physicsEngine->CreateRigidEntity(physicsGeom, mass);
+	IPhysicsEntity* pEntity;
+
+	if (soft)
+		pEntity = physicsEngine->CreateSoftEntity(physicsGeom, mass);
+	else
+		pEntity = physicsEngine->CreateRigidEntity(physicsGeom, mass);
 
 	// Node for physics
 	tLinkNode nodeRootPhysics(pEntity);

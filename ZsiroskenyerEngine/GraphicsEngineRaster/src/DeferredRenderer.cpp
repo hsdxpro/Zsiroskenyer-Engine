@@ -34,6 +34,7 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 {	
 	// buffers to null
 	compositionBuffer = NULL;
+	depthBuffer = NULL;
 	for (auto& v : gBuffer)
 		v = NULL;
 
@@ -61,6 +62,7 @@ cGraphicsEngine::cDeferredRenderer::~cDeferredRenderer() {
 	for (auto& v : gBuffer)
 		SAFE_RELEASE(v);
 	SAFE_RELEASE(compositionBuffer);
+	SAFE_RELEASE(depthBuffer);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -72,19 +74,22 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	for (auto& v : gBuffer)
 		SAFE_RELEASE(v);
 	SAFE_RELEASE(compositionBuffer);
+	SAFE_RELEASE(depthBuffer);
 
 	// create new buffers
 	eGapiResult results[] = {
-		gApi->CreateTexture(&gBuffer[0],		BUFFER_WIDTH, BUFFER_HEIGHT, 1, 1, eFormat::R8G8B8A8_UNORM, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE),
-		gApi->CreateTexture(&gBuffer[1],		BUFFER_WIDTH, BUFFER_HEIGHT, 1, 1, eFormat::R16G16_SINT, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE),
-		gApi->CreateTexture(&gBuffer[2],		BUFFER_WIDTH, BUFFER_HEIGHT, 1, 1, eFormat::R8G8B8A8_UNORM, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE),
-		gApi->CreateTexture(&compositionBuffer, BUFFER_WIDTH, BUFFER_HEIGHT, 1, 1, eFormat::R16G16B16A16_FLOAT, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE),
+		gApi->CreateTexture(&gBuffer[0],		BUFFER_WIDTH, BUFFER_HEIGHT, 1, 1, eFormat::R8G8B8A8_UNORM,		(int)eBind::RENDER_TARGET   | (int)eBind::SHADER_RESOURCE),
+		gApi->CreateTexture(&gBuffer[1],		BUFFER_WIDTH, BUFFER_HEIGHT, 1, 1, eFormat::R16G16_SINT,		(int)eBind::RENDER_TARGET   | (int)eBind::SHADER_RESOURCE),
+		gApi->CreateTexture(&gBuffer[2],		BUFFER_WIDTH, BUFFER_HEIGHT, 1, 1, eFormat::R8G8B8A8_UNORM,		(int)eBind::RENDER_TARGET   | (int)eBind::SHADER_RESOURCE),
+		gApi->CreateTexture(&compositionBuffer, BUFFER_WIDTH, BUFFER_HEIGHT, 1, 1, eFormat::R16G16B16A16_FLOAT, (int)eBind::RENDER_TARGET   | (int)eBind::SHADER_RESOURCE),
+		gApi->CreateTexture(&depthBuffer,		BUFFER_WIDTH, BUFFER_HEIGHT, 1, 1, eFormat::UNKNOWN,			(int)eBind::SHADER_RESOURCE | (int)eBind::DEPTH_STENCIL, eFormat::D24_UNORM_S8_UINT),
 	};
 
 	for (int i = 0; i < sizeof(results) / sizeof(results[0]); i++) {
 		if (results[i] != eGapiResult::OK) {
 			for (auto& p : gBuffer) SAFE_RELEASE(p);
 			SAFE_RELEASE(compositionBuffer);
+			SAFE_RELEASE(depthBuffer);
 			return results[i];
 		}
 	}
@@ -96,15 +101,14 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	ASSERT(parent.sceneManager->GetActiveCamera() != NULL);
 
 	// Set BackBuffer
-	parent.gApi->SetRenderTargets(3, &gBuffer[0], parent.gApi->GetDefaultRenderTarget());
+	parent.gApi->SetRenderTargets(3, &gBuffer[0], depthBuffer);
 
 	// Set ShaderProgram
 	parent.gApi->SetShaderProgram(shaderGBuffer);
 
 	// Get camera params
 	cCamera* cam = parent.sceneManager->GetActiveCamera();
-	Matrix44 viewMat = cam->GetViewMatrix();
-	Matrix44 projMat = cam->GetProjMatrix();
+	Matrix44 viewProjMat = cam->GetViewMatrix() * cam->GetProjMatrix();
 
 	// Render each instanceGroup
 	for (auto& group : parent.sceneManager->GetInstanceGroups()) {
@@ -137,7 +141,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 			// Entity world matrix
 			Matrix44 world = entity->GetWorldMatrix();
 			// WorldViewProj matrix
-			Matrix44 wvp = world * viewMat * projMat;
+			Matrix44 wvp = world * viewProjMat;
 
 			struct myBuffer
 			{
@@ -168,12 +172,33 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// Set ShaderProgram
 	parent.gApi->SetShaderProgram(shaderComposition);
 
+	// Campos for toying with camera attached lights
+	struct buffStruct {
+		Matrix44 invProj;
+		Matrix44 invView;
+
+		Vec3	 camPos;
+		bool	 padding0; // padding yeah for Vec3
+	}buffer;
+
+	cam->GetViewMatrix().Inverse(buffer.invView);
+	cam->GetProjMatrix().Inverse(buffer.invProj);
+	buffer.camPos = cam->GetPos();
+
+	IConstantBuffer* camPosBuffer;
+	parent.gApi->CreateConstantBuffer(&camPosBuffer, sizeof(buffStruct), eUsage::IMMUTABLE, (void*)&buffer);
+	parent.gApi->SetPSConstantBuffer(camPosBuffer, 0);
+	
 	// Load up gBuffers to composition shader
 	for (unsigned i = 0; i < 3; i++)
 		parent.gApi->SetTexture(gBuffer[i], i);
-	
+	parent.gApi->SetTexture(depthBuffer, 3);
+
 	// Draw triangle, hardware will quadify them automatically :)
 	parent.gApi->Draw(3);
+
+	// Free up mem
+	SAFE_RELEASE(camPosBuffer);
 }
 
 // Access to composition buffer for further processing like post-process & whatever

@@ -69,7 +69,7 @@ int ricsiMain() {
 									"demo_road",
 									"demo_tunnel",
 									"fake_tunnel",
-									"tower" 
+									"tower"
 								  };
 
 	const float mass = 0.0;
@@ -82,8 +82,11 @@ int ricsiMain() {
 	}
 	
 	// Our player
-	player = core->AddEntity(basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 70.0);
-	player->SetPos(Vec3(9, 0, 2));
+	player = core->AddEntity(basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 10.0, false);
+	player->SetPos(Vec3(9, 0, 20));
+
+	cEntity* crate =  core->AddEntity(basePath + L"objects/crate.dae", basePath + L"objects/crate.dae", basePath + L"materials/crate.zsm", 10.0, true);
+	crate->SetPos(Vec3(9, 0, 40));
 
 	// Main loop
 	while(window->IsOpened()) {
@@ -116,7 +119,7 @@ int ricsiMain() {
 		gEngine->Update();
 
 		// Debug rendering
-		//core->DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
+		core->DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
 
 		// Present SwapChain
 		gApi->Present();
@@ -154,7 +157,7 @@ void updateDemo(cCamera& cam, float tDelta) {
 // Shooting boxes
 	//if (((short)GetAsyncKeyState(VK_LBUTTON)) & 0x80) // Press detect doesn't work :(
 	if (GetAsyncKeyState(VK_LBUTTON))
-		pEngine->ShootBox(0.5f, cam.GetPos(), cam.GetDirFront(), 400); // This function in the interface is just for test purposes
+		pEngine->ShootBox(0.3f, cam.GetPos(), cam.GetDirFront(), 60); // This function in the interface is just for test purposes
 
 
 // CAMERA MOVING

@@ -47,8 +47,7 @@ cGeometryRef cResourceManager::GetGeometry(const zsString& filePath) {
 	// lookup if already exists
 	auto it = geometries.left.find(filePath);
 	if (it == geometries.left.end()) {
-		cGeometryBuilder b;
-		cGeometryBuilder::tGeometryDesc d = b.LoadGeometry(filePath);
+		cGeometryBuilder::tGeometryDesc d = cGeometryBuilder::LoadGeometry(filePath);
 
 		IVertexBuffer *VB;
 		gApi->CreateVertexBuffer(&VB, d.nVertices * d.vertexStride, eUsage::IMMUTABLE, d.vertices);

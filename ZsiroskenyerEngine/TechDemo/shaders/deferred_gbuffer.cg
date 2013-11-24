@@ -26,6 +26,7 @@ struct PS_OUT {
 	float4 gBuffer0 : COLOR0;
 	float4 gBuffer1 : COLOR1;
 	float4 gBuffer2 : COLOR2;
+	float depth	: DEPTH;
 };
 
 
@@ -48,6 +49,8 @@ VS_OUT VS_MAIN(VS_IN In) {
 
 PS_OUT PS_MAIN(VS_OUT In) {
 	PS_OUT Out;
+
+	Out.depth = In.posH.z;
 
 	// Storing color good
 	Out.gBuffer0 = tex2D(diffuseTex, In.tex0);// * float4(intensity, intensity, intensity, 1.0f);

@@ -23,6 +23,6 @@ public:
 	};
 
 	// Free up dynamic memory in the result !
-	tGeometryDesc LoadGeometry(const zsString& filePath);
+	static tGeometryDesc LoadGeometry(const zsString& filePath);
 	cGeometryBuilder();
 };

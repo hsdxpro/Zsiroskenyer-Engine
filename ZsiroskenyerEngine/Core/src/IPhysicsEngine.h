@@ -16,7 +16,7 @@ public:
 
 	// Add new rigid entity to the physics world
 	virtual IPhysicsEntity *CreateRigidEntity(const zsString& physicsGeom, float mass) = 0;
-
+	virtual IPhysicsEntity* CreateSoftEntity(const zsString& physicsGeom, float mass) = 0;
 	// TODO SOMEHOW REMOVE THESE
 	virtual void GetCollisionShapeEdges(Vec3* edges, size_t size, size_t& nEdges) = 0;
 	virtual void ShootBox(float size, const Vec3& pos, const Vec3& dir, float power) = 0;

@@ -1,5 +1,7 @@
 #include "RigidEntityBullet.h"
 
+#include "BulletDynamics\Dynamics\btRigidBody.h"
+
 cRigidEntityBullet::cRigidEntityBullet(btRigidBody* body) 
 :body(body) {
 }

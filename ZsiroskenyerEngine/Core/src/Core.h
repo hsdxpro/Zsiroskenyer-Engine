@@ -32,7 +32,7 @@ public:
 
 	void Update(float deltaT);
 
-	cEntity* AddEntity(const zsString& graphGeomPath, const zsString& physicsGeom, const zsString& mtlPath, float mass);
+	cEntity* AddEntity(const zsString& graphGeomPath, const zsString& physicsGeom, const zsString& mtlPath, float mass, bool soft = false);
 
 	IGraphicsEngine* GetGraphicsEngine();
 	IPhysicsEngine* GetPhysicsEngine();
