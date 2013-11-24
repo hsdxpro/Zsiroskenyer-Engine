@@ -103,8 +103,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 	// Get camera params
 	cCamera* cam = parent.sceneManager->GetActiveCamera();
-	Matrix44 viewMat = cam->GetViewMatrix();
-	Matrix44 projMat = cam->GetProjMatrix();
+	Matrix44 viewProjMat = cam->GetViewMatrix() * cam->GetProjMatrix();
 
 	// Render each instanceGroup
 	for (auto& group : parent.sceneManager->GetInstanceGroups()) {
@@ -137,7 +136,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 			// Entity world matrix
 			Matrix44 world = entity->GetWorldMatrix();
 			// WorldViewProj matrix
-			Matrix44 wvp = world * viewMat * projMat;
+			Matrix44 wvp = world * viewProjMat;
 
 			struct myBuffer
 			{
@@ -169,8 +168,16 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	parent.gApi->SetShaderProgram(shaderComposition);
 
 	// Campos for toying with camera attached lights
+	struct buffStruct {
+		Matrix44 invViewProj;
+		Vec3	 camPos;
+		bool	 padding0; // padding yeah for Vec3
+	}buffer;
+	viewProjMat.Inverse(buffer.invViewProj);
+	buffer.camPos = cam->GetPos();
+
 	IConstantBuffer* camPosBuffer;
-	parent.gApi->CreateConstantBuffer(&camPosBuffer, sizeof(Vec3), eUsage::IMMUTABLE, (void*)&cam->GetPos());
+	parent.gApi->CreateConstantBuffer(&camPosBuffer, sizeof(buffStruct), eUsage::IMMUTABLE, (void*)&buffer);
 	parent.gApi->SetPSConstantBuffer(camPosBuffer, 0);
 	
 	// Load up gBuffers to composition shader

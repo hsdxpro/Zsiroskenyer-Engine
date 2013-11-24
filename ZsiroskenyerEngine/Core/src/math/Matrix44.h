@@ -67,14 +67,15 @@ public:
 	static Matrix44 RotationEulerY(float angle);
 	static Matrix44 RotationEulerZ(float angle);
 
+	static Matrix44 MatrixViewRH(const Vec3& eye, const Vec3& target, const Vec3& up);
+	static Matrix44 MatrixProjPerspective(float nearPlane, float farPlane, float fovRad, float aspectRatio);
+
 	Matrix44& RotationAxisAngle (const Vec3& axis, float angle);
 	Matrix44& RotationQuat (const Quat&); // typecast ((Matrix44)quaternion) is possibly slower than this shit
 
 	Matrix44& Translation(float vX, float vY, float vZ);
 	Matrix44& Translation(const Vec3& v);
 
-	static Matrix44 MatrixViewRH(const Vec3& eye, const Vec3& target, const Vec3& up);
-	static Matrix44 MatrixProjPerspective(float nearPlane, float farPlane, float fovRad, float aspectRatio);
 
 	void SetColumn(size_t idx, const Vec4& v);
 

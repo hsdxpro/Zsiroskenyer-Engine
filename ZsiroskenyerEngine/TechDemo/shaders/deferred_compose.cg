@@ -2,7 +2,8 @@ sampler2D gBuffer0 : register(s0);
 sampler2D gBuffer1 : register(s1);
 sampler2D gBuffer2 : register(s2);
 
-float4 camPos : register(c0);
+float4x4 invViewProj: register(c0);
+float4 camPos : register(c4);
 
 struct VS_IN {
 	float3 posL 	: POSITION;
@@ -27,10 +28,17 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 
 PS_OUT PS_MAIN(VS_OUT In) {
 	PS_OUT Out;
+	float4 gBuff0 = tex2D(gBuffer0, In.tex0);
+	float z = gBuff0.w;
 
 	// Freakin world space position calculation from depth :)
-	float3 posW = float3(0,0,0);
-
-	Out.color = tex2D(gBuffer0, In.tex0) * (1.0f / distance(posW, camPos));
+	// Determine projected position
+	float4 posH = float4(In.tex0.x * 2 - 1, (1 - In.tex0.y) * 2 - 1, z, 1.0f);
+	// Inverse transform that to view space
+	float4 posW = mul(posH, invViewProj);
+	posW.xyz /= posW.w;
+	
+	Out.color = float4(posW) * tex2D(gBuffer0, In.tex0);
+//	Out.color = tex2D(gBuffer0, In.tex0) * (1.0f / distance(posW, camPos));
 	return Out;
 };

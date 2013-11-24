@@ -50,7 +50,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	PS_OUT Out;
 
 	// Storing color good
-	Out.gBuffer0 = tex2D(diffuseTex, In.tex0);// * float4(intensity, intensity, intensity, 1.0f);
+	Out.gBuffer0 = float4(tex2D(diffuseTex, In.tex0).xyz, In.posH.w);// * float4(intensity, intensity, intensity, 1.0f);
 
 	// Sample normal from texture
 	//NormalMap mintavételezés, eredmény [0,1]  ->	   //[0,1] to [-1,1]
