@@ -2,22 +2,14 @@
 
 #include "common.h"
 #include "Factory.h"
+#include "CreateGraphicsEngine.h"
 
 // TMP @TODO remove it
 #include "Camera.h"
 #include "Entity.h"
 
-cCore* cCore::instance = NULL;
-
-cCore* cCore::GetInstance() {
-	if(cCore::instance == NULL)
-		cCore::instance = new cCore();
-	return cCore::instance;
-}
-
-cCore::cCore() {
-	static_assert(false, "CSINALJ VALAMIT A CORE-RAL MERT: CreateGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config)");
-	graphicsEngine = Factory.CreateGraphicsEngine();
+cCore::cCore(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config) {
+	graphicsEngine = CreateGraphicsEngine(targetWindow, screenWidth, screenHeight, config);
 	physicsEngine = Factory.CreatePhysicsEngineBullet();
 	logicEngine = new cLogicEngine();
 

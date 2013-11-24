@@ -34,14 +34,6 @@ IPhysicsEngine* pEngine;
 void updateDemo(cCamera& cam, float tDelta);
 
 int ricsiMain() {
-	// Create core
-	cCore* core = cCore::GetInstance();
-
-	// Get Modules
-	IGraphicsEngine* gEngine = core->GetGraphicsEngine();
-	IGraphicsApi* gApi = gEngine->GetGraphicsApi();
-	pEngine = core->GetPhysicsEngine();
-	
 	// Window description
 	IWindow::tDesc winDesc;
 		winDesc.brush = IWindow::eBrush::RENDER_;
@@ -53,11 +45,19 @@ int ricsiMain() {
 	// Create window
 	IWindow* window = IWindow::Create(winDesc);
 
+	// Create core
+	cCore core(window, window->GetClientWidth(), window->GetClientHeight(), tGraphicsConfig());
+
+	// Get Modules
+	IGraphicsEngine* gEngine = core.GetGraphicsEngine();
+	IGraphicsApi* gApi = gEngine->GetGraphicsApi();
+	pEngine = core.GetPhysicsEngine();
+
 	// Set renderWindow
-	gApi->SetWindow(window);
+	//gApi->SetWindow(window);
 
 	// Create Camera
-	cCamera cam(/*0.5*3.141592653589*/1.15, (float)winDesc.clientWidth / winDesc.clientHeight, 0.01f, 5000.0f);
+	cCamera cam(/*0.5*3.141592653589*/1.15f, (float)winDesc.clientWidth / winDesc.clientHeight, 0.01f, 5000.0f);
 	gEngine->SetActiveCamera(&cam);
 
 	// Static terrain
@@ -78,14 +78,14 @@ int ricsiMain() {
 	ASSERT(sizeof(staticBaseNames) > 0);
 	for (size_t i = 0; i < sizeof(staticBaseNames) / sizeof(staticBaseNames[0]); i++) {
 		zsString geomPath = basePath + L"objects/" + staticBaseNames[i] + L".dae";
-		core->AddEntity(geomPath, geomPath, basePath + L"materials/" + staticBaseNames[i] + L".zsm", mass);
+		core.AddEntity(geomPath, geomPath, basePath + L"materials/" + staticBaseNames[i] + L".zsm", mass);
 	}
 	
 	// Our player
-	player = core->AddEntity(basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 10.0, false);
+	player = core.AddEntity(basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 10.0, false);
 	player->SetPos(Vec3(9, 0, 20));
 
-	cEntity* crate =  core->AddEntity(basePath + L"objects/crate.dae", basePath + L"objects/crate.dae", basePath + L"materials/crate.zsm", 10.0, true);
+	cEntity* crate =  core.AddEntity(basePath + L"objects/crate.dae", basePath + L"objects/crate.dae", basePath + L"materials/crate.zsm", 10.0, true);
 	crate->SetPos(Vec3(9, 0, 40));
 
 	// Main loop
@@ -99,7 +99,7 @@ int ricsiMain() {
 		float tDelta = cTimer::getDeltaSeconds();
 
 		updateDemo(cam, tDelta);
-		core->Update(tDelta);
+		core.Update(tDelta);
 
 		// Don't hog with set caption text... Fucking slow operation
 		static float timer1 = 0.0;
@@ -119,14 +119,13 @@ int ricsiMain() {
 		gEngine->Update();
 
 		// Debug rendering
-		core->DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
+		core.DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
 
 		// Present SwapChain
 		gApi->Present();
 	}
 	
 	SAFE_DELETE(window);
-	SAFE_DELETE(core);
 	return 0;
 }
 
@@ -211,7 +210,7 @@ void updateDemo(cCamera& cam, float tDelta) {
 	lastMousePos = currMousePos;
 
 	// Camera rotation
-	float maxLimit = 85.0 / 180.0 * ZS_PI;
+	float maxLimit = (float)85.0 / 180.0 * ZS_PI;
 	if (mouseDeltaY < -maxLimit)
 		mouseDeltaY = -maxLimit;
 	if (mouseDeltaY > maxLimit)

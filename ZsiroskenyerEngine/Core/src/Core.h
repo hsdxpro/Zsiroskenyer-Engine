@@ -25,6 +25,7 @@ public:
 		PHYSICS_COLPOINTS	= 1 << 2,
 	};
 
+	cCore(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config);
 	~cCore();
 
 	// Use eDebugRenderMode bit combinations
@@ -37,12 +38,7 @@ public:
 	IGraphicsEngine* GetGraphicsEngine();
 	IPhysicsEngine* GetPhysicsEngine();
 
-	static cCore* GetInstance();
-
 protected:
-	cCore();
-	static cCore* instance;
-
 	// Modules
 	IGraphicsEngine* graphicsEngine;
 	IPhysicsEngine* physicsEngine;
