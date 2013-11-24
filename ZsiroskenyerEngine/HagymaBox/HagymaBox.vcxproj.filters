@@ -12,6 +12,12 @@
     <ClCompile Include="src\Gui.cpp">
       <Filter>TESZT_ASD</Filter>
     </ClCompile>
+    <ClCompile Include="src\GuiRenderer.cpp">
+      <Filter>TESZT_ASD\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ResourceManager.cpp">
+      <Filter>TESZT_ASD\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\HagymaBox.h" />
@@ -24,6 +30,12 @@
     <ClInclude Include="src\Gui.h">
       <Filter>TESZT_ASD</Filter>
     </ClInclude>
+    <ClInclude Include="src\GuiRenderer.h">
+      <Filter>TESZT_ASD\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ResourceManager.h">
+      <Filter>TESZT_ASD\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="TESZT_ASD">
@@ -31,6 +43,12 @@
     </Filter>
     <Filter Include="TESZT_ASD\Controls">
       <UniqueIdentifier>{2caaccec-a2f1-4936-bd05-a0ad817f2211}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TESZT_ASD\Rendering">
+      <UniqueIdentifier>{e098de94-ec60-4adb-9f29-51c9003892a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TESZT_ASD\Resources">
+      <UniqueIdentifier>{84477102-d234-474e-9a24-0456cfe52fa1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

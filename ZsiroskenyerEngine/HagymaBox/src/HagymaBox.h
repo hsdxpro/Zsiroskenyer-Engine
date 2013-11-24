@@ -3,10 +3,11 @@
 // cool games as easy as possible
 #pragma once
 
-class IWindow;
 class cGuiSystem;
-class cCore;
+class cGuiRenderer;
 class cGui;
+class IWindow;
+class cCore;
 
 class cHagymaBox {
 public:
@@ -27,4 +28,5 @@ protected:
 
 	// Zsíroskenyér core used in the toolbox
 	cCore *engineCore;
+	cGuiRenderer *guiRenderer;
 };

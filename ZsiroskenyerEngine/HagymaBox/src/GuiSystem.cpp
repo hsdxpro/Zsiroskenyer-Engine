@@ -6,15 +6,16 @@
 #include "../../Core/src/common.h"
 #include "../../Core/src/ITexture2D.h"
 
+cGuiSystem::cGuiSystem(IGraphicsApi* gApi) 
+:resMgr(gApi) {
+}
+
 cGuiSystem::~cGuiSystem() {
 	for (auto i = images.begin(); i != images.end(); i++)
 		SAFE_DELETE(*i);
 
 	for (auto i = guis.begin(); i != guis.end(); i++)
 		SAFE_DELETE(*i);
-
-	for (auto i = textures.begin(); i != textures.end(); i++)
-		SAFE_RELEASE((*i));
 }
 
 cGui* cGuiSystem::CreateGui() {
@@ -23,9 +24,8 @@ cGui* cGuiSystem::CreateGui() {
 	return g;
 }
 
-cGuiImage* cGuiSystem::CreateImage(ITexture2D* t) {
-	textures.push_back(t);
-	cGuiImage* img = new cGuiImage(t);
+cGuiImage* cGuiSystem::CreateImage(const zsString& filePath) {
+	cGuiImage* img = new cGuiImage(resMgr.GetTexture(filePath));
 	images.push_back(img);
 	return img;
 }

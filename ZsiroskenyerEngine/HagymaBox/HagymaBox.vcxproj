@@ -87,15 +87,19 @@
   <ItemGroup>
     <ClCompile Include="src\Gui.cpp" />
     <ClCompile Include="src\GuiImage.cpp" />
+    <ClCompile Include="src\GuiRenderer.cpp" />
     <ClCompile Include="src\GuiSystem.cpp" />
     <ClCompile Include="src\HagymaBox.cpp" />
     <ClCompile Include="src\hagymaMain.cpp" />
+    <ClCompile Include="src\ResourceManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Gui.h" />
     <ClInclude Include="src\GuiImage.h" />
+    <ClInclude Include="src\GuiRenderer.h" />
     <ClInclude Include="src\GuiSystem.h" />
     <ClInclude Include="src\HagymaBox.h" />
+    <ClInclude Include="src\ResourceManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

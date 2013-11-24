@@ -2,25 +2,29 @@
 // Responsible for managing (Temporarily rendering) GUI's
 #pragma once
 
-#include <boost/unordered_map.hpp>
-
+#include "ResourceManager.h"
 #include "../../Core/src/zsString.h"
 #include <list>
 
-class cGuiImage;
 class ITexture2D;
+class IGraphicsApi;
+class cGuiImage;
 class cGui;
 
 class cGuiSystem {
 public:
+	cGuiSystem(IGraphicsApi* gApi);
 	~cGuiSystem();
 
 	cGui* CreateGui();
-	cGuiImage* CreateImage(ITexture2D* t);
+	cGuiImage* CreateImage(const zsString& filePath);
 protected:
+	// Image gui controls
 	std::list<cGuiImage*> images;
+
+	// Guis
 	std::list<cGui*> guis;
 
-	// Lol resource managing is there xD Yeah Richard Yeah !
-	std::list<ITexture2D*> textures;
+	// Resource manager
+	cResourceManager resMgr;
 };
