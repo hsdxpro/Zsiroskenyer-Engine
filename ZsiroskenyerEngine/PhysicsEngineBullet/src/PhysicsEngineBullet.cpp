@@ -20,8 +20,8 @@ cPhysicsEngineBullet::cPhysicsEngineBullet() {
 	///use the default collision dispatcher. For parallel processing you can use a diffent dispatcher (see Extras/BulletMultiThreaded)
 	btCollisionDispatcher* dispatcher = new	btCollisionDispatcher(collisionConfiguration);
 
-	btVector3 worldMin(-10000, -10000, -10000);
-	btVector3 worldMax( 10000,  10000,  10000);
+	btVector3 worldMin(-1000, -1000, -1000);
+	btVector3 worldMax( 1000,  1000,  1000);
 
 	///btDbvtBroadphase is a good general purpose broadphase. You can also try out btAxis3Sweep.
 	btBroadphaseInterface* overlappingPairCache = new btAxisSweep3(worldMin, worldMax);
@@ -32,40 +32,56 @@ cPhysicsEngineBullet::cPhysicsEngineBullet() {
 	physicsWorld = new btSoftRigidDynamicsWorld(dispatcher,overlappingPairCache,solver,collisionConfiguration);
 	
 	// GImpact dispatching registering, need for some special collision variances
-	//btGImpactCollisionAlgorithm::registerAlgorithm(dispatcher);
+	btGImpactCollisionAlgorithm::registerAlgorithm(dispatcher);
 	
-	physicsWorld->setGravity(btVector3(0 ,0 ,-10)); // TODO TMP GRAV
+	physicsWorld->setGravity(btVector3(0 ,0 ,-10));
 
-	physicsWorld->getDispatchInfo().m_useContinuous = true;
-
+	//physicsWorld->getDispatchInfo().m_useContinuous = true;
+	physicsWorld->getDispatchInfo().m_enableSPU = true;
 
 	softBodyWorldInfo.air_density = (btScalar)1.2;
 	softBodyWorldInfo.water_density = 0;
 	softBodyWorldInfo.water_offset = 0;
 	softBodyWorldInfo.water_normal = btVector3(0, 0, 0);
 	softBodyWorldInfo.m_gravity = physicsWorld->getGravity();
-	softBodyWorldInfo.m_sparsesdf.Initialize();
 	softBodyWorldInfo.m_dispatcher = physicsWorld->getDispatcher();
 	softBodyWorldInfo.m_broadphase = physicsWorld->getBroadphase();
 	softBodyWorldInfo.m_sparsesdf.Initialize();
-
-	physicsWorld->getDispatchInfo().m_enableSPU = true;
-
-	//Ragadós Spagetti effektus :D
-	//m_physicsworld->getSolverInfo().m_splitImpulse=true;
-	//m_physicsworld->getSolverInfo().m_numIterations = 20;
 }
 
 cPhysicsEngineBullet::~cPhysicsEngineBullet() {
-	int i;
-	for (i = physicsWorld->getNumCollisionObjects() - 1; i >= 0; i--) {
-		btCollisionObject* obj = physicsWorld->getCollisionObjectArray()[i];
-		btRigidBody* body = btRigidBody::upcast(obj);
-		if (body && body->getMotionState())
-			delete body->getMotionState();
 
+	/* Clean up	*/
+	for (int i = physicsWorld->getNumCollisionObjects() - 1; i >= 0; i--)
+	{
+		btCollisionObject*	obj = physicsWorld->getCollisionObjectArray()[i];
+		btRigidBody*		body = btRigidBody::upcast(obj);
+		
+		if (body && body->getMotionState())
+		{
+			delete body->getMotionState();
+		}
+		while (physicsWorld->getNumConstraints())
+		{
+			btTypedConstraint*	pc = physicsWorld->getConstraint(0);
+			physicsWorld->removeConstraint(pc);
+			delete pc;
+		}
+		btSoftBody* softBody = btSoftBody::upcast(obj);
+		if (softBody)
+		{
+			physicsWorld->removeSoftBody(softBody);
+		}
+		else
+		{
+			btRigidBody* body = btRigidBody::upcast(obj);
+			if (body)
+				physicsWorld->removeRigidBody(body);
+			else
+				physicsWorld->removeCollisionObject(obj);
+		}
 		physicsWorld->removeCollisionObject(obj);
-		SAFE_DELETE(obj);
+		delete obj;
 	}
 
 	SAFE_DELETE(physicsWorld);
@@ -117,7 +133,8 @@ IPhysicsEntity* cPhysicsEngineBullet::CreateRigidEntity(const zsString& physicsG
 	} else {
 		colShape = collisionShapes[physicsGeom];
 	}
-	colShape->setMargin(0.5); // TODO TMP TEST
+	
+	colShape->setMargin(1.0f); // TODO TMP TEST BECAUSE SOFT BODIES
 
 	// Dynamic Physics entity, calculate local inertia
 	btVector3 localInertia(0,0,0);
@@ -142,36 +159,37 @@ IPhysicsEntity* cPhysicsEngineBullet::CreateSoftEntity(const zsString& physicsGe
 		memcpy(vertices[i], (unsigned char*)d.vertices + i * d.vertexStride, sizeof(Vec3));
 
 	// Create soft body from geometry
-	//btSoftBody* body = btSoftBodyHelpers::CreateFromTriMesh(softBodyWorldInfo, (btScalar*)vertices, indices, d.nIndices / 3);
+	//btSoftBody* body = btSoftBodyHelpers::CreateFromTriMesh(softBodyWorldInfo, (btScalar*)vertices, (int*)indices, d.nIndices / 3);
 
-	btSoftBody* body = btSoftBodyHelpers::CreateEllipsoid(softBodyWorldInfo, btVector3(0, 0, 0), btVector3(6, 6, 6), 20);
-	/*
-	body->getCollisionShape()->setMargin(0.01);
+	btSoftBody* body = btSoftBodyHelpers::CreateEllipsoid(softBodyWorldInfo, btVector3(0, 0, 0), btVector3(2, 2, 2), 50);
+	physicsWorld->addSoftBody(body);
 
-	body->m_cfg.collisions = btSoftBody::fCollision::CL_SS + btSoftBody::fCollision::CL_RS;
+	body->setVolumeMass(mass);
+	body->setTotalMass(mass, true);
+	body->getCollisionShape()->setMargin(0.5f);
+
+	body->m_cfg.collisions = btSoftBody::fCollision::SDF_RS + btSoftBody::fCollision::CL_SS + btSoftBody::fCollision::CL_SELF;
 
 	// Assign material to soft body
 	btSoftBody::Material* pm = body->appendMaterial();
-	pm->m_kLST = 0.7;
-	//pm->m_flags -= btSoftBody::fMaterial::DebugDraw;
-	body->generateBendingConstraints(2, pm);
-	body->m_cfg.piterations = 3;
-	body->m_cfg.kDF = 0.5;
-	body->scale(btVector3(1, 1, 1));
-	body->setTotalMass(mass, true);
+	// Stiffness
+	pm->m_kLST = 0.3;
+	body->m_materials[0]->m_kLST = pm->m_kLST;
+
+	//constraint
+	body->generateBendingConstraints(1, pm);
 	body->randomizeConstraints();
-	*/
-	// Add soft body to world
-	physicsWorld->addSoftBody(body);
 
-	body->setVolumeMass(300);
-	body->m_cfg.piterations = 1;
-	//body->generateClusters(16);
-	body->getCollisionShape()->setMargin(0.01);
-	body->m_cfg.collisions = btSoftBody::fCollision::CL_SS + btSoftBody::fCollision::CL_RS;
-	body->m_materials[0]->m_kLST = 0.4;
-
-
+	// Friction and solver
+	body->m_cfg.piterations = 2;
+	body->m_cfg.kDF = 1;
+	
+	
+	// CLustering ( more rigid like behav, stability )
+	body->generateClusters(16); // Cluster specific
+	body->m_cfg.kSR_SPLT_CL = 0; // Cluster specific
+	body->m_cfg.kSRHR_CL = 0.3; //Cluster specific
+	
 	cSoftEntityBullet* r = new cSoftEntityBullet(body);
 	return r;
 }
@@ -306,19 +324,20 @@ void cPhysicsEngineBullet::GetCollisionShapeEdges(Vec3* edges, size_t size, size
 		}
 	}
 
+	// For each softbody
 	btSoftBodyArray& arr = physicsWorld->getSoftBodyArray();
 	for (int i = 0; i < arr.size(); i++) {
-		btSoftBody* body = arr.at(i);
-		btTransform worldTrans = body->getWorldTransform();
 
-		btSoftBody::tFaceArray& fArr = body->m_faces;
+		btSoftBody::tFaceArray& fArr = arr.at(i)->m_faces;
 		nEdges += fArr.size() * 3;
+
+		// For each face
 		for (int j = 0; j < fArr.size(); j++) {
 			btSoftBody::Face& face = fArr.at(j);
 
-			btVector3 p0 = worldTrans * face.m_n[0]->m_x;
-			btVector3 p1 = worldTrans * face.m_n[1]->m_x;
-			btVector3 p2 = worldTrans * face.m_n[2]->m_x;
+			btVector3 p0 = face.m_n[0]->m_x;
+			btVector3 p1 = face.m_n[1]->m_x;
+			btVector3 p2 = face.m_n[2]->m_x;
 
 			// Edge 1
 			edges[edgeIndex].x = p0.x();

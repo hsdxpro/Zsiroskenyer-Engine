@@ -82,8 +82,8 @@ int ricsiMain() {
 	}
 	
 	// Our player
-	player = core->AddEntity(basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 70.0, true);
-	player->SetPos(Vec3(9, 0, 10));
+	player = core->AddEntity(basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 10.0, true);
+	player->SetPos(Vec3(9, 0, 20));
 
 	// Main loop
 	while(window->IsOpened()) {
@@ -154,7 +154,7 @@ void updateDemo(cCamera& cam, float tDelta) {
 // Shooting boxes
 	//if (((short)GetAsyncKeyState(VK_LBUTTON)) & 0x80) // Press detect doesn't work :(
 	if (GetAsyncKeyState(VK_LBUTTON))
-		pEngine->ShootBox(0.5f, cam.GetPos(), cam.GetDirFront(), 400); // This function in the interface is just for test purposes
+		pEngine->ShootBox(0.3f, cam.GetPos(), cam.GetDirFront(), 60); // This function in the interface is just for test purposes
 
 
 // CAMERA MOVING
