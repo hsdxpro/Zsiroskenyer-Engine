@@ -179,7 +179,7 @@ Quat Quat::DirToRot(const Vec3&dir, const Vec3& up) {
 	// Build quat from matrix
 	Quat rot;
 		rot.w = (float)sqrt(1 + bMat._11 + bMat._22 + bMat._33) / 2;
-		double dfWScale = rot.w * 4;
+		float dfWScale = rot.w * 4;
 		rot.x = (bMat._32 - bMat._23) / dfWScale;
 		rot.y = (bMat._13 - bMat._31) / dfWScale;
 		rot.z = (bMat._21 - bMat._12) / dfWScale;

@@ -5,12 +5,16 @@
 
 class cTimer {
 public:
+	cTimer();
+
 	// Get delta seconds since last call
-	static float getDeltaSeconds();
+	float getDeltaSeconds();
 
 	// Get delta seconds since last call (precise)
-	static double getDeltaSecondsPrecise();
+	double getDeltaSecondsPrecise();
 
 	// Get Frames per second
 	static size_t GetFps(float deltaSeconds);
+protected:
+	std::chrono::system_clock::time_point curr;
 };

@@ -56,9 +56,6 @@ int ricsiMain() {
 	IGraphicsApi* gApi = gEngine->GetGraphicsApi();
 	pEngine = core.GetPhysicsEngine();
 
-	// Set renderWindow
-	//gApi->SetWindow(window);
-
 	// Create Camera
 	cCamera cam(/*0.5*3.141592653589*/1.15f, (float)winDesc.clientWidth / winDesc.clientHeight, 0.01f, 5000.0f);
 	gEngine->SetActiveCamera(&cam);
@@ -99,7 +96,8 @@ int ricsiMain() {
 		gApi->Clear(true, true);
 	
 		// Update everything
-		float tDelta = cTimer::getDeltaSeconds();
+		static cTimer t;
+		float tDelta = t.getDeltaSeconds();
 
 		updateDemo(cam, tDelta);
 		core.Update(tDelta);

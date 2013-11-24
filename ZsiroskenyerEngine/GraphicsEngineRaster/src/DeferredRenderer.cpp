@@ -184,8 +184,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		bool	 padding0; // padding yeah for Vec3
 	}buffer;
 
-	cam->GetViewMatrix().Inverse(buffer.invView);
-	cam->GetProjMatrix().Inverse(buffer.invProj);
+	buffer.invView = Matrix44::Inverse(cam->GetViewMatrix());
+	buffer.invProj = Matrix44::Inverse(cam->GetProjMatrix());
 	buffer.camPos = cam->GetPos();
 
 	IConstantBuffer* camPosBuffer;
