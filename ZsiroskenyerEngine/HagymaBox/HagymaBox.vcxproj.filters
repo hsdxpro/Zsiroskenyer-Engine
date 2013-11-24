@@ -9,6 +9,9 @@
     <ClCompile Include="src\GuiImage.cpp">
       <Filter>TESZT_ASD\Controls</Filter>
     </ClCompile>
+    <ClCompile Include="src\Gui.cpp">
+      <Filter>TESZT_ASD</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\HagymaBox.h" />
@@ -17,6 +20,9 @@
     </ClInclude>
     <ClInclude Include="src\GuiImage.h">
       <Filter>TESZT_ASD\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui.h">
+      <Filter>TESZT_ASD</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

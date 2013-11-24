@@ -26,12 +26,12 @@ int main() {
 	IWindow* window = IWindow::Create(winDesc);
 
 	
-	cHagymaBox editor;
+	cHagymaBox editor(window);
 
+	cTimer t;
 	while (window->IsOpened()) {
 		window->PeekAllMessages();
 
-		float tDelta = cTimer::getDeltaSeconds();
-		editor.Update(tDelta);
+		editor.Update(t.getDeltaSeconds());
 	}
 }

@@ -3,17 +3,28 @@
 // cool games as easy as possible
 #pragma once
 
-#include "GUISystem.h"
+class IWindow;
+class cGuiSystem;
+class cCore;
+class cGui;
 
 class cHagymaBox {
 public:
-	cHagymaBox();
+	cHagymaBox(IWindow* w);
 	~cHagymaBox();
 
 	void Update(float tDelta);
 
 protected:
 	void InitGui();
+	void RenderGui();
 
+	// The main gui for the editor
+	cGui* mainGui;
+
+	// Guisystem responsible for the interface
 	cGuiSystem* guiSystem;
+
+	// Zsíroskenyér core used in the toolbox
+	cCore *engineCore;
 };
