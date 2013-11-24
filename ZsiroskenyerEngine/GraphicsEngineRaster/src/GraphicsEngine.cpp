@@ -48,7 +48,7 @@ cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, un
 	// Create graphics api
 	gApi = Factory.CreateGraphicsD3D11();
 	if (!gApi)
-		throw std::runtime_error("failed to create graphics api");
+		throw std::runtime_error("Failed to create graphics api");
 	shaderManager = new cShaderManager(gApi);
 	resourceManager = new cResourceManager(gApi);
 	sceneManager = new cSceneManager();
@@ -64,7 +64,7 @@ cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, un
 		deferredRenderer = new cDeferredRenderer(*this);
 	}
 	catch (std::exception& e) {
-		std::cerr << "[non-fatal error (yet)] deferred renderer failed with message: " << e.what() << std::endl;
+		std::cerr << "[non-fatal error (yet)] Deferred renderer failed with message: " << e.what() << std::endl;
 		delete deferredRenderer;
 	}
 

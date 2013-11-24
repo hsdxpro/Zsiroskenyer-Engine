@@ -49,7 +49,7 @@ public:
 	Matrix44& Identity();
 	float Determinant();
 
-	Matrix44& Inverse(Matrix44& out);
+	Matrix44& Inverse(Matrix44& out) const;
 	Matrix44& Inverse();
 	Matrix44& Transpose(const Matrix44& in);
 	Matrix44& Transpose();

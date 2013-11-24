@@ -1,4 +1,4 @@
-// GraphicsGL.h By Zsíroskenyér team
+// GraphireatedefaultsGL.h By Zsíroskenyér team
 #pragma once
 
 #include "../../Core/src/IGraphicsApi.h"

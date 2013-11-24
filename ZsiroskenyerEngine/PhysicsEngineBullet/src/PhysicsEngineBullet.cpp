@@ -94,7 +94,7 @@ void cPhysicsEngineBullet::Release() {
 }
 
 void cPhysicsEngineBullet::SimulateWorld(float deltaT) {
-	physicsWorld->stepSimulation(deltaT);
+	//physicsWorld->stepSimulation(deltaT);
 }
 
 IPhysicsEntity* cPhysicsEngineBullet::CreateRigidEntity(const zsString& physicsGeom, float mass) {

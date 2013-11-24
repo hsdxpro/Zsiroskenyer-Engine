@@ -179,7 +179,7 @@ float Matrix44::Determinant() {
 		- _14 * ( _21 * (_32 * _43 - _42 * _33) - _22 * (_31 * _43 - _41 * _33) + _23 * (_31 * _42 - _32 * _41) );
 }
 
-Matrix44& Matrix44::Inverse(Matrix44& out) {
+Matrix44& Matrix44::Inverse(Matrix44& out) const {
 	// determinant
 	float det_A;
 	// partial computations for speed optimizations (hopefully faster, should be tested)
