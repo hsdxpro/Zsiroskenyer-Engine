@@ -6,16 +6,25 @@
     <ClCompile Include="src\RigidEntityBullet.cpp">
       <Filter>Rigid</Filter>
     </ClCompile>
+    <ClCompile Include="src\SoftEntityBullet.cpp">
+      <Filter>Soft</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\PhysicsEngineBullet.h" />
     <ClInclude Include="src\RigidEntityBullet.h">
       <Filter>Rigid</Filter>
     </ClInclude>
+    <ClInclude Include="src\SoftEntityBullet.h">
+      <Filter>Soft</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Rigid">
       <UniqueIdentifier>{4d2756fa-62e8-4327-9f47-1d17942e7bff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Soft">
+      <UniqueIdentifier>{9b5e9bb2-cfd9-489b-ac2b-5987ca00b776}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

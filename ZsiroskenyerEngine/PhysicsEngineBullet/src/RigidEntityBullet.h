@@ -2,8 +2,9 @@
 #pragma once
 
 #include "..\..\Core\src\IPhysicsEntity.h"
-#include "BulletDynamics\Dynamics\btRigidBody.h"
 #include "..\..\Core\src\Transform3D.h"
+
+class btRigidBody;
 
 class cRigidEntityBullet : public IPhysicsEntity {
 public:

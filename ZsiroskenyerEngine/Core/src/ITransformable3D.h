@@ -8,7 +8,6 @@
 
 class ITransformable3D {
 public:
-
 	virtual void SetPos(const Vec3& p) = 0;
 	virtual void SetPos(float x, float y, float z) = 0;
 

@@ -17,6 +17,7 @@ public:
 	void SimulateWorld(float deltaT) override;
 
 	IPhysicsEntity* CreateRigidEntity(const zsString& physicsGeom, float mass) override;
+	IPhysicsEntity* CreateSoftEntity(const zsString& physicsGeom, float mass) override;
 
 	void ShootBox(float size, const Vec3& pos, const Vec3& dir, float power);
 
@@ -28,7 +29,9 @@ public:
 protected:
 	//Fizikai világ reprezentálója
 	btSoftRigidDynamicsWorld* physicsWorld;
-		
+
+	btSoftBodyWorldInfo	softBodyWorldInfo;
+
 	//Fizika (Be,Ki)
 	bool physicsEnabled;
 

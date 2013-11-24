@@ -82,8 +82,8 @@ int ricsiMain() {
 	}
 	
 	// Our player
-	player = core->AddEntity(basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 70.0);
-	player->SetPos(Vec3(9, 0, 2));
+	player = core->AddEntity(basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 70.0, true);
+	player->SetPos(Vec3(9, 0, 10));
 
 	// Main loop
 	while(window->IsOpened()) {
@@ -116,7 +116,7 @@ int ricsiMain() {
 		gEngine->Update();
 
 		// Debug rendering
-		//core->DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
+		core->DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
 
 		// Present SwapChain
 		gApi->Present();
