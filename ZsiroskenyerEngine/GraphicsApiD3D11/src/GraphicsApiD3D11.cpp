@@ -692,10 +692,22 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, unsigned wid
 	// Create DepthStencil texture
 	if (hasDepthStencil) {
 		// Convert depthStencil format
-		DXGI_FORMAT f;
+		DXGI_FORMAT typelessFormat;
+		DXGI_FORMAT dsvFormat;
+		DXGI_FORMAT srvFormat;
 		switch (depthStencilFormat) {
-			case eFormat::D24_UNORM_S8_UINT	: f = DXGI_FORMAT_D24_UNORM_S8_UINT;	break;
-			case eFormat::D32_FLOAT			: f = DXGI_FORMAT_D32_FLOAT;			break;
+			case eFormat::D24_UNORM_S8_UINT: 
+					typelessFormat = DXGI_FORMAT_R24G8_TYPELESS;
+					dsvFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+					srvFormat = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+				break;
+
+			case eFormat::D32_FLOAT:
+					typelessFormat = DXGI_FORMAT_R32_TYPELESS;			
+					dsvFormat = DXGI_FORMAT_D32_FLOAT;
+					srvFormat = DXGI_FORMAT_R32_FLOAT;
+				break;
+
 			default:
 				SAFE_RELEASE(tex);
 				SAFE_RELEASE(rtv);
@@ -703,10 +715,14 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, unsigned wid
 				return eGapiResult::ERROR_INVALID_ARG;
 			break;
 		}
+		
+		if (!isRenderTarget && isShaderBindable)
+			texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+		else
+			texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
-		texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 		texDesc.CPUAccessFlags = 0; // TODO YOU CAN'T WRITE TEXTURES MUHAHA
-		texDesc.Format = f;
+		texDesc.Format = typelessFormat;
 		texDesc.MipLevels = 1;
 
 		hr = d3ddev->CreateTexture2D(&texDesc, 0, &tex);
@@ -717,7 +733,12 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, unsigned wid
 				return eGapiResult::ERROR_INVALID_ARG;
 		}
 
-		hr = d3ddev->CreateDepthStencilView(tex, NULL, &dsv);
+		D3D11_DEPTH_STENCIL_VIEW_DESC vDesc; memset(&vDesc, 0, sizeof(vDesc));
+		vDesc.Format = dsvFormat;
+		vDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		vDesc.Texture2D.MipSlice = 0;
+
+		hr = d3ddev->CreateDepthStencilView(tex, &vDesc, &dsv);
 		if (FAILED(hr)) {
 			SAFE_RELEASE(tex);
 			if (hr == E_OUTOFMEMORY)
@@ -727,13 +748,21 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, unsigned wid
 		}
 
 		if (!isRenderTarget && isShaderBindable) {
-			D3D11_SHADER_RESOURCE_VIEW_DESC srvdesc; memset(&srvdesc, 0, sizeof(srvdesc));
-			srvdesc.Format = f;
-			srvdesc.Texture2D.MipLevels = texDesc.MipLevels;
-			srvdesc.Texture2D.MostDetailedMip = 0;
-			srvdesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-
-			d3ddev->CreateShaderResourceView(tex, &srvdesc, &srv);
+			D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc; memset(&srvDesc, 0, sizeof(srvDesc));
+			srvDesc.Format = srvFormat;
+			srvDesc.Texture2D.MipLevels = texDesc.MipLevels;
+			srvDesc.Texture2D.MostDetailedMip = 0;
+			srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+			
+			hr = d3ddev->CreateShaderResourceView(tex, &srvDesc, &srv);
+			if (FAILED(hr)) {
+				SAFE_RELEASE(tex);
+				SAFE_RELEASE(dsv);
+				if (hr == E_OUTOFMEMORY)
+					return eGapiResult::ERROR_OUT_OF_MEMORY;
+				else
+					return eGapiResult::ERROR_INVALID_ARG;
+			}
 		}
 	}
 
