@@ -83,9 +83,8 @@ cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, un
 	catch (std::exception& e) {
 		std::cerr << "[non-fatal error (yet)] HDR post-processor failed with message. " << e.what() << std::endl;
 	}
-
-	screenCopyShader = shaderManager->GetShaderByName(L"screen_copy.cg");
 }
+
 cGraphicsEngine::~cGraphicsEngine() {
 	SAFE_DELETE(sceneManager);
 	SAFE_DELETE(resourceManager)

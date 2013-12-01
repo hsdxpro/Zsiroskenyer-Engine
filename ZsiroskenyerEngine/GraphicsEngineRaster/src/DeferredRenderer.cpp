@@ -45,7 +45,7 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 	// Create shaders
 	shaderGBuffer = parent.shaderManager->LoadShader(L"shaders/deferred_gbuffer.cg");
 	shaderComposition =	parent.shaderManager->LoadShader(L"shaders/deferred_compose.cg");
-	parent.shaderManager->LoadShader(L"shaders/screen_copy.cg");
+	parent.screenCopyShader = parent.shaderManager->LoadShader(L"shaders/screen_copy.cg");
 
 	if (!shaderGBuffer || !shaderComposition) {
 		std::string msg = std::string("Failed to create shaders:") + (shaderGBuffer ? "" : " g-buffer") + (shaderComposition ? "" : " composition");
@@ -165,11 +165,6 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 			buff.camPos = cam->GetPos();
 
 			gApi->SetConstantBufferData(gBufferConstantBuffer, &buff);
-
-			//gBufferConstantBuffer->SetData(0				  , &wvp		  , sizeof(Matrix44));
-			//gBufferConstantBuffer->SetData(sizeof(Matrix44)	  , &world		  , sizeof(Matrix44));
-			//gBufferConstantBuffer->SetData(sizeof(Matrix44)* 2, &cam->GetPos(), sizeof(Vec3)    );
-
 			gApi->SetVSConstantBuffer(gBufferConstantBuffer, 0);
 
 			// Draw entity..
@@ -185,13 +180,11 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 	// Campos for toying with camera attached lights
 	struct buffStruct {
-		Matrix44 invProj;
-		Matrix44 invView;
+		Matrix44 invViewProj;
 		Vec4	 camPos;
 	} buffer;
-	buffer.invView = Matrix44::Inverse(cam->GetViewMatrix());
-	buffer.invProj = Matrix44::Inverse(cam->GetProjMatrix());
-	buffer.camPos = Vec4(cam->GetPos(),1);
+	buffer.invViewProj = Matrix44::Inverse(viewProjMat);
+	buffer.camPos = Vec4(cam->GetPos(), 1);
 
 	IConstantBuffer* camPosBuffer;
 	parent.gApi->CreateConstantBuffer(&camPosBuffer, sizeof(buffStruct), eUsage::IMMUTABLE, (void*)&buffer);
@@ -214,7 +207,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {
 	shaderGBuffer = parent.shaderManager->ReloadShader(L"shaders/deferred_gbuffer.cg");
 	shaderComposition = parent.shaderManager->ReloadShader(L"shaders/deferred_compose.cg");
-	parent.shaderManager->ReloadShader(L"shaders/screen_copy.cg");
+	parent.screenCopyShader = parent.shaderManager->ReloadShader(L"shaders/screen_copy.cg");
 }
 
 // Access to composition buffer for further processing like post-process & whatever
