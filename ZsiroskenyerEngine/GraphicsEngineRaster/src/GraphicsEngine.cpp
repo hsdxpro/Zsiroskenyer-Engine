@@ -240,14 +240,12 @@ void cGraphicsEngine::RenderSceneDeferred() {
 	// post-processing will be run here
 	/* post-process */
 
-	/* Temporarily RenderComposition write to BackBuffer in MotionBlur pass TODO WRONG DECISION
 	// for now post-process & further rendering equals to copying the composed texture to BB
 	ITexture2D* composedBuffer = deferredRenderer->GetCompositionBuffer();
 	gApi->SetRenderTargetDefault();
 	gApi->SetShaderProgram(screenCopyShader);
 	gApi->SetTexture(composedBuffer, 0);
 	gApi->Draw(3);
-	*/
 }
 
 

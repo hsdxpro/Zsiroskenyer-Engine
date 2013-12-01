@@ -14,7 +14,7 @@ float cTimer::getDeltaSeconds() {
 
 double cTimer::getDeltaSecondsPrecise() {
 	std::chrono::system_clock::time_point tmp = std::chrono::system_clock::now();
-	float deltaT = std::chrono::duration_cast<std::chrono::duration<double>>(tmp - curr).count();
+	double deltaT = std::chrono::duration_cast<std::chrono::duration<double>>(tmp - curr).count();
 	curr = tmp;
 
 	return deltaT;

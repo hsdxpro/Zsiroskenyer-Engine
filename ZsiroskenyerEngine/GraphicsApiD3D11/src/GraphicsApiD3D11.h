@@ -120,7 +120,7 @@ public:
 private:
 	eGapiResult CreateDevice();
 	eGapiResult CreateMostAcceptableSwapChain(size_t width, size_t height, HWND windowHandle, const tDxConfig& config);
-	eGapiResult CreateRenderTargetViewForBB(const tDxConfig& config);
+	eGapiResult CreateViewsForBB(const tDxConfig& config);
 	eGapiResult CreateDefaultStates(const D3D11_CULL_MODE& cullMode, const D3D11_FILL_MODE& fillMode);
 	HRESULT CompileShaderFromFile(const zsString& fileName, const zsString& entry, const zsString& profile, ID3DBlob** ppBlobOut);
 	eGapiResult CompileCgToHLSL(const zsString& cgFileName, const zsString& hlslFileName, eProfileCG compileProfile);

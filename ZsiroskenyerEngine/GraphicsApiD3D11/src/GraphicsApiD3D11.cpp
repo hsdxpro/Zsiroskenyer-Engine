@@ -74,11 +74,11 @@ void cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
 	CreateMostAcceptableSwapChain(clientWidth, clientHeight, (HWND)(renderWindow->GetHandle()), cGraphicsApiD3D11::swapChainConfig);
 
 	// Create main render target (BackBuffer)
-	CreateRenderTargetViewForBB(swapChainConfig);
+	CreateViewsForBB(swapChainConfig);
 
 	// Create default viewport for swapChain rendering
 	defaultVP.TopLeftX = 0,
-		defaultVP.TopLeftY = 0;
+	defaultVP.TopLeftY = 0;
 	defaultVP.Width = clientWidth;
 	defaultVP.Height = clientHeight;
 	defaultVP.MaxDepth = 1.0f;
@@ -238,7 +238,7 @@ eGapiResult cGraphicsApiD3D11::CreateMostAcceptableSwapChain(size_t width, size_
 		sdesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 		sdesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	}
-	sdesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	sdesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
 	sdesc.OutputWindow = windowHandle;
 	sdesc.SampleDesc.Count = config.multiSampleCount;
 	sdesc.SampleDesc.Quality = config.multiSampleQuality;
@@ -267,10 +267,11 @@ eGapiResult cGraphicsApiD3D11::CreateMostAcceptableSwapChain(size_t width, size_
 	}
 }
 
-eGapiResult cGraphicsApiD3D11::CreateRenderTargetViewForBB(const tDxConfig& config) {
+eGapiResult cGraphicsApiD3D11::CreateViewsForBB(const tDxConfig& config) {
 	SAFE_RELEASE(defaultRenderTarget);
 
 	ID3D11RenderTargetView* rtv;
+	ID3D11ShaderResourceView* srv;
 	ID3D11DepthStencilView* dsv;
 
 	ID3D11Texture2D *backBuffer = NULL;
@@ -282,6 +283,15 @@ eGapiResult cGraphicsApiD3D11::CreateRenderTargetViewForBB(const tDxConfig& conf
 	hr = d3ddev->CreateRenderTargetView(backBuffer, 0, &rtv);
 	if (FAILED(hr)) {
 		ASSERT_MSG(false, L"Failed to create render target view for SwapChain's BackBuffer");
+		if (hr == E_OUTOFMEMORY)
+			return eGapiResult::ERROR_OUT_OF_MEMORY;
+		else
+			return eGapiResult::ERROR_UNKNOWN;
+	}
+	
+	hr = d3ddev->CreateShaderResourceView(backBuffer, NULL, &srv);
+	if (FAILED(hr)) {
+		ASSERT_MSG(false, L"Failed to create shader resource view for SwapChain's BackBuffer");
 		if (hr == E_OUTOFMEMORY)
 			return eGapiResult::ERROR_OUT_OF_MEMORY;
 		else
@@ -330,7 +340,7 @@ eGapiResult cGraphicsApiD3D11::CreateRenderTargetViewForBB(const tDxConfig& conf
 			return eGapiResult::ERROR_UNKNOWN;
 	}
 
-	defaultRenderTarget = new cTexture2DD3D11(bbDesc.Width, bbDesc.Height, NULL, rtv, dsv);
+	defaultRenderTarget = new cTexture2DD3D11(bbDesc.Width, bbDesc.Height, srv, rtv, dsv);
 	return eGapiResult::OK;
 }
 
@@ -1182,7 +1192,7 @@ eGapiResult cGraphicsApiD3D11::SetBackBufferSize(unsigned width, unsigned height
 	if (!FAILED(hr)) {
 		defaultVP.Width = width;
 		defaultVP.Height = height;
-		return CreateRenderTargetViewForBB(swapChainConfig);
+		return CreateViewsForBB(swapChainConfig);
 	}
 	switch (hr) {
 		case S_OK: return eGapiResult::OK;   break;

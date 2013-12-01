@@ -42,11 +42,8 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 	bufferWidth = parent.screenWidth;
 	bufferHeight = parent.screenHeight;
 
-	// Create shaders
-	shaderGBuffer = parent.shaderManager->LoadShader(L"shaders/deferred_gbuffer.cg");
-	shaderComposition =	parent.shaderManager->LoadShader(L"shaders/deferred_compose.cg");
-	parent.screenCopyShader = parent.shaderManager->LoadShader(L"shaders/screen_copy.cg");
-	parent.shaderManager->LoadShader(L"shaders/motion_blur.cg");
+	// "Creating" shaders
+	ReloadShaders();
 
 	if (!shaderGBuffer || !shaderComposition) {
 		std::string msg = std::string("Failed to create shaders:") + (shaderGBuffer ? "" : " g-buffer") + (shaderComposition ? "" : " composition");
@@ -178,6 +175,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		}
 	}
 
+
+
 	// Compose pass
 	parent.gApi->SetRenderTargets(1, &compositionBuffer, NULL);
 
@@ -206,10 +205,9 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	parent.gApi->Draw(3);
 
 
-	// BULL SHIT, CLEAR IT FROM DeferredRenderer
-	// Low quality shit motion blur, that takes camera and static shits into account, lot of hardcoded static shits
 
-	
+
+	// BULL SHIT LOW QUALITY MOTION BLUR
 	// Lazy boy rendering to BackBuffer lol:D
 	gApi->SetRenderTargetDefault();
 
@@ -239,6 +237,19 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// Draw triangle, hardware will quadify them automatically :)
 	parent.gApi->Draw(3);
 
+
+
+	// BULL SHIT DEPTH OF FIELD:D
+	gApi->SetRenderTargets(1, &compositionBuffer, NULL);
+
+	IShaderProgram* dofShProg = parent.GetShaderManager()->GetShaderByName(L"depth_of_field.cg");
+	gApi->SetShaderProgram(dofShProg);
+
+	gApi->SetTexture(gApi->GetDefaultRenderTarget(), 0);
+	gApi->SetTexture(depthBuffer, 1);
+
+	// Draw triangle, hardware will quadify them automatically :)
+	parent.gApi->Draw(3);
 }
 
 void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {
@@ -246,6 +257,7 @@ void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {
 	shaderComposition = parent.shaderManager->ReloadShader(L"shaders/deferred_compose.cg");
 	parent.screenCopyShader = parent.shaderManager->ReloadShader(L"shaders/screen_copy.cg");
 	parent.shaderManager->ReloadShader(L"shaders/motion_blur.cg");
+	parent.shaderManager->ReloadShader(L"shaders/depth_of_field.cg");
 }
 
 // Access to composition buffer for further processing like post-process & whatever
