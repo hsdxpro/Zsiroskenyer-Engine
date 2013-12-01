@@ -60,6 +60,10 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 		parent.shaderManager->UnloadShader(shaderComposition);
 		throw std::runtime_error("failed to create texture buffers");
 	}
+
+	// Prepare constant buffers for shaders (gBuffer, composition)
+	// Matrix44, worldViewProj, world.   Vec3 camPos, + 1 byte dummy
+	eGapiResult gr = gApi->CreateConstantBuffer(&gBufferConstantBuffer, 2 * sizeof(Matrix44) + sizeof(Vec4), eUsage::DEFAULT, NULL);
 }
 
 cGraphicsEngine::cDeferredRenderer::~cDeferredRenderer() {
@@ -67,6 +71,7 @@ cGraphicsEngine::cDeferredRenderer::~cDeferredRenderer() {
 		SAFE_RELEASE(v);
 	SAFE_RELEASE(compositionBuffer);
 	SAFE_RELEASE(depthBuffer);
+	SAFE_DELETE(gBufferConstantBuffer);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -127,8 +132,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		// Set SubMaterials
 		auto& mtl = *group->mtl;
 		for (size_t i = 0; i < mtl.GetNSubMaterials(); i++) {
-			ITexture2D* diffuse = mtl[i].textureDiffuse.get();
-			ITexture2D* normal = mtl[i].textureNormal.get();
+			ITexture2D* diffuse  = mtl[i].textureDiffuse.get();
+			ITexture2D* normal   = mtl[i].textureNormal.get();
 			ITexture2D* specular = mtl[i].textureSpecular.get();
 			ITexture2D* displace = mtl[i].textureDisplace.get();
 
@@ -149,26 +154,26 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 			// WorldViewProj matrix
 			Matrix44 wvp = world * viewProjMat;
 
-			struct myBuffer
+			struct gBuffConstantBuff
 			{
 				Matrix44 wvp;
 				Matrix44 world;
 				Vec3 camPos;
-
-			}buff;
+			} buff;
 			buff.wvp = wvp;
 			buff.world = world;
 			buff.camPos = cam->GetPos();
 
-			IConstantBuffer* buffer;
-			gApi->CreateConstantBuffer(&buffer, sizeof(buff), eUsage::DEFAULT, &buff);
-			gApi->SetVSConstantBuffer(buffer, 0);
+			gApi->SetConstantBufferData(gBufferConstantBuffer, &buff);
+
+			//gBufferConstantBuffer->SetData(0				  , &wvp		  , sizeof(Matrix44));
+			//gBufferConstantBuffer->SetData(sizeof(Matrix44)	  , &world		  , sizeof(Matrix44));
+			//gBufferConstantBuffer->SetData(sizeof(Matrix44)* 2, &cam->GetPos(), sizeof(Vec3)    );
+
+			gApi->SetVSConstantBuffer(gBufferConstantBuffer, 0);
 
 			// Draw entity..
 			gApi->DrawIndexed(ib->GetSize() / sizeof(unsigned));
-
-			// Free up constantBuffer
-			buffer->Release();
 		}
 	}
 

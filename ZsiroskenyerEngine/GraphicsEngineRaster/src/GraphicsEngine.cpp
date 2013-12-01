@@ -83,6 +83,8 @@ cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, un
 	catch (std::exception& e) {
 		std::cerr << "[non-fatal error (yet)] HDR post-processor failed with message. " << e.what() << std::endl;
 	}
+
+	screenCopyShader = shaderManager->GetShaderByName(L"screen_copy.cg");
 }
 cGraphicsEngine::~cGraphicsEngine() {
 	SAFE_DELETE(sceneManager);
@@ -235,14 +237,13 @@ void cGraphicsEngine::RenderSceneDeferred() {
 
 	// render the scene to the composition buffer w/ deferredRenderer
 	deferredRenderer->RenderComposition();
-	ITexture2D* composedBuffer = deferredRenderer->GetCompositionBuffer();
 
 	// post-processing will be run here
 	/* post-process */
 
 	// for now post-process & further rendering equals to copying the composed texture to BB
+	ITexture2D* composedBuffer = deferredRenderer->GetCompositionBuffer();
 	gApi->SetRenderTargetDefault();
-	IShaderProgram* screenCopyShader = shaderManager->GetShaderByName(L"screen_copy.cg");
 	gApi->SetShaderProgram(screenCopyShader);
 	gApi->SetTexture(composedBuffer, 0);
 	gApi->Draw(3);

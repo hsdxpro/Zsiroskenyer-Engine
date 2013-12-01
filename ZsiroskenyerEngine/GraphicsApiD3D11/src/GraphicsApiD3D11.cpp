@@ -550,7 +550,7 @@ eGapiResult cGraphicsApiD3D11::CreateConstantBuffer(IConstantBuffer** resource, 
 	ID3D11Buffer* buffer = NULL;
 
 	D3D11_BUFFER_DESC desc;
-	desc.ByteWidth = size - (size % 16) + 16; // shader constants are multiple of 16 byte
+	desc.ByteWidth = size;
 	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = 0;
@@ -566,11 +566,11 @@ eGapiResult cGraphicsApiD3D11::CreateConstantBuffer(IConstantBuffer** resource, 
 	resData.SysMemPitch = 0;
 	resData.SysMemSlicePitch = 0;
 
-	HRESULT hr = d3ddev->CreateBuffer(&desc, &resData, &buffer);
+	HRESULT hr = d3ddev->CreateBuffer(&desc, resData.pSysMem ? &resData : NULL, &buffer);
 	switch (hr) {
 		case S_OK:
 			*resource = new cConstantBufferD3D11(buffer, desc.ByteWidth, usage);
-			eGapiResult::OK;
+			return eGapiResult::OK;
 		case E_OUTOFMEMORY:
 			return eGapiResult::ERROR_OUT_OF_MEMORY;
 		default:
@@ -1111,6 +1111,10 @@ void cGraphicsApiD3D11::SetIndexBuffer(const IIndexBuffer* indexBuffer) {
 }
 
 void cGraphicsApiD3D11::SetInstanceData() {
+}
+
+void cGraphicsApiD3D11::SetConstantBufferData(IConstantBuffer* b, void* data) {
+	d3dcon->UpdateSubresource(((cConstantBufferD3D11*)b)->GetBufferPointer(), 0, NULL, data, 0, 0);
 }
 
 void cGraphicsApiD3D11::SetTexture(const ITexture2D* tex, size_t slotIdx) {
