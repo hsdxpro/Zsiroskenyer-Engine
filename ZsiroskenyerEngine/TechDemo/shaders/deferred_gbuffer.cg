@@ -58,12 +58,11 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	// Sample normal from texture
 	//NormalMap mintavételezés, eredmény [0,1]  ->	   //[0,1] to [-1,1]
 	float3 normalT = normalize(tex2D(normalTex, In.tex0).xyz * 2.0f - 1.0f);
-	float3 normalW = In.normalW;
+	//float3 normalW = mul(normalT, In.TBN); // Normals from normal map
+	float3 normalW = In.normalW; // Normals from geometry
 	
 	// Pack normals
-	float3 n = mul(normalT, In.TBN);
-	n = normalW;
-	n = normalize(n);
+	float3 n = normalize(normalW);
 	Out.gBuffer1.r = n.x;
 	Out.gBuffer1.g = 0.5f*n.y + (n.z>0.f ? 0.5f:-0.5f);
 
