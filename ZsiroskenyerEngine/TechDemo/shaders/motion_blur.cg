@@ -1,0 +1,56 @@
+sampler2D texture0 : register(s0);
+sampler2D depthTexture : register(s1);
+
+float4x4 invViewProj; // inv curr
+float4x4 currViewProj; // curr
+float4x4 prevViewProj; // prev
+
+struct VS_IN {
+	float3 posL 	: POSITION;
+	float2 tex0 	: TEXCOORD0;
+};
+
+struct VS_OUT {
+	float4 posH 	: SV_POSITION;
+	float2 tex0 	: TEXCOORD2;
+};
+
+struct PS_OUT {
+	float4 color: COLOR0;
+};
+
+VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
+	VS_OUT Out;
+	Out.tex0 = float2( (VertexID << 1) & 2, VertexID & 2 );
+	Out.posH = float4(  Out.tex0 * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f), 0.0f, 1.0f );
+	return Out;
+}
+
+PS_OUT PS_MAIN(VS_OUT In) {
+	PS_OUT Out;
+
+	// World space pos from depth
+	float4 currPosH = float4(In.tex0.x * 2 - 1, (1 - In.tex0.y) * 2 - 1, tex2D(depthTexture , In.tex0).r, 1.0f); // NDC space
+	float4 posW = mul(currPosH, invViewProj);
+	posW /= posW.w;
+
+	float4 prevPosH = mul(posW, prevViewProj);
+	prevPosH.xyzw /= prevPosH.w;
+	
+	float2 velocity = (currPosH.xy - prevPosH.xy) / 2.0f;
+
+	// Color at that pixel
+   	float4 color = tex2D(texture0, In.tex0);
+	const int nSamples = 8; // TODO REMOVE THAT SHIT
+	for(int i = 1; i < nSamples; ++i) 
+	{  
+  		// Sample the color buffer along the velocity vector.  
+   		float4 currentColor = tex2D(texture0, In.tex0 + i * velocity * 20);
+
+  		// Add the current color to our color sum.
+  		color += currentColor;  
+	}  
+	// Average all of the samples to get the final blur color.  
+   	Out.color = color / (nSamples + 1) ;
+	return Out;
+};

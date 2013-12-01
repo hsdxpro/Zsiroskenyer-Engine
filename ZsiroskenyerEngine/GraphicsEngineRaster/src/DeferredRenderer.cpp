@@ -46,6 +46,7 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 	shaderGBuffer = parent.shaderManager->LoadShader(L"shaders/deferred_gbuffer.cg");
 	shaderComposition =	parent.shaderManager->LoadShader(L"shaders/deferred_compose.cg");
 	parent.screenCopyShader = parent.shaderManager->LoadShader(L"shaders/screen_copy.cg");
+	parent.shaderManager->LoadShader(L"shaders/motion_blur.cg");
 
 	if (!shaderGBuffer || !shaderComposition) {
 		std::string msg = std::string("Failed to create shaders:") + (shaderGBuffer ? "" : " g-buffer") + (shaderComposition ? "" : " composition");
@@ -203,12 +204,50 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 	// Draw triangle, hardware will quadify them automatically :)
 	parent.gApi->Draw(3);
+
+
+	// BULL SHIT, CLEAR IT FROM DeferredRenderer
+	// Low quality shit motion blur, that takes camera and static shits into account, lot of hardcoded static shits
+
+	
+	// Lazy boy rendering to BackBuffer lol:D
+	gApi->SetRenderTargetDefault();
+
+	IShaderProgram* motionBlurShProg = parent.GetShaderManager()->GetShaderByName(L"motion_blur.cg");
+	gApi->SetShaderProgram(motionBlurShProg);
+
+	static IConstantBuffer* shitBuffer;
+	static eGapiResult gr = gApi->CreateConstantBuffer(&shitBuffer, 3 * sizeof(Matrix44), eUsage::DEFAULT, NULL);
+
+	static Matrix44 lastViewProj = viewProjMat;
+	struct shitBuffStruct
+	{
+		Matrix44 invViewProj;
+		Matrix44 currViewProj;
+		Matrix44 lastViewProj;
+	} asd;
+	asd.invViewProj = buffer.invViewProj;
+	asd.currViewProj = viewProjMat;
+	asd.lastViewProj = lastViewProj;
+
+	gApi->SetConstantBufferData(shitBuffer, &asd);
+	gApi->SetPSConstantBuffer(shitBuffer, 0);
+
+	gApi->SetTexture(compositionBuffer, 0);
+	gApi->SetTexture(depthBuffer, 1);
+
+	lastViewProj = viewProjMat;
+
+	// Draw triangle, hardware will quadify them automatically :)
+	parent.gApi->Draw(3);
+
 }
 
 void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {
 	shaderGBuffer = parent.shaderManager->ReloadShader(L"shaders/deferred_gbuffer.cg");
 	shaderComposition = parent.shaderManager->ReloadShader(L"shaders/deferred_compose.cg");
 	parent.screenCopyShader = parent.shaderManager->ReloadShader(L"shaders/screen_copy.cg");
+	parent.shaderManager->ReloadShader(L"shaders/motion_blur.cg");
 }
 
 // Access to composition buffer for further processing like post-process & whatever

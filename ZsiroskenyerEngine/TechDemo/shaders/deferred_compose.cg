@@ -33,10 +33,8 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	float4 gBuff0 = tex2D(gBuffer0, In.tex0);
 	float z = tex2D(depthBuffer , In.tex0).r;
 
-	// calculate world space position of pixel
-	// clip space position
-	float4 posH = float4(In.tex0.x * 2 - 1, (1 - In.tex0.y) * 2 - 1, z, 1.0f);
-	// transfrom from clip space to world space w/ inverse proj matrix
+	// World space pos from depth
+	float4 posH = float4(In.tex0.x * 2 - 1, (1 - In.tex0.y) * 2 - 1, z, 1.0f); // NDC space
 	float4 posW = mul(posH, invViewProj);
 	posW.xyzw /= posW.w;
 
@@ -66,7 +64,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 		Out.color = float4(0,0,0,1);
 	
 	// Richard
-	//Out.color =  tex2D(gBuffer0, In.tex0) * saturate(dot(normal, normalize(camPos- posW.xyz))) / distance(camPos, posW) * 30;
+	//Out.color =  tex2D(gBuffer0, In.tex0) * saturate(dot(normal, normalize(camPos- posW.xyz))) / distance(camPos, posW) * 15;
 	
 	return Out;
 };

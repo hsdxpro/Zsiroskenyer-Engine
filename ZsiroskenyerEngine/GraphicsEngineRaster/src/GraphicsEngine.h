@@ -101,6 +101,9 @@ private:
 		IConstantBuffer* gBufferConstantBuffer;
 		IConstantBuffer* compConstantBuffer;
 
+		// Remove that also..
+		ITexture2D* motionBlurredBuffer;
+
 		unsigned bufferWidth, bufferHeight;
 	};
 
