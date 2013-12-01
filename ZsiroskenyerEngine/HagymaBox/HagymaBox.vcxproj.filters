@@ -12,11 +12,11 @@
     <ClCompile Include="src\Gui.cpp">
       <Filter>TESZT_ASD</Filter>
     </ClCompile>
-    <ClCompile Include="src\GuiRenderer.cpp">
-      <Filter>TESZT_ASD\Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="src\ResourceManager.cpp">
       <Filter>TESZT_ASD\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GuiRenderer.cpp">
+      <Filter>TESZT_ASD\Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
