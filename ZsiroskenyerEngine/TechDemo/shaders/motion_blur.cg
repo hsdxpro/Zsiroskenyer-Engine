@@ -1,9 +1,8 @@
 sampler2D texture0 : register(s0);
 sampler2D depthTexture : register(s1);
 
-float4x4 invViewProj; // inv curr
-float4x4 currViewProj; // curr
-float4x4 prevViewProj; // prev
+float4x4 invViewProj : register(c0); // inv curr
+float4x4 prevViewProj: register(c4); // prev
 
 struct VS_IN {
 	float3 posL 	: POSITION;
@@ -35,22 +34,22 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	posW /= posW.w;
 
 	float4 prevPosH = mul(posW, prevViewProj);
-	prevPosH.xyzw /= prevPosH.w;
+	prevPosH /= prevPosH.w;
 	
-	float2 velocity = (currPosH.xy - prevPosH.xy) / 2.0f;
+	float2 velocity = (currPosH.xy - prevPosH.xy) / 2.0f * (1.0f / 800);
 
 	// Color at that pixel
    	float4 color = tex2D(texture0, In.tex0);
-	const int nSamples = 8; // TODO REMOVE THAT SHIT
-	for(int i = 1; i < nSamples; ++i) 
+	const int nSamples = 16; // TODO REMOVE THAT SHIT
+	for(int i = 1; i < nSamples; ++i)
 	{  
   		// Sample the color buffer along the velocity vector.  
-   		float4 currentColor = tex2D(texture0, In.tex0 + i * velocity * 20);
+   		float4 currentColor = tex2D(texture0, In.tex0 + (float)i * velocity *400 );
 
   		// Add the current color to our color sum.
-  		color += currentColor;  
+  		color += currentColor;
 	}  
 	// Average all of the samples to get the final blur color.  
    	Out.color = color / (nSamples + 1) ;
 	return Out;
-};
+}

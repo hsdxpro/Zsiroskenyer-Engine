@@ -217,18 +217,16 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetShaderProgram(motionBlurShProg);
 
 	static IConstantBuffer* shitBuffer;
-	static eGapiResult gr = gApi->CreateConstantBuffer(&shitBuffer, 3 * sizeof(Matrix44), eUsage::DEFAULT, NULL);
+	static eGapiResult gr = gApi->CreateConstantBuffer(&shitBuffer, 2 * sizeof(Matrix44), eUsage::DEFAULT, NULL);
 
-	static Matrix44 lastViewProj = viewProjMat;
+	static Matrix44 prevViewProj = viewProjMat;
 	struct shitBuffStruct
 	{
 		Matrix44 invViewProj;
-		Matrix44 currViewProj;
-		Matrix44 lastViewProj;
+		Matrix44 prevViewProj;
 	} asd;
 	asd.invViewProj = buffer.invViewProj;
-	asd.currViewProj = viewProjMat;
-	asd.lastViewProj = lastViewProj;
+	asd.prevViewProj = prevViewProj;
 
 	gApi->SetConstantBufferData(shitBuffer, &asd);
 	gApi->SetPSConstantBuffer(shitBuffer, 0);
@@ -236,7 +234,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetTexture(compositionBuffer, 0);
 	gApi->SetTexture(depthBuffer, 1);
 
-	lastViewProj = viewProjMat;
+	prevViewProj = viewProjMat;
 
 	// Draw triangle, hardware will quadify them automatically :)
 	parent.gApi->Draw(3);
