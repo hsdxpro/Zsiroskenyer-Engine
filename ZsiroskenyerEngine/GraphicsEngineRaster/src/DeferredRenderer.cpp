@@ -62,8 +62,11 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 	}
 
 	// Prepare constant buffers for shaders (gBuffer, composition)
-	// Matrix44, worldViewProj, world.   Vec3 camPos, + 1 byte dummy
+	// Matrix44, worldViewProj, world.   Vec3 camPos, + 1 byte dummy ( GBUFFER)
 	eGapiResult gr = gApi->CreateConstantBuffer(&gBufferConstantBuffer, 2 * sizeof(Matrix44) + sizeof(Vec4), eUsage::DEFAULT, NULL);
+
+	// Matrix44 invViewProj, Vec3 campos, + 1 byte dummy( COMPOSITION)
+	gr = gApi->CreateConstantBuffer(&compConstantBuffer, sizeof(Matrix44)+sizeof(Vec4), eUsage::DEFAULT, NULL);
 }
 
 cGraphicsEngine::cDeferredRenderer::~cDeferredRenderer() {
@@ -71,7 +74,9 @@ cGraphicsEngine::cDeferredRenderer::~cDeferredRenderer() {
 		SAFE_RELEASE(v);
 	SAFE_RELEASE(compositionBuffer);
 	SAFE_RELEASE(depthBuffer);
+
 	SAFE_DELETE(gBufferConstantBuffer);
+	SAFE_DELETE(compConstantBuffer);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -179,16 +184,15 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	parent.gApi->SetShaderProgram(shaderComposition);
 
 	// Campos for toying with camera attached lights
-	struct buffStruct {
+	struct compBuffConstantBuff {
 		Matrix44 invViewProj;
-		Vec4	 camPos;
+		Vec3 camPos;
 	} buffer;
 	buffer.invViewProj = Matrix44::Inverse(viewProjMat);
-	buffer.camPos = Vec4(cam->GetPos(), 1);
+	buffer.camPos = cam->GetPos();
 
-	IConstantBuffer* camPosBuffer;
-	parent.gApi->CreateConstantBuffer(&camPosBuffer, sizeof(buffStruct), eUsage::IMMUTABLE, (void*)&buffer);
-	parent.gApi->SetPSConstantBuffer(camPosBuffer, 0);
+	gApi->SetConstantBufferData(compConstantBuffer, &buffer);
+	parent.gApi->SetPSConstantBuffer(compConstantBuffer, 0);
 	
 	// Load up gBuffers to composition shader
 	for (unsigned i = 0; i < 3; i++)
@@ -199,9 +203,6 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 	// Draw triangle, hardware will quadify them automatically :)
 	parent.gApi->Draw(3);
-
-	// Free up mem
-	SAFE_RELEASE(camPosBuffer);
 }
 
 void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {

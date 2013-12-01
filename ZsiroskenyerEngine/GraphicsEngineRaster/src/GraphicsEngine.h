@@ -96,7 +96,10 @@ private:
 		cGraphicsEngine& parent;
 
 		eGapiResult ReallocBuffers();
+
+		// Constant buffers for shaders TODO, move them to IShaderProgram
 		IConstantBuffer* gBufferConstantBuffer;
+		IConstantBuffer* compConstantBuffer;
 
 		unsigned bufferWidth, bufferHeight;
 	};
