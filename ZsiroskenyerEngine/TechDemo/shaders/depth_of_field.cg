@@ -1,0 +1,30 @@
+sampler2D texture0 : register(s0);
+sampler2D depthTexture : register(s1);
+
+
+struct VS_IN {
+	float3 posL 	: POSITION;
+	float2 tex0 	: TEXCOORD0;
+};
+
+struct VS_OUT {
+	float4 posH 	: SV_POSITION;
+	float2 tex0 	: TEXCOORD2;
+};
+
+struct PS_OUT {
+	float4 color: COLOR0;
+};
+
+VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
+	VS_OUT Out;
+	Out.tex0 = float2( (VertexID << 1) & 2, VertexID & 2 );
+	Out.posH = float4(  Out.tex0 * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f), 0.0f, 1.0f );
+	return Out;
+}
+
+PS_OUT PS_MAIN(VS_OUT In) {
+	PS_OUT Out;
+	Out.color = float4(1,0,0,0);
+	return Out;
+}
