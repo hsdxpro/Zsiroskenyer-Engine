@@ -55,6 +55,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SoundEngineFMOD", "SoundEng
 		{0444E71E-FDC6-4511-B395-6946993BBB5F} = {0444E71E-FDC6-4511-B395-6946993BBB5F}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C7A8FD8C-9932-45D8-8937-08506CFF8F97}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
