@@ -25,6 +25,17 @@ public:
 		PHYSICS_COLPOINTS	= 1 << 2,
 	};
 
+	// Link between modules
+	struct tLinkNode {
+		tLinkNode(ITransformable3D* entity)
+		:entity(entity) {}
+
+		// Transformable entity
+		ITransformable3D* entity;
+
+		std::vector<tLinkNode> childs;
+	};
+
 	cCore(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config);
 	~cCore();
 
@@ -37,7 +48,8 @@ public:
 
 	IGraphicsEngine* GetGraphicsEngine();
 	IPhysicsEngine* GetPhysicsEngine();
-
+protected:
+	void UpdateChildLinksRecursively(cCore::tLinkNode& n);
 protected:
 	// Modules
 	IGraphicsEngine* graphicsEngine;
@@ -50,17 +62,7 @@ protected:
 	// Entities from modules
 	std::list<cGraphicsEntity*> graphicsEntities;
 	std::list<IPhysicsEntity*> physicsEntities;
+	// ELIMINATE FUCKING SLOW TREE TRAVERSAL
 
-	// Link between modules
-	struct tLinkNode { 
-		tLinkNode(ITransformable3D* entity) 
-		:entity(entity) {}
-
-		// Transformable entity
-		ITransformable3D* entity;
-
-		// Childs
-		std::list<tLinkNode> childs;
-	};
-	std::list<tLinkNode> entityLinks;
+	std::vector<cCore::tLinkNode> entityLinks;
 };

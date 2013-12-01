@@ -51,14 +51,16 @@ void cCore::Update(float deltaT) {
 	physicsEngine->SimulateWorld(deltaT);
 
 	// Update Links
-	// For each Root link
-	for (auto it = entityLinks.begin(); it != entityLinks.end(); it++) {
-		auto childs = it->childs;
-	
-		// For each child
-		for (auto it2 = childs.begin(); it2 != childs.end(); it2++) {
-			it2->entity->SetWorldTransform(it->entity);
-		}
+	for (size_t i = 0; i < entityLinks.size(); i++)
+	{
+		UpdateChildLinksRecursively(entityLinks[i]);
+	}
+}
+
+void cCore::UpdateChildLinksRecursively(cCore::tLinkNode& n) {
+	for (size_t i = 0; i < n.childs.size(); i++) {
+		n.childs[i].entity->SetWorldTransform(n.entity);
+		UpdateChildLinksRecursively(n.childs[i]);
 	}
 }
 

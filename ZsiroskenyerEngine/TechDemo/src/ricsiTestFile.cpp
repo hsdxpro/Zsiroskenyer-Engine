@@ -120,7 +120,7 @@ int ricsiMain() {
 		gEngine->Update();
 
 		// Debug rendering
-		core.DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
+		//core.DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
 
 		// Present SwapChain
 		gApi->Present();
