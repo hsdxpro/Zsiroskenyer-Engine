@@ -30,6 +30,8 @@ public:
 	// resources
 	virtual eGapiResult	CreateVertexBuffer(IVertexBuffer** resource, size_t size, eUsage usage, void* data = NULL) = 0;
 	virtual eGapiResult	CreateIndexBuffer(IIndexBuffer** resource, size_t size, eUsage usage, void* data = NULL) = 0;
+
+	// shader constants are multiple of 16 byte
 	virtual eGapiResult CreateConstantBuffer(IConstantBuffer** resource, size_t size, eUsage usage, void* data = NULL) = 0;
 	virtual eGapiResult CreateTexture(ITexture2D** resource, const zsString& filePath) = 0;
 	virtual eGapiResult CreateTexture(ITexture2D** resource, unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, unsigned bind, eFormat depthStencilFormat = eFormat::UNKNOWN) = 0;
@@ -59,6 +61,7 @@ public:
 	virtual void SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) = 0;
 	virtual void SetIndexBuffer(const IIndexBuffer* indexBuffer) = 0;
 	virtual void SetInstanceData(/*whatever*/) = 0;
+	virtual void SetConstantBufferData(IConstantBuffer* b, void* data) = 0;
 	virtual void SetVSConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) = 0;
 	virtual void SetPSConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) = 0;
 	virtual void SetTexture(const ITexture2D* tex, size_t slotIdx) = 0;

@@ -107,6 +107,7 @@ public:
 	void SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) override;
 	void SetIndexBuffer(const IIndexBuffer* indexBuffer) override;
 	void SetInstanceData(/*whatever*/) override;
+	void SetConstantBufferData(IConstantBuffer* b, void* data) override;
 	void SetTexture(const ITexture2D* tex, size_t slotIdx) override;
 	void SetVSConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) override;
 	void SetPSConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) override;
