@@ -113,7 +113,14 @@ private:
 	public:
 		cHDRProcessor(cGraphicsEngine& parent);
 		~cHDRProcessor();
+		void SetSource(ITexture2D* srcTexture);
+		void Update(float elapsedSec);
 	private:
 		cGraphicsEngine& parent;
+		ITexture2D* source;
+		ITexture2D* luminanceBuffer[9]; // for 9 buffers down from 512x512
+		ITexture2D* blurBuffer;
+		float avgLuminance;
+		unsigned sourceWidth, sourceHeight;
 	};
 };
