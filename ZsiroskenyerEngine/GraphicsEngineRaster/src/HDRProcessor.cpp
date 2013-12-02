@@ -18,8 +18,13 @@ cGraphicsEngine::cHDRProcessor::cHDRProcessor(cGraphicsEngine& parent) : parent(
 
 	// create luminance textures
 	unsigned resolution=1;
+	ITexture2D::tDesc desc;
+	
+	desc.format = eFormat::R16_FLOAT;
+	desc.bind = (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE;
 	for (int i = 0; i < 9; i++) {
-		eGapiResult r = parent.gApi->CreateTexture(&luminanceBuffer[8-i], resolution, resolution, 1, 1, eFormat::R16_FLOAT, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
+		desc.width = desc.height = resolution;
+		eGapiResult r = parent.gApi->CreateTexture(&luminanceBuffer[8-i], desc);
 		if (r != eGapiResult::OK) {
 			// release all textures
 			for (auto& t : luminanceBuffer)
@@ -50,15 +55,20 @@ eGraphicsResult cGraphicsEngine::cHDRProcessor::SetSource(ITexture2D* srcTexture
 	assert(srcTexture != NULL);
 
 	// create downsampled buffers
-	unsigned width = sourceWidth / 2, height = sourceHeight / 2;
-	auto r = parent.gApi->CreateTexture(&downSampled, width, height, 1, 1, eFormat::R16G16B16A16_FLOAT, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
+	ITexture2D::tDesc desc;
+	desc.bind = (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE;
+	desc.format = eFormat::R16G16B16A16_FLOAT;
+	desc.width = sourceWidth / 2;
+	desc.height = sourceHeight / 2;
+	auto r = parent.gApi->CreateTexture(&downSampled, desc);
 	if (r != eGapiResult::OK)
 		return eGraphicsResult::ERROR_UNKNOWN;
-	auto r = parent.gApi->CreateTexture(&blurBuffer, width, height, 1, 1, eFormat::R16G16B16A16_FLOAT, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
+	r = parent.gApi->CreateTexture(&blurBuffer, desc);
 	if (r != eGapiResult::OK) {
 		SAFE_RELEASE(downSampled)
 			return eGraphicsResult::ERROR_UNKNOWN;
 	}
 
+	return eGraphicsResult::OK;
 }
 

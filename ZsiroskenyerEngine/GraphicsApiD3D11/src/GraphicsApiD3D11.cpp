@@ -616,38 +616,34 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const zsStri
 	}
 }
 
-eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, unsigned bind, eFormat depthStencilFormat /*= eFormat::UNKNOWN*/) {
-
+//eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, unsigned bind, eFormat depthStencilFormat /*= eFormat::UNKNOWN*/) {
+eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::tDesc desc, void* data /*= NULL*/) {
 	ID3D11Texture2D* tex = NULL;
 	// Outputs
 	ID3D11RenderTargetView* rtv = NULL;
 	ID3D11ShaderResourceView* srv = NULL;
 	ID3D11DepthStencilView* dsv = NULL;
 
-	bool isRenderTarget = (bool)((int)bind & (int)eBind::RENDER_TARGET);
-	bool isShaderBindable = (bool)((int)bind & (int)eBind::SHADER_RESOURCE);
-	bool hasDepthStencil = (bool)((int)bind & (int)eBind::DEPTH_STENCIL);
+	bool isRenderTarget = (bool)((int)desc.bind & (int)eBind::RENDER_TARGET);
+	bool isShaderBindable = (bool)((int)desc.bind & (int)eBind::SHADER_RESOURCE);
+	bool hasDepthStencil = (bool)((int)desc.bind & (int)eBind::DEPTH_STENCIL);
 
 	UINT colorBindFlag = 0;
 	if (isRenderTarget)   colorBindFlag |= D3D11_BIND_RENDER_TARGET;
 	if (isShaderBindable) colorBindFlag |= D3D11_BIND_SHADER_RESOURCE;
 
-
-	// TODO REMOVE THAT SHIT, MAKE INTERFACE FUNCTION TO FORCE CONVERTING / API FROM GENERAL FORMAT TO HIS FORMAT
-	// SHIT REMOVED
-
 	D3D11_TEXTURE2D_DESC texDesc;
-	texDesc.ArraySize = arraySize;
+	texDesc.ArraySize = desc.arraySize;
 	texDesc.BindFlags = colorBindFlag;
 	texDesc.CPUAccessFlags = 0; // TODO YOU CAN'T WRITE TEXTURES MUHAHA ( PARAMETERIZE )
-	texDesc.Format = ConvertToNativeFormat(format);
-	texDesc.Height = height;
-	texDesc.Width = width;
-	texDesc.MipLevels = mipLevels;
+	texDesc.Format = ConvertToNativeFormat(desc.format);
+	texDesc.Height = desc.height;
+	texDesc.Width = desc.width;
+	texDesc.MipLevels = desc.mipLevels;
 	texDesc.MiscFlags = 0;
 	texDesc.SampleDesc.Count = 1;
 	texDesc.SampleDesc.Quality = 0;
-	texDesc.Usage = D3D11_USAGE_DEFAULT; // TODO ( PARAMETERIZE )
+	texDesc.Usage = ConvertToNativeUsage(desc.usage); // TODO ( PARAMETERIZE )
 
 	HRESULT hr = S_OK;
 	if (isRenderTarget) {
@@ -694,7 +690,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, unsigned wid
 		DXGI_FORMAT typelessFormat;
 		DXGI_FORMAT dsvFormat;
 		DXGI_FORMAT srvFormat;
-		switch (depthStencilFormat) {
+		switch (desc.depthFormat) {
 			case eFormat::D24_UNORM_S8_UINT:
 				typelessFormat = DXGI_FORMAT_R24G8_TYPELESS;
 				dsvFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -765,7 +761,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, unsigned wid
 		}
 	}
 
-	*resource = new cTexture2DD3D11(width, height, srv, rtv, dsv);
+	*resource = new cTexture2DD3D11(desc.width, desc.height, srv, rtv, dsv);
 	return eGapiResult::OK;
 }
 

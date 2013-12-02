@@ -9,7 +9,7 @@
 #include <dxgi.h>
 
 #undef ERROR_FILE_NOT_FOUND // fucking dx collides with eGapiResult::ERROR_FILE_NOT_FOUND
-#include "../../Core/src/IGraphicsApi.h"
+#include "../../Core/src/GAPI.h"
 #include "../../Core/src/IWindow.h"
 #include "../../Core/src/common.h"
 
@@ -80,7 +80,8 @@ public:
 	eGapiResult	CreateIndexBuffer(IIndexBuffer** resource, size_t size, eUsage usage, void* data = NULL) override;
 	eGapiResult CreateConstantBuffer(IConstantBuffer** resource, size_t size, eUsage usage, void* data = NULL) override;
 	eGapiResult CreateTexture(ITexture2D** resource, const zsString& filePath) override;
-	eGapiResult CreateTexture(ITexture2D** resource, unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, unsigned bind, eFormat depthStencilFormat = eFormat::UNKNOWN) override;
+	eGapiResult CreateTexture(ITexture2D** resource, ITexture2D::tDesc desc, void* data = NULL) override;
+	//eGapiResult CreateTexture(ITexture2D** resource, unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, unsigned bind, eFormat depthStencilFormat = eFormat::UNKNOWN) override;
 	eGapiResult CreateShaderProgram(IShaderProgram** resource, const zsString& shaderPath) override;
 
 	eGapiResult WriteBuffer(IIndexBuffer* buffer, void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) override;
