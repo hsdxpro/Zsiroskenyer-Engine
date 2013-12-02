@@ -41,13 +41,20 @@ cGraphicsEngine::cHDRProcessor::~cHDRProcessor() {
 	for (auto& t : luminanceBuffer)
 		SAFE_RELEASE(t);
 	SAFE_RELEASE(blurBuffer);
+	SAFE_RELEASE(downSampled);
 }
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
-//	Public interface
+//	Methods
+
+//	Set HDR range float buffer
 eGraphicsResult cGraphicsEngine::cHDRProcessor::SetSource(ITexture2D* srcTexture, unsigned sourceWidth, unsigned sourceHeight) {
+	// release old downsampled buffers
+	SAFE_RELEASE(blurBuffer);
+	SAFE_RELEASE(downSampled);
+
 	// set internal vars
 	this->sourceWidth = sourceWidth;
 	this->sourceHeight = sourceHeight;
@@ -66,9 +73,12 @@ eGraphicsResult cGraphicsEngine::cHDRProcessor::SetSource(ITexture2D* srcTexture
 	r = parent.gApi->CreateTexture(&blurBuffer, desc);
 	if (r != eGapiResult::OK) {
 		SAFE_RELEASE(downSampled)
-			return eGraphicsResult::ERROR_UNKNOWN;
+		return eGraphicsResult::ERROR_UNKNOWN;
 	}
 
 	return eGraphicsResult::OK;
 }
+
+//	Update source buffer
+void Update(float elapsedSec = -1.0f);
 

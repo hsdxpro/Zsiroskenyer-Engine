@@ -114,7 +114,7 @@ private:
 		cHDRProcessor(cGraphicsEngine& parent);
 		~cHDRProcessor();
 		eGraphicsResult SetSource(ITexture2D* srcTexture, unsigned sourceWidth, unsigned sourceHeight);
-		void Update(float elapsedSec);
+		void Update(float elapsedSec = -1.0f);
 	private:
 		cGraphicsEngine& parent;
 		ITexture2D* source;
