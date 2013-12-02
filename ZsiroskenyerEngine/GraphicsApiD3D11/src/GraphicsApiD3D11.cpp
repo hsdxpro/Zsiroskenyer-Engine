@@ -408,7 +408,7 @@ HRESULT cGraphicsApiD3D11::CompileShaderFromFile(const zsString& fileName, const
 			zsString errorStrW(size_needed, 0);
 			MultiByteToWideChar(CP_UTF8, 0, errorStr, strlen(errorStr), &errorStrW[0], size_needed);
 
-			ASSERT_MSG(false, L"Can't Compile :" + fileName + L"\n\n" + errorStrW);
+			ASSERT_MSG(false, L"Can't Compile: " + fileName + L"\n\n" + errorStrW);
 		}
 		if (pErrorBlob) pErrorBlob->Release();
 		return hr;
