@@ -64,7 +64,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 		Out.color = float4(0,0,0,1);
 	
 	// Richard
-	Out.color =  tex2D(gBuffer0, In.tex0);// * saturate(dot(normal, normalize(camPos- posW.xyz))) / distance(camPos, posW) * 15;
+	Out.color =  tex2D(gBuffer0, In.tex0) * saturate(dot(normal, normalize(camPos- posW.xyz))) / distance(camPos, posW) * 15;
 	
 	return Out;
 };

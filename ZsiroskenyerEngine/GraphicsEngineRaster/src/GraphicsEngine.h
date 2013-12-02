@@ -88,6 +88,7 @@ private:
 	private:
 		ITexture2D* gBuffer[3];
 		ITexture2D* compositionBuffer;
+		ITexture2D* helperBuffer;
 		ITexture2D* depthBuffer;
 
 		IGraphicsApi* gApi;

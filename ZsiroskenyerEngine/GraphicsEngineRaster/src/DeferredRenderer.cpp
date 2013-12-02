@@ -23,10 +23,6 @@
 #include <stdexcept>
 
 
-#define BUFFER_WIDTH	800
-#define BUFFER_HEIGHT	600
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //	Constructor & Destructor
 cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
@@ -94,7 +90,8 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	results[1] = gApi->CreateTexture(&gBuffer[1], bufferWidth, bufferHeight, 1, 1, eFormat::R16G16_SNORM, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
 	results[2] = gApi->CreateTexture(&gBuffer[2], bufferWidth, bufferHeight, 1, 1, eFormat::R8G8B8A8_UNORM, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
 	results[3] = gApi->CreateTexture(&compositionBuffer, bufferWidth, bufferHeight, 1, 1, eFormat::R16G16B16A16_FLOAT, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
-	results[4] = gApi->CreateTexture(&depthBuffer, bufferWidth, bufferHeight, 1, 1, eFormat::UNKNOWN, (int)eBind::SHADER_RESOURCE | (int)eBind::DEPTH_STENCIL, eFormat::D24_UNORM_S8_UINT);
+	results[4] = gApi->CreateTexture(&helperBuffer, bufferWidth, bufferHeight, 1, 1, eFormat::R16G16B16A16_FLOAT, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
+	results[5] = gApi->CreateTexture(&depthBuffer, bufferWidth, bufferHeight, 1, 1, eFormat::UNKNOWN, (int)eBind::SHADER_RESOURCE | (int)eBind::DEPTH_STENCIL, eFormat::D24_UNORM_S8_UINT);
 
 	for (int i = 0; i < sizeof(results) / sizeof(results[0]); i++) {
 		if (results[i] != eGapiResult::OK) {
@@ -111,14 +108,15 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	ASSERT(parent.sceneManager->GetActiveCamera() != NULL);
 
+// GBUFFER PASS______________________________________________________________________________________________________________________________________
 	// Clear buffers
-	parent.gApi->ClearTexture(depthBuffer);
+	gApi->ClearTexture(depthBuffer);
 
 	// Set BackBuffer
-	parent.gApi->SetRenderTargets(3, gBuffer, depthBuffer);
+	gApi->SetRenderTargets(3, gBuffer, depthBuffer);
 
 	// Set ShaderProgram
-	parent.gApi->SetShaderProgram(shaderGBuffer);
+	gApi->SetShaderProgram(shaderGBuffer);
 
 	// Get camera params
 	cCamera* cam = parent.sceneManager->GetActiveCamera();
@@ -177,11 +175,11 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 
 
-	// Compose pass
-	parent.gApi->SetRenderTargets(1, &compositionBuffer, NULL);
+// COMPOSITION PASS______________________________________________________________________________________________________________________________________
+	gApi->SetRenderTargets(1, &compositionBuffer, NULL);
 
 	// Set ShaderProgram
-	parent.gApi->SetShaderProgram(shaderComposition);
+	gApi->SetShaderProgram(shaderComposition);
 
 	// Campos for toying with camera attached lights
 	struct compBuffConstantBuff {
@@ -192,24 +190,22 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	buffer.camPos = cam->GetPos();
 
 	gApi->SetConstantBufferData(compConstantBuffer, &buffer);
-	parent.gApi->SetPSConstantBuffer(compConstantBuffer, 0);
+	gApi->SetPSConstantBuffer(compConstantBuffer, 0);
 	
 	// Load up gBuffers to composition shader
 	for (unsigned i = 0; i < 3; i++)
-		parent.gApi->SetTexture(gBuffer[i], i);
+		gApi->SetTexture(gBuffer[i], i);
 
 	// Load up depth buffer
-	parent.gApi->SetTexture(depthBuffer, 3);
+	gApi->SetTexture(depthBuffer, 3);
 
 	// Draw triangle, hardware will quadify them automatically :)
-	parent.gApi->Draw(3);
+	gApi->Draw(3);
 
 
 
-
-	// BULL SHIT LOW QUALITY MOTION BLUR
-	// Lazy boy rendering to BackBuffer lol:D
-	gApi->SetRenderTargetDefault();
+// MOTION BLUR______________________________________________________________________________________________________________________________________
+	gApi->SetRenderTargets(1, &helperBuffer, NULL);
 
 	IShaderProgram* motionBlurShProg = parent.GetShaderManager()->GetShaderByName(L"motion_blur.cg");
 	gApi->SetShaderProgram(motionBlurShProg);
@@ -235,21 +231,21 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	prevViewProj = viewProjMat;
 
 	// Draw triangle, hardware will quadify them automatically :)
-	parent.gApi->Draw(3);
+	gApi->Draw(3);
 
 
 
-	// BULL SHIT DEPTH OF FIELD:D
+// DEPTH OF FIELD______________________________________________________________________________________________________________________________________
 	gApi->SetRenderTargets(1, &compositionBuffer, NULL);
 
 	IShaderProgram* dofShProg = parent.GetShaderManager()->GetShaderByName(L"depth_of_field.cg");
 	gApi->SetShaderProgram(dofShProg);
 
-	gApi->SetTexture(gApi->GetDefaultRenderTarget(), 0);
+	gApi->SetTexture(helperBuffer, 0);
 	gApi->SetTexture(depthBuffer, 1);
 
 	// Draw triangle, hardware will quadify them automatically :)
-	parent.gApi->Draw(3);
+	gApi->Draw(3);
 }
 
 void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {

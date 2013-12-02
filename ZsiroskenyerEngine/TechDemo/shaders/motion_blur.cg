@@ -36,7 +36,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	float4 prevPosH = mul(posW, prevViewProj);
 	prevPosH /= prevPosH.w;
 	
-	float2 velocity = (currPosH.xy - prevPosH.xy) / 2.0f * (1.0f / 800);
+	float2 velocity = pow((currPosH.xy - prevPosH.xy) / 2.0f ,3) * 100;
 
 	// Color at that pixel
    	float4 color = tex2D(texture0, In.tex0);
@@ -44,12 +44,10 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	for(int i = 1; i < nSamples; ++i)
 	{  
   		// Sample the color buffer along the velocity vector.  
-   		float4 currentColor = tex2D(texture0, In.tex0 + (float)i * velocity *400 );
-
-  		// Add the current color to our color sum.
-  		color += currentColor;
+   		color += tex2D(texture0, clamp(In.tex0 + i * velocity, 0.0f, 1.0f));
 	}  
 	// Average all of the samples to get the final blur color.  
-   	Out.color = color / (nSamples + 1) ;
+   	Out.color = color / nSamples;
+	//Out.color = color;
 	return Out;
 }
