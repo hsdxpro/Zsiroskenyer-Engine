@@ -1086,6 +1086,10 @@ void cGraphicsApiD3D11::ClearTexture(ITexture2D* t, unsigned clearFlag /*= 0*/, 
 	ID3D11DepthStencilView* dsv = ((cTexture2DD3D11*)t)->GetDSV();
 	if (dsv != NULL)
 		d3dcon->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, depthVal, (UINT8)stencilVal);
+
+	ID3D11RenderTargetView* rtv = ((cTexture2DD3D11*)t)->GetRTV();
+	if ( rtv != NULL)
+		d3dcon->ClearRenderTargetView(rtv, (FLOAT*)&clearColor);
 }
 
 void cGraphicsApiD3D11::Present() {
