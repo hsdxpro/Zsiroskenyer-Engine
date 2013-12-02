@@ -87,13 +87,28 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	SAFE_RELEASE(helperBuffer);
 
 	// create new buffers
-	eGapiResult results[5];
+	eGapiResult results[6];
+	ITexture2D::tDesc desc;
+	desc.width = bufferWidth;
+	desc.height = bufferHeight;
+	desc.bind = (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE;
+	desc.usage = eUsage::DEFAULT;
+	/*
 	results[0] = gApi->CreateTexture(&gBuffer[0], bufferWidth, bufferHeight, 1, 1, eFormat::R8G8B8A8_UNORM, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
 	results[1] = gApi->CreateTexture(&gBuffer[1], bufferWidth, bufferHeight, 1, 1, eFormat::R16G16_SNORM, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
 	results[2] = gApi->CreateTexture(&gBuffer[2], bufferWidth, bufferHeight, 1, 1, eFormat::R8G8B8A8_UNORM, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
 	results[3] = gApi->CreateTexture(&compositionBuffer, bufferWidth, bufferHeight, 1, 1, eFormat::R16G16B16A16_FLOAT, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
 	results[4] = gApi->CreateTexture(&helperBuffer, bufferWidth, bufferHeight, 1, 1, eFormat::R16G16B16A16_FLOAT, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
 	results[5] = gApi->CreateTexture(&depthBuffer, bufferWidth, bufferHeight, 1, 1, eFormat::UNKNOWN, (int)eBind::SHADER_RESOURCE | (int)eBind::DEPTH_STENCIL, eFormat::D24_UNORM_S8_UINT);
+	*/
+	desc.format = eFormat::R8G8B8A8_UNORM;		results[0] = gApi->CreateTexture(&gBuffer[0], desc);
+	desc.format = eFormat::R16G16_SNORM;		results[1] = gApi->CreateTexture(&gBuffer[1], desc);
+	desc.format = eFormat::R8G8B8A8_UNORM;		results[2] = gApi->CreateTexture(&gBuffer[2], desc);
+	desc.format = eFormat::R16G16B16A16_FLOAT;	results[3] = gApi->CreateTexture(&compositionBuffer, desc);
+	desc.format = eFormat::R16G16B16A16_FLOAT;	results[4] = gApi->CreateTexture(&helperBuffer, desc);
+	
+	desc.format = eFormat::R32_TYPELESS;	desc.depthFormat = eFormat::D24_UNORM_S8_UINT;	desc.bind = (int)eBind::SHADER_RESOURCE | (int)eBind::DEPTH_STENCIL;
+	results[5] = gApi->CreateTexture(&depthBuffer, desc);
 
 	for (int i = 0; i < sizeof(results) / sizeof(results[0]); i++) {
 		if (results[i] != eGapiResult::OK) {
