@@ -20,6 +20,47 @@ struct PS_OUT {
 	float4 color: COLOR0;
 };
 
+float3 depthToWorldSpace(float depth, float2 texCoord)
+{
+	// World space pos from depth
+	float4 posH = float4(texCoord.x * 2 - 1, (1 - texCoord.y) * 2 - 1, depth, 1.0f); // NDC space
+	float4 posW = mul(posH, invViewProj);
+	posW /= posW.w;
+	return posW.xyz;
+}
+
+float CalcAO(float2 baseTex)
+{
+	float3 refPos = depthToWorldSpace(tex2D(depthBuffer, baseTex).r,  baseTex);
+
+	float ao = 0;
+	// Sample in 4 direction
+	int quality = 32;
+	float radius = 0.13;// / (refDepth);
+	int aoCount = 0;
+	for(int i = 0; i < quality; i++)
+	{
+		float2 tx1 = baseTex + float2( 1.0f/800 * i *radius);
+		float2 tx2 = baseTex + float2(-1.0f/800 * i *radius);
+		float2 tx3 = baseTex + float2(0,  1.0f/600 * i *radius);
+		float2 tx4 = baseTex + float2(0, -1.0f/600 * i *radius);
+
+		float3 posW1 = depthToWorldSpace(tex2D(depthBuffer, tx1).r, tx1);
+		float3 posW2 = depthToWorldSpace(tex2D(depthBuffer, tx2).r, tx2);
+		float3 posW3 = depthToWorldSpace(tex2D(depthBuffer, tx3).r, tx3);
+		float3 posW4 = depthToWorldSpace(tex2D(depthBuffer, tx4).r, tx4);
+
+		aoCount += 4;
+
+		float clampVal = 0.6f;
+		ao += clamp(distance(refPos, posW1), 0.0f, clampVal);
+		ao += clamp(distance(refPos, posW2), 0.0f, clampVal);
+		ao += clamp(distance(refPos, posW3), 0.0f, clampVal);
+		ao += clamp(distance(refPos, posW4), 0.0f, clampVal);
+	}
+	return ao / aoCount;//1.0f / ( ao / aoCount);
+}
+
 VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 	VS_OUT vout;
 	vout.tex0 = float2( (VertexID << 1) & 2, VertexID & 2 );
@@ -34,16 +75,14 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	float z = tex2D(depthBuffer , In.tex0).r;
 
 	// World space pos from depth
-	float4 posH = float4(In.tex0.x * 2 - 1, (1 - In.tex0.y) * 2 - 1, z, 1.0f); // NDC space
-	float4 posW = mul(posH, invViewProj);
-	posW.xyzw /= posW.w;
+	float3 posW = depthToWorldSpace(z, In.tex0);
 
 	// get normal
 	float2 packedNormal = tex2D(gBuffer1, In.tex0);
 	float3 normal;
 	normal.x = packedNormal.r;
 	normal.y = 2.0f*(packedNormal.g>0.0f ? packedNormal.g-0.5f:packedNormal.g+0.5f);
-	normal.z = sqrt(clamp(1.0f - normal.x*normal.x - normal.y*normal.y, 0.0f, 1.0f)) * (packedNormal.g>0.0f ? 1.0f:-1.0f);
+	normal.z = sqrt(1.0f - normal.x*normal.x - normal.y*normal.y) * (packedNormal.g>0.0f ? 1.0f:-1.0f);
 		
 	// calculate outputs color
 	Out.color = 20.0f / distance(camPos.xyz, posW.xyz) * tex2D(gBuffer0, In.tex0);// * (20.0f / distance(camPos, posW));//posW;//tex2D(gBuffer0, In.tex0);
@@ -54,7 +93,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	float lightness = Out.color.r*0.27+Out.color.g*0.67+Out.color.b*0.06;
 	float4 lightnessColor = float4(float3(lightness, lightness, lightness)*0.4f, 0.f);
 	Out.color = float4(normal+float3(1,1,1)*0.5, 1.f);
-	
+	*/
 	Out.color = float4(normal*0.5+float3(0.5,0.5,0.5), 1);
 	
 	float4 dbgNormal = tex2D(gBuffer2, In.tex0);
@@ -62,13 +101,11 @@ PS_OUT PS_MAIN(VS_OUT In) {
 		Out.color = dbgNormal;
 	if (In.tex0.x>0.498 && In.tex0.x<0.502)
 		Out.color = float4(0,0,0,1);
-	*/
 	
-	// Peti
-	//Out.color = float4(0.5*normal.xyz+float3(0.5,0.5,0.5), 1.0f);
-	
+	float ao = 1 - CalcAO(In.tex0);
+
 	// Richard
-	Out.color =  tex2D(gBuffer0, In.tex0);// * saturate(dot(normal, normalize(camPos- posW.xyz))) / distance(camPos, posW) * 15;
-	
+	//Out.color = float4(1,1,1,1) - ao; //tex2D(gBuffer0, In.tex0) - ao;// * saturate(dot(normal, normalize(camPos- posW.xyz))) / distance(camPos, posW) * 15;
+	Out.color = tex2D(gBuffer0, In.tex0) * ao * clamp(saturate(dot(normal, normalize(camPos- posW))) / distance(camPos, posW) * 45, 0.0f, 1.5f);
 	return Out;
 };
