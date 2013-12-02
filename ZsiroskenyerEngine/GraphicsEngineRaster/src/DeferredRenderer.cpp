@@ -31,6 +31,7 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 	// buffers to null
 	compositionBuffer = NULL;
 	depthBuffer = NULL;
+	helperBuffer = NULL;
 	for (auto& v : gBuffer)
 		v = NULL;
 
@@ -83,6 +84,7 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 		SAFE_RELEASE(v);
 	SAFE_RELEASE(compositionBuffer);
 	SAFE_RELEASE(depthBuffer);
+	SAFE_RELEASE(helperBuffer);
 
 	// create new buffers
 	eGapiResult results[5];
@@ -97,6 +99,7 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 		if (results[i] != eGapiResult::OK) {
 			for (auto& p : gBuffer) SAFE_RELEASE(p);
 			SAFE_RELEASE(compositionBuffer);
+			SAFE_RELEASE(helperBuffer);
 			SAFE_RELEASE(depthBuffer);
 			return results[i];
 		}
@@ -110,8 +113,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 	// Clear buffers
 	gApi->ClearTexture(depthBuffer);
-	gApi->ClearTexture(gBuffer[0], 0, Vec4(0,0,0,0));
-
+	gApi->ClearTexture(gBuffer[0], 0, Vec4(0, 0, 0, 0));
 // GBUFFER PASS______________________________________________________________________________________________________________________________________
 
 	// Set BackBuffer
