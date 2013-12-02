@@ -43,7 +43,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	float3 normal;
 	normal.x = packedNormal.r;
 	normal.y = 2.0f*(packedNormal.g>0.0f ? packedNormal.g-0.5f:packedNormal.g+0.5f);
-	normal.z = sqrt(1.0f - normal.x*normal.x - normal.y*normal.y) * (packedNormal.g>0.0f ? 1.0f:-1.0f);
+	normal.z = sqrt(clamp(1.0f - normal.x*normal.x - normal.y*normal.y, 0.0f, 1.0f)) * (packedNormal.g>0.0f ? 1.0f:-1.0f);
 		
 	// calculate outputs color
 	Out.color = 20.0f / distance(camPos.xyz, posW.xyz) * tex2D(gBuffer0, In.tex0);// * (20.0f / distance(camPos, posW));//posW;//tex2D(gBuffer0, In.tex0);
@@ -54,7 +54,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	float lightness = Out.color.r*0.27+Out.color.g*0.67+Out.color.b*0.06;
 	float4 lightnessColor = float4(float3(lightness, lightness, lightness)*0.4f, 0.f);
 	Out.color = float4(normal+float3(1,1,1)*0.5, 1.f);
-	*/
+	
 	Out.color = float4(normal*0.5+float3(0.5,0.5,0.5), 1);
 	
 	float4 dbgNormal = tex2D(gBuffer2, In.tex0);
@@ -62,6 +62,10 @@ PS_OUT PS_MAIN(VS_OUT In) {
 		Out.color = dbgNormal;
 	if (In.tex0.x>0.498 && In.tex0.x<0.502)
 		Out.color = float4(0,0,0,1);
+	*/
+	
+	// Peti
+	//Out.color = float4(0.5*normal.xyz+float3(0.5,0.5,0.5), 1.0f);
 	
 	// Richard
 	Out.color =  tex2D(gBuffer0, In.tex0) * saturate(dot(normal, normalize(camPos- posW.xyz))) / distance(camPos, posW) * 15;
