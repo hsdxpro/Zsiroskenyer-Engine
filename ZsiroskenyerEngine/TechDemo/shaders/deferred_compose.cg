@@ -82,7 +82,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	float3 normal;
 	normal.x = packedNormal.r;
 	normal.y = 2.0f*(packedNormal.g>0.0f ? packedNormal.g-0.5f:packedNormal.g+0.5f);
-	normal.z = sqrt(1.0f - normal.x*normal.x - normal.y*normal.y) * (packedNormal.g>0.0f ? 1.0f:-1.0f);
+	normal.z = sqrt(clamp(1.0f - normal.x*normal.x - normal.y*normal.y, 0, 1)) * (packedNormal.g>0.0f ? 1.0f:-1.0f);
 		
 	// calculate outputs color
 	Out.color = 20.0f / distance(camPos.xyz, posW.xyz) * tex2D(gBuffer0, In.tex0);// * (20.0f / distance(camPos, posW));//posW;//tex2D(gBuffer0, In.tex0);
