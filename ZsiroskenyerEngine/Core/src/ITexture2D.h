@@ -11,7 +11,7 @@ public:
 	virtual size_t GetWidth() const = 0;
 	virtual size_t GetHeight() const = 0;
 
-	class tDesc {
+	struct tDesc {
 		tDesc(unsigned width, unsigned height, eFormat format, unsigned bind, eUsage usage, unsigned mipLevels = 1, unsigned arraySize = 1, eFormat depthFormat = eFormat::UNKNOWN)
 		: width(width), height(height), format(format), bind(bind), usage(usage), mipLevels(mipLevels), arraySize(arraySize), depthFormat(depthFormat) { }
 		tDesc() : tDesc(1, 1, eFormat::UNKNOWN, (int)eBind::SHADER_RESOURCE, eUsage::DEFAULT, 1, 1, eFormat::UNKNOWN) { }
