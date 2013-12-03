@@ -1161,7 +1161,7 @@ void cGraphicsApiD3D11::SetPSConstantBuffer(IConstantBuffer* buffer, size_t slot
 	d3dcon->PSSetConstantBuffers(slotIdx, 1, &cBuffer);
 }
 
-eGapiResult cGraphicsApiD3D11::SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget) {
+eGapiResult cGraphicsApiD3D11::SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget /* = NULL */) {
 	// RTVS
 	static ID3D11RenderTargetView* rtvS[16];
 	for (unsigned i = 0; i < nTargets; i++)

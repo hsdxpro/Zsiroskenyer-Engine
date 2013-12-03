@@ -3,6 +3,7 @@
 
 
 #include "GraphicsEngine.h"
+#include "ShaderManager.h"
 #include <cassert>
 #include <stdexcept>
 
@@ -12,9 +13,13 @@
 cGraphicsEngine::cHDRProcessor::cHDRProcessor(cGraphicsEngine& parent) : parent(parent) {
 	// set vars
 	avgLuminance = 0;
+	adaptedLuminance = 0;
 	sourceWidth = sourceHeight = 0;
 	for (auto& t : luminanceBuffer)
 		t = NULL;
+
+	// create shaders
+
 
 	// create luminance textures
 	unsigned resolution=1;
@@ -79,6 +84,21 @@ eGraphicsResult cGraphicsEngine::cHDRProcessor::SetSource(ITexture2D* srcTexture
 	return eGraphicsResult::OK;
 }
 
-//	Update source buffer
-void Update(float elapsedSec = -1.0f);
+
+////////////////////////////////////////////////////////////////////////////////
+//	Update
+
+void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
+	// Calculate average luminance
+	parent.gApi->SetRenderTargets(1, &luminanceBuffer[0], NULL);
+	parent.gApi->SetShaderProgram(parent.shaderManager->GetShaderByName("hdr_luminance_sample"));
+
+	parent.gApi->SetShaderProgram(parent.shaderManager->GetShaderByName("hdr_luminance_avg"));
+	for (int i = 1; i < 9; i++) {
+		parent.gApi->SetRenderTargets(1, &luminanceBuffer[i], NULL);
+	}
+
+
+
+}
 

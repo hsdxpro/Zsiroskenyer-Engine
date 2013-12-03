@@ -122,6 +122,7 @@ private:
 		ITexture2D* blurBuffer;
 		ITexture2D* downSampled;
 		float avgLuminance;
+		float adaptedLuminance;
 		unsigned sourceWidth, sourceHeight;
 	};
 };
