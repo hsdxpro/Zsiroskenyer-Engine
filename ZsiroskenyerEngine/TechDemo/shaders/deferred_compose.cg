@@ -58,13 +58,8 @@ float doAmbientOcclusion(in float2 texcoord,in float2 delta_uv, in float3 pos1, 
  float3 diff = pos2 - pos1;
  float3 dir = normalize(diff);
 
-
-//Két pixel között húzódó vektor( p2 -> p1) dot p1 normal vektora,
-//return 1.0f - saturate(dot(dir,norm1));///(SSAObias+length(diff));
-
-float SSAObias = 0.0f;
-return 1.0f -  clamp(dot(dir,norm1),0.05f,1.0f);///(SSAObias+length(diff));
-
+ float SSAObias = 0.0f;
+ return 1.0f -  clamp(dot(dir,norm1),0.1f,1.0f)/(SSAObias+length(diff));
 }
 
 //THE SSAO PROCESS FOR THE PIXEL
@@ -153,7 +148,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 
 	//Out.color = float4(GetPosition(In.tex0),1);
 	// Richard
-	Out.color = 1 - ao;// * saturate(dot(normal, normalize(camPos- posW.xyz))) / distance(camPos, posW) * 15;
+	Out.color = (1 - ao)*0.5f;// * saturate(dot(normal, normalize(camPos- posW.xyz))) / distance(camPos, posW) * 15;
 	//Out.color = tex2D(gBuffer0, In.tex0) * ao * clamp(saturate(dot(normal, normalize(camPos- posW))) / distance(camPos, posW) * 45, 0.0f, 1.5f);
 	return Out;
 };

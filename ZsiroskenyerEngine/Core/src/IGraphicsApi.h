@@ -38,11 +38,13 @@ public:
 	//virtual eGapiResult CreateTexture(ITexture2D** resource, unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, unsigned bind, eFormat depthStencilFormat = eFormat::UNKNOWN) = 0;
 	virtual eGapiResult CreateShaderProgram(IShaderProgram** resource, const zsString& shaderPath) = 0;
 
-	virtual eGapiResult WriteBuffer(IIndexBuffer* buffer , void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) = 0;
-	virtual eGapiResult WriteBuffer(IVertexBuffer* buffer, void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) = 0;
 
-	virtual eGapiResult ReadBuffer(IIndexBuffer* buffer, void* dest, size_t size, size_t offset = 0) = 0;
-	virtual eGapiResult ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset = 0) = 0;
+	virtual eGapiResult WriteResource(IIndexBuffer* buffer , void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) = 0;
+	virtual eGapiResult WriteResource(IVertexBuffer* buffer, void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) = 0;
+
+	virtual eGapiResult ReadResource(IIndexBuffer* buffer, void* dest, size_t size, size_t offset = 0) = 0;
+	virtual eGapiResult ReadResource(IVertexBuffer* buffer, void* dest, size_t size, size_t offset = 0) = 0;
+	virtual eGapiResult ReadResource(ITexture2D* texture, void* dest, size_t size, size_t offset = 0) = 0;
 
 	// rendering
 	virtual void Clear(bool target = true, bool depth = false, bool stencil = false) = 0;

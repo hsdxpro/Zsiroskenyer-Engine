@@ -970,7 +970,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	return eGapiResult::OK;
 }
 
-eGapiResult cGraphicsApiD3D11::WriteBuffer(IIndexBuffer* buffer, void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
+eGapiResult cGraphicsApiD3D11::WriteResource(IIndexBuffer* buffer, void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
 	ASSERT(buffer != NULL);
 
 	if (buffer->GetSize()<size + offset)
@@ -991,7 +991,7 @@ eGapiResult cGraphicsApiD3D11::WriteBuffer(IIndexBuffer* buffer, void* source, s
 	return eGapiResult::OK;
 }
 
-eGapiResult cGraphicsApiD3D11::WriteBuffer(IVertexBuffer* buffer, void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
+eGapiResult cGraphicsApiD3D11::WriteResource(IVertexBuffer* buffer, void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
 	ASSERT(buffer != NULL);
 
 	if (buffer->GetSize()<size + offset)
@@ -1012,7 +1012,7 @@ eGapiResult cGraphicsApiD3D11::WriteBuffer(IVertexBuffer* buffer, void* source, 
 	return eGapiResult::OK;
 }
 
-eGapiResult cGraphicsApiD3D11::ReadBuffer(IIndexBuffer* buffer, void* dest, size_t size, size_t offset /*= 0*/) {
+eGapiResult cGraphicsApiD3D11::ReadResource(IIndexBuffer* buffer, void* dest, size_t size, size_t offset /*= 0*/) {
 	ASSERT(buffer != NULL);
 
 	if (buffer->GetSize()<size + offset)
@@ -1034,7 +1034,7 @@ eGapiResult cGraphicsApiD3D11::ReadBuffer(IIndexBuffer* buffer, void* dest, size
 	return eGapiResult::OK;
 }
 
-eGapiResult cGraphicsApiD3D11::ReadBuffer(IVertexBuffer* buffer, void* dest, size_t size, size_t offset /*= 0*/) {
+eGapiResult cGraphicsApiD3D11::ReadResource(IVertexBuffer* buffer, void* dest, size_t size, size_t offset /*= 0*/) {
 	ASSERT(buffer != NULL);
 
 	if (buffer->GetSize()<size + offset)
@@ -1055,6 +1055,30 @@ eGapiResult cGraphicsApiD3D11::ReadBuffer(IVertexBuffer* buffer, void* dest, siz
 
 	return eGapiResult::OK;
 }
+
+eGapiResult cGraphicsApiD3D11::ReadResource(ITexture2D* texture, void* dest, size_t size, size_t offset = 0) {
+	ASSERT(buffer != NULL);
+
+	// TODO OUT OF RANGE CHECK
+	//if (buffer->GetSize() < size + offset)
+		//return eGapiResult::ERROR_OUT_OF_RANGE;
+
+	HRESULT hr = S_OK;
+	ID3D11Texture2D* d3dBuffer = (ID3D11Texture2D*)texture;
+	D3D11_MAPPED_SUBRESOURCE mappedRes;
+
+	hr = d3dcon->Map(d3dBuffer, 0, D3D11_MAP_READ, 0, &mappedRes);
+	if (hr != S_OK) {
+		return eGapiResult::ERROR_INVALID_ARG;
+	}
+
+	memcpy(dest, (void*)(size_t(mappedRes.pData) + offset), size);
+
+	d3dcon->Unmap(d3dBuffer, 0);
+
+	return eGapiResult::OK;
+}
+
 
 ////////////////////
 // draw
