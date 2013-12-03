@@ -54,29 +54,30 @@ float doAmbientOcclusion(in float2 texcoord,in float2 delta_uv, in float3 pos1, 
  float3 pos2 = GetPosition(texcoord + delta_uv);
 
  //HALO eltüntetése (próbálkozás) sajna csak pár helyzetben nagyon jó
- if(distance(pos1,pos2) > 8.0f)
- 	return 1.0f;
+ //if(distance(pos1,pos2) > 8.0f)
+ 	//return 1.0f;
 
  float3 diff = pos2 - pos1;
  float3 dir = normalize(diff);
 
  float SSAObias = 0.0f;
- return 1.0f -  clamp(dot(dir,norm1),0.1f,1.0f)/(SSAObias+length(diff));
+ return 1.0f -  clamp(dot(dir,norm1),0.1f,1.0f);///(SSAObias+length(diff));
 }
 
 //THE SSAO PROCESS FOR THE PIXEL
 float ambientocclusionprocess(float2 projtex)
 {
-  float SSAOraylength = 0.1f;
+  float SSAOraylength = 5.0050f;
   float SSAOiterations = 8;
 
   // View space delta texture coord for sampling
-  float4 vsDeltaCoord = float4(SSAOraylength, 0, tex2D(depthBuffer, projtex), 1);
-
+//  float4 vsDeltaCoord = float4(0, 0,, 0);
+	float4 vsDeltaCoord  = float4(SSAOraylength, distance(camPos, depthToWorldSpace(tex2D(depthBuffer, projtex).r, projtex)), 1, 0);
+//distance(camPos, depthToWorldSpace(tex2D(depthBuffer, projtex).r))
   // Transform that to proj space, then divide, transform x,y to texture space,  now ssao will be depth independent
   float4 deltaCoord = mul(vsDeltaCoord, projMat); deltaCoord /= deltaCoord.w;
-  float SMAP_DX = (deltaCoord.x + 1) /  2; 
-  float SMAP_DY = (deltaCoord.y - 1) / -2;
+  float SMAP_DX = (deltaCoord.x + 1) /  2 / 800;
+  float SMAP_DY = SMAP_DX;
 
 //Ambient Gyüjtés folyamat kezdete 0
  float ao = 0.0f;
@@ -110,7 +111,7 @@ float ambientocclusionprocess(float2 projtex)
 
 
  } 
-float SSAOintensity = 0.7f;
+float SSAOintensity = 1.4f;
   return (1.0f - (ao/SSAOiterations/8))*(SSAOintensity);
 }
 
@@ -150,13 +151,9 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	if (In.tex0.x>0.498 && In.tex0.x<0.502)
 		Out.color = float4(0,0,0,1);
 	
-	float2 projtex = In.tex0 * 2 - 1;
-	projtex.y *= -1;
-	float ao = ambientocclusionprocess(In.tex0);
+	float ao = 1 - ambientocclusionprocess(In.tex0);
 
-	//Out.color = float4(GetPosition(In.tex0),1);
-	// Richard
-	Out.color = (1 - ao)*0.5f;// * saturate(dot(normal, normalize(camPos- posW.xyz))) / distance(camPos, posW) * 15;
-	//Out.color = tex2D(gBuffer0, In.tex0) * ao * clamp(saturate(dot(normal, normalize(camPos- posW))) / distance(camPos, posW) * 45, 0.0f, 1.5f);
+	//Out.color = ao * 0.5f;// * saturate(dot(normal, normalize(camPos- posW.xyz))) / distance(camPos, posW) * 15;
+	Out.color = tex2D(gBuffer0, In.tex0) * ao * clamp(saturate(dot(normal, normalize(camPos- posW))) / distance(camPos, posW) * 45, 0.0f, 1.5f);
 	return Out;
 };
