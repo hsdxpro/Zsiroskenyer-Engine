@@ -1056,7 +1056,7 @@ eGapiResult cGraphicsApiD3D11::ReadResource(IVertexBuffer* buffer, void* dest, s
 	return eGapiResult::OK;
 }
 
-eGapiResult cGraphicsApiD3D11::ReadResource(ITexture2D* texture, void* dest, size_t size, size_t offset = 0) {
+eGapiResult cGraphicsApiD3D11::ReadResource(ITexture2D* texture, void* dest, size_t size, size_t offset /*= 0*/) {
 	ASSERT(buffer != NULL);
 
 	// TODO OUT OF RANGE CHECK

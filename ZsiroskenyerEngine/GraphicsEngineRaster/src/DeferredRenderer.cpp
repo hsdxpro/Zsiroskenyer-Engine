@@ -56,12 +56,12 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 		throw std::runtime_error("failed to create texture buffers");
 	}
 
-	// Prepare constant buffers for shaders (gBuffer, composition)
+	// Prepare constant buffers for shaders gBuffer
 	// Matrix44, worldViewProj, world.   Vec3 camPos, + 1 byte dummy ( GBUFFER)
 	eGapiResult gr = gApi->CreateConstantBuffer(&gBufferConstantBuffer, 2 * sizeof(Matrix44) + sizeof(Vec4), eUsage::DEFAULT, NULL);
 
 	// Matrix44 invViewProj, Vec3 campos, + 1 byte dummy( COMPOSITION)
-	gr = gApi->CreateConstantBuffer(&compConstantBuffer, sizeof(Matrix44)+sizeof(Vec4), eUsage::DEFAULT, NULL);
+	gr = gApi->CreateConstantBuffer(&compConstantBuffer, 2 * sizeof(Matrix44) + sizeof(Vec4), eUsage::DEFAULT, NULL);
 }
 
 cGraphicsEngine::cDeferredRenderer::~cDeferredRenderer() {
@@ -139,7 +139,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 	// Get camera params
 	cCamera* cam = parent.sceneManager->GetActiveCamera();
-	Matrix44 viewProjMat = cam->GetViewMatrix() * cam->GetProjMatrix();
+	Matrix44 projMat = cam->GetProjMatrix(); // laterly used
+	Matrix44 viewProjMat = cam->GetViewMatrix() * projMat;
 
 	// Render each instanceGroup
 	for (auto& group : parent.sceneManager->GetInstanceGroups()) {
@@ -203,10 +204,12 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// Campos for toying with camera attached lights
 	struct compBuffConstantBuff {
 		Matrix44 invViewProj;
+		Matrix44 proj;
 		Vec3 camPos;
 	} buffer;
 	buffer.invViewProj = Matrix44::Inverse(viewProjMat);
 	buffer.camPos = cam->GetPos();
+	buffer.proj = projMat;
 
 	gApi->SetConstantBufferData(compConstantBuffer, &buffer);
 	gApi->SetPSConstantBuffer(compConstantBuffer, 0);

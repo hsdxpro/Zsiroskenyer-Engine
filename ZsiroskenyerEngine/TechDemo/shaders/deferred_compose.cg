@@ -3,8 +3,10 @@ sampler2D gBuffer1 : register(s1);
 sampler2D gBuffer2 : register(s2);
 sampler2D depthBuffer : register(s3);
 
-float4x4 invViewProj: register(c0);
-float4 camPos : register(c4);
+float4x4 invViewProj : register(c0);
+float4x4 projMat : register(c4);
+float4 camPos : register(c8);
+
 
 struct VS_IN {
 	float3 posL 	: POSITION;
@@ -65,13 +67,19 @@ float doAmbientOcclusion(in float2 texcoord,in float2 delta_uv, in float3 pos1, 
 //THE SSAO PROCESS FOR THE PIXEL
 float ambientocclusionprocess(float2 projtex)
 {
-  float SSAOraylength = 4.0f;
+  float SSAOraylength = 0.1f;
   float SSAOiterations = 8;
+
+  // View space delta texture coord for sampling
+  float4 vsDeltaCoord = float4(SSAOraylength, 0, tex2D(depthBuffer, projtex), 1);
+
+  // Transform that to proj space, then divide, transform x,y to texture space,  now ssao will be depth independent
+  float4 deltaCoord = mul(vsDeltaCoord, projMat); deltaCoord /= deltaCoord.w;
+  float SMAP_DX = (deltaCoord.x + 1) /  2; 
+  float SMAP_DY = (deltaCoord.y - 1) / -2;
 
 //Ambient Gyüjtés folyamat kezdete 0
  float ao = 0.0f;
- float SMAP_DX = 1.0f/800.0f;//bbwidth;
- float SMAP_DY = 1.0f/600.0f;//bbheight;
                                                    //  . .
 //Kiindulási pixel, normalja,pozíciója, és majd ezek körül mászkálunk négyzetekben..     . <- kiindulási pont
  float3 refpos = GetPosition(projtex);
@@ -81,14 +89,14 @@ float ambientocclusionprocess(float2 projtex)
  {
    //8 körül levõ ponton mintavétel
    //kezdés bal felsõ sarok órajárás irányban..
-   float2 coord1 = float2(-SMAP_DX,-SMAP_DY)*j*SSAOraylength;
-   float2 coord2 = float2(0       ,-SMAP_DY)*j*SSAOraylength;
-   float2 coord3 = float2(SMAP_DX ,-SMAP_DY)*j*SSAOraylength;
-   float2 coord4 = float2(SMAP_DX ,0       )*j*SSAOraylength;
-   float2 coord5 = float2(SMAP_DX ,SMAP_DY )*j*SSAOraylength;
-   float2 coord6 = float2(0       ,SMAP_DY )*j*SSAOraylength;
-   float2 coord7 = float2(-SMAP_DX,SMAP_DY )*j*SSAOraylength;
-   float2 coord8 = float2(-SMAP_DX,0       )*j*SSAOraylength;
+   float2 coord1 = float2(-SMAP_DX,-SMAP_DY)*j;
+   float2 coord2 = float2(0       ,-SMAP_DY)*j;
+   float2 coord3 = float2(SMAP_DX ,-SMAP_DY)*j;
+   float2 coord4 = float2(SMAP_DX ,0       )*j;
+   float2 coord5 = float2(SMAP_DX ,SMAP_DY )*j;
+   float2 coord6 = float2(0       ,SMAP_DY )*j;
+   float2 coord7 = float2(-SMAP_DX,SMAP_DY )*j;
+   float2 coord8 = float2(-SMAP_DX,0       )*j;
 
 
    ao+= doAmbientOcclusion(projtex,coord1,refpos,refnorm);
