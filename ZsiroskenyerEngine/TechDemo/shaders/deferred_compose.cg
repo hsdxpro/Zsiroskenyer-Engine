@@ -29,36 +29,86 @@ float3 depthToWorldSpace(float depth, float2 texCoord)
 	return posW.xyz;
 }
 
-float CalcAO(float2 baseTex)
+float3 GetPosition(float2 texCoord)
 {
-	float3 refPos = depthToWorldSpace(tex2D(depthBuffer, baseTex).r,  baseTex);
+	return depthToWorldSpace(tex2D(depthBuffer, texCoord).r, texCoord);
+}
 
-	float ao = 0;
-	// Sample in 4 direction
-	int quality = 32;
-	float radius = 0.13;// / (refDepth);
-	int aoCount = 0;
-	for(int i = 0; i < quality; i++)
-	{
-		float2 tx1 = baseTex + float2( 1.0f/800 * i *radius);
-		float2 tx2 = baseTex + float2(-1.0f/800 * i *radius);
-		float2 tx3 = baseTex + float2(0,  1.0f/600 * i *radius);
-		float2 tx4 = baseTex + float2(0, -1.0f/600 * i *radius);
+float3 GetNormal(float2 texCoord)
+{
+	float2 packedNormal = tex2D(gBuffer1, texCoord);
+	float3 normal;
+	normal.x = packedNormal.r;
+	normal.y = 2.0f*(packedNormal.g>0.0f ? packedNormal.g-0.5f:packedNormal.g+0.5f);
+	normal.z = sqrt(clamp(1.0f - normal.x*normal.x - normal.y*normal.y, 0, 1)) * (packedNormal.g>0.0f ? 1.0f:-1.0f);
+	return normal;
+}
 
-		float3 posW1 = depthToWorldSpace(tex2D(depthBuffer, tx1).r, tx1);
-		float3 posW2 = depthToWorldSpace(tex2D(depthBuffer, tx2).r, tx2);
-		float3 posW3 = depthToWorldSpace(tex2D(depthBuffer, tx3).r, tx3);
-		float3 posW4 = depthToWorldSpace(tex2D(depthBuffer, tx4).r, tx4);
 
-		aoCount += 4;
+//PER_PIXEL SSAO összetevõ számolás
+float doAmbientOcclusion(in float2 texcoord,in float2 delta_uv, in float3 pos1, in float3 norm1)
+{
 
-		float clampVal = 0.6f;
-		ao += clamp(distance(refPos, posW1), 0.0f, clampVal);
-		ao += clamp(distance(refPos, posW2), 0.0f, clampVal);
-		ao += clamp(distance(refPos, posW3), 0.0f, clampVal);
-		ao += clamp(distance(refPos, posW4), 0.0f, clampVal);
-	}
-	return ao / aoCount;//1.0f / ( ao / aoCount);
+ float3 pos2 = GetPosition(texcoord + delta_uv);
+
+ //HALO eltüntetése (próbálkozás) sajna csak pár helyzetben nagyon jó
+ if(distance(pos1,pos2) > 8.0f)
+ 	return 1.0f;
+
+ float3 diff = pos2 - pos1;
+ float3 dir = normalize(diff);
+
+
+//Két pixel között húzódó vektor( p2 -> p1) dot p1 normal vektora,
+//return 1.0f - saturate(dot(dir,norm1));///(SSAObias+length(diff));
+
+float SSAObias = 0.0f;
+return 1.0f -  clamp(dot(dir,norm1),0.05f,1.0f);///(SSAObias+length(diff));
+
+}
+
+//THE SSAO PROCESS FOR THE PIXEL
+float ambientocclusionprocess(float2 projtex)
+{
+  float SSAOraylength = 4.0f;
+  float SSAOiterations = 8;
+
+//Ambient Gyüjtés folyamat kezdete 0
+ float ao = 0.0f;
+ float SMAP_DX = 1.0f/800.0f;//bbwidth;
+ float SMAP_DY = 1.0f/600.0f;//bbheight;
+                                                   //  . .
+//Kiindulási pixel, normalja,pozíciója, és majd ezek körül mászkálunk négyzetekben..     . <- kiindulási pont
+ float3 refpos = GetPosition(projtex);
+ float3 refnorm = GetNormal(projtex);
+
+ for (int j = 1; j <= SSAOiterations; ++j)
+ {
+   //8 körül levõ ponton mintavétel
+   //kezdés bal felsõ sarok órajárás irányban..
+   float2 coord1 = float2(-SMAP_DX,-SMAP_DY)*j*SSAOraylength;
+   float2 coord2 = float2(0       ,-SMAP_DY)*j*SSAOraylength;
+   float2 coord3 = float2(SMAP_DX ,-SMAP_DY)*j*SSAOraylength;
+   float2 coord4 = float2(SMAP_DX ,0       )*j*SSAOraylength;
+   float2 coord5 = float2(SMAP_DX ,SMAP_DY )*j*SSAOraylength;
+   float2 coord6 = float2(0       ,SMAP_DY )*j*SSAOraylength;
+   float2 coord7 = float2(-SMAP_DX,SMAP_DY )*j*SSAOraylength;
+   float2 coord8 = float2(-SMAP_DX,0       )*j*SSAOraylength;
+
+
+   ao+= doAmbientOcclusion(projtex,coord1,refpos,refnorm);
+   ao+= doAmbientOcclusion(projtex,coord2,refpos,refnorm);
+   ao+= doAmbientOcclusion(projtex,coord3,refpos,refnorm);
+   ao+= doAmbientOcclusion(projtex,coord4,refpos,refnorm);
+   ao+= doAmbientOcclusion(projtex,coord5,refpos,refnorm);
+   ao+= doAmbientOcclusion(projtex,coord6,refpos,refnorm);
+   ao+= doAmbientOcclusion(projtex,coord7,refpos,refnorm);
+   ao+= doAmbientOcclusion(projtex,coord8,refpos,refnorm);
+
+
+ } 
+float SSAOintensity = 0.7f;
+  return (1.0f - (ao/SSAOiterations/8))*(SSAOintensity);
 }
 
 VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
@@ -77,12 +127,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	// World space pos from depth
 	float3 posW = depthToWorldSpace(z, In.tex0);
 
-	// get normal
-	float2 packedNormal = tex2D(gBuffer1, In.tex0);
-	float3 normal;
-	normal.x = packedNormal.r;
-	normal.y = 2.0f*(packedNormal.g>0.0f ? packedNormal.g-0.5f:packedNormal.g+0.5f);
-	normal.z = sqrt(clamp(1.0f - normal.x*normal.x - normal.y*normal.y, 0, 1)) * (packedNormal.g>0.0f ? 1.0f:-1.0f);
+	float3 normal = GetNormal(In.tex0);
 		
 	// calculate outputs color
 	Out.color = 20.0f / distance(camPos.xyz, posW.xyz) * tex2D(gBuffer0, In.tex0);// * (20.0f / distance(camPos, posW));//posW;//tex2D(gBuffer0, In.tex0);
@@ -102,10 +147,13 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	if (In.tex0.x>0.498 && In.tex0.x<0.502)
 		Out.color = float4(0,0,0,1);
 	
-	float ao = 1 - CalcAO(In.tex0);
+	float2 projtex = In.tex0 * 2 - 1;
+	projtex.y *= -1;
+	float ao = ambientocclusionprocess(In.tex0);
 
+	//Out.color = float4(GetPosition(In.tex0),1);
 	// Richard
-	//Out.color = float4(1,1,1,1) - ao; //tex2D(gBuffer0, In.tex0) - ao;// * saturate(dot(normal, normalize(camPos- posW.xyz))) / distance(camPos, posW) * 15;
-	Out.color = tex2D(gBuffer0, In.tex0) * ao * clamp(saturate(dot(normal, normalize(camPos- posW))) / distance(camPos, posW) * 45, 0.0f, 1.5f);
+	Out.color = 1 - ao;// * saturate(dot(normal, normalize(camPos- posW.xyz))) / distance(camPos, posW) * 15;
+	//Out.color = tex2D(gBuffer0, In.tex0) * ao * clamp(saturate(dot(normal, normalize(camPos- posW))) / distance(camPos, posW) * 45, 0.0f, 1.5f);
 	return Out;
 };
