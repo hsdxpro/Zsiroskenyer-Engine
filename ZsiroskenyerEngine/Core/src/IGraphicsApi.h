@@ -58,7 +58,7 @@ public:
 	virtual void Present() = 0;
 
 	virtual eGapiResult SetRenderTargetDefault() = 0;
-	virtual eGapiResult SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget) = 0;
+	virtual eGapiResult SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget = NULL) = 0;
 	virtual eGapiResult SetBackBufferSize(unsigned width, unsigned height) = 0;
 
 	virtual void SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) = 0;

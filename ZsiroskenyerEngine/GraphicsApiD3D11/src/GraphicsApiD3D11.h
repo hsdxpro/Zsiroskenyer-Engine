@@ -103,7 +103,7 @@ public:
 	void Present() override;
 
 	eGapiResult SetRenderTargetDefault() override;
-	eGapiResult SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget) override;
+	eGapiResult SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget = NULL) override;
 	eGapiResult SetBackBufferSize(unsigned width, unsigned height) override;
 
 	void SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) override;
