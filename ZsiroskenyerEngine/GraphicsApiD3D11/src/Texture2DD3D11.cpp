@@ -24,6 +24,16 @@ size_t cTexture2DD3D11::GetHeight() const {
 	return height;
 }
 
+ID3D11Texture2D* const cTexture2DD3D11::Get() const {
+	ASSERT(srv);
+	if (srv) {
+		ID3D11Texture2D* tex;
+		srv->GetResource((ID3D11Resource**)&tex);
+		return tex;
+	}
+	return NULL;
+}
+
 ID3D11ShaderResourceView* const cTexture2DD3D11::GetSRV() const {
 	return srv;
 }

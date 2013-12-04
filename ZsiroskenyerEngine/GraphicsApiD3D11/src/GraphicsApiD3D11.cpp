@@ -1064,7 +1064,7 @@ eGapiResult cGraphicsApiD3D11::ReadResource(ITexture2D* texture, void* dest, siz
 		//return eGapiResult::ERROR_OUT_OF_RANGE;
 
 	HRESULT hr = S_OK;
-	ID3D11Texture2D* d3dBuffer = (ID3D11Texture2D*)texture;
+	ID3D11Texture2D* d3dBuffer = ((cTexture2DD3D11*)texture)->Get();
 	D3D11_MAPPED_SUBRESOURCE mappedRes;
 
 	hr = d3dcon->Map(d3dBuffer, 0, D3D11_MAP_READ, 0, &mappedRes);

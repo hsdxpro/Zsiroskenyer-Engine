@@ -7,6 +7,7 @@
 struct ID3D11ShaderResourceView;
 struct ID3D11RenderTargetView;
 struct ID3D11DepthStencilView;
+struct ID3D11Texture2D;
 
 class cTexture2DD3D11 : public ITexture2D {
 public:
@@ -17,6 +18,7 @@ public:
 	size_t GetWidth() const override;
 	size_t GetHeight() const override;
 
+	ID3D11Texture2D* const Get() const;
 	ID3D11ShaderResourceView* const GetSRV() const;
 	ID3D11RenderTargetView* const GetRTV() const;
 	ID3D11DepthStencilView* const GetDSV() const;
