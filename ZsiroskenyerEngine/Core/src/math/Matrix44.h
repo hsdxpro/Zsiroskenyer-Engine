@@ -110,7 +110,7 @@ public:
 std::ostream& operator << (std::ostream& os, const Matrix44& m);
 
 
-
+Matrix44 lerp(const Matrix44& m1, const Matrix44& m2, float t);
 
 
 

@@ -396,3 +396,8 @@ std::ostream& operator << (std::ostream& os, const Matrix44& m) {
 	MatrixPrint(m, os);
 	return os;
 }
+
+
+Matrix44 lerp(const Matrix44& m1, const Matrix44& m2, float t) {
+	return m1 * t + m2 * (1 - t);
+}

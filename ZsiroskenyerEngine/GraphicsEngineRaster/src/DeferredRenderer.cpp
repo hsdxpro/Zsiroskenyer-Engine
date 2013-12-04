@@ -19,6 +19,9 @@
 #include "../../Core/src/GraphicsEntity.h"
 #include "../../Core/src/Camera.h"
 
+// For lerping
+#include "../../Core/src/math/math_all.h"
+
 #include <string>
 #include <stdexcept>
 
@@ -235,14 +238,18 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	static IConstantBuffer* shitBuffer;
 	static eGapiResult gr = gApi->CreateConstantBuffer(&shitBuffer, 2 * sizeof(Matrix44), eUsage::DEFAULT, NULL);
 
-	static Matrix44 prevViewProj = viewProjMat;
-	//prevViewProj = viewProjMat;
+	Matrix44 currViewProj = viewProjMat;
+	static Matrix44 prevViewProj = currViewProj;
+
+	Matrix44 currLerped = lerp(currViewProj, prevViewProj, 0.15f);
+
 	struct shitBuffStruct
 	{
 		Matrix44 invViewProj;
 		Matrix44 prevViewProj;
 	} asd;
-	asd.invViewProj = buffer.invViewProj;
+
+	asd.invViewProj = Matrix44::Inverse(currLerped);
 	asd.prevViewProj = prevViewProj;
 
 	gApi->SetConstantBufferData(shitBuffer, &asd);
@@ -251,7 +258,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetTexture(compositionBuffer, 0);
 	gApi->SetTexture(depthBuffer, 1);
 
-	prevViewProj = viewProjMat;
+	prevViewProj = currLerped;
 
 	// Draw triangle, hardware will quadify them automatically :)
 	gApi->Draw(3);
