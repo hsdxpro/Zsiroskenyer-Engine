@@ -115,6 +115,44 @@ float SSAOintensity = 1.4f;
   return (1.0f - (ao/SSAOiterations/8))*(SSAOintensity);
 }
 
+float Directionallight(float3 dir, float3 norm, float3 posW,float specexponent)
+{
+	float4 result = float4(0,0,0,0);
+	//Dir Light (Fotonok szinte párhuzamosak.. (SUN))
+	float3 lightvec = -normalize(dir);
+
+
+	//LAMBERT'S COSINE LAW
+	float difflight = saturate(dot(lightvec,norm));
+
+	//CALC SPEC LIGHT IF DIFFLIGHT IS WORK
+	float speclight = 0.0f;
+	
+	result = difflight;
+
+	/*
+	if(specexponent >= 1.0f)
+	{
+		float3 eyeVec = normalize(posW - campos);
+		float3 reflectedVec = reflect(eyeVec,norm);
+		float4 reflectColor = reflection_map.Sample(sampler1,reflectedVec)*(specexponent-1.0f);
+		if(shadowfactor == 0.0f)
+			reflectColor*=0.5f;
+		result += reflectColor;
+	}*/
+
+	if(difflight > 0.0f)
+	{	
+		float3 viewvec = normalize( camPos - posW );
+		float3 halfvec = normalize( lightvec + viewvec );
+	  	speclight =  pow(saturate(dot(norm,halfvec)),pow(specexponent,2)*200);
+		result+= speclight;	
+	}
+
+	return result;	
+	
+}
+
 VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 	VS_OUT vout;
 	vout.tex0 = float2( (VertexID << 1) & 2, VertexID & 2 );
@@ -152,8 +190,6 @@ PS_OUT PS_MAIN(VS_OUT In) {
 		Out.color = float4(0,0,0,1);
 	
 	float ao = 1 - ambientocclusionprocess(In.tex0);
-
-	//Out.color = ao * 0.5f;// * saturate(dot(normal, normalize(camPos- posW.xyz))) / distance(camPos, posW) * 15;
-	Out.color = tex2D(gBuffer0, In.tex0) * ao * clamp(saturate(dot(normal, normalize(camPos- posW))) / distance(camPos, posW) * 45, 0.0f, 1.5f);
+	Out.color = tex2D(gBuffer0, In.tex0) * ao * Directionallight(float3(1,0,-1), normal, posW, 0.3);
 	return Out;
-};
+}

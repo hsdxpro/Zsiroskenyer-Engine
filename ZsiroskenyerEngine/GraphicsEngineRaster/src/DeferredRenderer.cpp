@@ -236,6 +236,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	static eGapiResult gr = gApi->CreateConstantBuffer(&shitBuffer, 2 * sizeof(Matrix44), eUsage::DEFAULT, NULL);
 
 	static Matrix44 prevViewProj = viewProjMat;
+	//prevViewProj = viewProjMat;
 	struct shitBuffStruct
 	{
 		Matrix44 invViewProj;

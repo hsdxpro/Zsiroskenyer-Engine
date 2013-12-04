@@ -20,6 +20,7 @@ struct VS_OUT {
 	float2 tex0 	: TEXCOORD2;
 	float3 posW 	: TEXCOORD3;
 	float3x3 TBN	: TEXCOORD4;
+	float2 savedZW  : TEXCOORD5;
 };
 
 struct PS_OUT {
@@ -38,6 +39,7 @@ VS_OUT VS_MAIN(VS_IN In) {
 	Out.normalW = In.normalL.x* world[0].xyz + ( In.normalL.y * world[1].xyz + (In.normalL.z * world[2].xyz));
 	Out.tangentW = In.tangentL.x* world[0].xyz + ( In.tangentL.y * world[1].xyz + (In.tangentL.z * world[2].xyz));
 	Out.posH = In.posL.x * wvp[0] + ( In.posL.y * wvp[1] + (In.posL.z * wvp[2] + wvp[3]));
+	Out.savedZW = Out.posH.zw;
 
 	// Calculate TBN base per vertex (CHEAP) (Tangent to World space)
 		float3 N = Out.normalW;
@@ -50,7 +52,13 @@ VS_OUT VS_MAIN(VS_IN In) {
 PS_OUT PS_MAIN(VS_OUT In) {
 	PS_OUT Out;
 
-	Out.depth = In.posH.z;
+	// Linearized depth values
+	//float nn = 0.01; // camera z near
+  	//float f = 5000.0; // camera z far
+  	//float z = In.posH.z;
+  	//Out.depth  = (2.0 * nn) / (f + nn - z * (f - nn));
+
+	Out.depth = In.savedZW.x / In.savedZW.y;//In.posH.z;
 
 	// Storing color good
 	Out.gBuffer0 = tex2D(diffuseTex, In.tex0);// * float4(intensity, intensity, intensity, 1.0f);

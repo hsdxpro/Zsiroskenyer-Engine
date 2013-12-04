@@ -27,27 +27,23 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 
 PS_OUT PS_MAIN(VS_OUT In) {
 	PS_OUT Out;
-
 	// World space pos from depth (SLOW SOLUTION) TODO make faster
 	float4 currPosH = float4(In.tex0.x * 2 - 1, (1 - In.tex0.y) * 2 - 1, tex2D(depthTexture , In.tex0).r, 1.0f); // NDC space
 	float4 posW = mul(currPosH, invViewProj);
-	//posW /= posW.w;
+	posW.xyzw /= posW.w;
 
 	float4 prevPosH = mul(posW, prevViewProj);
-	//prevPosH /= prevPosH.w;
+	prevPosH.xyzw /= prevPosH.w;
 	
-	float2 velocity = pow((currPosH.xy - prevPosH.xy) / 2.0f,3) * 100;
+	float2 velocity = (currPosH.xy - prevPosH.xy) / 2.0f / 5; // /5 leave hard changes lol, TODO REMOVE, Interpolation need on C++ side
 
-	// Color at that pixel
+	// Get the initial color at this pixel.  
    	float4 color = tex2D(texture0, In.tex0);
-	const int nSamples = 4; // TODO REMOVE THAT SHIT
-	for(int i = 1; i < nSamples; ++i)
-	{  
-  		// Sample the color buffer along the velocity vector.  
-   		color += tex2D(texture0, clamp(In.tex0 + i * velocity, 0.0f, 1.0f));
-	}  
-	// Average all of the samples to get the final blur color.  
-   	Out.color = color / nSamples;
-	//Out.color = color;
+    
+	int nSamples = 6;
+	for(int i = 1; i < nSamples; ++i)     
+   		color += tex2D(texture0, saturate(In.tex0 + i * velocity));  
+ 
+	Out.color = color / nSamples; 
 	return Out;
 }
