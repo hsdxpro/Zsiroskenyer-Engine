@@ -241,7 +241,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	Matrix44 currViewProj = viewProjMat;
 	static Matrix44 prevViewProj = currViewProj;
 
-	Matrix44 currLerped = lerp(currViewProj, prevViewProj, 0.15f);
+	Matrix44 currLerped = lerp(currViewProj, prevViewProj, 0.35f);
 
 	struct shitBuffStruct
 	{
