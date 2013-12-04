@@ -139,7 +139,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 	// Get camera params
 	cCamera* cam = parent.sceneManager->GetActiveCamera();
-	Matrix44 projMat = cam->GetProjMatrix(); // laterly used
+	Matrix44 projMat = cam->GetProjMatrix(); // lately used
 	Matrix44 viewProjMat = cam->GetViewMatrix() * projMat;
 
 	// Render each instanceGroup
