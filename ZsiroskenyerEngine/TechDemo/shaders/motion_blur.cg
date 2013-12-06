@@ -44,7 +44,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 
 	int nSamples = 8;
 	for(int i = 1; i < nSamples; ++i)     
-   		color += tex2D(texture0, saturate(In.tex0 + i * velocity));  
+   		color += tex2D(texture0, clamp(In.tex0 + i * velocity, 0.005f, 0.993f));
  
 	Out.color = color / nSamples; 
 	return Out;
