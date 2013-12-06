@@ -18,24 +18,27 @@ void cSoftEntityBullet::SetPos(float x, float y, float z) {
 }
 
 void cSoftEntityBullet::SetRot(const Quat& r) {
+	// TODO
 }
 void cSoftEntityBullet::SetRot(float x, float y, float z, float w) {
-
+	// TODO
 }
 
 void cSoftEntityBullet::SetScale(const Vec3& s) {
+	// TODO
 }
 void cSoftEntityBullet::SetScale(float x, float y, float z) {
+	// TODO
 }
 
 const Vec3& cSoftEntityBullet::GetPos() {
-	return Vec3();
+	return Vec3(); // TODO
 }
 
 const Quat& cSoftEntityBullet::GetRot()  {
-	return Quat();
+	return Quat(); // TODO
 }
 
 const Vec3& cSoftEntityBullet::GetScale()  {
-	return Vec3();
+	return Vec3(); // TODO
 }

@@ -30,7 +30,7 @@
 //	Constructor & Destructor
 cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 : shaderGBuffer(NULL), shaderComposition(NULL), parent(parent), gApi(parent.gApi)
-{	
+{
 	// buffers to null
 	compositionBuffer = NULL;
 	depthBuffer = NULL;
@@ -61,10 +61,10 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 
 	// Prepare constant buffers for shaders gBuffer
 	// Matrix44, worldViewProj, world.   Vec3 camPos, + 1 byte dummy ( GBUFFER)
-	eGapiResult gr = gApi->CreateConstantBuffer(&gBufferConstantBuffer, 2 * sizeof(Matrix44) + sizeof(Vec4), eUsage::DEFAULT, NULL);
+	eGapiResult gr = gApi->CreateConstantBuffer(&gBufferConstantBuffer, 2 * sizeof(Matrix44)+sizeof(Vec4), eUsage::DEFAULT, NULL);
 
 	// Matrix44 invViewProj, Vec3 campos, + 1 byte dummy( COMPOSITION)
-	gr = gApi->CreateConstantBuffer(&compConstantBuffer, 2 * sizeof(Matrix44) + sizeof(Vec4), eUsage::DEFAULT, NULL);
+	gr = gApi->CreateConstantBuffer(&compConstantBuffer, 2 * sizeof(Matrix44)+sizeof(Vec4), eUsage::DEFAULT, NULL);
 }
 
 cGraphicsEngine::cDeferredRenderer::~cDeferredRenderer() {
@@ -109,7 +109,7 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	desc.format = eFormat::R8G8B8A8_UNORM;		results[2] = gApi->CreateTexture(&gBuffer[2], desc);
 	desc.format = eFormat::R16G16B16A16_FLOAT;	results[3] = gApi->CreateTexture(&compositionBuffer, desc);
 	desc.format = eFormat::R16G16B16A16_FLOAT;	results[4] = gApi->CreateTexture(&helperBuffer, desc);
-	
+
 	desc.format = eFormat::R32_TYPELESS;	desc.depthFormat = eFormat::D24_UNORM_S8_UINT;	desc.bind = (int)eBind::SHADER_RESOURCE | (int)eBind::DEPTH_STENCIL;
 	results[5] = gApi->CreateTexture(&depthBuffer, desc);
 
@@ -132,7 +132,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// Clear buffers
 	gApi->ClearTexture(depthBuffer);
 	gApi->ClearTexture(gBuffer[0], 0, Vec4(0, 0, 0, 0));
-// GBUFFER PASS______________________________________________________________________________________________________________________________________
+	// GBUFFER PASS______________________________________________________________________________________________________________________________________
 
 	// Set BackBuffer
 	gApi->SetRenderTargets(3, gBuffer, depthBuffer);
@@ -142,8 +142,14 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 	// Get camera params
 	cCamera* cam = parent.sceneManager->GetActiveCamera();
-	Matrix44 projMat = cam->GetProjMatrix(); // lately used
-	Matrix44 viewProjMat = cam->GetViewMatrix() * projMat;
+
+	// Lerping viewproj	
+	Matrix44 projMat = cam->GetProjMatrix();
+	Matrix44 currViewProj = cam->GetViewMatrix() * projMat;
+	static Matrix44 prevViewProj = currViewProj;
+
+
+	Matrix44 currLerpedViewProj = lerp(currViewProj, prevViewProj, 0.35f);
 
 	// Render each instanceGroup
 	for (auto& group : parent.sceneManager->GetInstanceGroups()) {
@@ -156,8 +162,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		// Set SubMaterials
 		auto& mtl = *group->mtl;
 		for (size_t i = 0; i < mtl.GetNSubMaterials(); i++) {
-			ITexture2D* diffuse  = mtl[i].textureDiffuse.get();
-			ITexture2D* normal   = mtl[i].textureNormal.get();
+			ITexture2D* diffuse = mtl[i].textureDiffuse.get();
+			ITexture2D* normal = mtl[i].textureNormal.get();
 			ITexture2D* specular = mtl[i].textureSpecular.get();
 			ITexture2D* displace = mtl[i].textureDisplace.get();
 
@@ -176,7 +182,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 			// Entity world matrix
 			Matrix44 world = entity->GetWorldMatrix();
 			// WorldViewProj matrix
-			Matrix44 wvp = world * viewProjMat;
+			Matrix44 wvp = world * currLerpedViewProj;
 
 			struct gBuffConstantBuff
 			{
@@ -198,7 +204,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 
 
-// COMPOSITION PASS______________________________________________________________________________________________________________________________________
+	// COMPOSITION PASS______________________________________________________________________________________________________________________________________
 	gApi->SetRenderTargets(1, &compositionBuffer, NULL);
 
 	// Set ShaderProgram
@@ -210,13 +216,13 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		Matrix44 proj;
 		Vec3 camPos;
 	} buffer;
-	buffer.invViewProj = Matrix44::Inverse(viewProjMat);
+	buffer.invViewProj = Matrix44::Inverse(currLerpedViewProj);
 	buffer.camPos = cam->GetPos();
 	buffer.proj = projMat;
 
 	gApi->SetConstantBufferData(compConstantBuffer, &buffer);
 	gApi->SetPSConstantBuffer(compConstantBuffer, 0);
-	
+
 	// Load up gBuffers to composition shader
 	for (unsigned i = 0; i < 3; i++)
 		gApi->SetTexture(gBuffer[i], i);
@@ -229,7 +235,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 
 
-// MOTION BLUR______________________________________________________________________________________________________________________________________
+	// MOTION BLUR______________________________________________________________________________________________________________________________________
 	gApi->SetRenderTargets(1, &helperBuffer, NULL);
 
 	IShaderProgram* motionBlurShProg = parent.GetShaderManager()->GetShaderByName(L"motion_blur.cg");
@@ -238,18 +244,13 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	static IConstantBuffer* shitBuffer;
 	static eGapiResult gr = gApi->CreateConstantBuffer(&shitBuffer, 2 * sizeof(Matrix44), eUsage::DEFAULT, NULL);
 
-	Matrix44 currViewProj = viewProjMat;
-	static Matrix44 prevViewProj = currViewProj;
-
-	Matrix44 currLerped = lerp(currViewProj, prevViewProj, 0.15f);
-
 	struct shitBuffStruct
 	{
 		Matrix44 invViewProj;
 		Matrix44 prevViewProj;
 	} asd;
 
-	asd.invViewProj = Matrix44::Inverse(currLerped);
+	asd.invViewProj = Matrix44::Inverse(currLerpedViewProj);
 	asd.prevViewProj = prevViewProj;
 
 	gApi->SetConstantBufferData(shitBuffer, &asd);
@@ -258,14 +259,14 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetTexture(compositionBuffer, 0);
 	gApi->SetTexture(depthBuffer, 1);
 
-	prevViewProj = currLerped;
+	prevViewProj = currLerpedViewProj;
 
 	// Draw triangle, hardware will quadify them automatically :)
 	gApi->Draw(3);
 
 
 
-// DEPTH OF FIELD______________________________________________________________________________________________________________________________________
+	// DEPTH OF FIELD______________________________________________________________________________________________________________________________________
 	gApi->SetRenderTargets(1, &compositionBuffer, NULL);
 
 	IShaderProgram* dofShProg = parent.GetShaderManager()->GetShaderByName(L"depth_of_field.cg");
@@ -300,7 +301,7 @@ eGraphicsResult cGraphicsEngine::cDeferredRenderer::Resize(unsigned width, unsig
 	// reallocate buffers w/ new size
 	bufferWidth = width;
 	bufferHeight = height;
-	eGapiResult r= ReallocBuffers();
+	eGapiResult r = ReallocBuffers();
 	// analyze results and return
 	if (r == eGapiResult::OK)
 		return eGraphicsResult::OK;
