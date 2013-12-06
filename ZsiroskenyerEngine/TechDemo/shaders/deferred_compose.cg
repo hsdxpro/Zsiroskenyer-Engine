@@ -53,8 +53,8 @@ float doAmbientOcclusion(in float2 texcoord,in float2 delta_uv, in float3 pos1, 
  float3 pos2 = GetPosition(texcoord + delta_uv);
 
  //HALO eltüntetése (próbálkozás) sajna csak pár helyzetben nagyon jó
- //if(distance(pos1,pos2) > 8.0f)
- 	//return 1.0f;
+ if(distance(pos1,pos2) > 8.8f)
+ 	return 0.8f;
 
  float3 diff = pos2 - pos1;
  float3 dir = normalize(diff);
@@ -66,14 +66,15 @@ float doAmbientOcclusion(in float2 texcoord,in float2 delta_uv, in float3 pos1, 
 //THE SSAO PROCESS FOR THE PIXEL
 float ambientocclusionprocess(float2 projtex)
 {
-  float SSAOraylength = 5.050f;
+  float SSAOraylength = 5.000150f;
   float SSAOiterations = 8;
 
-// Try depth independency, but not expected result TODO...
-float4 vsDeltaCoord  = float4(SSAOraylength, distance(camPos, depthToWorldSpace(tex2D(depthBuffer, projtex).r, projtex)), 1, 0);
+	// Try depth independency, but not expected result TODO...
+	float4 vsDeltaCoord  = float4(SSAOraylength, distance(camPos, depthToWorldSpace(tex2D(depthBuffer, projtex).r, projtex)), 0, 1);
 
   // Transform that to proj space, then divide, transform x,y to texture space,  now ssao will be depth independent
-  float4 deltaCoord = mul(vsDeltaCoord, projMat);// deltaCoord /= deltaCoord.w;
+  float4 deltaCoord = mul(vsDeltaCoord, projMat);
+
   float SMAP_DX = (deltaCoord.x + 1) /  2 / 800; // MAGICS, TODO
   float SMAP_DY = SMAP_DX;
 
@@ -109,7 +110,7 @@ float4 vsDeltaCoord  = float4(SSAOraylength, distance(camPos, depthToWorldSpace(
 
 
  } 
-float SSAOintensity = 1.4f;
+float SSAOintensity = 2.0f;
   return (1.0f - (ao/SSAOiterations/8))*(SSAOintensity);
 }
 
@@ -187,11 +188,12 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	if (In.tex0.x>0.498 && In.tex0.x<0.502)
 		Out.color = float4(0,0,0,1);
 	
+	float lighting = Directionallight(float3(1,0,-1), normal, posW, 0.3f, 0.4f, 0.4f);
 	float ao = 1 - ambientocclusionprocess(In.tex0);
+	float ambient = 0.6f;
 
-	float lighting = Directionallight(float3(1,0,-1), normal, posW, 0.3f, 0.2f, 0.2f);
-	float ambient = 0.03f;
 	float4 diffuseColor = tex2D(gBuffer0, In.tex0);
-	Out.color = diffuseColor * ao * lighting  + ( 1 - lighting) * diffuseColor * ambient;
+	Out.color = diffuseColor * lighting + diffuseColor * ao * ambient;
+//	Out.color = diffuseColor * lighting + diffuseColor *(saturate(ambient - lighting) + ao);// + diffuseColor * ao ;// diffuseColor * ( ao * ambient);
 	return Out;
 }
