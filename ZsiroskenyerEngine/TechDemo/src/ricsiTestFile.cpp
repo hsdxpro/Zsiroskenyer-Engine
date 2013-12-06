@@ -53,7 +53,7 @@ int ricsiMain() {
 
 	// Get Modules
 	IGraphicsEngine* gEngine = core.GetGraphicsEngine();
-	IGraphicsApi* gApi = gEngine->GetGraphicsApi();
+	IGraphicsApi* gApi = gEngine->GetGraphicsApi(); 
 	pEngine = core.GetPhysicsEngine();
 
 	// Create Camera
