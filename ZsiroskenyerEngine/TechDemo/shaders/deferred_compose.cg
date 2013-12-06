@@ -189,6 +189,9 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	
 	float ao = 1 - ambientocclusionprocess(In.tex0);
 
-	Out.color = tex2D(gBuffer0, In.tex0) * ao * Directionallight(float3(1,0,-1), normal, posW, 0.3, 1, 3);
+	float lighting = Directionallight(float3(1,0,-1), normal, posW, 0.3f, 0.2f, 0.2f);
+	float ambient = 0.03f;
+	float4 diffuseColor = tex2D(gBuffer0, In.tex0);
+	Out.color = diffuseColor * ao * lighting  + ( 1 - lighting) * diffuseColor * ambient;
 	return Out;
 }
