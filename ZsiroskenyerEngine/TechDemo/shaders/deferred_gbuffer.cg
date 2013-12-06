@@ -52,12 +52,7 @@ VS_OUT VS_MAIN(VS_IN In) {
 PS_OUT PS_MAIN(VS_OUT In) {
 	PS_OUT Out;
 
-	// Linearized depth values
-	//float nn = 0.01; // camera z near
-  	//float f = 5000.0; // camera z far
-  	//float z = In.posH.z;
-  	//Out.depth  = (2.0 * nn) / (f + nn - z * (f - nn));
-
+	// Linearly corrected depth
 	Out.depth = In.savedZW.x / In.savedZW.y;//In.posH.z;
 
 	// Storing color good

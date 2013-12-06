@@ -46,6 +46,8 @@ public:
 	virtual eGapiResult ReadResource(IVertexBuffer* buffer, void* dest, size_t size, size_t offset = 0) = 0;
 	virtual eGapiResult ReadResource(ITexture2D* texture, void* dest, size_t size, size_t offset = 0) = 0;
 
+	virtual eGapiResult CopyResource(ITexture2D* src, ITexture2D* dst) = 0;
+
 	// rendering
 	virtual void Clear(bool target = true, bool depth = false, bool stencil = false) = 0;
 	virtual void ClearTexture(ITexture2D* t, unsigned clearFlag = 0, const Vec4& clearColor = Vec4(), float depthVal = 1.0f, size_t stencilVal = 0) = 0;

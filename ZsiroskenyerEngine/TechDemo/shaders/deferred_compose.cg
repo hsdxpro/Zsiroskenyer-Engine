@@ -50,7 +50,6 @@ float3 GetNormal(float2 texCoord)
 //PER_PIXEL SSAO összetevõ számolás
 float doAmbientOcclusion(in float2 texcoord,in float2 delta_uv, in float3 pos1, in float3 norm1)
 {
-
  float3 pos2 = GetPosition(texcoord + delta_uv);
 
  //HALO eltüntetése (próbálkozás) sajna csak pár helyzetben nagyon jó
@@ -67,16 +66,15 @@ float doAmbientOcclusion(in float2 texcoord,in float2 delta_uv, in float3 pos1, 
 //THE SSAO PROCESS FOR THE PIXEL
 float ambientocclusionprocess(float2 projtex)
 {
-  float SSAOraylength = 5.0050f;
+  float SSAOraylength = 5.050f;
   float SSAOiterations = 8;
 
-  // View space delta texture coord for sampling
-//  float4 vsDeltaCoord = float4(0, 0,, 0);
-	float4 vsDeltaCoord  = float4(SSAOraylength, distance(camPos, depthToWorldSpace(tex2D(depthBuffer, projtex).r, projtex)), 1, 0);
-//distance(camPos, depthToWorldSpace(tex2D(depthBuffer, projtex).r))
+// Try depth independency, but not expected result TODO...
+float4 vsDeltaCoord  = float4(SSAOraylength, distance(camPos, depthToWorldSpace(tex2D(depthBuffer, projtex).r, projtex)), 1, 0);
+
   // Transform that to proj space, then divide, transform x,y to texture space,  now ssao will be depth independent
-  float4 deltaCoord = mul(vsDeltaCoord, projMat); deltaCoord /= deltaCoord.w;
-  float SMAP_DX = (deltaCoord.x + 1) /  2 / 800;
+  float4 deltaCoord = mul(vsDeltaCoord, projMat);// deltaCoord /= deltaCoord.w;
+  float SMAP_DX = (deltaCoord.x + 1) /  2 / 800; // MAGICS, TODO
   float SMAP_DY = SMAP_DX;
 
 //Ambient Gyüjtés folyamat kezdete 0
@@ -190,6 +188,9 @@ PS_OUT PS_MAIN(VS_OUT In) {
 		Out.color = float4(0,0,0,1);
 	
 	float ao = 1 - ambientocclusionprocess(In.tex0);
+	//Out.color = ao;
+	//return Out;
+
 	Out.color = tex2D(gBuffer0, In.tex0) * ao * Directionallight(float3(1,0,-1), normal, posW, 0.3);
 	return Out;
 }

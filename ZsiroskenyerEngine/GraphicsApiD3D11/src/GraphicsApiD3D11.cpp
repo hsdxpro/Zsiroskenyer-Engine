@@ -1079,6 +1079,11 @@ eGapiResult cGraphicsApiD3D11::ReadResource(ITexture2D* texture, void* dest, siz
 	return eGapiResult::OK;
 }
 
+eGapiResult cGraphicsApiD3D11::CopyResource(ITexture2D* src, ITexture2D* dst) {
+	d3dcon->CopyResource((ID3D11Resource*)((cTexture2DD3D11*)dst)->Get(), (ID3D11Resource*)((cTexture2DD3D11*)src)->Get());
+	return eGapiResult::OK;
+}
+
 
 ////////////////////
 // draw

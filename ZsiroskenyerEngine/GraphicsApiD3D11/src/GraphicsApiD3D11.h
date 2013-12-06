@@ -91,6 +91,8 @@ public:
 	eGapiResult ReadResource(IVertexBuffer* buffer, void* dest, size_t size, size_t offset = 0) override;
 	eGapiResult ReadResource(ITexture2D* texture, void* dest, size_t size, size_t offset = 0) override;
 
+	eGapiResult CopyResource(ITexture2D* src, ITexture2D* dst) override;
+
 	// draw
 	void Clear(bool target = true, bool depth = false, bool stencil = false) override;
 	void ClearTexture(ITexture2D* t, unsigned clearFlag = 0, const Vec4& clearColor = Vec4(), float depthVal = 1.0f, size_t stencilVal = 0);
