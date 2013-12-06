@@ -55,8 +55,9 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	// Linearly corrected depth
 	Out.depth = In.savedZW.x / In.savedZW.y;//In.posH.z;
 
-	// Storing color good
-	Out.gBuffer0 = tex2D(diffuseTex, In.tex0);// * float4(intensity, intensity, intensity, 1.0f);
+	// Storing color good, DEGAMMA
+	Out.gBuffer0 = pow(tex2D(diffuseTex, In.tex0),2.2);// * float4(intensity, intensity, intensity, 1.0f);
+	//Out.gBuffer0 = tex2D(diffuseTex, In.tex0);// * float4(intensity, intensity, intensity, 1.0f);
 
 	// Sample normal from texture
 	//NormalMap mintavételezés, eredmény [0,1]  ->	   //[0,1] to [-1,1]

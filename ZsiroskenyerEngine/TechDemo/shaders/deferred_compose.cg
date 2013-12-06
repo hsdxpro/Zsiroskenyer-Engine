@@ -113,7 +113,7 @@ float SSAOintensity = 1.4f;
   return (1.0f - (ao/SSAOiterations/8))*(SSAOintensity);
 }
 
-float Directionallight(float3 dir, float3 norm, float3 posW,float specexponent)
+float Directionallight(float3 dir, float3 norm, float3 posW,float specexponent, float specularIntensity, float diffuseIntensity)
 {
 	float4 result = float4(0,0,0,0);
 	//Dir Light (Fotonok szinte párhuzamosak.. (SUN))
@@ -126,7 +126,7 @@ float Directionallight(float3 dir, float3 norm, float3 posW,float specexponent)
 	//CALC SPEC LIGHT IF DIFFLIGHT IS WORK
 	float speclight = 0.0f;
 	
-	result = difflight;
+	result = difflight * diffuseIntensity;
 
 	/*
 	if(specexponent >= 1.0f)
@@ -143,7 +143,7 @@ float Directionallight(float3 dir, float3 norm, float3 posW,float specexponent)
 	{	
 		float3 viewvec = normalize( camPos - posW );
 		float3 halfvec = normalize( lightvec + viewvec );
-	  	speclight =  pow(saturate(dot(norm,halfvec)),pow(specexponent,2)*200);
+	  	speclight =  pow(saturate(dot(norm,halfvec)),pow(specexponent,2)*200) * specularIntensity;
 		result+= speclight;	
 	}
 
@@ -188,9 +188,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 		Out.color = float4(0,0,0,1);
 	
 	float ao = 1 - ambientocclusionprocess(In.tex0);
-	//Out.color = ao;
-	//return Out;
 
-	Out.color = tex2D(gBuffer0, In.tex0) * ao * Directionallight(float3(1,0,-1), normal, posW, 0.3);
+	Out.color = tex2D(gBuffer0, In.tex0) * ao * Directionallight(float3(1,0,-1), normal, posW, 0.3, 1, 3);
 	return Out;
 }
