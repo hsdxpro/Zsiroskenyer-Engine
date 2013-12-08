@@ -161,39 +161,31 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 
 PS_OUT PS_MAIN(VS_OUT In) {
 	PS_OUT Out;
-	
-	float4 gBuff0 = tex2D(gBuffer0, In.tex0);
-	float z = tex2D(depthBuffer , In.tex0).r;
 
-	// World space pos from depth
-	float3 posW = depthToWorldSpace(z, In.tex0);
-
+	// World space Position and Normal
+	float3 posW = depthToWorldSpace(tex2D(depthBuffer , In.tex0).r, In.tex0);
 	float3 normal = GetNormal(In.tex0);
-		
-	// calculate outputs color
-	Out.color = 20.0f / distance(camPos.xyz, posW.xyz) * tex2D(gBuffer0, In.tex0);// * (20.0f / distance(camPos, posW));//posW;//tex2D(gBuffer0, In.tex0);
-	
+
 	
 	// DEBUG INCOMING NORMALS!
 	/*
 	float lightness = Out.color.r*0.27+Out.color.g*0.67+Out.color.b*0.06;
 	float4 lightnessColor = float4(float3(lightness, lightness, lightness)*0.4f, 0.f);
 	Out.color = float4(normal+float3(1,1,1)*0.5, 1.f);
-	*/
 	Out.color = float4(normal*0.5+float3(0.5,0.5,0.5), 1);
-	
+
 	float4 dbgNormal = tex2D(gBuffer2, In.tex0);
 	if (In.tex0.x>0.5)
 		Out.color = dbgNormal;
 	if (In.tex0.x>0.498 && In.tex0.x<0.502)
 		Out.color = float4(0,0,0,1);
+	*/
 	
+	// Not so plausible term using, FUCK YOU, need some new shits, to work good
 	float lighting = Directionallight(float3(1,0,-1), normal, posW, 0.3f, 0.4f, 0.4f);
 	float ao = 1 - ambientocclusionprocess(In.tex0);
 	float ambient = 0.6f;
-
 	float4 diffuseColor = tex2D(gBuffer0, In.tex0);
-	Out.color = diffuseColor * lighting + diffuseColor * ao * ambient;
-//	Out.color = diffuseColor * lighting + diffuseColor *(saturate(ambient - lighting) + ao);// + diffuseColor * ao ;// diffuseColor * ( ao * ambient);
+		Out.color = diffuseColor * lighting + diffuseColor * ao * ambient;
 	return Out;
 }
