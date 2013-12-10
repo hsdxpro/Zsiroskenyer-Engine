@@ -241,7 +241,16 @@ void cGraphicsEngine::RenderSceneDeferred() {
 	/* post-process */
 
 	// for now post-process & further rendering equals to copying the composed texture to BB
+	static ITexture2D* compBuf_Check = NULL; // TODO: Remove this or i kill myself
 	ITexture2D* composedBuffer = deferredRenderer->GetCompositionBuffer();
+
+	// HDR
+	if (composedBuffer != compBuf_Check) {
+		compBuf_Check = composedBuffer;
+		hdrProcessor->SetSource(composedBuffer, screenWidth, screenHeight);
+	}
+	hdrProcessor->Update();
+
 	gApi->SetRenderTargetDefault();
 	gApi->SetShaderProgram(screenCopyShader);
 	gApi->SetTexture(composedBuffer, 0);

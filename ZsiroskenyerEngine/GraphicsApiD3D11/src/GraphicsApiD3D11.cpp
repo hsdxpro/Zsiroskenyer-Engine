@@ -342,7 +342,7 @@ eGapiResult cGraphicsApiD3D11::CreateViewsForBB(const tDxConfig& config) {
 			return eGapiResult::ERROR_UNKNOWN;
 	}
 
-	defaultRenderTarget = new cTexture2DD3D11(bbDesc.Width, bbDesc.Height, srv, rtv, dsv);
+	defaultRenderTarget = new cTexture2DD3D11(bbDesc.Width, bbDesc.Height, backBuffer, srv, rtv, dsv);
 	return eGapiResult::OK;
 }
 
@@ -613,7 +613,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const zsStri
 					   tex2D->Release();
 
 					   // return
-					   *resource = new cTexture2DD3D11(width, height, srv);
+					   *resource = new cTexture2DD3D11(width, height, tex2D, srv);
 					   return eGapiResult::OK;
 		}
 		default:
@@ -621,7 +621,6 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const zsStri
 	}
 }
 
-//eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, unsigned bind, eFormat depthStencilFormat /*= eFormat::UNKNOWN*/) {
 eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::tDesc desc, void* data /*= NULL*/) {
 	ID3D11Texture2D* tex = NULL;
 	// Outputs
@@ -640,7 +639,6 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 	D3D11_TEXTURE2D_DESC texDesc;
 	texDesc.ArraySize = desc.arraySize;
 	texDesc.BindFlags = colorBindFlag;
-	texDesc.CPUAccessFlags = 0; // TODO YOU CAN'T WRITE TEXTURES MUHAHA ( PARAMETERIZE )
 	texDesc.Format = ConvertToNativeFormat(desc.format);
 	texDesc.Height = desc.height;
 	texDesc.Width = desc.width;
@@ -649,7 +647,79 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 	texDesc.SampleDesc.Count = 1;
 	texDesc.SampleDesc.Quality = 0;
 	texDesc.Usage = ConvertToNativeUsage(desc.usage); // TODO ( PARAMETERIZE )
+	texDesc.CPUAccessFlags = [&]()->UINT{
+		if (texDesc.Usage == D3D11_USAGE_DYNAMIC)
+			return D3D11_CPU_ACCESS_WRITE;
+		else if (texDesc.Usage == D3D11_USAGE_STAGING)
+			return D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
+		else
+			return 0;
+	}();
 
+	HRESULT hr = S_OK;
+	// create texture resource
+	hr = d3ddev->CreateTexture2D(&texDesc, NULL, &tex);
+	if (FAILED(hr)) {
+		ASSERT_MSG(false, L"Can't create texture2D");
+		if (hr == E_OUTOFMEMORY)
+			return eGapiResult::ERROR_OUT_OF_MEMORY;
+		else
+			return eGapiResult::ERROR_INVALID_ARG;
+	}
+
+	// create views as needed
+	if (isRenderTarget) {
+		hr = d3ddev->CreateRenderTargetView(tex, NULL, &rtv);
+		if (FAILED(hr)) {
+			SAFE_RELEASE(tex);
+			ASSERT_MSG(false, L"Can't create texture2D");
+			if (hr == E_OUTOFMEMORY)
+				return eGapiResult::ERROR_OUT_OF_MEMORY;
+			else
+				return eGapiResult::ERROR_INVALID_ARG;
+		}
+	}
+	if (isShaderBindable) {
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+		// desc feltöltés blabla
+
+		hr = d3ddev->CreateShaderResourceView(tex, NULL, &srv);
+		if (FAILED(hr)) {
+			SAFE_RELEASE(rtv);
+			SAFE_RELEASE(tex);
+			ASSERT_MSG(false, L"Can't create texture2D");
+			if (hr == E_OUTOFMEMORY)
+				return eGapiResult::ERROR_OUT_OF_MEMORY;
+			else
+				return eGapiResult::ERROR_INVALID_ARG;
+		}
+	}
+	if (hasDepthStencil) {
+		D3D11_DEPTH_STENCIL_VIEW_DESC dsDesc;
+		memset(&dsDesc, 0, sizeof(dsDesc));
+		dsDesc.Format = ConvertToNativeFormat(desc.depthFormat);
+		dsDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		dsDesc.Texture2D.MipSlice = 0;
+
+		hr = d3ddev->CreateDepthStencilView(tex, &dsDesc, &dsv);
+		if (FAILED(hr)) {
+			SAFE_RELEASE(rtv);
+			SAFE_RELEASE(srv);
+			SAFE_RELEASE(tex);
+			ASSERT_MSG(false, L"Can't create texture2D");
+			if (hr == E_OUTOFMEMORY)
+				return eGapiResult::ERROR_OUT_OF_MEMORY;
+			else
+				return eGapiResult::ERROR_INVALID_ARG;
+		}
+	}
+	*resource = new cTexture2DD3D11(desc.width, desc.height, tex, srv, rtv, dsv);
+	return eGapiResult::OK;
+
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// WARNING: THIS BELOW THING IS BULLSHIT! & THE ABOVE MIGHT FAIL TO WORK
+	/*//
 	HRESULT hr = S_OK;
 	if (isRenderTarget) {
 		// Create texture
@@ -683,7 +753,6 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 				else
 					return eGapiResult::ERROR_INVALID_ARG;
 			}
-
 		}
 	}
 
@@ -764,10 +833,10 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 					return eGapiResult::ERROR_INVALID_ARG;
 			}
 		}
-	}
-
-	*resource = new cTexture2DD3D11(desc.width, desc.height, srv, rtv, dsv);
+	}	
+	*resource = new cTexture2DD3D11(desc.width, desc.height, tex, srv, rtv, dsv);
 	return eGapiResult::OK;
+	//*/
 }
 
 eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, const zsString& shaderPath) {

@@ -117,12 +117,18 @@ private:
 		void Update(float elapsedSec = -1.0f);
 	private:
 		cGraphicsEngine& parent;
+		IGraphicsApi* gApi;
 		ITexture2D* source;
-		ITexture2D* luminanceBuffer[9]; // for 9 buffers down from 512x512
+		ITexture2D* luminanceBuffer[10]; // for 10 buffers down from 512x512 ... 1x1
+		ITexture2D* luminanceStaging;
 		ITexture2D* blurBuffer;
 		ITexture2D* downSampled;
 		float avgLuminance;
 		float adaptedLuminance;
+		IShaderProgram* shaderLumSample;
+		IShaderProgram* shaderLumAvg;
 		unsigned sourceWidth, sourceHeight;
+
+		void Cleanup();
 	};
 };

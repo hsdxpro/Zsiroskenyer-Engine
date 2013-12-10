@@ -11,7 +11,7 @@ struct ID3D11Texture2D;
 
 class cTexture2DD3D11 : public ITexture2D {
 public:
-	cTexture2DD3D11(size_t width, size_t height, ID3D11ShaderResourceView* srv = NULL, ID3D11RenderTargetView* rtv = NULL, ID3D11DepthStencilView* dsv = NULL);
+	cTexture2DD3D11(size_t width, size_t height, ID3D11Texture2D* tex, ID3D11ShaderResourceView* srv = NULL, ID3D11RenderTargetView* rtv = NULL, ID3D11DepthStencilView* dsv = NULL);
 	~cTexture2DD3D11();
 	void Release() override;
 
@@ -26,6 +26,7 @@ protected:
 	size_t width;
 	size_t height;
 
+	ID3D11Texture2D* tex;
 	ID3D11ShaderResourceView* srv;
 	ID3D11RenderTargetView* rtv;
 	ID3D11DepthStencilView* dsv;

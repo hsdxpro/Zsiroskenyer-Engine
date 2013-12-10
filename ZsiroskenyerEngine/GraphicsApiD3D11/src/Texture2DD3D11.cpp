@@ -2,14 +2,15 @@
 
 #include <d3d11.h>
 
-cTexture2DD3D11::cTexture2DD3D11(size_t width, size_t height, ID3D11ShaderResourceView* srv /*= NULL*/, ID3D11RenderTargetView* rtv /*= NULL*/, ID3D11DepthStencilView* dsv /*= NULL*/)
-:width(width), height(height), srv(srv), rtv(rtv), dsv(dsv) {
+cTexture2DD3D11::cTexture2DD3D11(size_t width, size_t height, ID3D11Texture2D* tex, ID3D11ShaderResourceView* srv /*= NULL*/, ID3D11RenderTargetView* rtv /*= NULL*/, ID3D11DepthStencilView* dsv /*= NULL*/)
+:width(width), height(height), tex(tex), srv(srv), rtv(rtv), dsv(dsv) {
 }
 
 cTexture2DD3D11::~cTexture2DD3D11() {
 	SAFE_RELEASE(srv);
 	SAFE_RELEASE(rtv);
 	SAFE_RELEASE(dsv);
+	SAFE_RELEASE(tex);
 }
 
 void cTexture2DD3D11::Release() {
@@ -25,12 +26,8 @@ size_t cTexture2DD3D11::GetHeight() const {
 }
 
 ID3D11Texture2D* const cTexture2DD3D11::Get() const {
-	ASSERT(srv);
-	if (srv) {
-		ID3D11Texture2D* tex;
-		srv->GetResource((ID3D11Resource**)&tex);
-		return tex;
-	}
+	ASSERT(tex);
+	return tex;
 	return NULL;
 }
 
