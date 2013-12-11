@@ -110,9 +110,17 @@ eGraphicsResult cGraphicsEngine::cHDRProcessor::SetSource(ITexture2D* srcTexture
 ////////////////////////////////////////////////////////////////////////////////
 //	Update
 #include <iostream>
-
+#include <chrono>
+auto timePrev = std::chrono::high_resolution_clock::now();
+float elapsedTotal = 0.0f;
 void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
-	// Calculate average luminance
+	// get a fucking elapsed time... ugly, remove this or i kill myself
+	auto timeNow = std::chrono::high_resolution_clock::now();
+	float elapsed = (float)std::chrono::duration_cast<std::chrono::microseconds>(timeNow - timePrev).count() / 1e6f;
+	timePrev = timeNow;
+	elapsedTotal += elapsed;
+
+	// calculate average luminance
 	gApi->SetShaderProgram(shaderLumSample);
 	gApi->SetRenderTargets(1, &luminanceBuffer[0], NULL);
 	gApi->SetTexture(source, 0);
@@ -129,9 +137,9 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	auto r = gApi->CopyResource(luminanceBuffer[9], luminanceStaging);
 	gApi->ReadResource(luminanceStaging, &avgLuminance, sizeof(float));
 
-	std::cout << avgLuminance;
-
-
-
+	if (elapsedTotal >= 1.0f) {
+		std::cout << "Avg. luminance = " << avgLuminance << ", log10(lum) =  " << log10(avgLuminance) << std::endl;
+		elapsedTotal = 0.0f;
+	}
 }
 

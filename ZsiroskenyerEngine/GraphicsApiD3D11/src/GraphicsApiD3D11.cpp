@@ -36,8 +36,6 @@ D3D11_USAGE ConvertToNativeUsage(eUsage usage);
 
 
 
-
-
 // Config
 cGraphicsApiD3D11::tDxConfig cGraphicsApiD3D11::tDxConfig::DEFAULT = cGraphicsApiD3D11::tDxConfig();
 cGraphicsApiD3D11::tDxConfig cGraphicsApiD3D11::tDxConfig::MEDIUM = cGraphicsApiD3D11::tDxConfig();
@@ -628,17 +626,13 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 	ID3D11ShaderResourceView* srv = NULL;
 	ID3D11DepthStencilView* dsv = NULL;
 
-	bool isRenderTarget   = (bool)((int)desc.bind & (int)eBind::RENDER_TARGET);
-	bool isShaderBindable = (bool)((int)desc.bind & (int)eBind::SHADER_RESOURCE);
-	bool hasDepthStencil  = (bool)((int)desc.bind & (int)eBind::DEPTH_STENCIL);
-
-	UINT colorBindFlag = 0;
-	if (isRenderTarget)   colorBindFlag |= D3D11_BIND_RENDER_TARGET;
-	if (isShaderBindable) colorBindFlag |= D3D11_BIND_SHADER_RESOURCE;
+	bool isRenderTarget   = 0 != ((int)desc.bind & (int)eBind::RENDER_TARGET);
+	bool isShaderBindable = 0 != ((int)desc.bind & (int)eBind::SHADER_RESOURCE);
+	bool hasDepthStencil  = 0 != ((int)desc.bind & (int)eBind::DEPTH_STENCIL);
 
 	D3D11_TEXTURE2D_DESC texDesc;
 	texDesc.ArraySize = desc.arraySize;
-	texDesc.BindFlags = colorBindFlag;
+	texDesc.BindFlags = ConvertToNativeBind(desc.bind);
 	texDesc.Format = ConvertToNativeFormat(desc.format);
 	texDesc.Height = desc.height;
 	texDesc.Width = desc.width;
@@ -657,7 +651,16 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 	}();
 
 	HRESULT hr = S_OK;
-	// TODO: make the format typeless
+	// make the format typeless if it has depth:
+	if (hasDepthStencil) {
+		switch (desc.depthFormat) {
+			case eFormat::D16_UNORM: texDesc.Format = DXGI_FORMAT_R16_TYPELESS; break;
+			case eFormat::D24_UNORM_S8_UINT: texDesc.Format = DXGI_FORMAT_R24G8_TYPELESS; break;
+			case eFormat::D32_FLOAT: texDesc.Format = DXGI_FORMAT_R32_TYPELESS; break;
+			case eFormat::D32_FLOAT_S8X24_UINT: texDesc.Format = DXGI_FORMAT_R32G32_TYPELESS; break;
+		}
+	}
+
 	// create texture resource
 	hr = d3ddev->CreateTexture2D(&texDesc, NULL, &tex);
 	if (FAILED(hr)) {
@@ -668,44 +671,26 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 			return eGapiResult::ERROR_INVALID_ARG;
 	}
 
+	// view descriptors
+	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	D3D11_SHADER_RESOURCE_VIEW_DESC* pSrvDesc=NULL;
 	// create views as needed
-	if (isRenderTarget) {
-		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
-		// TODO: desc feltöltés blabla
-
-		hr = d3ddev->CreateRenderTargetView(tex, NULL, &rtv);
-		if (FAILED(hr)) {
-			SAFE_RELEASE(tex);
-			ASSERT_MSG(false, L"Can't create texture2D");
-			if (hr == E_OUTOFMEMORY)
-				return eGapiResult::ERROR_OUT_OF_MEMORY;
-			else
-				return eGapiResult::ERROR_INVALID_ARG;
-		}
-	}
-	if (isShaderBindable) {
-		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-		// TODO: desc feltöltés blabla
-
-		hr = d3ddev->CreateShaderResourceView(tex, NULL, &srv);
-		if (FAILED(hr)) {
-			SAFE_RELEASE(rtv);
-			SAFE_RELEASE(tex);
-			ASSERT_MSG(false, L"Can't create texture2D");
-			if (hr == E_OUTOFMEMORY)
-				return eGapiResult::ERROR_OUT_OF_MEMORY;
-			else
-				return eGapiResult::ERROR_INVALID_ARG;
-		}
-	}
 	if (hasDepthStencil) {
-		D3D11_DEPTH_STENCIL_VIEW_DESC dsDesc;
-		memset(&dsDesc, 0, sizeof(dsDesc));
-		dsDesc.Format = ConvertToNativeFormat(desc.depthFormat);
-		dsDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-		dsDesc.Texture2D.MipSlice = 0;
+		// fill ds view desc
+		memset(&dsvDesc, 0, sizeof(dsvDesc));
+		dsvDesc.Format = ConvertToNativeFormat(desc.depthFormat);
+		dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		dsvDesc.Texture2D.MipSlice = 0;
+		// fill sr view desc
+		memset(&srvDesc, 0, sizeof(srvDesc));
+		srvDesc.Format = ConvertToNativeFormat(desc.format);
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Texture2D.MipLevels = texDesc.MipLevels;
+		srvDesc.Texture2D.MostDetailedMip = 0;
+		pSrvDesc = &srvDesc;
 
-		hr = d3ddev->CreateDepthStencilView(tex, &dsDesc, &dsv);
+		hr = d3ddev->CreateDepthStencilView(tex, &dsvDesc, &dsv);
 		if (FAILED(hr)) {
 			SAFE_RELEASE(rtv);
 			SAFE_RELEASE(srv);
@@ -717,6 +702,30 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 				return eGapiResult::ERROR_INVALID_ARG;
 		}
 	}
+	if (isRenderTarget) {
+		hr = d3ddev->CreateRenderTargetView(tex, NULL, &rtv);
+		if (FAILED(hr)) {
+			SAFE_RELEASE(tex);
+			ASSERT_MSG(false, L"Can't create texture2D");
+			if (hr == E_OUTOFMEMORY)
+				return eGapiResult::ERROR_OUT_OF_MEMORY;
+			else
+				return eGapiResult::ERROR_INVALID_ARG;
+		}
+	}
+	if (isShaderBindable) {
+		hr = d3ddev->CreateShaderResourceView(tex, pSrvDesc, &srv);
+		if (FAILED(hr)) {
+			SAFE_RELEASE(rtv);
+			SAFE_RELEASE(tex);
+			ASSERT_MSG(false, L"Can't create texture2D");
+			if (hr == E_OUTOFMEMORY)
+				return eGapiResult::ERROR_OUT_OF_MEMORY;
+			else
+				return eGapiResult::ERROR_INVALID_ARG;
+		}
+	}
+
 	*resource = new cTexture2DD3D11(desc.width, desc.height, tex, srv, rtv, dsv);
 	return eGapiResult::OK;
 
@@ -1320,12 +1329,12 @@ ITexture2D* cGraphicsApiD3D11::GetDefaultRenderTarget() const {
 
 unsigned ConvertToNativeBind(unsigned flags) {
 	unsigned ret = 0;
-	ret |= (D3D11_BIND_CONSTANT_BUFFER*(flags&(unsigned)eBind::CONSTANT_BUFFER));
-	ret |= (D3D11_BIND_INDEX_BUFFER*(flags&(unsigned)eBind::INDEX_BUFFER));
-	ret |= (D3D11_BIND_DEPTH_STENCIL*(flags&(unsigned)eBind::DEPTH_STENCIL));
-	ret |= (D3D11_BIND_RENDER_TARGET*(flags&(unsigned)eBind::RENDER_TARGET));
-	ret |= (D3D11_BIND_SHADER_RESOURCE*(flags&(unsigned)eBind::SHADER_RESOURCE));
-	ret |= (D3D11_BIND_VERTEX_BUFFER*(flags&(unsigned)eBind::VERTEX_BUFFER));
+	ret |= ((flags&(unsigned)eBind::CONSTANT_BUFFER) != 0 ? D3D11_BIND_CONSTANT_BUFFER : 0);
+	ret |= ((flags&(unsigned)eBind::INDEX_BUFFER) != 0 ? D3D11_BIND_INDEX_BUFFER : 0);
+	ret |= ((flags&(unsigned)eBind::DEPTH_STENCIL) != 0 ? D3D11_BIND_DEPTH_STENCIL : 0);
+	ret |= ((flags&(unsigned)eBind::RENDER_TARGET) != 0 ? D3D11_BIND_RENDER_TARGET : 0);
+	ret |= ((flags&(unsigned)eBind::SHADER_RESOURCE) != 0 ? D3D11_BIND_SHADER_RESOURCE : 0);
+	ret |= ((flags&(unsigned)eBind::VERTEX_BUFFER) != 0 ? D3D11_BIND_VERTEX_BUFFER : 0);
 
 	return ret;
 }

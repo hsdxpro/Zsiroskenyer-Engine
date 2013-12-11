@@ -110,7 +110,7 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	desc.format = eFormat::R16G16B16A16_FLOAT;	results[3] = gApi->CreateTexture(&compositionBuffer, desc);
 	desc.format = eFormat::R16G16B16A16_FLOAT;	results[4] = gApi->CreateTexture(&helperBuffer, desc);
 
-	desc.format = eFormat::D24_UNORM_S8_UINT;	desc.depthFormat = eFormat::D24_UNORM_S8_UINT;	desc.bind = (int)eBind::SHADER_RESOURCE | (int)eBind::DEPTH_STENCIL;
+	desc.format = eFormat::R24_UNORM_X8_TYPELESS;	desc.depthFormat = eFormat::D24_UNORM_S8_UINT;	desc.bind = (int)eBind::SHADER_RESOURCE | (int)eBind::DEPTH_STENCIL;
 	results[5] = gApi->CreateTexture(&depthBuffer, desc);
 
 	for (int i = 0; i < sizeof(results) / sizeof(results[0]); i++) {
