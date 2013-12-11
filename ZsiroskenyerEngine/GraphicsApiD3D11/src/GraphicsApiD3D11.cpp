@@ -657,6 +657,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 	}();
 
 	HRESULT hr = S_OK;
+	// TODO: make the format typeless
 	// create texture resource
 	hr = d3ddev->CreateTexture2D(&texDesc, NULL, &tex);
 	if (FAILED(hr)) {
@@ -669,6 +670,9 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 
 	// create views as needed
 	if (isRenderTarget) {
+		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
+		// TODO: desc feltöltés blabla
+
 		hr = d3ddev->CreateRenderTargetView(tex, NULL, &rtv);
 		if (FAILED(hr)) {
 			SAFE_RELEASE(tex);
@@ -681,7 +685,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 	}
 	if (isShaderBindable) {
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-		// desc feltöltés blabla
+		// TODO: desc feltöltés blabla
 
 		hr = d3ddev->CreateShaderResourceView(tex, NULL, &srv);
 		if (FAILED(hr)) {
