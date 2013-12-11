@@ -1279,15 +1279,30 @@ void cGraphicsApiD3D11::SetPSConstantBuffer(IConstantBuffer* buffer, size_t slot
 
 eGapiResult cGraphicsApiD3D11::SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget /* = NULL */) {
 	// RTVS
+	static D3D11_VIEWPORT viewPorts[16];
+	static D3D11_TEXTURE2D_DESC desc;
 	static ID3D11RenderTargetView* rtvS[16];
 	for (unsigned i = 0; i < nTargets; i++)
+	{
 		rtvS[i] = ((const cTexture2DD3D11*)(renderTargets[i]))->GetRTV();
+		if (rtvS[i]) {
+			viewPorts[i].Width = ((const cTexture2DD3D11*)(renderTargets[i]))->GetWidth();
+			viewPorts[i].Height = ((const cTexture2DD3D11*)(renderTargets[i]))->GetHeight();
+			viewPorts[i].TopLeftX = 0;
+			viewPorts[i].TopLeftY = 0;
+			viewPorts[i].MinDepth = 0.0f;
+			viewPorts[i].MaxDepth = 1.0f;
+		}
+	}
 
 	// DSV
 	ID3D11DepthStencilView* dsv = NULL;
 	if (depthStencilTarget) dsv = ((cTexture2DD3D11*)depthStencilTarget)->GetDSV();
 
-	// Set them
+	// Set Viewports
+	d3dcon->RSSetViewports(nTargets, viewPorts);
+
+	// Set RTVS
 	d3dcon->OMSetRenderTargets(nTargets, rtvS, dsv);
 	return eGapiResult::OK;
 }
