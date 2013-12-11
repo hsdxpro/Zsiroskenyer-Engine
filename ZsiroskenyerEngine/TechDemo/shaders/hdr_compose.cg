@@ -1,10 +1,11 @@
 sampler2D textureInput : register(s0) = {
-    MipFilter = LINEAR,
-    MinFilter = LINEAR,
-    MagFilter = LINEAR,
+    MipFilter = POINT,
+    MinFilter = POINT,
+    MagFilter = POINT,
 	AddressU = Clamp,
 	AddressW = Clamp,
 };
+float logAvgLum : register(c0);
 
 struct VS_IN {
 	float3 posL 	: POSITION;
@@ -25,5 +26,10 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 
 float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	float4 color = tex2D(textureInput, In.tex0);
+	float pixelLum = color.r*0.27 + color.g*0.67 + color.b*0.06;
+	float a = exp(logAvgLum-1.5f);
+	float b = exp(logAvgLum+1.5f);
+	color = color/pixelLum * ((pixelLum-a)/(b-a));
+		
 	return color;
 }

@@ -114,19 +114,21 @@ private:
 		cHDRProcessor(cGraphicsEngine& parent);
 		~cHDRProcessor();
 		eGraphicsResult SetSource(ITexture2D* srcTexture, unsigned sourceWidth, unsigned sourceHeight);
+		void SetDestination(ITexture2D* dest);
 		void Update(float elapsedSec = -1.0f);
 	private:
 		cGraphicsEngine& parent;
 		IGraphicsApi* gApi;
 		ITexture2D* source;
+		ITexture2D* dest;
 		ITexture2D* luminanceBuffer[10]; // for 10 buffers down from 512x512 ... 1x1
 		ITexture2D* luminanceStaging;
 		ITexture2D* blurBuffer;
 		ITexture2D* downSampled;
 		float avgLuminance;
 		float adaptedLuminance;
-		IShaderProgram* shaderLumSample;
-		IShaderProgram* shaderLumAvg;
+		IShaderProgram *shaderLumSample, *shaderLumAvg, *shaderCompose;
+		IConstantBuffer* cbCompose;
 		unsigned sourceWidth, sourceHeight;
 
 		void Cleanup();

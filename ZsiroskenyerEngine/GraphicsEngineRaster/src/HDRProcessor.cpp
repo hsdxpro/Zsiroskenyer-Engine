@@ -6,6 +6,7 @@
 #include "ShaderManager.h"
 #include <cassert>
 #include <stdexcept>
+#include <algorithm>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -18,15 +19,25 @@ cGraphicsEngine::cHDRProcessor::cHDRProcessor(cGraphicsEngine& parent) : parent(
 	blurBuffer = NULL;
 	downSampled = NULL;
 	luminanceStaging = NULL;
+	source = NULL;
+	dest = NULL;
 	for (auto& t : luminanceBuffer)
 		t = NULL;
 
 	// create shaders
 	shaderLumSample = parent.shaderManager->LoadShader("shaders/hdr_luminance_sample.cg");
 	shaderLumAvg = parent.shaderManager->LoadShader("shaders/hdr_luminance_avg.cg");
+	shaderCompose = parent.shaderManager->LoadShader("shaders/hdr_compose.cg");
 	if (!shaderLumSample || !shaderLumAvg) {
 		Cleanup();
 		throw std::runtime_error("failed to create shaders");
+	}
+
+	// create constant buffers
+	eGapiResult rcb = gApi->CreateConstantBuffer(&cbCompose, sizeof(float)+12, eUsage::DEFAULT);
+	if (rcb != eGapiResult::OK) {
+		Cleanup();
+		throw std::runtime_error("failed to create shader constant buffers");
 	}
 
 	// create luminance textures
@@ -106,6 +117,10 @@ eGraphicsResult cGraphicsEngine::cHDRProcessor::SetSource(ITexture2D* srcTexture
 	return eGraphicsResult::OK;
 }
 
+// Set LDR output buffer
+void cGraphicsEngine::cHDRProcessor::SetDestination(ITexture2D* dest) {
+	this->dest = dest;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //	Update
@@ -133,7 +148,7 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 		gApi->Draw(3);
 	}
 
-	// TODO: avgLuminance = ...;
+	// extract average luminance from buffer
 	auto r = gApi->CopyResource(luminanceBuffer[9], luminanceStaging);
 	gApi->ReadResource(luminanceStaging, &avgLuminance, sizeof(float));
 
@@ -141,5 +156,21 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 		std::cout << "Avg. luminance = " << avgLuminance << ", log10(lum) =  " << log10(avgLuminance) << std::endl;
 		elapsedTotal = 0.0f;
 	}
+
+	// downsample that bullshit for blurring
+	/* TODO */
+
+	// compose to destination buffer
+	float speed = 0.9f;
+	float t = std::max(0.0f, speed - elapsed) / speed;
+	adaptedLuminance = avgLuminance*(1.0 - t) + t*adaptedLuminance;
+	float logAvgLum = log10(adaptedLuminance);
+	gApi->SetRenderTargets(1, &dest);
+	gApi->SetTexture(source, 0);
+	gApi->SetShaderProgram(shaderCompose);
+	gApi->SetConstantBufferData(cbCompose, &logAvgLum);
+	gApi->SetPSConstantBuffer(cbCompose, 0);
+	gApi->Draw(3);
+
 }
 

@@ -249,12 +249,16 @@ void cGraphicsEngine::RenderSceneDeferred() {
 		compBuf_Check = composedBuffer;
 		hdrProcessor->SetSource(composedBuffer, screenWidth, screenHeight);
 	}
+	hdrProcessor->SetDestination(gApi->GetDefaultRenderTarget());
 	hdrProcessor->Update();
 
+	gApi->GetDefaultRenderTarget();
+	/*
 	gApi->SetRenderTargetDefault();
 	gApi->SetShaderProgram(screenCopyShader);
 	gApi->SetTexture(composedBuffer, 0);
 	gApi->Draw(3);
+	*/
 }
 
 
