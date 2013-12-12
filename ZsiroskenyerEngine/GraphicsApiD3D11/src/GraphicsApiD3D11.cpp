@@ -164,7 +164,7 @@ eGapiResult cGraphicsApiD3D11::CreateMostAcceptableSwapChain(size_t width, size_
 	if (d3dsc != NULL)
 		SAFE_RELEASE(d3dsc);
 
-	DXGI_FORMAT bbFormat = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	DXGI_FORMAT bbFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 	// create Graphic Infrastructure factory
 	IDXGIFactory* fact = NULL;
@@ -1319,7 +1319,7 @@ eGapiResult cGraphicsApiD3D11::SetBackBufferSize(unsigned width, unsigned height
 	// Release default render target (BackBuffer)
 	SAFE_DELETE(defaultRenderTarget);
 
-	HRESULT hr = d3dsc->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, DXGI_SWAP_EFFECT_DISCARD | DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
+	HRESULT hr = d3dsc->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_SWAP_EFFECT_DISCARD | DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
 	if (!FAILED(hr)) {
 		defaultVP.Width = width;
 		defaultVP.Height = height;
