@@ -163,10 +163,18 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	adaptedLuminance = adaptedLuminance + (logAvgLum - adaptedLuminance)*(1 - exp(-elapsed / speed));
 
 	// compose to destination buffer
+	struct {
+		float logAvgLum;
+		float blueShift;
+		float pad1;
+		float pad2;
+	} shaderConstants;
+	shaderConstants.logAvgLum = adaptedLuminance;
+	shaderConstants.blueShift = 1.0f - std::min(std::max((adaptedLuminance + 2.0f) / (2.0f), 0.0f), 1.0f);
 	gApi->SetRenderTargets(1, &dest);
 	gApi->SetTexture(source, 0);
 	gApi->SetShaderProgram(shaderCompose);
-	gApi->SetConstantBufferData(cbCompose, &adaptedLuminance);
+	gApi->SetConstantBufferData(cbCompose, &shaderConstants);
 	gApi->SetPSConstantBuffer(cbCompose, 0);
 	gApi->Draw(3);
 

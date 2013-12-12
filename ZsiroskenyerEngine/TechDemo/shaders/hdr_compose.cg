@@ -5,7 +5,10 @@ sampler2D textureInput : register(s0) = {
 	AddressU = Clamp,
 	AddressW = Clamp,
 };
-float logAvgLum : register(c0);
+struct {
+	float logAvgLum;
+	float blueShift;
+} constants : register(c0);
 
 struct VS_IN {
 	float3 posL 	: POSITION;
@@ -24,19 +27,45 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 	return Out;
 }
 
+
+float3 toXyz(float3 arg) {
+	return mul(
+		float3x3(0.4124564, 0.3575761, 0.1804375, 
+				 0.2126729, 0.7151522, 0.0721750,
+				 0.0193339, 0.1191920, 0.9503041),
+		arg
+	);
+}
+
 float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	float4 color = tex2D(textureInput, In.tex0);
+	float logAvgLum = constants.logAvgLum;
 	float pixelLum = color.r*0.2126 + color.g*0.7152 + color.b*0.0722;
 	float absAvgLum = pow(10.0f, logAvgLum);
 	// clamping for 50/50: 1/505.0=1.998e-3 & 1.998
 	// clamping for 33/66: 3/1002=2.994012e-4 & 2.994012
 	float a = absAvgLum*2.994012e-3f;
 	float b = absAvgLum*2.994012f;
-	float lumMultiplier = ((pixelLum-a)/(b-a));
-	color = color/pixelLum * lumMultiplier;
-	// get blueshift amount: interpol between 1e-2 and 1
-	float blueShift = 1.0f-clamp((logAvgLum+2.0f)/(2.0f), 0.0f, 1.0f);
-	color.rgb = (1.0f-blueShift)*color.rgb + blueShift*float3(0.2, 0.3, 0.4)*lumMultiplier;
+	float t = ((pixelLum-a)/(b-a));
+	// apply blueshift
+	float3 colorXyz = toXyz(color.rgb);
+	float scotopicLum = colorXyz.y*(1.33*(1+(colorXyz.y+colorXyz.z)/colorXyz.x)-1.68);
+	float blueShift = constants.blueShift;
+	color.rgb = (1.0f-blueShift)*color.rgb + blueShift*0.1*float3(1.05f, 0.97f, 1.27f)*scotopicLum;
+	
+	color = color/pixelLum * t;
+	
+	if (In.tex0.x>0.5) {
+		color.rgb = float3(In.tex0.y, In.tex0.y, In.tex0.y);
+	}
+	else {
+		float c = pow(In.tex0.y, 2.2);
+		color.rgb = float3(c,c,c);
+	}
+		
 	
 	return color;
 }
+
+
+
