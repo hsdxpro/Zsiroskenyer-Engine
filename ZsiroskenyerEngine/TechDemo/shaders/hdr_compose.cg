@@ -26,7 +26,7 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 
 float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	float4 color = tex2D(textureInput, In.tex0);
-	float pixelLum = color.r*0.27 + color.g*0.67 + color.b*0.06;
+	float pixelLum = color.r*0.2126 + color.g*0.7152 + color.b*0.0722;
 	float absAvgLum = pow(10.0f, logAvgLum);
 	// clamping for 50/50: 1/505.0=1.998e-3 & 1.998
 	// clamping for 33/66: 3/1002=2.994012e-4 & 2.994012

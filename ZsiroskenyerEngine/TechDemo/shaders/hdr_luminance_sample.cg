@@ -25,6 +25,6 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 
 float PS_MAIN(VS_OUT In) : COLOR0 {
 	float4 color = tex2D(textureInput, In.tex0);
-	float luminance = color.r*0.27 + color.g*0.67 + color.b*0.06;
+	float luminance = color.r*0.2126 + color.g*0.7152 + color.b*0.0722;
 	return luminance;
 }

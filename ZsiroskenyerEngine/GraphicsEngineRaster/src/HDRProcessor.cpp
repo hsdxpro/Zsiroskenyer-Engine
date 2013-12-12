@@ -156,15 +156,17 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	// downsample that bullshit for blurring
 	/* TODO */
 
+	// calculate adaptation
+	float logAvgLum = log10(avgLuminance+0.00001f);
+	float rodSensitivity = 0.04 / (0.04 + logAvgLum);
+	float speed = rodSensitivity*0.4f + (1 - rodSensitivity)*0.4;
+	adaptedLuminance = adaptedLuminance + (logAvgLum - adaptedLuminance)*(1 - exp(-elapsed / speed));
+
 	// compose to destination buffer
-	float speed = 0.9f;
-	float t = std::max(0.0f, speed - elapsed) / speed;
-	adaptedLuminance = avgLuminance*(1.0 - t) + t*adaptedLuminance;
-	float logAvgLum = log10(adaptedLuminance);
 	gApi->SetRenderTargets(1, &dest);
 	gApi->SetTexture(source, 0);
 	gApi->SetShaderProgram(shaderCompose);
-	gApi->SetConstantBufferData(cbCompose, &logAvgLum);
+	gApi->SetConstantBufferData(cbCompose, &adaptedLuminance);
 	gApi->SetPSConstantBuffer(cbCompose, 0);
 	gApi->Draw(3);
 
@@ -172,7 +174,7 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	if (elapsedTotal >= 1.0f) {
 		std::cout << "Avg. luminance = " << avgLuminance << ", log10(lum) =  " << log10(avgLuminance) << std::endl;
 		std::cout << "   [" << avgLuminance*2.994012e-3 << ", " << avgLuminance*2.994012 << "]\n";
-		std::cout << "   Blueshift = " << 1.0f - std::min(std::max((log10(adaptedLuminance) + 2.0f) / (2.0f), 0.0f), 1.0f) << std::endl;
+		std::cout << "   Blueshift = " << 1.0f - std::min(std::max((adaptedLuminance + 2.0f) / (2.0f), 0.0f), 1.0f) << std::endl;
 		elapsedTotal = 0.0f;
 	}
 }
