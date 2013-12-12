@@ -27,9 +27,16 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	float4 color = tex2D(textureInput, In.tex0);
 	float pixelLum = color.r*0.27 + color.g*0.67 + color.b*0.06;
-	float a = exp(logAvgLum-1.5f);
-	float b = exp(logAvgLum+1.5f);
-	color = color/pixelLum * ((pixelLum-a)/(b-a));
-		
+	float absAvgLum = pow(10.0f, logAvgLum);
+	// clamping for 50/50: 1/505.0=1.998e-3 & 1.998
+	// clamping for 33/66: 3/1002=2.994012e-4 & 2.994012
+	float a = absAvgLum*2.994012e-3f;
+	float b = absAvgLum*2.994012f;
+	float lumMultiplier = ((pixelLum-a)/(b-a));
+	color = color/pixelLum * lumMultiplier;
+	// get blueshift amount: interpol between 1e-2 and 1
+	float blueShift = 1.0f-clamp((logAvgLum+2.0f)/(2.0f), 0.0f, 1.0f);
+	color.rgb = (1.0f-blueShift)*color.rgb + blueShift*float3(0.2, 0.3, 0.4)*lumMultiplier;
+	
 	return color;
 }

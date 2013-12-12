@@ -152,10 +152,6 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	auto r = gApi->CopyResource(luminanceBuffer[9], luminanceStaging);
 	gApi->ReadResource(luminanceStaging, &avgLuminance, sizeof(float));
 
-	if (elapsedTotal >= 1.0f) {
-		std::cout << "Avg. luminance = " << avgLuminance << ", log10(lum) =  " << log10(avgLuminance) << std::endl;
-		elapsedTotal = 0.0f;
-	}
 
 	// downsample that bullshit for blurring
 	/* TODO */
@@ -172,5 +168,12 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	gApi->SetPSConstantBuffer(cbCompose, 0);
 	gApi->Draw(3);
 
+	// display HDR information
+	if (elapsedTotal >= 1.0f) {
+		std::cout << "Avg. luminance = " << avgLuminance << ", log10(lum) =  " << log10(avgLuminance) << std::endl;
+		std::cout << "   [" << avgLuminance*2.994012e-3 << ", " << avgLuminance*2.994012 << "]\n";
+		std::cout << "   Blueshift = " << 1.0f - std::min(std::max((log10(adaptedLuminance) + 2.0f) / (2.0f), 0.0f), 1.0f) << std::endl;
+		elapsedTotal = 0.0f;
+	}
 }
 
