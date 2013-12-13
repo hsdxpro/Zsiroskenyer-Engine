@@ -872,7 +872,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	}
 
 	zsString entryNames[nShaders] = {"VS_MAIN", "HS_MAIN", "DS_MAIN", "GS_MAIN", "PS_MAIN"};
-	zsString profileNames[nShaders] = {"vs_5_0", "hs_5_0", "ds_5_0", "gs_5_0", "ps_5_0"};
+	zsString profileNames[nShaders] = {"vs_4_0", "hs_4_0", "ds_4_0", "gs_4_0", "ps_4_0"};
 
 	// Shader Output data
 	ID3D11VertexShader* vs = NULL;
