@@ -4,60 +4,6 @@
 #include "../../Core/src/zsString.h"
 
 LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-	switch(msg) {
-	case WM_DESTROY: 
-		{
-			PostQuitMessage(0);
-			//@TODO TMP CODE Fuck... REMOVE THAT
-		}
-		break;
-	case IWindow::eMessage::MOUSE_MBUTTONDOWN:
-		{
-			//ManagerInput.onMouseMiddleDown();
-		} break;
-	case IWindow::eMessage::MOUSE_MBUTTONUP:
-		{
-			//ManagerInput.onMouseMiddleUp();
-		} break;
-	case IWindow::eMessage::WINDOW_SIZE_CHANGED:
-		{
-			//ManagerOpenGL.setRenderWindow(hwnd);
-		} break;
-	case IWindow::eMessage::MOUSE_LBUTTONUP:
-		{
-			//ManagerInput.onMouseLeftUp();
-		} break;
-	case IWindow::eMessage::MOUSE_LBUTTONDOWN:
-		{
-			//ManagerInput.onMouseLeftDown();
-		} break;
-	case IWindow::eMessage::MOUSE_MOVE:
-		{
-			// These are window client relative coords
-			//ManagerInput.onMouseMove(LOWORD(lParam), HIWORD(lParam));
-		} break;
-	case IWindow::eMessage::KEY_UP:
-		{
-			//ManagerInput.onKeyUp(wParam);
-		} break;
-	case IWindow::eMessage::KEY_DOWN:
-		{
-			//ManagerInput.onKeyDown(wParam);
-		}break;
-	case IWindow::eMessage::DESTROY:
-		{
-			//cWindow *window = ManagerWindow.getWindowByHandle(hwnd);
-
-			// ASSERT the window doesn't created with ManagerWindow singleton, dont use simple cWindow constructor yourself
-			//ASSERT( window != NULL);
-			//window->close();
-		} break;
-	default:
-		{
-
-		}
-		break;
-	}
 	return DefWindowProc(hwnd,msg,wParam,lParam);
 }
 
@@ -130,17 +76,42 @@ void cWindow::MoveCenter() {
 	SetWindowPos(handle, 0, screenCenterX - rect.right/2, screenCenterY - rect.bottom/2, rect.right, rect.bottom, 0);
 }
 
-void cWindow::PeekAllMessages() {
-	static MSG msg;
-	while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+bool cWindow::HandleMessage(IWindow::eMessage* msg) {
+	static MSG winMsg;
+	// Get window message from OS
+	if (PeekMessage(&winMsg, NULL, 0, 0, PM_REMOVE))
 	{
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
+		// Translate, dispatch, process message 
+		TranslateMessage(&winMsg);
+		DispatchMessage(&winMsg);
+		*msg = ProcessMessage(winMsg);
 
-	// If the message is WM_QUIT, exit the while loop
-	if(msg.message == WM_QUIT)
-		Close();
+		return *msg != IWindow::eMessage::QUIT;
+	}
+	return false;
+}
+
+IWindow::eMessage cWindow::ProcessMessage(const MSG& msg) {
+	switch (msg.message) {
+		case WM_QUIT:
+		{
+			// Close window
+			Close();
+			return IWindow::eMessage::QUIT;
+		}
+		case WM_DESTROY:
+		{
+			//@TODO TMP CODE Fuck... REMOVE THAT
+			PostQuitMessage(0);
+			return IWindow::eMessage::DESTROY;
+		}
+		case WM_SIZE:
+				return IWindow::eMessage::SIZE_CHANGED;
+		case WM_SYSKEYDOWN:
+			// ALT + ENTER = SIZE_CHANGED
+			if (LOWORD(msg.wParam) == VK_RETURN && ((msg.lParam >> 29 & 0x1) == 1))
+				return IWindow::eMessage::SIZE_CHANGED;
+	}
 }
 
 void cWindow::Close() {

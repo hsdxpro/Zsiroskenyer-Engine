@@ -89,8 +89,12 @@ int ricsiMain() {
 	crate->SetPos(Vec3(9, 0, 40));
 
 	// Main loop
+	IWindow::eMessage msg;
 	while(window->IsOpened()) {
-		window->PeekAllMessages();
+		while (window->HandleMessage(&msg)) {
+			if (msg == IWindow::eMessage::SIZE_CHANGED)
+				gEngine->Resize(window->GetClientWidth(), window->GetClientHeight());	
+		}
 
 		// Clear BB
 		gApi->Clear(true, true);

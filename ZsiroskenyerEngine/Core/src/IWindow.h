@@ -32,7 +32,7 @@ public:
 		CLOSE,
 		KEY_DOWN,
 		KEY_UP,
-		WINDOW_SIZE_CHANGED,
+		SIZE_CHANGED,
 		MOUSE_MOVE,
 		MOUSE_LBUTTONDOWN,
 		MOUSE_LBUTTONUP,
@@ -60,20 +60,22 @@ public:
 		}
 	};
 
+	virtual bool HandleMessage(IWindow::eMessage* msg) = 0;
+
 	virtual void MoveCenter() = 0;
-	virtual void PeekAllMessages() = 0;
 	virtual void Close() = 0;
+
 	virtual void SetCaptionText(const zsString& str) = 0;
 
-	virtual bool IsOpened() const = 0;
 	virtual bool IsFullscreen() const = 0;
+	virtual bool IsOpened()		const = 0;
 
-	virtual zsString GetCaptionText() const = 0;
-	virtual Vec2 GetCenter() const = 0;
-	virtual Handle GetHandle() const = 0;
-	virtual size_t GetClientWidth() const = 0;
-	virtual size_t GetClientHeight() const = 0;
-	virtual float GetClientAspectRatio() const = 0;
+	virtual float			GetClientAspectRatio()	const = 0;
+	virtual size_t			GetClientHeight()		const = 0;
+	virtual size_t			GetClientWidth()		const = 0;
+	virtual zsString		GetCaptionText()		const = 0;
+	virtual Vec2			GetCenter()				const = 0;
+	virtual IWindow::Handle GetHandle()				const = 0;
 
 	static IWindow* Create(const IWindow::tDesc& desc);
 };

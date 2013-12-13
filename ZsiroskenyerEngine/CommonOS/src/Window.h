@@ -11,22 +11,27 @@ class cWindow : public IWindow {
 public:
 	cWindow(const IWindow::tDesc& winDesc);
 
+	bool HandleMessage(IWindow::eMessage* msg) override;
+
 	void MoveCenter() override;
-	void PeekAllMessages() override;
 	void Close() override;
+
 	void SetCaptionText(const zsString& str) override;
 
-	bool IsOpened() const override;
 	bool IsFullscreen() const override;
+	bool IsOpened()		const override;
 
-	zsString GetCaptionText() const override;
-	Vec2 GetCenter() const override;
-	IWindow::Handle GetHandle() const override;
-	size_t GetClientWidth() const override;
-	size_t GetClientHeight() const override;
-	float GetClientAspectRatio() const override;
+	float			GetClientAspectRatio()	const override;
+	size_t			GetClientHeight()		const override;
+	size_t			GetClientWidth()		const override;
+	zsString		GetCaptionText()		const override;
+	Vec2			GetCenter()				const override;
+	IWindow::Handle GetHandle()				const override;
 
 protected:
-	bool opened;
+	IWindow::eMessage ProcessMessage(const MSG& msg);
+
+protected:
 	HWND handle;
+	bool opened;
 };
