@@ -94,8 +94,8 @@ int ricsiMain() {
 	IWindow::eMessage msg;
 	while(window->IsOpened()) {
 		while (window->HandleMessage(&msg)) {
-			if (msg == IWindow::eMessage::SIZE_CHANGED)
-				gEngine->Resize(window->GetClientWidth(), window->GetClientHeight());	
+			//if (msg == IWindow::eMessage::SIZE_CHANGED)
+				//gEngine->Resize(window->GetClientWidth(), window->GetClientHeight());	
 		}
 
 		// Clear BB

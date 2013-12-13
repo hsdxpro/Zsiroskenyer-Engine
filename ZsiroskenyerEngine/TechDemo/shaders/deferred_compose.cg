@@ -53,21 +53,22 @@ float doAmbientOcclusion(in float2 texcoord,in float2 delta_uv, in float3 pos1, 
  float3 pos2 = GetPosition(texcoord + delta_uv);
 
  //HALO eltüntetése (próbálkozás) sajna csak pár helyzetben nagyon jó
- if(distance(pos1,pos2) > 8.8f)
+ if(distance(pos1,pos2) > 5)
  	return 0.8f;
 
  float3 diff = pos2 - pos1;
  float3 dir = normalize(diff);
 
  float SSAObias = 0.0f;
- return 1.0f -  clamp(dot(dir,norm1),0.1f,1.0f);///(SSAObias+length(diff));
+ return 1.0f -  clamp(dot(dir,norm1),0.1f,1.0f);
+// return 1.0f -  clamp(dot(dir,norm1),-0.1f,1.0f);
 }
 
 //THE SSAO PROCESS FOR THE PIXEL
 float ambientocclusionprocess(float2 projtex)
 {
   float SSAOraylength = 5.000150f;
-  float SSAOiterations = 8;
+  float SSAOiterations = 2;
 
 	// Try depth independency, but not expected result TODO...
 	float4 vsDeltaCoord  = float4(SSAOraylength, distance(camPos, depthToWorldSpace(tex2D(depthBuffer, projtex).r, projtex)), 0, 1);
@@ -85,18 +86,19 @@ float ambientocclusionprocess(float2 projtex)
  float3 refpos = GetPosition(projtex);
  float3 refnorm = GetNormal(projtex);
 
+ float SSAORadius = 2.0f;
  for (int j = 1; j <= SSAOiterations; ++j)
  {
    //8 körül levõ ponton mintavétel
    //kezdés bal felsõ sarok órajárás irányban..
-   float2 coord1 = float2(-SMAP_DX,-SMAP_DY)*j;
-   float2 coord2 = float2(0       ,-SMAP_DY)*j;
-   float2 coord3 = float2(SMAP_DX ,-SMAP_DY)*j;
-   float2 coord4 = float2(SMAP_DX ,0       )*j;
-   float2 coord5 = float2(SMAP_DX ,SMAP_DY )*j;
-   float2 coord6 = float2(0       ,SMAP_DY )*j;
-   float2 coord7 = float2(-SMAP_DX,SMAP_DY )*j;
-   float2 coord8 = float2(-SMAP_DX,0       )*j;
+   float2 coord1 = float2(-SMAP_DX,-SMAP_DY)*j * SSAORadius;
+   float2 coord2 = float2(0       ,-SMAP_DY)*j * SSAORadius;
+   float2 coord3 = float2(SMAP_DX ,-SMAP_DY)*j * SSAORadius;
+   float2 coord4 = float2(SMAP_DX ,0       )*j * SSAORadius;
+   float2 coord5 = float2(SMAP_DX ,SMAP_DY )*j * SSAORadius;
+   float2 coord6 = float2(0       ,SMAP_DY )*j * SSAORadius;
+   float2 coord7 = float2(-SMAP_DX,SMAP_DY )*j * SSAORadius;
+   float2 coord8 = float2(-SMAP_DX,0       )*j * SSAORadius;
 
 
    ao+= doAmbientOcclusion(projtex,coord1,refpos,refnorm);
@@ -110,7 +112,7 @@ float ambientocclusionprocess(float2 projtex)
 
 
  } 
-float SSAOintensity = 2.0f;
+float SSAOintensity = 1.5f;
   return (1.0f - (ao/SSAOiterations/8))*(SSAOintensity);
 }
 
@@ -184,6 +186,8 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	// Not so plausible term using, FUCK YOU, need some new shits, to work good
 	float lighting = Directionallight(float3(1,0,-1), normal, posW, 0.3f, 0.4f, 0.4f);
 	float ao = 1 - ambientocclusionprocess(In.tex0);
+	//Out.color = ao;
+	//return Out;
 	float ambient = 0.6f;
 	float4 diffuseColor = tex2D(gBuffer0, In.tex0);
 		Out.color = diffuseColor * lighting + diffuseColor * ao * ambient;

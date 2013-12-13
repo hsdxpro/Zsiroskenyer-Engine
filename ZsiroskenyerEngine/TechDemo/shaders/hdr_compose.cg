@@ -55,7 +55,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	color.rgb = (1.0f-blueShift)*color.rgb + blueShift*0.1*float3(1.05f, 0.97f, 1.27f)*scotopicLum;
 	
 	color = color/pixelLum * t;
-	
+
 	/*
 	if (In.tex0.x>0.5) {
 		color.rgb; // = float3(In.tex0.y, In.tex0.y, In.tex0.y);
