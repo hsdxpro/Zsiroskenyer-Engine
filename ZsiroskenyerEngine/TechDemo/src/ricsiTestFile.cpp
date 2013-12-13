@@ -88,6 +88,8 @@ int ricsiMain() {
 	cEntity* crate =  core.AddEntity(basePath + L"objects/crate.dae", basePath + L"objects/crate.dae", basePath + L"materials/crate.zsm", 10.0, true);
 	crate->SetPos(Vec3(9, 0, 40));
 
+	//TESZT01BRANCH TESZT VÁÁ :) !
+
 	// Main loop
 	IWindow::eMessage msg;
 	while(window->IsOpened()) {
