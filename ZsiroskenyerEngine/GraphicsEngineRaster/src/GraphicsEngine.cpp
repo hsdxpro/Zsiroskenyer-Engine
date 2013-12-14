@@ -22,6 +22,7 @@
 #include <iostream>
 
 
+////////////////////////////////////////////////////////////////////////////////
 // DLL pure C interface
 extern "C"
 __declspec(dllexport) IGraphicsEngine* CreateGraphicsEngineRaster(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config) {
@@ -36,8 +37,8 @@ __declspec(dllexport) IGraphicsEngine* CreateGraphicsEngineRaster(IWindow* targe
 	return engine;
 }
 
-
-//	Construction of the graphics engine
+////////////////////////////////////////////////////////////////////////////////
+//	Constructor of the graphics engine
 cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config) 
 	:
 	screenWidth(screenWidth),
@@ -57,7 +58,7 @@ cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, un
 			gApi = NULL;
 	}
 	if (!gApi)
-		throw std::runtime_error("Failed to create graphics api");
+		throw std::runtime_error("failed to create graphics api");
 	shaderManager = new cShaderManager(gApi);
 	resourceManager = new cResourceManager(gApi);
 	sceneManager = new cSceneManager();
@@ -73,7 +74,7 @@ cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, un
 		deferredRenderer = new cDeferredRenderer(*this);
 	}
 	catch (std::exception& e) {
-		std::cerr << "[non-fatal error (yet)] Deferred renderer failed with message: " << e.what() << std::endl;
+		throw std::runtime_error(std::string("failed to create deferred renderer: ") + e.what());
 	}
 
 	// Create hdr post-processor
@@ -81,7 +82,7 @@ cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, un
 		hdrProcessor = new cHDRProcessor(*this);
 	}
 	catch (std::exception& e) {
-		std::cerr << "[non-fatal error (yet)] HDR post-processor failed with message. " << e.what() << std::endl;
+		throw std::runtime_error(std::string("failed to create hdr post-processor: ") + e.what());
 	}
 }
 
@@ -98,8 +99,10 @@ void cGraphicsEngine::Release() {
 }
 
 
+////////////////////////////////////////////////////////////////////////////////
 //	Utility & Settings
-//	TODO: Reload all resources not only shaders
+
+// reload all resourcess. TODO: not only shaders
 eGraphicsResult cGraphicsEngine::ReloadResources() {
 	if(!shaderManager->ReloadShader(L"shaders/test.cg"))
 		return eGraphicsResult::ERROR_UNKNOWN;
@@ -112,14 +115,12 @@ eGraphicsResult cGraphicsEngine::ReloadResources() {
 	return eGraphicsResult::OK;
 }
 
-void cGraphicsEngine::SetActiveCamera(cCamera* cam) {
-	sceneManager->SetActiveCamera(cam);
-}
-
+// set global configuration
 eGraphicsResult cGraphicsEngine::SetConfig(tGraphicsConfig config) {
 	return eGraphicsResult::OK; // no config, no work
 }
 
+// resize screen
 eGraphicsResult cGraphicsEngine::Resize(unsigned width, unsigned height) {
 	eGraphicsResult result = eGraphicsResult::OK;
 
@@ -133,6 +134,30 @@ eGraphicsResult cGraphicsEngine::Resize(unsigned width, unsigned height) {
 	return result;
 }
 
+// create/delete scenes
+IGraphicsScene* cGraphicsEngine::CreateScene() {
+	try {
+		cGraphicsScene* newScene = new cGraphicsScene();
+		graphicsScenes.insert(newScene);
+		return newScene;
+	}
+	catch (std::exception&) {
+		return NULL;
+	}
+}
+void cGraphicsEngine::DeleteScene(const IGraphicsScene* scene) {
+	auto it = graphicsScenes.find((cGraphicsScene*)scene);
+	if (it != graphicsScenes.end()) {
+		delete *it;
+		graphicsScenes.erase(it);
+	}
+}
+
+// DEPRECATED
+void cGraphicsEngine::SetActiveCamera(cCamera* cam) {
+	sceneManager->SetActiveCamera(cam);
+}
+// DEPRECATED
 cGraphicsEntity* cGraphicsEngine::CreateEntity(const zsString& geomPath, const zsString& mtlPath) {
 	cGeometryRef geom = resourceManager->GetGeometry(geomPath);
 	cMaterialRef mtl = resourceManager->GetMaterial(mtlPath);
@@ -144,15 +169,16 @@ cGraphicsEntity* cGraphicsEngine::CreateEntity(const zsString& geomPath, const z
 }
 
 
-
-//	Rendering
-eGraphicsResult cGraphicsEngine::Update() {
+////////////////////////////////////////////////////////////////////////////////
+//	Update scene
+eGraphicsResult cGraphicsEngine::Update(float elapsed) {
 	//RenderSceneForward();
 	RenderSceneDeferred();
 	return eGraphicsResult::OK;
 }
 
 
+////////////////////////////////////////////////////////////////////////////////
 //	Internal private functionality
 void cGraphicsEngine::RenderSceneForward() {
 

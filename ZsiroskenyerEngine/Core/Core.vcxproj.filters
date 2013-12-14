@@ -155,6 +155,9 @@
     <ClInclude Include="src\CreateGraphicsEngine.h">
       <Filter>M_GraphicsEngine</Filter>
     </ClInclude>
+    <ClInclude Include="src\GraphicsLight.h">
+      <Filter>M_GraphicsEngine\Classes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\math\color.cpp">
@@ -236,6 +239,9 @@
     </ClCompile>
     <ClCompile Include="src\CreateGraphicsEngine.cpp">
       <Filter>M_GraphicsEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GraphicsLight.cpp">
+      <Filter>M_GraphicsEngine\Classes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

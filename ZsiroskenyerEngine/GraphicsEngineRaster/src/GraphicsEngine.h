@@ -9,20 +9,50 @@
 
 #include "../../Core/src/IGraphicsEngine.h"
 #include "../../Core/src/GAPI.h"
+#include "SceneManager.h"
+#include <set>
 
 class ITexture2D;
 class IGraphicsApi;
 class IShaderManager;
-class cSceneManager;
 class cResourceManager;
 class ITexture2D;
 class IShaderProgram;
 class IWindow;
 
+////////////////////////////////////////////////////////////////////////////////
+//	Dll accessor
 extern "C"
 __declspec(dllexport) IGraphicsEngine* CreateGraphicsEngineRaster(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config);
 
 
+////////////////////////////////////////////////////////////////////////////////
+//	GraphicsScene
+class cGraphicsScene : public IGraphicsScene {
+public:
+	// constructor & destructor
+	cGraphicsScene();
+	~cGraphicsScene();
+
+	// entities & lights
+	cGraphicsEntity* CreateEntity(const zsString& geomPath, const zsString& mtlPath) override;
+	void DeleteEntity(const cGraphicsEntity* entity) override;
+	cGraphicsLight* CreateLight() override;
+	void DeleteLight(const cGraphicsLight* light) override;
+
+	// scene state
+	void SetActiveCamera(cCamera* cam) override;
+	cCamera* GetActiveCamera() override;
+	void SetRenderState(tRenderState state) override;
+	void Clear() override;
+private:
+	tRenderState state;
+	cSceneManager sceneManager;
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+//	GraphicsEngine
 class cGraphicsEngine : public IGraphicsEngine {
 	class cDeferredRenderer;
 	class cHDRProcessor;
@@ -38,18 +68,25 @@ public:
 	eGraphicsResult ReloadResources() override;
 	eGraphicsResult SetConfig(tGraphicsConfig config) override;
 	eGraphicsResult Resize(unsigned width, unsigned height) override;
+
+	// DEPRECATED
 	void SetActiveCamera(cCamera* cam) override;
 	cGraphicsEntity* CreateEntity(const zsString& geomPath, const zsString& mtlPath) override;
+	cCamera* GetActiveCamera() override;
+#pragma deprecated(SetActiveCamera, CreateEntity, GetActiveCamera)
+
+	// NEW - scene management
+	IGraphicsScene*	CreateScene() override;
+	void			DeleteScene(const IGraphicsScene* scene) override;
 
 	// rendering
-	eGraphicsResult Update() override;
+	eGraphicsResult Update(float elapsed = 0.0f) override;
 		
 	// sub-component accessors
 	cSceneManager*		GetSceneManager();
 	cResourceManager*	GetResourceManager();
 	IGraphicsApi*		GetGraphicsApi() override;
 	IShaderManager*		GetShaderManager() override;
-	cCamera*			GetActiveCamera() override;
 private:
 	// internal functions
 	void RenderSceneForward();
@@ -57,19 +94,26 @@ private:
 
 	// state
 	unsigned screenWidth, screenHeight;
+	tGraphicsConfig config;
 
-	// sub-compnents
+	// sub-compnents: rendering & graphical
 	IGraphicsApi* gApi;
 	IShaderManager* shaderManager;
 	cResourceManager* resourceManager;
-	cSceneManager* sceneManager;
+	std::set<cGraphicsScene*> graphicsScenes;
 	cDeferredRenderer* deferredRenderer;
 	cHDRProcessor* hdrProcessor;
+	// DEPRECATED
+	cSceneManager* sceneManager;
+#pragma deprecated(sceneManager)
 	
 	// some member var for fast access in deferred functions
 	IShaderProgram* screenCopyShader;
 
-	// deferred renderer helper subclass
+
+	// --- --- SUBCLASSES --- --- //
+
+	// Deferred renderer helper subclass
 	class cDeferredRenderer {
 	public:
 		// constructor
