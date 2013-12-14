@@ -9,6 +9,7 @@
 
 #include "../../Core/src/IGraphicsEngine.h"
 #include "../../Core/src/GAPI.h"
+#include "../../Core/src/Camera.h"
 #include "SceneManager.h"
 #include <set>
 
@@ -29,9 +30,10 @@ __declspec(dllexport) IGraphicsEngine* CreateGraphicsEngineRaster(IWindow* targe
 ////////////////////////////////////////////////////////////////////////////////
 //	GraphicsScene
 class cGraphicsScene : public IGraphicsScene {
+	friend class cGraphicsEngine;
 public:
 	// constructor & destructor
-	cGraphicsScene();
+	cGraphicsScene(cGraphicsEngine& parent, tRenderState state = tRenderState());
 	~cGraphicsScene();
 
 	// entities & lights
@@ -41,19 +43,25 @@ public:
 	void DeleteLight(const cGraphicsLight* light) override;
 
 	// scene state
-	void SetActiveCamera(cCamera* cam) override;
-	cCamera* GetActiveCamera() override;
-	void SetRenderState(tRenderState state) override;
+	cCamera& GetCamera() override;
+	tRenderState& GetState() override;
 	void Clear() override;
 private:
+	// information for rendering pipeline
 	tRenderState state;
 	cSceneManager sceneManager;
+	cGraphicsEngine& parent;
+	cCamera camera;
+
+	// temporary per-scene renderer data
+	float luminanceAdaptation;
 };
 
 
 ////////////////////////////////////////////////////////////////////////////////
 //	GraphicsEngine
 class cGraphicsEngine : public IGraphicsEngine {
+	friend class cGraphicsScene;
 	class cDeferredRenderer;
 	class cHDRProcessor;
 public:
@@ -70,17 +78,23 @@ public:
 	eGraphicsResult Resize(unsigned width, unsigned height) override;
 
 	// DEPRECATED
+	/*
 	void SetActiveCamera(cCamera* cam) override;
 	cGraphicsEntity* CreateEntity(const zsString& geomPath, const zsString& mtlPath) override;
 	cCamera* GetActiveCamera() override;
 #pragma deprecated(SetActiveCamera, CreateEntity, GetActiveCamera)
+	*/
 
 	// NEW - scene management
-	IGraphicsScene*	CreateScene() override;
+	IGraphicsScene*	CreateScene(tRenderState state = tRenderState()) override;
 	void			DeleteScene(const IGraphicsScene* scene) override;
 
-	// rendering
+	// rendering pipeline
 	eGraphicsResult Update(float elapsed = 0.0f) override;
+		// scene state loaded there
+	cSceneManager* sceneManager;
+	cCamera* camera;
+	float elapsed;
 		
 	// sub-component accessors
 	cSceneManager*		GetSceneManager();
@@ -88,9 +102,10 @@ public:
 	IGraphicsApi*		GetGraphicsApi() override;
 	IShaderManager*		GetShaderManager() override;
 private:
-	// internal functions
-	void RenderSceneForward();
-	void RenderSceneDeferred();
+	// rendering functions
+	void RenderScene(cGraphicsScene& scene, float elapsed);
+	void RenderForward();
+	void RenderDeferred();
 
 	// state
 	unsigned screenWidth, screenHeight;
@@ -103,9 +118,6 @@ private:
 	std::set<cGraphicsScene*> graphicsScenes;
 	cDeferredRenderer* deferredRenderer;
 	cHDRProcessor* hdrProcessor;
-	// DEPRECATED
-	cSceneManager* sceneManager;
-#pragma deprecated(sceneManager)
 	
 	// some member var for fast access in deferred functions
 	IShaderProgram* screenCopyShader;
@@ -115,6 +127,7 @@ private:
 
 	// Deferred renderer helper subclass
 	class cDeferredRenderer {
+		friend class cGraphicsEngine;
 	public:
 		// constructor
 		cDeferredRenderer(cGraphicsEngine& parent);
@@ -154,6 +167,7 @@ private:
 
 	// HDR post-processor helper class
 	class cHDRProcessor {
+		friend class cGraphicsEngine;
 	public:
 		cHDRProcessor(cGraphicsEngine& parent);
 		~cHDRProcessor();

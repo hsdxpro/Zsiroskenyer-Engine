@@ -125,14 +125,13 @@ void cGraphicsEngine::cHDRProcessor::SetDestination(ITexture2D* dest) {
 ////////////////////////////////////////////////////////////////////////////////
 //	Update
 #include <iostream>
-#include <chrono>
-auto timePrev = std::chrono::high_resolution_clock::now();
-float elapsedTotal = 0.0f;
+float elapsedTotal = 0.0f; // debug print state changes
+
 void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
-	// get a fucking elapsed time... ugly, remove this or i kill myself
-	auto timeNow = std::chrono::high_resolution_clock::now();
-	float elapsed = (float)std::chrono::duration_cast<std::chrono::microseconds>(timeNow - timePrev).count() / 1e6f;
-	timePrev = timeNow;
+	float elapsed = 1e-8;
+	if (elapsedSec >= 1e-8f) {
+		elapsed = elapsedSec;
+	}
 	elapsedTotal += elapsed;
 
 	// calculate average luminance
@@ -153,8 +152,7 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	gApi->ReadResource(luminanceStaging, &avgLuminance, sizeof(float));
 
 
-	// downsample that bullshit for blurring
-	/* TODO */
+	// TODO: downsample that bullshit for blurring //
 
 	// calculate adaptation
 	float logAvgLum = log10(avgLuminance+0.00001f);

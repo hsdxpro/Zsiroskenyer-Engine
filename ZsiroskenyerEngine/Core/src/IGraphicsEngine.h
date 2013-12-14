@@ -88,9 +88,9 @@ public:
 	virtual void Clear() = 0;
 
 	// scene state
-	virtual void SetActiveCamera(cCamera* cam) = 0;
-	virtual cCamera* GetActiveCamera() = 0;
-	virtual void SetRenderState(tRenderState state) = 0;
+	//virtual void SetActiveCamera(cCamera* cam) = 0;
+	virtual cCamera& GetCamera() = 0;
+	virtual tRenderState& GetState() = 0;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -111,12 +111,14 @@ public:
 	virtual eGraphicsResult Update(float elapsed = 0.0f) = 0;
 
 	// DEPRECATED
+	/*
 	virtual cGraphicsEntity* CreateEntity(const zsString& geomPath, const zsString& mtlPath) = 0;
 	virtual void			SetActiveCamera(cCamera* cam) = 0;
 	virtual cCamera*		GetActiveCamera() = 0;
 #pragma deprecated(CreateEntity, SetActiveCamera, GetActiveCamera)
+	*/
 
 	// NEW - scene management
-	virtual IGraphicsScene*	CreateScene() = 0;
+	virtual IGraphicsScene*	CreateScene(tRenderState state = tRenderState()) = 0;
 	virtual void			DeleteScene(const IGraphicsScene* scene) = 0;
 };

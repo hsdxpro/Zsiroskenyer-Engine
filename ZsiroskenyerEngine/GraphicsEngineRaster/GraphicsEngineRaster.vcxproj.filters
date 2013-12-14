@@ -45,6 +45,7 @@
     </ClCompile>
     <ClCompile Include="src\DeferredRenderer.cpp" />
     <ClCompile Include="src\HDRProcessor.cpp" />
+    <ClCompile Include="src\GraphicsScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GraphicsEngine.h" />

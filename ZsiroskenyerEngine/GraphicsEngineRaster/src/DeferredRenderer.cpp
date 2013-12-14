@@ -127,13 +127,13 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 
 // Render the scene to composition buffer
 void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
-	ASSERT(parent.sceneManager->GetActiveCamera() != NULL);
-
 	// Clear buffers
 	gApi->ClearTexture(depthBuffer);
 	gApi->ClearTexture(gBuffer[0], 0, Vec4(0, 0, 0, 0));
-	// GBUFFER PASS______________________________________________________________________________________________________________________________________
-
+	
+	//----------------------------------------------------------------------//
+	// --- --- --- --- --- --- --- GBUFFER PASS --- --- --- --- --- --- --- //
+	//----------------------------------------------------------------------//
 	// Set BackBuffer
 	gApi->SetRenderTargets(3, gBuffer, depthBuffer);
 
@@ -141,7 +141,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetShaderProgram(shaderGBuffer);
 
 	// Get camera params
-	cCamera* cam = parent.sceneManager->GetActiveCamera();
+	cCamera* cam = parent.camera;
 
 	// Lerping viewproj	
 	Matrix44 projMat = cam->GetProjMatrix();
@@ -203,8 +203,9 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	}
 
 
-
-	// COMPOSITION PASS______________________________________________________________________________________________________________________________________
+	//--------------------------------------------------------------------------//
+	// --- --- --- --- --- --- --- COMPOSITION PASS --- --- --- --- --- --- --- //
+	//--------------------------------------------------------------------------//
 	gApi->SetRenderTargets(1, &compositionBuffer, NULL);
 
 	// Set ShaderProgram

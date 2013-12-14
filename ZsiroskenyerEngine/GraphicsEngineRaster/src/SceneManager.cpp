@@ -16,15 +16,15 @@
 #include <cassert>
 
 //	Constructor & Destructor
-cSceneManager::cSceneManager() 
-: activeCamera(NULL) {
+cSceneManager::cSceneManager() {
 }
 
 cSceneManager::~cSceneManager() {
+	Clear();
 }
 
 
-//	Creating scene entities
+//	Add/Remove scene entities
 cGraphicsEntity* cSceneManager::AddEntity(cGeometryRef geom, cMaterialRef mtl) {
 	cInstanceGroup* instGroup = NULL;
 	cInstanceGroup searchDummy;
@@ -55,8 +55,8 @@ cGraphicsEntity* cSceneManager::AddEntity(cGeometryRef geom, cMaterialRef mtl) {
 	}
 }
 
-void cSceneManager::RemoveEntity(const cGraphicsEntity& entity) {
-	cInstanceGroup* instGroup = entity.instanceGroup;
+void cSceneManager::RemoveEntity(const cGraphicsEntity* entity) {
+	cInstanceGroup* instGroup = entity->instanceGroup;
 
 	auto it = instanceGroups.find(instGroup);
 	if (it==instanceGroups.end() || *it!=instGroup) { // only for debugging!
@@ -64,19 +64,22 @@ void cSceneManager::RemoveEntity(const cGraphicsEntity& entity) {
 		return;
 	}
 
-	instGroup->entities.erase(const_cast<cGraphicsEntity*>(&entity));
+	instGroup->entities.erase(const_cast<cGraphicsEntity*>(entity));
 	if (instGroup->entities.size() == 0) {
 		instanceGroups.erase(instGroup);
 	}
+
+	delete entity;
 }
 
-//	Camera
-void cSceneManager::SetActiveCamera(cCamera *cam) {
-	activeCamera = cam;
-}
-
-cCamera *cSceneManager::GetActiveCamera() const {
-	return activeCamera;
+// Clear scene
+void cSceneManager::Clear() {
+	for (auto instGroup : instanceGroups) {
+		for (auto entity : instGroup->entities) {
+			delete entity;
+		}
+	}
+	instanceGroups.clear();
 }
 
 //	Get entity list

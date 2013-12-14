@@ -135,9 +135,9 @@ eGraphicsResult cGraphicsEngine::Resize(unsigned width, unsigned height) {
 }
 
 // create/delete scenes
-IGraphicsScene* cGraphicsEngine::CreateScene() {
+IGraphicsScene* cGraphicsEngine::CreateScene(tRenderState state) {
 	try {
-		cGraphicsScene* newScene = new cGraphicsScene();
+		cGraphicsScene* newScene = new cGraphicsScene(*this, state);
 		graphicsScenes.insert(newScene);
 		return newScene;
 	}
@@ -154,10 +154,13 @@ void cGraphicsEngine::DeleteScene(const IGraphicsScene* scene) {
 }
 
 // DEPRECATED
+/*
 void cGraphicsEngine::SetActiveCamera(cCamera* cam) {
-	sceneManager->SetActiveCamera(cam);
+	//sceneManager->SetActiveCamera(cam);
 }
+*/
 // DEPRECATED
+/*
 cGraphicsEntity* cGraphicsEngine::CreateEntity(const zsString& geomPath, const zsString& mtlPath) {
 	cGeometryRef geom = resourceManager->GetGeometry(geomPath);
 	cMaterialRef mtl = resourceManager->GetMaterial(mtlPath);
@@ -167,20 +170,60 @@ cGraphicsEntity* cGraphicsEngine::CreateEntity(const zsString& geomPath, const z
 
 	return sceneManager->AddEntity(std::move(geom), std::move(mtl));
 }
+*/
 
 
 ////////////////////////////////////////////////////////////////////////////////
 //	Update scene
 eGraphicsResult cGraphicsEngine::Update(float elapsed) {
+	if (elapsed < 1e-8) {
+		elapsed = 1e-8;
+	}
+	/*
 	//RenderSceneForward();
 	RenderSceneDeferred();
+	return eGraphicsResult::OK;
+	*/
+	for (auto& scene : graphicsScenes) {
+		RenderScene(*scene, elapsed);
+	}
 	return eGraphicsResult::OK;
 }
 
 
+// Render a graphics scene
+void cGraphicsEngine::RenderScene(cGraphicsScene& scene, float elapsed) {
+	// load settings from scene
+	camera = &scene.camera;
+	camera->SetAspectRatio((double)screenWidth / (double)screenHeight);
+	sceneManager = &scene.sceneManager;
+	this->elapsed = elapsed;
+
+	// --- --- composition w/ deferred --- --- //
+	ASSERT(deferredRenderer);
+	deferredRenderer->RenderComposition();
+
+	// --- --- post-process --- --- //
+	static ITexture2D* compBuf_Check = NULL; // TODO: Remove this or I kill myself
+	ITexture2D* composedBuffer = deferredRenderer->GetCompositionBuffer();
+
+	// HDR
+	if (composedBuffer != compBuf_Check) {
+		compBuf_Check = composedBuffer;
+		hdrProcessor->SetSource(composedBuffer, screenWidth, screenHeight);
+	}
+	hdrProcessor->adaptedLuminance = scene.luminanceAdaptation; // copy luminance value
+	hdrProcessor->SetDestination(gApi->GetDefaultRenderTarget());	// set destination as backbuffer
+	hdrProcessor->Update(elapsed);									// update hdr
+	scene.luminanceAdaptation = hdrProcessor->adaptedLuminance; // copy luminance value
+
+	gApi->GetDefaultRenderTarget();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 //	Internal private functionality
-void cGraphicsEngine::RenderSceneForward() {
+/*
+void cGraphicsEngine::RenderForward() {
 
 	ASSERT(sceneManager->GetActiveCamera() != NULL);
 
@@ -254,19 +297,17 @@ void cGraphicsEngine::RenderSceneForward() {
 		}
 	}
 }
+*/
 
-
+/*
 // Render scene in deferred mode w/ post-processing
-void cGraphicsEngine::RenderSceneDeferred() {
+void cGraphicsEngine::RenderDeferred() {
 	ASSERT(deferredRenderer);
 
-	// render the scene to the composition buffer w/ deferredRenderer
+	// --- --- composition w/ deferred --- --- //
 	deferredRenderer->RenderComposition();
 
-	// post-processing will be run here
-	/* post-process */
-
-	// for now post-process & further rendering equals to copying the composed texture to BB
+	// --- --- post-process --- --- //
 	static ITexture2D* compBuf_Check = NULL; // TODO: Remove this or i kill myself
 	ITexture2D* composedBuffer = deferredRenderer->GetCompositionBuffer();
 
@@ -279,14 +320,8 @@ void cGraphicsEngine::RenderSceneDeferred() {
 	hdrProcessor->Update();
 
 	gApi->GetDefaultRenderTarget();
-	/*
-	gApi->SetRenderTargetDefault();
-	gApi->SetShaderProgram(screenCopyShader);
-	gApi->SetTexture(composedBuffer, 0);
-	gApi->Draw(3);
-	*/
 }
-
+*/
 
 //	Get sub-components where allowed
 cSceneManager* cGraphicsEngine::GetSceneManager()  {
@@ -303,8 +338,4 @@ IGraphicsApi* cGraphicsEngine::GetGraphicsApi() {
 
 IShaderManager* cGraphicsEngine::GetShaderManager() {
 	return shaderManager;
-}
-
-cCamera* cGraphicsEngine::GetActiveCamera() {
-	return sceneManager->GetActiveCamera();
 }

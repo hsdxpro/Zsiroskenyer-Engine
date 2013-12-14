@@ -43,15 +43,10 @@ public:
 	~cSceneManager();
 
 	cGraphicsEntity* AddEntity(cGeometryRef geom, cMaterialRef mtl);
-	void RemoveEntity(const cGraphicsEntity& entity);
-
-	void SetActiveCamera(cCamera *cam);
-
-	cCamera *GetActiveCamera() const;
+	void RemoveEntity(const cGraphicsEntity* entity);
+	void Clear();
 
 	const std::unordered_set<cInstanceGroup*, cInstGroupPtrHasher,cInstGroupPtrCompare>& GetInstanceGroups() const;
 private:
 	std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare> instanceGroups;
-
-	cCamera* activeCamera;
 };
