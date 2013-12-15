@@ -10,7 +10,10 @@
 
 //	Constructor & destructor
 cGraphicsScene::cGraphicsScene(cGraphicsEngine& parent, tRenderState state) 
-: state(state), parent(parent), camera(70.0f/180.f*3.1415926f, 1.0f, 0.5f, 2000.0f) {
+:	state(state), parent(parent),
+	camera(70.0f/180.f*3.1415926f, 1.0f, 0.5f, 2000.0f),
+	luminanceAdaptation(0.0f)
+{
 }
 
 cGraphicsScene::~cGraphicsScene() {
