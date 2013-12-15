@@ -56,9 +56,10 @@ int ricsiMain() {
 	IGraphicsApi* gApi = gEngine->GetGraphicsApi(); 
 	pEngine = core.GetPhysicsEngine();
 
-	// Create Camera
-	cCamera cam(/*0.5*3.141592653589*/1.15f, (float)winDesc.clientWidth / winDesc.clientHeight, 0.01f, 5000.0f);
-	gEngine->SetActiveCamera(&cam);
+
+	// Create scene with camera
+	IGraphicsScene* s = gEngine->CreateScene();// gEngine->SetActiveCamera(&cam);
+	s->GetCamera() = cCamera(/*0.5*3.141592653589*/1.15f, (float)winDesc.clientWidth / winDesc.clientHeight, 0.01f, 5000.0f);
 
 	// Static terrain
 	zsString staticBaseNames[9] = { "coyote",
@@ -78,14 +79,14 @@ int ricsiMain() {
 	ASSERT(sizeof(staticBaseNames) > 0);
 	for (size_t i = 0; i < sizeof(staticBaseNames) / sizeof(staticBaseNames[0]); i++) {
 		zsString geomPath = basePath + L"objects/" + staticBaseNames[i] + L".dae";
-		core.AddEntity(geomPath, geomPath, basePath + L"materials/" + staticBaseNames[i] + L".zsm", mass);
+		core.AddEntity(s, geomPath, geomPath, basePath + L"materials/" + staticBaseNames[i] + L".zsm", mass);
 	}
 	
 	// Our player
-	player = core.AddEntity(basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 10.0, false);
+	player = core.AddEntity(s, basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 10.0, false);
 	player->SetPos(Vec3(9, 0, 20));
 
-	cEntity* crate =  core.AddEntity(basePath + L"objects/crate.dae", basePath + L"objects/crate.dae", basePath + L"materials/crate.zsm", 10.0, true);
+	cEntity* crate =  core.AddEntity(s, basePath + L"objects/crate.dae", basePath + L"objects/crate.dae", basePath + L"materials/crate.zsm", 10.0, true);
 	crate->SetPos(Vec3(9, 0, 40));
 
 	//TESZT01BRANCH TESZT VÁÁ :) !
@@ -105,7 +106,7 @@ int ricsiMain() {
 		static cTimer t;
 		float tDelta = t.getDeltaSeconds();
 
-		updateDemo(cam, tDelta);
+		updateDemo(s->GetCamera(), tDelta);
 		core.Update(tDelta);
 
 		// Don't hog with set caption text... Fucking slow operation

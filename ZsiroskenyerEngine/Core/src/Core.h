@@ -40,11 +40,11 @@ public:
 	~cCore();
 
 	// Use eDebugRenderMode bit combinations
-	void DebugRender(unsigned long renderFlags);
+	void DebugRender(IGraphicsScene* s, unsigned long renderFlags);
 
 	void Update(float deltaT);
 
-	cEntity* AddEntity(const zsString& graphGeomPath, const zsString& physicsGeom, const zsString& mtlPath, float mass, bool soft = false);
+	cEntity* AddEntity(IGraphicsScene* s,const zsString& graphGeomPath, const zsString& physicsGeom, const zsString& mtlPath, float mass, bool soft = false);
 
 	IGraphicsEngine* GetGraphicsEngine();
 	IPhysicsEngine* GetPhysicsEngine();

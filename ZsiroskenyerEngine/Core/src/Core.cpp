@@ -30,7 +30,7 @@ cCore::~cCore() {
 	SAFE_DELETE(logicEngine);
 }
 
-void cCore::DebugRender(unsigned long renderFlags) {
+void cCore::DebugRender(IGraphicsScene* s, unsigned long renderFlags) {
 	// Render Physics Triangles
 	static Vec3 edges[400000]; // TODO THIS IS NOT THE BEST FOR YOU :D
 	if(renderFlags & (unsigned long)eDebugRenderMode::PHYSICS_TRIANGLES) {
@@ -39,8 +39,8 @@ void cCore::DebugRender(unsigned long renderFlags) {
 
 		if (nEdges != 0) {
 			// Render lines for physics..
-			cCamera* cam = graphicsEngine->GetActiveCamera();
-			Matrix44 viewProj = cam->GetViewMatrix() * cam->GetProjMatrix();
+			const cCamera& cam = s->GetCamera();
+			Matrix44 viewProj = cam.GetViewMatrix() * cam.GetProjMatrix();
 			debugRenderer->RenderLines(viewProj, edges, nEdges, Vec3(1.0f, 0.0f, 0.0f));
 		}
 	}
@@ -64,9 +64,9 @@ void cCore::UpdateChildLinksRecursively(cCore::tLinkNode& n) {
 	}
 }
 
-cEntity* cCore::AddEntity(const zsString& graphGeomPath,const zsString& physicsGeom, const zsString& mtlPath, float mass, bool soft /*= false*/ ) {
+cEntity* cCore::AddEntity(IGraphicsScene* s, const zsString& graphGeomPath,const zsString& physicsGeom, const zsString& mtlPath, float mass, bool soft /*= false*/ ) {
 	// Create entity module parts
-	cGraphicsEntity* gEntity = graphicsEngine->CreateEntity(graphGeomPath, mtlPath);
+	cGraphicsEntity* gEntity = s->CreateEntity(graphGeomPath, mtlPath);
 	IPhysicsEntity* pEntity;
 
 	if (soft)
