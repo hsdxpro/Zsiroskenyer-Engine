@@ -12,6 +12,7 @@
 #include "../../Core/src/Camera.h"
 #include "SceneManager.h"
 #include <set>
+#include <deque>
 
 class ITexture2D;
 class IGraphicsApi;
@@ -46,6 +47,12 @@ public:
 	cCamera& GetCamera() override;
 	tRenderState& GetState() override;
 	void Clear() override;
+
+	// scene order
+	void MoveUp() override;
+	void MoveDown() override;
+	void MoveTop() override;
+	void MoveBottom() override;
 private:
 	// information for rendering pipeline
 	tRenderState state;
@@ -116,6 +123,7 @@ private:
 	IShaderManager* shaderManager;
 	cResourceManager* resourceManager;
 	std::set<cGraphicsScene*> graphicsScenes;
+	std::deque<cGraphicsScene*> graphicsSceneOrder;
 	cDeferredRenderer* deferredRenderer;
 	cHDRProcessor* hdrProcessor;
 	

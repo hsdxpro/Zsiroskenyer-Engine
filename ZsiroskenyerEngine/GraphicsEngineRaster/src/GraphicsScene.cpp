@@ -54,3 +54,61 @@ tRenderState& cGraphicsScene::GetState() {
 void cGraphicsScene::Clear() {
 	sceneManager.Clear();
 }
+
+
+
+//	Scene order
+void cGraphicsScene::MoveUp() {
+	
+	for (auto it = parent.graphicsSceneOrder.begin();
+		it != parent.graphicsSceneOrder.end();
+		it++)
+	{
+		if (*it == this) {
+			if (it+1 != parent.graphicsSceneOrder.end()) {
+				auto itNext = it + 1;
+				auto tmp = *itNext;
+				*itNext = *it;
+				*it = tmp;
+			}
+			break;
+		}
+	}
+}
+void cGraphicsScene::MoveDown() {
+	for (auto it = parent.graphicsSceneOrder.begin();
+		it != parent.graphicsSceneOrder.end();
+		it++)
+	{
+		if (*it == this) {
+			if (it != parent.graphicsSceneOrder.begin()) {
+				auto itPrev = it - 1;
+				auto tmp = *itPrev;
+				*itPrev = *it;
+				*it = tmp;
+			}
+		}
+	}
+}
+void cGraphicsScene::MoveTop() {
+	for (auto it = parent.graphicsSceneOrder.begin();
+		it != parent.graphicsSceneOrder.end();
+		it++)
+	{
+		if (*it == this) {
+			parent.graphicsSceneOrder.erase(it);
+			parent.graphicsSceneOrder.push_back(this);
+		}
+	}
+}
+void cGraphicsScene::MoveBottom() {
+	for (auto it = parent.graphicsSceneOrder.begin();
+		it != parent.graphicsSceneOrder.end();
+		it++)
+	{
+		if (*it == this) {
+			parent.graphicsSceneOrder.erase(it);
+			parent.graphicsSceneOrder.push_front(this);
+		}
+	}
+}

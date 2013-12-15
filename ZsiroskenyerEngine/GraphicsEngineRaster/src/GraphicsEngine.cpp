@@ -139,6 +139,7 @@ IGraphicsScene* cGraphicsEngine::CreateScene(tRenderState state) {
 	try {
 		cGraphicsScene* newScene = new cGraphicsScene(*this, state);
 		graphicsScenes.insert(newScene);
+		graphicsSceneOrder.push_back(newScene);
 		return newScene;
 	}
 	catch (std::exception&) {
@@ -148,6 +149,12 @@ IGraphicsScene* cGraphicsEngine::CreateScene(tRenderState state) {
 void cGraphicsEngine::DeleteScene(const IGraphicsScene* scene) {
 	auto it = graphicsScenes.find((cGraphicsScene*)scene);
 	if (it != graphicsScenes.end()) {
+		for (auto ito = graphicsSceneOrder.begin(); ito != graphicsSceneOrder.end(); ito++) {
+			if (*ito == *it) {
+				graphicsSceneOrder.erase(ito);
+				break;
+			}
+		}
 		delete *it;
 		graphicsScenes.erase(it);
 	}
@@ -184,7 +191,7 @@ eGraphicsResult cGraphicsEngine::Update(float elapsed) {
 	RenderSceneDeferred();
 	return eGraphicsResult::OK;
 	*/
-	for (auto& scene : graphicsScenes) {
+	for (auto& scene : graphicsSceneOrder) {
 		RenderScene(*scene, elapsed);
 	}
 	return eGraphicsResult::OK;

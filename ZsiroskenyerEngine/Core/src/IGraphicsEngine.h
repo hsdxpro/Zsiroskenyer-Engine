@@ -88,9 +88,14 @@ public:
 	virtual void Clear() = 0;
 
 	// scene state
-	//virtual void SetActiveCamera(cCamera* cam) = 0;
 	virtual cCamera& GetCamera() = 0;
 	virtual tRenderState& GetState() = 0;
+
+	// scene order
+	virtual void MoveUp() = 0;
+	virtual void MoveDown() = 0;
+	virtual void MoveTop() = 0;
+	virtual void MoveBottom() = 0;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
