@@ -29,8 +29,9 @@ int main() {
 	cHagymaBox editor(window);
 
 	cTimer t;
+	IWindow::eMessage msg;
 	while (window->IsOpened()) {
-		window->PeekAllMessages();
+		while (window->HandleMessage(&msg));
 
 		editor.Update(t.getDeltaSeconds());
 	}

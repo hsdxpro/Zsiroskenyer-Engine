@@ -6,9 +6,8 @@
 #include "../../Core/src/common.h"
 #include "../../Core/src/ITexture2D.h"
 
-cGuiSystem::cGuiSystem(IGraphicsApi* gApi) 
-:resMgr(gApi) {
-}
+cGuiSystem::cGuiSystem() 
+{}
 
 cGuiSystem::~cGuiSystem() {
 	for (auto i = images.begin(); i != images.end(); i++)
@@ -25,7 +24,7 @@ cGui* cGuiSystem::CreateGui() {
 }
 
 cGuiImage* cGuiSystem::CreateImage(const zsString& filePath) {
-	cGuiImage* img = new cGuiImage(resMgr.GetTexture(filePath));
-	images.push_back(img);
-	return img;
+	//cGuiImage* img = new cGuiImage(resMgr.GetTexture(filePath));
+	//images.push_back(img);
+	return NULL;
 }

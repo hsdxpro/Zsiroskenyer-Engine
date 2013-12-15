@@ -3,11 +3,12 @@
 // cool games as easy as possible
 #pragma once
 
-class cGuiSystem;
-class cGuiRenderer;
-class cGui;
-class IWindow;
 class cCore;
+class cGuiSystem;
+class cGui;
+class IGraphicsScene;
+class IWindow;
+
 
 class cHagymaBox {
 public:
@@ -18,15 +19,16 @@ public:
 
 protected:
 	void InitGui();
-	void RenderGui();
 
-	// The main gui for the editor
-	cGui* mainGui;
+	// Zsíroskenyér core used in the toolbox
+	cCore *engineCore;
+
+	// Main 3D scene for editing
+	IGraphicsScene* editorScene;
 
 	// Guisystem responsible for the interface
 	cGuiSystem* guiSystem;
 
-	// Zsíroskenyér core used in the toolbox
-	cCore *engineCore;
-	cGuiRenderer *guiRenderer;
+	// The main gui for the editor
+	cGui* mainGui;
 };
