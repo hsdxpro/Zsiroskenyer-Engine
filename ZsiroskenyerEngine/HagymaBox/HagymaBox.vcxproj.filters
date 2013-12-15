@@ -3,52 +3,37 @@
   <ItemGroup>
     <ClCompile Include="src\HagymaBox.cpp" />
     <ClCompile Include="src\hagymaMain.cpp" />
-    <ClCompile Include="src\GuiSystem.cpp">
-      <Filter>TESZT_ASD</Filter>
-    </ClCompile>
     <ClCompile Include="src\GuiImage.cpp">
-      <Filter>TESZT_ASD\Controls</Filter>
+      <Filter>GuiSystem\Gui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GuiSystem.cpp">
+      <Filter>GuiSystem</Filter>
     </ClCompile>
     <ClCompile Include="src\Gui.cpp">
-      <Filter>TESZT_ASD</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ResourceManager.cpp">
-      <Filter>TESZT_ASD\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GuiRenderer.cpp">
-      <Filter>TESZT_ASD\Rendering</Filter>
+      <Filter>GuiSystem\Gui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\HagymaBox.h" />
-    <ClInclude Include="src\GuiSystem.h">
-      <Filter>TESZT_ASD</Filter>
-    </ClInclude>
     <ClInclude Include="src\GuiImage.h">
-      <Filter>TESZT_ASD\Controls</Filter>
+      <Filter>GuiSystem\Gui\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GuiSystem.h">
+      <Filter>GuiSystem</Filter>
     </ClInclude>
     <ClInclude Include="src\Gui.h">
-      <Filter>TESZT_ASD</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GuiRenderer.h">
-      <Filter>TESZT_ASD\Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ResourceManager.h">
-      <Filter>TESZT_ASD\Resources</Filter>
+      <Filter>GuiSystem\Gui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="TESZT_ASD">
-      <UniqueIdentifier>{2ea69e85-f3e2-4952-8ad8-6d744eef7eff}</UniqueIdentifier>
+    <Filter Include="GuiSystem">
+      <UniqueIdentifier>{1e84bba2-bbec-418a-b6d0-34435b8b4166}</UniqueIdentifier>
     </Filter>
-    <Filter Include="TESZT_ASD\Controls">
+    <Filter Include="GuiSystem\Gui">
+      <UniqueIdentifier>{c70b0ac0-98cd-4c36-adea-6d57a13041b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GuiSystem\Gui\Controls">
       <UniqueIdentifier>{2caaccec-a2f1-4936-bd05-a0ad817f2211}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="TESZT_ASD\Rendering">
-      <UniqueIdentifier>{e098de94-ec60-4adb-9f29-51c9003892a2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="TESZT_ASD\Resources">
-      <UniqueIdentifier>{84477102-d234-474e-9a24-0456cfe52fa1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
