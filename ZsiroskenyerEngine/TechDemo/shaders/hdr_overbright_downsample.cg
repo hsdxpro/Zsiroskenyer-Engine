@@ -1,4 +1,4 @@
-// input texture sampler
+// texture input sampler
 sampler2D textureInput : register(s0) = {
     MipFilter = LINEAR,
     MinFilter = LINEAR,
@@ -6,6 +6,11 @@ sampler2D textureInput : register(s0) = {
 	AddressU = Clamp,
 	AddressW = Clamp,
 };
+
+// constant buffers
+struct {
+	float logAvgLum;
+} constants : register(c0);
 
 // in/out structures
 struct VS_IN {
@@ -27,8 +32,20 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 }
 
 // pixel shader
-float PS_MAIN(VS_OUT In) : COLOR0 {
+float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	float4 color = tex2D(textureInput, In.tex0);
-	float luminance = color.r*0.2126 + color.g*0.7152 + color.b*0.0722;
-	return luminance;
+	float logAvgLum = constants.logAvgLum;
+	float pixelLum = color.r*0.2126 + color.g*0.7152 + color.b*0.0722;
+	float absAvgLum = pow(10.0f, logAvgLum);
+	// clamping for 50/50: 1/505.0=1.998e-3 & 1.998
+	float magic = 1.998f;
+	float overbrightTreshold = absAvgLum*magic;
+	
+	float m = max(0.0f, (pixelLum-overbrightTreshold)) / pixelLum;
+	color.rgb *= float3(m,m,m);
+	color.a = 1.0f;
+	
+	color.rgb = max(color.rgb, 0.0f);
+	
+	return color;
 }

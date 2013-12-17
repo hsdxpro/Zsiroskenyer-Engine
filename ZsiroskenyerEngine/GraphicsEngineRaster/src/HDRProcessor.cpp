@@ -28,7 +28,10 @@ cGraphicsEngine::cHDRProcessor::cHDRProcessor(cGraphicsEngine& parent) : parent(
 	shaderLumSample = parent.shaderManager->LoadShader("shaders/hdr_luminance_sample.cg");
 	shaderLumAvg = parent.shaderManager->LoadShader("shaders/hdr_luminance_avg.cg");
 	shaderCompose = parent.shaderManager->LoadShader("shaders/hdr_compose.cg");
-	if (!shaderLumSample || !shaderLumAvg) {
+	shaderBlurHoriz = parent.shaderManager->LoadShader("shaders/hdr_blur_horiz.cg");
+	shaderBlurVert = parent.shaderManager->LoadShader("shaders/hdr_blur_vert.cg");
+	shaderOverbright = parent.shaderManager->LoadShader("shaders/hdr_overbright_downsample.cg");
+	if (!shaderLumSample || !shaderLumAvg || !shaderBlurHoriz || !shaderBlurVert || !shaderOverbright || !shaderCompose) {
 		Cleanup();
 		throw std::runtime_error("failed to create shaders");
 	}
@@ -151,26 +154,48 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	auto r = gApi->CopyResource(luminanceBuffer[9], luminanceStaging);
 	gApi->ReadResource(luminanceStaging, &avgLuminance, sizeof(float));
 
-
-	// TODO: downsample that bullshit for blurring //
-
 	// calculate adaptation
-	float logAvgLum = log10(avgLuminance+0.00001f);
+	float logAvgLum = log10(avgLuminance + 0.00001f);
 	float rodSensitivity = 0.04 / (0.04 + logAvgLum);
 	float speed = rodSensitivity*0.4f + (1 - rodSensitivity)*0.4;
 	adaptedLuminance = adaptedLuminance + (logAvgLum - adaptedLuminance)*(1 - exp(-elapsed / speed));
 
-	// compose to destination buffer
+	// shader constants
 	struct {
 		float logAvgLum;
 		float blueShift;
 		float pad1;
 		float pad2;
 	} shaderConstants;
+
+	
+	// downsample that bullshit for blurring
+	shaderConstants.logAvgLum = adaptedLuminance;
+
+	gApi->SetRenderTargets(1, &downSampled);
+	gApi->SetTexture(source, 0);
+	gApi->SetShaderProgram(shaderOverbright);
+	gApi->SetConstantBufferData(cbCompose, &shaderConstants);
+	gApi->SetPSConstantBuffer(cbCompose, 0);
+	gApi->Draw(3);
+	
+	// now blur that bullshit
+	gApi->SetRenderTargets(1, &blurBuffer);
+	gApi->SetTexture(downSampled, 0);
+	gApi->SetShaderProgram(shaderBlurHoriz);
+	gApi->Draw(3);
+	gApi->SetRenderTargets(1, &downSampled);
+	gApi->SetTexture(blurBuffer, 0);
+	gApi->SetShaderProgram(shaderBlurVert);
+	gApi->Draw(3);
+	
+	// compose to destination buffer
 	shaderConstants.logAvgLum = adaptedLuminance;
 	shaderConstants.blueShift = 1.0f - std::min(std::max((adaptedLuminance + 2.0f) / (2.0f), 0.0f), 1.0f);
+
 	gApi->SetRenderTargets(1, &dest);
 	gApi->SetTexture(source, 0);
+	gApi->SetTexture(downSampled, 1);
 	gApi->SetShaderProgram(shaderCompose);
 	gApi->SetConstantBufferData(cbCompose, &shaderConstants);
 	gApi->SetPSConstantBuffer(cbCompose, 0);
@@ -179,7 +204,7 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	// display HDR information
 	if (elapsedTotal >= 1.0f) {
 		std::cout << "Avg. luminance = " << avgLuminance << ", log10(lum) =  " << log10(avgLuminance) << std::endl;
-		std::cout << "   [" << avgLuminance*2.994012e-3 << ", " << avgLuminance*2.994012 << "]\n";
+		std::cout << "   [" << avgLuminance*1.998e-3 << ", " << avgLuminance*1.998 << "]\n";
 		std::cout << "   Blueshift = " << 1.0f - std::min(std::max((adaptedLuminance + 2.0f) / (2.0f), 0.0f), 1.0f) << std::endl;
 		elapsedTotal = 0.0f;
 	}

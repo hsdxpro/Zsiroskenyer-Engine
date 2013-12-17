@@ -193,7 +193,7 @@ private:
 		ITexture2D* downSampled;
 		float avgLuminance;
 		float adaptedLuminance;
-		IShaderProgram *shaderLumSample, *shaderLumAvg, *shaderCompose;
+		IShaderProgram *shaderLumSample, *shaderLumAvg, *shaderOverbright, *shaderBlurVert, *shaderBlurHoriz, *shaderCompose;
 		IConstantBuffer* cbCompose;
 		unsigned sourceWidth, sourceHeight;
 

@@ -1,4 +1,4 @@
-// input texture sampler
+// texture input sampler
 sampler2D textureInput : register(s0) = {
     MipFilter = LINEAR,
     MinFilter = LINEAR,
@@ -6,6 +6,9 @@ sampler2D textureInput : register(s0) = {
 	AddressU = Clamp,
 	AddressW = Clamp,
 };
+
+// constant buffers
+
 
 // in/out structures
 struct VS_IN {
@@ -27,8 +30,12 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 }
 
 // pixel shader
-float PS_MAIN(VS_OUT In) : COLOR0 {
-	float4 color = tex2D(textureInput, In.tex0);
-	float luminance = color.r*0.2126 + color.g*0.7152 + color.b*0.0722;
-	return luminance;
+float4 PS_MAIN(VS_OUT In) : COLOR0 {
+	float4 sum = float4(0,0,0,0);
+	for (float i=-0.05; i<=0.05; i+=0.005) {
+		sum += 0.1*tex2D(textureInput, float2(clamp(In.tex0.x+i, 0.0, 1.0), In.tex0.y));
+	}
+	sum.a = 1.0f;
+
+	return sum;
 }

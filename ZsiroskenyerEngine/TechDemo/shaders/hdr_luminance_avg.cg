@@ -1,3 +1,4 @@
+// input texture sampler
 sampler2D textureInput : register(s0) = {
     MipFilter = LINEAR,
     MinFilter = LINEAR,
@@ -6,6 +7,7 @@ sampler2D textureInput : register(s0) = {
 	AddressW = Clamp,
 };
 
+// in/out structures
 struct VS_IN {
 	float3 posL 	: POSITION;
 	float2 tex0 	: TEXCOORD0;
@@ -16,6 +18,7 @@ struct VS_OUT {
 	float2 tex0 	: TEXCOORD2;
 };
 
+// vertex shader
 VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 	VS_OUT Out;
 	Out.tex0 = float2( (VertexID << 1) & 2, VertexID & 2 );
@@ -23,6 +26,7 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 	return Out;
 }
 
+// pixel shader
 float PS_MAIN(VS_OUT In) : COLOR0 {
 	float color = tex2D(textureInput, In.tex0);
 	return color;
