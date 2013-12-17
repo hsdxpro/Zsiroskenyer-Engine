@@ -36,6 +36,8 @@ cHagymaBox::~cHagymaBox() {
 }
 
 void cHagymaBox::InitGui() {
+	// GuiSystem rendezi váá...
+	//engineCore->AddEntity(editorScene,)
 	//cGuiImage* img = guiSystem->CreateImage(L"textures/cliff.jpg");
 	//mainGui->Add(img, 100, 100);
 }
