@@ -1205,7 +1205,7 @@ void cGraphicsApiD3D11::ClearTexture(ITexture2D* t, unsigned clearFlag /*= 0*/, 
 }
 
 void cGraphicsApiD3D11::Present() {
-	ASSERT_MSG(d3dsc, L"Need to set window for rendering");
+	ASSERT_MSG(d3dsc!=NULL, L"Need to set window for rendering");
 	d3dsc->Present(0, 0);
 }
 

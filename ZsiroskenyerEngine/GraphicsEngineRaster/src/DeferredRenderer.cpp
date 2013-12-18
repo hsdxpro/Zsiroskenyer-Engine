@@ -129,7 +129,10 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// Clear buffers
 	gApi->ClearTexture(depthBuffer);
-	gApi->ClearTexture(gBuffer[0], 0, Vec4(0.5f, 0.5f, 0.5f, 0.5f));
+	gApi->ClearTexture(gBuffer[0], 0, Vec4(0.5f, 0.7f, 0.8f, 0.0f));
+	gApi->ClearTexture(gBuffer[1], 0, Vec4(0.5f, 0.5f, 0.0f, 0.0f));
+	gApi->ClearTexture(gBuffer[2], 0, Vec4(0.0f, 0.0f, 0.0f, 0.0f));
+
 	
 	//----------------------------------------------------------------------//
 	// --- --- --- --- --- --- --- GBUFFER PASS --- --- --- --- --- --- --- //

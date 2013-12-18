@@ -47,6 +47,10 @@ float3 toXyz(float3 arg) {
 
 float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	float4 color = tex2D(textureInput, In.tex0);
+
+	float3 haloColor = tex2D(blurTexture, In.tex0);
+	color.rgb += haloColor;
+	
 	float logAvgLum = constants.logAvgLum;
 	float pixelLum = color.r*0.2126 + color.g*0.7152 + color.b*0.0722;
 	float absAvgLum = pow(10.0f, logAvgLum);
@@ -59,23 +63,13 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	// apply blueshift
 	float3 colorXyz = toXyz(color.rgb);
 	float scotopicLum = colorXyz.y*(1.33*(1+(colorXyz.y+colorXyz.z)/colorXyz.x)-1.68);
-	float blueShift = constants.blueShift;
+	float blueShift = constants.blueShift;	
+	
 	color.rgb = (1.0f-blueShift)*color.rgb + blueShift*0.1*float3(1.05f, 0.97f, 1.27f)*scotopicLum;
 	
-	color = color/pixelLum * t;
+	color = color * (t / max(1e-12, pixelLum));	
 
-	/*
-	if (In.tex0.x>0.5) {
-		color.rgb; // = float3(In.tex0.y, In.tex0.y, In.tex0.y);
-	}
-	else {
-		//float c = pow(In.tex0.y, 2.2);
-		//color.rgb = float3(c,c,c);
-		color.rgb = pow(color.rgb, 2.2);
-	}
-	*/
-	color.rgb = max(color.rgb, 0.0f);
-	color = color + tex2D(blurTexture, In.tex0);
+	color.rgb = max(color.rgb, float3(0.0f, 0.0f, 0.0f));
 	
 	return color;
 }

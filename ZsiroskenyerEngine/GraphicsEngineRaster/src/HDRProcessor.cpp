@@ -158,7 +158,12 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	float logAvgLum = log10(avgLuminance + 0.00001f);
 	float rodSensitivity = 0.04 / (0.04 + logAvgLum);
 	float speed = rodSensitivity*0.4f + (1 - rodSensitivity)*0.4;
+	float a = adaptedLuminance;
 	adaptedLuminance = adaptedLuminance + (logAvgLum - adaptedLuminance)*(1 - exp(-elapsed / speed));
+
+	if (isnan(adaptedLuminance)) {
+		__debugbreak();
+	}
 
 	// shader constants
 	struct {
@@ -191,7 +196,7 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	
 	// compose to destination buffer
 	shaderConstants.logAvgLum = adaptedLuminance;
-	shaderConstants.blueShift = 1.0f - std::min(std::max((adaptedLuminance + 2.0f) / (2.0f), 0.0f), 1.0f);
+	shaderConstants.blueShift = 1.0f - std::min(0.5f*std::max((adaptedLuminance + 2.0f), 0.0f), 1.0f);
 
 	gApi->SetRenderTargets(1, &dest);
 	gApi->SetTexture(source, 0);
@@ -204,8 +209,9 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	// display HDR information
 	if (elapsedTotal >= 1.0f) {
 		std::cout << "Avg. luminance = " << avgLuminance << ", log10(lum) =  " << log10(avgLuminance) << std::endl;
+		std::cout << "   Adaptation = " << adaptedLuminance << std::endl;
 		std::cout << "   [" << avgLuminance*1.998e-3 << ", " << avgLuminance*1.998 << "]\n";
-		std::cout << "   Blueshift = " << 1.0f - std::min(std::max((adaptedLuminance + 2.0f) / (2.0f), 0.0f), 1.0f) << std::endl;
+		std::cout << "   Blueshift = " << shaderConstants.blueShift << std::endl;
 		elapsedTotal = 0.0f;
 	}
 }

@@ -71,7 +71,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 
 	
 	// Buffer2 reserved for future use
-	Out.gBuffer2 = float4(In.tangentW.xyz*0.5+float3(0.5,0.5,0.5),1); // NOT USED YET | FOR DEBUG
+	Out.gBuffer2 = float4(In.tangentW.xyz*0.5+float3(0.5,0.5,0.5),1.0f); // NOT USED YET | FOR DEBUG
 	
 	/*
 	float3 pointLightPos = float3(0, 0, 0);

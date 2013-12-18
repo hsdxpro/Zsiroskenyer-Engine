@@ -46,7 +46,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 		sum += sample * weight;
 	}
 	sum /= scSum;
-	sum.a = 1.0f;
+	//sum.a = 1.0f;
 
 	return sum;
 }
