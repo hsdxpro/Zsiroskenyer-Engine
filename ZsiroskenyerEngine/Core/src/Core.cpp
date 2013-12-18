@@ -55,6 +55,8 @@ void cCore::Update(float deltaT) {
 	{
 		UpdateChildLinksRecursively(entityLinks[i]);
 	}
+
+	graphicsEngine->Update(deltaT);
 }
 
 void cCore::UpdateChildLinksRecursively(cCore::tLinkNode& n) {

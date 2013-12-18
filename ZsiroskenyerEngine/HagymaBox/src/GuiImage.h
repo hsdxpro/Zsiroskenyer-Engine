@@ -1,17 +1,12 @@
 // GuiImage.h By Zsíroskenyér Team 2013.11.22 23:25
 #pragma once
 
-class ITexture2D;
+class cGraphicsEntity;
 
 class cGuiImage {
-	friend class cGuiSystem;
-public:
-	void SetPos( unsigned posX, unsigned posY);
-
+	friend class cGui;
 protected:
-	cGuiImage(ITexture2D* t);
+	cGuiImage(cGraphicsEntity* e);
 protected:
-	ITexture2D* texture;
-
-	unsigned posX, posY;
+	cGraphicsEntity* entity;
 };

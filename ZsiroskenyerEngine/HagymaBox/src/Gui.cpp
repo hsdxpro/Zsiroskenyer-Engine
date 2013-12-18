@@ -1,11 +1,15 @@
 #include "Gui.h"
 
 #include "GuiImage.h"
+#include "../../GraphicsEngineRaster/src/GraphicsEngine.h"
 
 cGui::cGui() {
 }
 
-void cGui::Add(cGuiImage* img, unsigned posX, unsigned posY) {
-	img->SetPos(posX, posY);
-	images.push_back(img);
+cGui::cGui(IGraphicsScene* s) 
+:scene(s) {
+}
+
+cGuiImage* cGui::CreateImage(const zsString& mtlPath) {
+	return new cGuiImage(scene->CreateEntity(L"objects/quad.dae", mtlPath));
 }
