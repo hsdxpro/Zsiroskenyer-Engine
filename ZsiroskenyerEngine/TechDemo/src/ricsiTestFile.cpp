@@ -1,25 +1,25 @@
 #include "testFiles.h"
 
 // Visualities
-#include "..\..\Core\src\IGraphicsEngine.h"
-#include "..\..\GraphicsEngineRaster\src\ResourceManager.h"
-#include "..\..\Core\src\Camera.h"
-#include "..\..\Core\src\Game.h"
-#include "..\..\Core\src\Level.h"
-#include "..\..\Core\src\Entity.h"
-#include "..\..\Core\src\Core.h"
-
-// OS
-#include "..\..\Core\src\IWindow.h"
+#include "../../Core/src/IGraphicsEngine.h"
+#include "../../GraphicsEngineRaster/src/ResourceManager.h"
+#include "../../Core/src/Camera.h"
+#include "../../Core/src/Game.h"
+#include "../../Core/src/Level.h"
+#include "../../Core/src/Entity.h"
+#include "../../Core/src/Core.h"
+			
+// OS		
+#include "../../Core/src/IWindow.h"
 
 // Math and utils
-#include "..\..\Core\src\Factory.h"
-#include "..\..\Core\src\math/Quat.h"
+#include "../../Core/src/Factory.h"
+#include "../../Core/src/math/Quat.h"
 #include <vector>
 #include <cstdlib>
 #include <iostream>
 
-#include "..\..\Core\src\Timer.h"
+#include "../../Core/src/Timer.h"
 
 // TODO REMOVE THAT OR I KILL MYSELF
 #define NOMINMAX
@@ -98,21 +98,15 @@ int ricsiMain() {
 			//if (msg == IWindow::eMessage::SIZE_CHANGED)
 				//gEngine->Resize(window->GetClientWidth(), window->GetClientHeight());	
 		}
-
-		// Clear BB
-		gApi->Clear(true, true);
 	
 		// Update everything
 		static cTimer t;
-		float tDelta = t.getDeltaSeconds();
-
-		updateDemo(s->GetCamera(), tDelta);
-		core.Update(tDelta);
+		float deltaT = t.getDeltaSeconds();
 
 		// Don't hog with set caption text... Fucking slow operation
 		static float timer1 = 0.0;
-		timer1 += tDelta;
-		size_t fps = cTimer::GetFps(tDelta);
+		timer1 += deltaT;
+		size_t fps = cTimer::GetFps(deltaT);
 		if (timer1 > 1.0f)
 		{
 			window->SetCaptionText(zsString(L"[Zsíroskenyér Engine 0.1 Beta]  FPS: ") + fps);
@@ -123,8 +117,8 @@ int ricsiMain() {
 		if (GetAsyncKeyState('R') && GetAsyncKeyState(VK_LCONTROL))
 			gEngine->ReloadResources();
 
-		// Render Scene
-		gEngine->Update(tDelta);
+		updateDemo(s->GetCamera(), deltaT);
+		core.Update(deltaT);
 
 		// Debug rendering
 		//core.DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);

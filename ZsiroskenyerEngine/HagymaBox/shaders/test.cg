@@ -1,0 +1,65 @@
+float4x4 wvp : register(c0);
+float4x4 world : register(c4);
+float3 camPos : register(c8);
+
+sampler2D diffuseTex : register(s0);
+sampler2D normalTex : register(s1);
+
+struct VS_IN {
+	float3 posL 	: POSITION;
+	float3 normalL 	: NORMAL;
+	float3 tangentL : TANGENT;
+	float2 tex0 	: TEXCOORD0;
+};
+
+struct VS_OUT {
+	float4 posH 	: SV_POSITION;
+	float3 normalW 	: TEXCOORD0;
+	float3 tangentW	: TEXCOORD1;
+	float2 tex0 	: TEXCOORD2;
+	float3 posW 	: TEXCOORD3;
+	float3x3 TBN	: TEXCOORD4;
+};
+
+struct PS_OUT {
+	float4 color : COLOR;
+};
+
+
+VS_OUT VS_MAIN(VS_IN In) {
+	VS_OUT vout;
+	vout.tex0 = In.tex0;
+
+	vout.posW = In.posL.x * world[0].xyz + ( In.posL.y * world[1].xyz + (In.posL.z * world[2].xyz) + world[3].xyz);
+	vout.normalW = In.normalL.x* world[0].xyz + ( In.normalL.y * world[1].xyz + (In.normalL.z * world[2].xyz));
+	vout.tangentW = In.tangentL.x* world[0].xyz + ( In.tangentL.y * world[1].xyz + (In.tangentL.z * world[2].xyz));
+	vout.posH = In.posL.x * wvp[0] + ( In.posL.y * wvp[1] + (In.posL.z * wvp[2] + wvp[3]));
+
+	// Calculate TBN base per vertex (CHEAP) (Tangent to World space)
+		float3 N = vout.normalW;
+		float3 T = normalize(vout.tangentW - dot(vout.tangentW,N)*N);
+		float3 B = cross(N,T);
+	vout.TBN = float3x3(T,B,N);
+	return vout;
+}
+
+PS_OUT PS_MAIN(VS_OUT In) {
+	PS_OUT pout;
+
+	// Sample normal from texture
+	//NormalMap mintavételezés, eredmény [0,1]  ->	   //[0,1] to [-1,1]
+	float3 normalT = normalize(tex2D(normalTex, In.tex0).xyz * 2.0f - 1.0f);
+	float3 normalW = mul(normalT, In.TBN);
+
+	float3 pointLightPos = float3(0, 0, 0);
+	float3 lightVec = normalize(pointLightPos - In.posW);
+	float intensity = saturate(dot(normalW , lightVec)) / distance(pointLightPos, In.posW) * 90;
+	if(intensity > 0.0f) // ELIMINATE THAT BULLSHIT NOW !!!! Don't you hear ?
+	{
+		float3 h = normalize(lightVec + camPos - In.posW);
+		intensity += pow(saturate(dot(normalW , h)), 255);
+	}
+	pout.color = tex2D(diffuseTex, In.tex0);// * float4(intensity, intensity, intensity, 1.0f);
+	//pout.color = float4(mul(normalT, In.TBN), 1.0f);
+	return pout;
+};

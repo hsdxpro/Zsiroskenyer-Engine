@@ -1,0 +1,51 @@
+// texture input sampler
+sampler2D textureInput : register(s0) = {
+    MipFilter = LINEAR,
+    MinFilter = LINEAR,
+    MagFilter = LINEAR,
+	AddressU = Clamp,
+	AddressW = Clamp,
+};
+
+// constant buffers
+struct {
+	float logAvgLum;
+} constants : register(c0);
+
+// in/out structures
+struct VS_IN {
+	float3 posL 	: POSITION;
+	float2 tex0 	: TEXCOORD0;
+};
+
+struct VS_OUT {
+	float4 posH 	: SV_POSITION;
+	float2 tex0 	: TEXCOORD2;
+};
+
+// vertex shader
+VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
+	VS_OUT Out;
+	Out.tex0 = float2( (VertexID << 1) & 2, VertexID & 2 );
+	Out.posH = float4(  Out.tex0 * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f), 0.0f, 1.0f );
+	return Out;
+}
+
+// pixel shader
+float4 PS_MAIN(VS_OUT In) : COLOR0 {
+	float4 color = tex2D(textureInput, In.tex0);
+	float logAvgLum = constants.logAvgLum;
+	float pixelLum = color.r*0.2126 + color.g*0.7152 + color.b*0.0722;
+	float absAvgLum = pow(10.0f, logAvgLum);
+	// clamping for 50/50: 1/505.0=1.998e-3 & 1.998
+	float magic = 1.998f;
+	float overbrightTreshold = absAvgLum*magic;
+	
+	float m = max(0.0f, (pixelLum-overbrightTreshold)) / pixelLum;
+	color.rgb *= float3(m,m,m);
+	color.a = 1.0f;
+	
+	color.rgb = max(color.rgb, 0.0f);
+	
+	return color;
+}

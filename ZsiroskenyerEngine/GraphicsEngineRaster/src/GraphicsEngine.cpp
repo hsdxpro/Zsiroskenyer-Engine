@@ -186,6 +186,8 @@ eGraphicsResult cGraphicsEngine::Update(float elapsed) {
 	if (elapsed < 1e-8) {
 		elapsed = 1e-8;
 	}
+	gApi->Clear(true, true);
+
 	/*
 	//RenderSceneForward();
 	RenderSceneDeferred();

@@ -14,17 +14,15 @@ cHagymaBox::cHagymaBox(IWindow* w) {
 	tGraphicsConfig gCfg; gCfg.rasterEngine.gxApi = tGraphicsConfig::D3D11;
 	engineCore = new cCore(w, w->GetClientWidth(), w->GetClientHeight(), gCfg);
 
-	// Need gApi, review why that shit needed...
-	//IGraphicsApi* gApi = engineCore->GetGraphicsEngine()->GetGraphicsApi();
-
 	// Main 3D scene for editing
-	editorScene = engineCore->GetGraphicsEngine()->CreateScene();
+	scene = engineCore->GetGraphicsEngine()->CreateScene();
+	scene->GetCamera() = cCamera(/*0.5*3.141592653589*/1.15f, (float)w->GetClientWidth() / w->GetClientHeight(), 0.01f, 5000.0f);
 
 	// Create gui system
 	guiSystem = new cGuiSystem();
 
 	// Create gui
-	mainGui = guiSystem->CreateGui();
+	mainGui = guiSystem->CreateGui(engineCore->GetGraphicsEngine()->CreateScene());
 
 	// Init gui
 	InitGui();
@@ -36,14 +34,21 @@ cHagymaBox::~cHagymaBox() {
 }
 
 void cHagymaBox::InitGui() {
-	// GuiSystem rendezi váá...
-	//engineCore->AddEntity(editorScene,)
-	//cGuiImage* img = guiSystem->CreateImage(L"textures/cliff.jpg");
-	//mainGui->Add(img, 100, 100);
+	cGuiImage* img = mainGui->CreateImage(L"materials/cliff.zsm");
 }
 
-void cHagymaBox::Update(float tDelta) {
+void cHagymaBox::Update(float deltaT) {
+	engineCore->Update(deltaT);
+	engineCore->GetGraphicsEngine()->GetGraphicsApi()->Present();
 	// Updating the gui system..
 
 	// Editor Logic here :....
+}
+
+cCore* cHagymaBox::GetEngineCore() {
+	return engineCore;
+}
+
+cCamera& cHagymaBox::GetCamera() {
+	return scene->GetCamera();
 }

@@ -9,13 +9,17 @@ class cGui;
 class IGraphicsScene;
 class IWindow;
 
+#include "../../Core/src/Camera.h"
 
 class cHagymaBox {
 public:
 	cHagymaBox(IWindow* w);
 	~cHagymaBox();
 
-	void Update(float tDelta);
+	void Update(float deltaT);
+
+	cCore* GetEngineCore();
+	cCamera& GetCamera();
 
 protected:
 	void InitGui();
@@ -24,7 +28,7 @@ protected:
 	cCore *engineCore;
 
 	// Main 3D scene for editing
-	IGraphicsScene* editorScene;
+	IGraphicsScene* scene;
 
 	// Guisystem responsible for the interface
 	cGuiSystem* guiSystem;

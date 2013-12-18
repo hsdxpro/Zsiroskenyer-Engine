@@ -5,7 +5,7 @@
 #include "../../Core/src/zsString.h"
 #include <vector>
 
-class IGraphicsApi;
+class IGraphicsScene;
 class cGuiImage;
 class cGui;
 
@@ -14,8 +14,7 @@ public:
 	cGuiSystem();
 	~cGuiSystem();
 
-	cGui* CreateGui();
-	cGuiImage* CreateImage(const zsString& filePath);
+	cGui* CreateGui(IGraphicsScene* s);
 protected:
 	// Image gui controls
 	std::vector<cGuiImage*> images;

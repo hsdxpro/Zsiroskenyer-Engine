@@ -2,17 +2,24 @@
 // Holding GuiControls
 #pragma once
 
+#include "../../Core/src/zsString.h"
 #include <list>
 
+class IGraphicsScene;
 class cGuiImage;
 
 class cGui {
 public:
 	friend class cGuiSystem;
 
-	void Add(cGuiImage* img, unsigned posX, unsigned posY);
+	cGuiImage* CreateImage(const zsString& mtlPath);
+
 protected:
 	cGui();
+	cGui(IGraphicsScene* s);
 protected:
+	// Gui represented with cGraphicsScene
+	IGraphicsScene* scene;
+
 	std::list<cGuiImage*> images;
 };
