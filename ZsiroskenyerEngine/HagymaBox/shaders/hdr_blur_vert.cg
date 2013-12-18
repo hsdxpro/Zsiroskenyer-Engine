@@ -1,0 +1,41 @@
+// texture input sampler
+sampler2D textureInput : register(s0) = {
+    MipFilter = LINEAR,
+    MinFilter = LINEAR,
+    MagFilter = LINEAR,
+	AddressU = Clamp,
+	AddressW = Clamp,
+};
+
+// constant buffers
+
+
+// in/out structures
+struct VS_IN {
+	float3 posL 	: POSITION;
+	float2 tex0 	: TEXCOORD0;
+};
+
+struct VS_OUT {
+	float4 posH 	: SV_POSITION;
+	float2 tex0 	: TEXCOORD2;
+};
+
+// vertex shader
+VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
+	VS_OUT Out;
+	Out.tex0 = float2( (VertexID << 1) & 2, VertexID & 2 );
+	Out.posH = float4(  Out.tex0 * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f), 0.0f, 1.0f );
+	return Out;
+}
+
+// pixel shader
+float4 PS_MAIN(VS_OUT In) : COLOR0 {
+	float4 sum = float4(0,0,0,0);
+	for (float i=-0.05; i<=0.05; i+=0.005) {
+		sum += 0.1*tex2D(textureInput, float2(In.tex0.x, clamp(In.tex0.y+i, 0.0, 1.0)));
+	}
+	sum.a = 1.0f;
+
+	return sum;
+}

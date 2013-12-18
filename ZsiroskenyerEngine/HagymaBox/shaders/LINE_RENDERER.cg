@@ -1,0 +1,28 @@
+float4x4 viewProjMat;
+float3 color;
+
+
+struct VS_IN {
+	float3 posL : POSITION;
+};
+
+struct VS_OUT {
+	float4 posH : SV_POSITION;
+};
+
+struct PS_OUT {
+	float4 color : COLOR;
+};
+
+
+VS_OUT VS_MAIN(VS_IN In) {
+	VS_OUT vout;
+		vout.posH = In.posL.x * viewProjMat[0] + (In.posL.y * viewProjMat[1] + (In.posL.z * viewProjMat[2] + viewProjMat[3]));
+	return vout;
+}
+
+PS_OUT PS_MAIN(VS_OUT In) {
+	PS_OUT pout;
+		pout.color = float4(color,1.0f);
+	return pout;
+};
