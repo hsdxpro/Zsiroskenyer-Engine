@@ -40,7 +40,6 @@ int main() {
 
 	
 	cHagymaBox editor(window);
-
 	pEngine = editor.GetEngineCore()->GetPhysicsEngine();
 
 	cTimer t;
@@ -55,34 +54,11 @@ int main() {
 }
 
 
-bool noJump = false; // don't commit suicide upon seeing this :D
+bool noJump = false;
 void updateDemo(cCamera& cam, float tDelta) {
-	/*
-	static Quat playerRot;
-	Vec3 playerDir = Vec3(0, 1, 0) * playerRot;
-	const Vec3 up(0, 0, 1);
-
-	// Controlling player with WSAD
-	Vec3 deltaMove(0, 0, 0);
-	if (GetAsyncKeyState('W'))
-	deltaMove += playerDir * tDelta;
-	if (GetAsyncKeyState('S'))
-	deltaMove += -playerDir * tDelta;
-	if (GetAsyncKeyState('A'))
-	deltaMove += Vec3::Cross(up, playerDir)  * tDelta;
-	if (GetAsyncKeyState('D'))
-	deltaMove += Vec3::Cross(playerDir, up)  * tDelta;
-
-	Vec3 playerPos = player->GetPos();
-	player->SetPos(playerPos + deltaMove);
-	cam.SetPos(playerPos + Vec3(0, -0.75, 2));
-	*/
-
 	// Shooting boxes
-	//if (((short)GetAsyncKeyState(VK_LBUTTON)) & 0x80) // Press detect doesn't work :(
 	if (GetAsyncKeyState(VK_LBUTTON))
 		pEngine->ShootBox(0.3f, cam.GetPos(), cam.GetDirFront(), 60); // This function in the interface is just for test purposes
-
 
 	// CAMERA MOVING
 	Vec3 deltaMove(0, 0, 0);
@@ -98,7 +74,6 @@ void updateDemo(cCamera& cam, float tDelta) {
 	// Set new position
 	cam.SetPos(cam.GetPos() + deltaMove);
 	cam.SetTarget(cam.GetTarget() + deltaMove);
-
 
 	// CAMERA ROTATION...
 	// get delta mouse
