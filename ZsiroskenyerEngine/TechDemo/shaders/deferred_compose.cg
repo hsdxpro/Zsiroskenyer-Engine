@@ -305,8 +305,9 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	
 	// light properties: THESE ARE JUST MADE UP HERE
 	float3 lightDir = normalize(float3(0.5, 0.5, -0.5));
-	float3 lightColor = 1.5*float3(192.0/255.0, 191.0/255.0, 173.0/255.0); // sun color at noon
-	float3 ambientColor = 1.5*float3(25.0/255.0, 30.0/255.0, 45.0/255.0); // sky color at noon
+	// HINT: 5e3 is the luminance of full sunlit scene
+	float3 lightColor = 16e3 * float3(192.0/255.0, 191.0/255.0, 173.0/255.0); // sun color at noon
+	float3 ambientColor = 16e3 * float3(25.0/255.0, 30.0/255.0, 45.0/255.0); // sky color at noon
 	
 	// deal with sky: this is ugly...
 	if (samplegBuffer2.a < 0.000001f) {
@@ -322,10 +323,13 @@ PS_OUT PS_MAIN(VS_OUT In) {
 		
 		float deviation = acos(dot(lightDir, -viewDir));
 		if (deviation < 32.0f/60.0f/180.f*3.1415926f) {
-			skyColor += lightColor*50.f;
+			// HINT: 1.6e9 is the luminance of the sun disk at noon
+			skyColor += lightColor*1e9f;
 		}
 		
 		//color = samplegBuffer0.rgb;
+		// HINT: 7e3 is the luminance of a clear sky
+		skyColor.rgb *= 9.0e3f;
 		Out.color = float4(skyColor.rgb, 1.0f);
 		return Out;
 	}
