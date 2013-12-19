@@ -162,14 +162,14 @@ float Fresnel(float NdotL, float fresnelBias, float fresnelPow)
 
 }
 
-float CookTorranceMagic(float3 N, float3 I)
+float CookTorranceMagic(float3 N, float3 I, float L)
 {
 	// Test material...
-	float Ka = 1;
+	float Ka = 0.5;
 	float Ks = 0.8;
 	float Kd = 0.8;
-	float IOR = 1.3;
-	float roughness = 0.2;
+	float IOR = 0.3;
+	float roughness = 0.5;
 	float opacity = 1;
 	float specularColor = 1;
 	//float4 diffuseColor = (.6, .6, .6);
@@ -188,7 +188,7 @@ float CookTorranceMagic(float3 N, float3 I)
         float NdotV = dot(Nn,Vn);
         
         //half angle vector
-        float3 Ln = normalize(I);
+        float3 Ln = normalize(L);
         float3 H = normalize(Vn+Ln);
                 
         float NdotH = dot(Nn,H);
@@ -198,15 +198,13 @@ float CookTorranceMagic(float3 N, float3 I)
         float alpha = acos(NdotH);
               
         //microfacet distribution
-        float D = 1.0f;//gaussConstant*exp(-(alpha*alpha)/(m*m));
+        float D = gaussConstant*exp(-(alpha*alpha)/(m*m));
    
         //geometric attenuation factor
-        float G = 1.0f;// min(1, min((2*NdotH*NdotV/VdotH), (2*NdotH*NdotL/VdotH)));
+        float G = min(1, min((2*NdotH*NdotV/VdotH), (2*NdotH*NdotL/VdotH)));
 
         //sum contributions
-        cook += (F*D*G)/(PI*NdotV);
-			
-        return cook/PI;
+        return clamp((F*D*G)/(PI*NdotV),0.1f, 2.0f);
 }
 
 /* garbage
