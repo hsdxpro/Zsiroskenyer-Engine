@@ -43,16 +43,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	float b = absAvgLum*magic;
 	float t = ((pixelLum-a)/(b-a));
 	
-	//color.rgb = color.rgb/pixelLum*t - color.rgb/pixelLum;
-	//color.rgb = color.rgb * pixelLum / t;
-	
 	color.rgb -= color.rgb / max(1e-12f, pixelLum) * b;
-	
-	//color.rgb = color.rgb / (pixelLum * (t-b));
-	//color.rgb = color.rgb * pixelLum / t;
-
-	// x/a*t - x/a*c
-	// x/a * (t-c)
 	
 	color.rgb = max(color.rgb, float3(0.0f, 0.0f, 0.0f));
 	
