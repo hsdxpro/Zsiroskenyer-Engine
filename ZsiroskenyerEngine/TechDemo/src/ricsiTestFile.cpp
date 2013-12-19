@@ -89,14 +89,15 @@ int ricsiMain() {
 	cEntity* crate =  core.AddEntity(s, basePath + L"objects/crate.dae", basePath + L"objects/crate.dae", basePath + L"materials/crate.zsm", 10.0, true);
 	crate->SetPos(Vec3(9, 0, 40));
 
-	//TESZT01BRANCH TESZT VÁÁ :) !
+	//gEngine->Resize(1366, 768);
 
 	// Main loop
 	IWindow::eMessage msg;
 	while(window->IsOpened()) {
 		while (window->HandleMessage(&msg)) {
-			//if (msg == IWindow::eMessage::SIZE_CHANGED)
-				//gEngine->Resize(window->GetClientWidth(), window->GetClientHeight());	
+			if (msg == IWindow::eMessage::SIZE_CHANGED)
+			gEngine->Resize(window->GetClientWidth(), window->GetClientHeight());
+			//gEngine->Resize(1366, 768);
 		}
 	
 		// Update everything
