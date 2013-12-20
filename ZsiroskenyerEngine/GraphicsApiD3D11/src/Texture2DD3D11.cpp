@@ -7,10 +7,10 @@ cTexture2DD3D11::cTexture2DD3D11(size_t width, size_t height, ID3D11Texture2D* t
 }
 
 cTexture2DD3D11::~cTexture2DD3D11() {
+	tex = NULL;
 	SAFE_RELEASE(srv);
 	SAFE_RELEASE(rtv);
 	SAFE_RELEASE(dsv);
-	SAFE_RELEASE(tex);
 }
 
 void cTexture2DD3D11::Release() {
@@ -28,7 +28,6 @@ size_t cTexture2DD3D11::GetHeight() const {
 ID3D11Texture2D* const cTexture2DD3D11::Get() const {
 	ASSERT(tex);
 	return tex;
-	return NULL;
 }
 
 ID3D11ShaderResourceView* const cTexture2DD3D11::GetSRV() const {

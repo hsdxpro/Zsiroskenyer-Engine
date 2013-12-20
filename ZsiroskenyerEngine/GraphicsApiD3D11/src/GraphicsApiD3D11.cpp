@@ -329,11 +329,11 @@ eGapiResult cGraphicsApiD3D11::CreateViewsForBB(const tDxConfig& config) {
 
 	// create DepthStencilView
 	hr = d3ddev->CreateDepthStencilView(depthTexture, NULL, &dsv);
-	SAFE_RELEASE(depthTexture);
-	SAFE_RELEASE(backBuffer);
 
 	if (FAILED(hr)) {
 		ASSERT_MSG(false, "Failed to create depth buffer VIEW for swapChain");
+		SAFE_RELEASE(depthTexture);
+		SAFE_RELEASE(backBuffer);
 		if (hr == E_OUTOFMEMORY)
 			return eGapiResult::ERROR_OUT_OF_MEMORY;
 		else
@@ -341,6 +341,10 @@ eGapiResult cGraphicsApiD3D11::CreateViewsForBB(const tDxConfig& config) {
 	}
 
 	defaultRenderTarget = new cTexture2DD3D11(bbDesc.Width, bbDesc.Height, backBuffer, srv, rtv, dsv);
+	
+	SAFE_RELEASE(depthTexture);
+	SAFE_RELEASE(backBuffer);
+
 	return eGapiResult::OK;
 }
 
@@ -383,15 +387,6 @@ HRESULT cGraphicsApiD3D11::CompileShaderFromFile(const zsString& fileName, const
 	HRESULT hr = S_OK;
 
 	DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
-
-#if defined( DEBUG ) || defined( _DEBUG )
-	// set the D3DCOMPILE_DEBUG flag to embed debug information in the shaders.
-	// setting this flag improves the shader debugging experience, but still allows 
-	// the shaders to be optimized and to run exactly the way they will run in 
-	// the release configuration of this program.
-	dwShaderFlags |= D3DCOMPILE_DEBUG;
-	dwShaderFlags |= D3D10_SHADER_SKIP_OPTIMIZATION;
-#endif
 
 	ID3DBlob* pErrorBlob;
 	char ansiEntry[256];
@@ -894,7 +889,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	IFile* cgFile = NULL;
 	for (size_t i = 0; i < nShaders; i++) {
 		byteCodeSizes[i] = 0;
-		blobs[i] = 0;
+		blobs[i] = NULL;
 
 		// Found binary ... Read it
 		if (binExistences[i]) {

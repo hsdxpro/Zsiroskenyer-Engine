@@ -271,7 +271,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 
 	// DEPTH OF FIELD______________________________________________________________________________________________________________________________________
-	gApi->SetRenderTargets(1, &compositionBuffer, NULL);
+	//gApi->SetRenderTargets(1, &compositionBuffer, NULL);
+	gApi->SetRenderTargetDefault(); // test purposes
 
 	IShaderProgram* dofShProg = parent.GetShaderManager()->GetShaderByName(L"depth_of_field.cg");
 	gApi->SetShaderProgram(dofShProg);

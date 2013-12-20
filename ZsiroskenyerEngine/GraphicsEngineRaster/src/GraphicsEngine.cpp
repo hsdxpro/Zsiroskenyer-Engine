@@ -212,6 +212,7 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, float elapsed) {
 	ASSERT(deferredRenderer);
 	deferredRenderer->RenderComposition();
 
+	/*
 	// --- --- post-process --- --- //
 	static ITexture2D* compBuf_Check = NULL; // TODO: Remove this or I kill myself
 	ITexture2D* composedBuffer = deferredRenderer->GetCompositionBuffer();
@@ -227,6 +228,7 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, float elapsed) {
 	scene.luminanceAdaptation = hdrProcessor->adaptedLuminance; // copy luminance value
 
 	gApi->GetDefaultRenderTarget();
+	*/
 }
 
 ////////////////////////////////////////////////////////////////////////////////
