@@ -155,7 +155,8 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	gApi->ReadResource(luminanceStaging, &avgLuminance, sizeof(float));
 
 	// calculate adaptation
-	float logAvgLum = log10(avgLuminance + 0.00001f);
+	avgLuminance = std::max(1e-15f, avgLuminance);
+	float logAvgLum = log10(avgLuminance);
 	float rodSensitivity = 0.04 / (0.04 + logAvgLum);
 	float speed = rodSensitivity*0.4f + (1 - rodSensitivity)*0.4;
 	float a = adaptedLuminance;
