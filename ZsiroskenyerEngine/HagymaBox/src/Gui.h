@@ -2,6 +2,7 @@
 // Holding GuiControls
 #pragma once
 
+#include "../../Core/src/Camera.h"
 #include "../../Core/src/zsString.h"
 #include <list>
 
@@ -13,6 +14,8 @@ public:
 	friend class cGuiSystem;
 
 	cGuiImage* CreateImage(const zsString& mtlPath);
+
+	cCamera& GetCamera();
 
 protected:
 	cGui();

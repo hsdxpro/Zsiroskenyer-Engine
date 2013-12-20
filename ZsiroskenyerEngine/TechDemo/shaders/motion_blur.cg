@@ -35,7 +35,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	float4 prevPosH = mul(posW, prevViewProj);
 	prevPosH.xyzw /= prevPosH.w;
 	
-	float2 velocity = (currPosH.xy - prevPosH.xy) / 2.0f / 8;
+	float2 velocity = (currPosH.xy - prevPosH.xy) / 2.0f/ 8;
 
 	// Get the initial color at this pixel.  
    	float4 color = tex2D(texture0, In.tex0);

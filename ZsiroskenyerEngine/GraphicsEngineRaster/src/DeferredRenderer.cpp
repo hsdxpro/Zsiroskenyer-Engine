@@ -146,13 +146,12 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// Get camera params
 	cCamera* cam = parent.camera;
 
-	// Lerping viewproj	
+	// Just lerping view, then combine how you want
+	Matrix44 currView = cam->GetViewMatrix();
+	static Matrix44 prevView = currView;
+	Matrix44 currLerpedView = lerp( prevView, currView, 0.35f);
 	Matrix44 projMat = cam->GetProjMatrix();
-	Matrix44 currViewProj = cam->GetViewMatrix() * projMat;
-	static Matrix44 prevViewProj = currViewProj;
-
-
-	Matrix44 currLerpedViewProj = lerp(currViewProj, prevViewProj, 0.35f);
+	Matrix44 viewProjMat = currLerpedView * projMat;
 
 	// Render each instanceGroup
 	for (auto& group : parent.sceneManager->GetInstanceGroups()) {
@@ -185,7 +184,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 			// Entity world matrix
 			Matrix44 world = entity->GetWorldMatrix();
 			// WorldViewProj matrix
-			Matrix44 wvp = world * currLerpedViewProj;
+			Matrix44 wvp = world * viewProjMat;
 
 			struct gBuffConstantBuff
 			{
@@ -220,7 +219,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		Matrix44 proj;
 		Vec3 camPos;
 	} buffer;
-	buffer.invViewProj = Matrix44::Inverse(currLerpedViewProj);
+	buffer.invViewProj = Matrix44::Inverse(viewProjMat);
 	buffer.camPos = cam->GetPos();
 	buffer.proj = projMat;
 
@@ -254,8 +253,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		Matrix44 prevViewProj;
 	} asd;
 
-	asd.invViewProj = Matrix44::Inverse(currLerpedViewProj);
-	asd.prevViewProj = prevViewProj;
+	asd.invViewProj = Matrix44::Inverse(viewProjMat);
+	asd.prevViewProj = prevView * projMat;
 
 	gApi->SetConstantBufferData(shitBuffer, &asd);
 	gApi->SetPSConstantBuffer(shitBuffer, 0);
@@ -263,11 +262,11 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetTexture(compositionBuffer, 0);
 	gApi->SetTexture(depthBuffer, 1);
 
-	prevViewProj = currLerpedViewProj;
+	// asd new
+	prevView = currLerpedView;
 
 	// Draw triangle, hardware will quadify them automatically :)
 	gApi->Draw(3);
-
 
 
 	// DEPTH OF FIELD______________________________________________________________________________________________________________________________________
