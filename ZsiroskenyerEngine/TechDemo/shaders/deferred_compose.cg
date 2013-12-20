@@ -343,7 +343,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	color = (diffuseTerm + specularTerm) * lightAtten;
 	// ambient & AO
 	float aoFactor = 1.0f;
-	aoFactor = 1.0f - ambientocclusionprocess(In.tex0);
+	aoFactor = 1.0f;// - ambientocclusionprocess(In.tex0);
 	color += ambientColor * diffuseColor;
 	color *= aoFactor;
 	
