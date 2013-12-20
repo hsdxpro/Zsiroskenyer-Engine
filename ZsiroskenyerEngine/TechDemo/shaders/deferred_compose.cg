@@ -66,7 +66,7 @@ float3 depthToWorldSpace(float depth, float2 texCoord)
 
 
 float3 GetPosition(float2 texCoord) {
-	return GetWorldPosition(texCoord, tex2D(depthBuffer, texCoord));
+	return GetWorldPosition(texCoord, tex2Dlod(depthBuffer, float4(texCoord,0,0)));
 }
 
 float3 GetNormal(float2 texCoord) {
@@ -343,7 +343,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	color = (diffuseTerm + specularTerm) * lightAtten;
 	// ambient & AO
 	float aoFactor = 1.0f;
-	aoFactor = 1.0f;// - ambientocclusionprocess(In.tex0);
+	aoFactor = 1.0f - ambientocclusionprocess(In.tex0);
 	color += ambientColor * diffuseColor;
 	color *= aoFactor;
 	
