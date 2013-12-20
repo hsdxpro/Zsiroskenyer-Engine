@@ -39,13 +39,11 @@ PS_OUT PS_MAIN(VS_OUT In) {
 
 	// Get the initial color at this pixel.  
    	float4 color = tex2D(texture0, In.tex0);
-    	//Out.color = color;
-	//return Out;
 
 	int nSamples = 8;
 	for(int i = 1; i < nSamples; ++i)     
    		color += tex2D(texture0, clamp(In.tex0 + i * velocity, 0.005f, 0.993f));
  
-	Out.color = color / nSamples; 
+	Out.color = color / (nSamples + 1);
 	return Out;
 }

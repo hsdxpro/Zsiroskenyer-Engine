@@ -298,7 +298,9 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	// get normal and world position
 	float3 normal = UnpackNormal(samplegBuffer1);
 	float3 posW = GetWorldPosition(In.tex0, depth);
-		
+	//Out.color.xyz = normal.xyz;
+	//return Out;
+
 	// get material properties
 	float3 diffuseColor = samplegBuffer0.rgb;
 	float glossiness = 0.01f;
