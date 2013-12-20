@@ -26,7 +26,7 @@ IPhysicsEngine* pEngine;
 // The gui system that i create is just test, so sources are stay in HagymaBox project
 
 // Bullshit camera for demo
-void updateDemo(cCamera& cam, float tDelta);
+void updateDemo(cCamera& cam, float deltaT);
 
 int main() {
 	// Create window
@@ -55,7 +55,7 @@ int main() {
 
 
 bool noJump = false;
-void updateDemo(cCamera& cam, float tDelta) {
+void updateDemo(cCamera& cam, float deltaT) {
 	// Shooting boxes
 	if (GetAsyncKeyState(VK_LBUTTON))
 		pEngine->ShootBox(0.3f, cam.GetPos(), cam.GetDirFront(), 60); // This function in the interface is just for test purposes
@@ -63,13 +63,13 @@ void updateDemo(cCamera& cam, float tDelta) {
 	// CAMERA MOVING
 	Vec3 deltaMove(0, 0, 0);
 	if (GetAsyncKeyState('W'))
-		deltaMove += cam.GetDirFront() * (CAM_MOVE_SPEED * tDelta);
+		deltaMove += cam.GetDirFront() * (CAM_MOVE_SPEED * deltaT);
 	if (GetAsyncKeyState('S'))
-		deltaMove += cam.GetDirBack()  * (CAM_MOVE_SPEED * tDelta);
+		deltaMove += cam.GetDirBack()  * (CAM_MOVE_SPEED * deltaT);
 	if (GetAsyncKeyState('A'))
-		deltaMove += cam.GetDirLeft()  * (CAM_MOVE_SPEED * tDelta);
+		deltaMove += cam.GetDirLeft()  * (CAM_MOVE_SPEED * deltaT);
 	if (GetAsyncKeyState('D'))
-		deltaMove += cam.GetDirRight() * (CAM_MOVE_SPEED * tDelta);
+		deltaMove += cam.GetDirRight() * (CAM_MOVE_SPEED * deltaT);
 
 	// Set new position
 	cam.SetPos(cam.GetPos() + deltaMove);

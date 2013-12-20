@@ -58,7 +58,7 @@ int ricsiMain() {
 
 
 	// Create scene with camera
-	IGraphicsScene* s = gEngine->CreateScene();// gEngine->SetActiveCamera(&cam);
+	IGraphicsScene* s = gEngine->CreateScene();
 	s->GetCamera() = cCamera(/*0.5*3.141592653589*/1.15f, (float)winDesc.clientWidth / winDesc.clientHeight, 0.01f, 5000.0f);
 
 	// Static terrain
@@ -86,10 +86,9 @@ int ricsiMain() {
 	player = core.AddEntity(s, basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 10.0, false);
 	player->SetPos(Vec3(9, 0, 20));
 
-	cEntity* crate =  core.AddEntity(s, basePath + L"objects/crate.dae", basePath + L"objects/crate.dae", basePath + L"materials/crate.zsm", 10.0, true);
-	crate->SetPos(Vec3(9, 0, 40));
-
-	//gEngine->Resize(1366, 768);
+	// Soft body test
+	//cEntity* crate =  core.AddEntity(s, basePath + L"objects/crate.dae", basePath + L"objects/crate.dae", basePath + L"materials/crate.zsm", 10.0, true);
+	//crate->SetPos(Vec3(9, 0, 40));
 
 	// Main loop
 	IWindow::eMessage msg;
@@ -97,7 +96,7 @@ int ricsiMain() {
 		while (window->HandleMessage(&msg)) {
 			if (msg == IWindow::eMessage::SIZE_CHANGED)
 			gEngine->Resize(window->GetClientWidth(), window->GetClientHeight());
-			//gEngine->Resize(1366, 768);
+			s->GetCamera().SetAspectRatio(window->GetClientAspectRatio());
 		}
 	
 		// Update everything

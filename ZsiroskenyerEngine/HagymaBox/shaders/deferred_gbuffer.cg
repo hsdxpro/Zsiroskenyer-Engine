@@ -19,8 +19,8 @@ struct VS_OUT {
 	float3 tangentW	: TEXCOORD1;
 	float2 tex0 	: TEXCOORD2;
 	float3 posW 	: TEXCOORD3;
-	float3x3 TBN	: TEXCOORD4;
-	float2 savedZW  : TEXCOORD5;
+	float2 savedZW  : TEXCOORD4;
+	float3x3 TBN	: TEXCOORD5;
 };
 
 struct PS_OUT {
@@ -58,10 +58,10 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	// Storing color good
 	Out.gBuffer0 = tex2D(diffuseTex, In.tex0);// * float4(intensity, intensity, intensity, 1.0f);
 
-	// Sample normal from texture
-	//NormalMap mintavételezés, eredmény [0,1]  ->	   //[0,1] to [-1,1]
+	// Sample normal, in tangent space
 	float3 normalT = normalize(tex2D(normalTex, In.tex0).xyz * 2.0f - 1.0f);
-	//float3 normalW = mul(normalT, In.TBN); // Normals from normal map
+
+	//float3 normalW = mul(In.TBN, normalT);
 	float3 normalW = In.normalW; // Normals from geometry
 	
 	// Pack normals
@@ -71,17 +71,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 
 	
 	// Buffer2 reserved for future use
-	Out.gBuffer2 = float4(In.tangentW.xyz*0.5+float3(0.5,0.5,0.5),1); // NOT USED YET | FOR DEBUG
-	
-	/*
-	float3 pointLightPos = float3(0, 0, 0);
-	float3 lightVec = normalize(pointLightPos - In.posW);
-	float intensity = saturate(dot(normalW , lightVec)) / distance(pointLightPos, In.posW) * 90;
-	if(intensity > 0.0f) // ELIMINATE THAT BULLSHIT NOW !!!! Don't you hear ?
-	{
-		float3 h = normalize(lightVec + camPos - In.posW);
-		intensity += pow(saturate(dot(normalW , h)), 255);
-	}	
-	*/
+	Out.gBuffer2 = float4(In.tangentW.xyz*0.5+float3(0.5,0.5,0.5),1.0f); // NOT USED YET | FOR DEBUG
+
 	return Out;
 };

@@ -39,13 +39,13 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	float absAvgLum = pow(10.0f, logAvgLum);
 	// clamping for 50/50: 1/505.0=1.998e-3 & 1.998
 	float magic = 1.998f;
-	float overbrightTreshold = absAvgLum*magic;
+	float a = absAvgLum*magic*1e-3f;
+	float b = absAvgLum*magic;
+	float t = ((pixelLum-a)/(b-a));
 	
-	float m = max(0.0f, (pixelLum-overbrightTreshold)) / pixelLum;
-	color.rgb *= float3(m,m,m);
-	color.a = 1.0f;
+	color.rgb -= color.rgb / max(1e-12f, pixelLum) * b;
 	
-	color.rgb = max(color.rgb, 0.0f);
+	color.rgb = max(color.rgb, float3(0.0f, 0.0f, 0.0f));
 	
 	return color;
 }

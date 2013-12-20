@@ -1,13 +1,21 @@
+//------------------------------------------------------------------------------
+//	G-buffer input textures
+//------------------------------------------------------------------------------
 sampler2D gBuffer0 : register(s0);
 sampler2D gBuffer1 : register(s1);
 sampler2D gBuffer2 : register(s2);
 sampler2D depthBuffer : register(s3);
 
+//------------------------------------------------------------------------------
+//	Constant buffer
+//------------------------------------------------------------------------------
 float4x4 invViewProj : register(c0);
 float4x4 projMat : register(c4);
 float4 camPos : register(c8);
 
-
+//------------------------------------------------------------------------------
+//	Shader in/out structures
+//------------------------------------------------------------------------------
 struct VS_IN {
 	float3 posL 	: POSITION;
 	float2 tex0 	: TEXCOORD0;
@@ -22,6 +30,30 @@ struct PS_OUT {
 	float4 color: COLOR0;
 };
 
+
+//------------------------------------------------------------------------------
+//	Helper functions
+//------------------------------------------------------------------------------
+
+// Convert from clip space to world space
+float3 GetWorldPosition(float2 screenCoords, float depth) {
+	float4 posH = float4(screenCoords.x * 2.0f - 1.0f, (1.0f - screenCoords.y) * 2.0f - 1.0f, depth, 1.0f); // NDC space
+	float4 posW = mul(posH, invViewProj);
+	posW /= posW.w;
+	return posW.xyz;
+}
+
+// Unpack normals
+float3 UnpackNormal(float2 packedNormal) {
+	float3 normal;
+	normal.x = packedNormal.r;
+	normal.y = 2.0f*(packedNormal.g>0.0f ? packedNormal.g-0.5f:packedNormal.g+0.5f);
+	normal.z = sqrt(clamp(1.0f - normal.x*normal.x - normal.y*normal.y, 0, 1)) * (packedNormal.g>0.0f ? 1.0f:-1.0f);
+	return normal;
+}
+
+
+/* garbage
 float3 depthToWorldSpace(float depth, float2 texCoord)
 {
 	// World space pos from depth
@@ -30,22 +62,23 @@ float3 depthToWorldSpace(float depth, float2 texCoord)
 	posW /= posW.w;
 	return posW.xyz;
 }
+*/
 
-float3 GetPosition(float2 texCoord)
-{
-	return depthToWorldSpace(tex2D(depthBuffer, texCoord).r, texCoord);
+
+float3 GetPosition(float2 texCoord) {
+	return GetWorldPosition(texCoord, tex2Dlod(depthBuffer, float4(texCoord,0,0)));
 }
 
-float3 GetNormal(float2 texCoord)
-{
+float3 GetNormal(float2 texCoord) {
 	float2 packedNormal = tex2D(gBuffer1, texCoord);
-	float3 normal;
-	normal.x = packedNormal.r;
-	normal.y = 2.0f*(packedNormal.g>0.0f ? packedNormal.g-0.5f:packedNormal.g+0.5f);
-	normal.z = sqrt(clamp(1.0f - normal.x*normal.x - normal.y*normal.y, 0, 1)) * (packedNormal.g>0.0f ? 1.0f:-1.0f);
-	return normal;
+	return UnpackNormal(packedNormal);
 }
 
+
+
+//------------------------------------------------------------------------------
+//	Screen-Space Ambient Occlusion
+//------------------------------------------------------------------------------
 
 //PER_PIXEL SSAO összetevõ számolás
 float doAmbientOcclusion(in float2 texcoord,in float2 delta_uv, in float3 pos1, in float3 norm1)
@@ -67,11 +100,12 @@ float doAmbientOcclusion(in float2 texcoord,in float2 delta_uv, in float3 pos1, 
 //THE SSAO PROCESS FOR THE PIXEL
 float ambientocclusionprocess(float2 projtex)
 {
+
   float SSAOraylength = 5.000150f;
   float SSAOiterations = 2;
 
 	// Try depth independency, but not expected result TODO...
-	float4 vsDeltaCoord  = float4(SSAOraylength, distance(camPos, depthToWorldSpace(tex2D(depthBuffer, projtex).r, projtex)), 0, 1);
+	float4 vsDeltaCoord  = float4(SSAOraylength, distance(camPos, GetWorldPosition(projtex, tex2D(depthBuffer, projtex).r)), 0, 1);
 
   // Transform that to proj space, then divide, transform x,y to texture space,  now ssao will be depth independent
   float4 deltaCoord = mul(vsDeltaCoord, projMat);
@@ -112,7 +146,8 @@ float ambientocclusionprocess(float2 projtex)
 
 
  } 
-float SSAOintensity = 1.5f;
+ 
+  float SSAOintensity = 1.5f;
   return (1.0f - (ao/SSAOiterations/8))*(SSAOintensity);
 }
 
@@ -127,14 +162,14 @@ float Fresnel(float NdotL, float fresnelBias, float fresnelPow)
 
 }
 
-float CookTorranceMagic(float3 N, float3 I)
+float CookTorranceMagic(float3 N, float3 I, float L)
 {
 	// Test material...
-	float Ka = 1;
+	float Ka = 0.5;
 	float Ks = 0.8;
 	float Kd = 0.8;
-	float IOR = 1.3;
-	float roughness = 0.2;
+	float IOR = 0.3;
+	float roughness = 0.5;
 	float opacity = 1;
 	float specularColor = 1;
 	//float4 diffuseColor = (.6, .6, .6);
@@ -153,7 +188,7 @@ float CookTorranceMagic(float3 N, float3 I)
         float NdotV = dot(Nn,Vn);
         
         //half angle vector
-        float3 Ln = normalize(I);
+        float3 Ln = normalize(L);
         float3 H = normalize(Vn+Ln);
                 
         float NdotH = dot(Nn,H);
@@ -163,17 +198,16 @@ float CookTorranceMagic(float3 N, float3 I)
         float alpha = acos(NdotH);
               
         //microfacet distribution
-        float D = 1.0f;//gaussConstant*exp(-(alpha*alpha)/(m*m));
+        float D = gaussConstant*exp(-(alpha*alpha)/(m*m));
    
         //geometric attenuation factor
-        float G = 1.0f;// min(1, min((2*NdotH*NdotV/VdotH), (2*NdotH*NdotL/VdotH)));
+        float G = min(1, min((2*NdotH*NdotV/VdotH), (2*NdotH*NdotL/VdotH)));
 
         //sum contributions
-        cook += (F*D*G)/(PI*NdotV);
-			
-        return cook/PI;
+        return clamp((F*D*G)/(PI*NdotV),0.1f, 2.0f);
 }
 
+/* garbage
 float Directionallight(float3 dir, float3 norm, float3 posW,float specexponent, float specularIntensity, float diffuseIntensity)
 {
 	float4 result = float4(0,0,0,0);
@@ -195,9 +229,50 @@ float Directionallight(float3 dir, float3 norm, float3 posW,float specexponent, 
 		result+= speclight;	
 	}
 
-	return result;	
-	
+	return result;		
 }
+*/
+
+//------------------------------------------------------------------------------
+//	Diffuse lighting term
+//------------------------------------------------------------------------------
+
+float3 DiffuseLight(float3 lightDir, float3 lightColor, float3 normal) {
+	float c = clamp(-dot(lightDir, normal), 0.0, 1.0);
+	return c * lightColor;
+}
+
+//------------------------------------------------------------------------------
+//	Specular lighting term
+//------------------------------------------------------------------------------
+float3 SpecularLight(float3 lightDir, float3 lightColor, float3 normal, float3 viewDir, float glossiness) {
+	/*
+	float F = 0.9f; // fresnel reflection function by IOR
+	float sF = sqrt(F);
+
+	float c = dot(normal, -normalize(viewDir+lightDir));
+	float n = (1+sF)/(1-sF);
+	float g = sqrt(n*n + c*c - 1);
+	
+	float gc = (g-c)/(g+c);
+	float gc1 = ((g+c)*c - 1) / ((g-c)*c + 1);
+	float specFactor = 0.5f * gc*gc * (1 + gc1*gc1);
+	*/
+	float specFactor = 0.0f;
+	return lightColor * specFactor;;
+}
+
+//------------------------------------------------------------------------------
+//	Light attenuation
+//------------------------------------------------------------------------------
+float LightAttenuation() {
+	return 1.0f;
+}
+
+
+//------------------------------------------------------------------------------
+//	Vertex shader
+//------------------------------------------------------------------------------
 
 VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 	VS_OUT vout;
@@ -206,27 +281,85 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 	return vout;
 }
 
+//------------------------------------------------------------------------------
+//	Pixel shader
+//------------------------------------------------------------------------------
 PS_OUT PS_MAIN(VS_OUT In) {
 	PS_OUT Out;
+	Out.color = float4(0,0,0,1);
+	float3 color;
+	
+	// sample gBuffers
+	float4 samplegBuffer0 = tex2D(gBuffer0, In.tex0);
+	float2 samplegBuffer1 = tex2D(gBuffer1, In.tex0);
+	float4 samplegBuffer2 = tex2D(gBuffer2, In.tex0);
+	float depth = tex2D(depthBuffer , In.tex0);
+	
+	// get normal and world position
+	float3 normal = UnpackNormal(samplegBuffer1);
+	float3 posW = GetWorldPosition(In.tex0, depth);
+	//Out.color.xyz = normal.xyz;
+	//return Out;
 
+	// get material properties
+	float3 diffuseColor = samplegBuffer0.rgb;
+	float glossiness = 0.01f;
+	
+	// light properties: THESE ARE JUST MADE UP HERE
+	float3 lightDir = normalize(float3(0.5, 0.5, -0.5));
+	// HINT: 5e3 is the luminance of full sunlit scene
+	float3 lightColor = 16e3 * float3(192.0/255.0, 191.0/255.0, 173.0/255.0); // sun color at noon
+	float3 ambientColor = 16e3 * float3(25.0/255.0, 30.0/255.0, 45.0/255.0); // sky color at noon
+	
+	// deal with sky: this is ugly...
+	if (samplegBuffer2.a < 0.000001f) {
+		float3 viewDir = normalize(posW-camPos);
+		
+		float x = clamp(viewDir.z*3.5, 0.0, 1.0);
+		float horizonBlend = 3*x*x - 2*x*x*x;
+		
+		float3 zenithColor = float3(0.5f, 0.7f, 0.8f);
+		float3 horizonColor = float3(0.76f, 0.89f, 0.95f);
+		
+		float3 skyColor = horizonBlend*zenithColor + (1.0f-horizonBlend)*horizonColor;
+		
+		float deviation = acos(dot(lightDir, -viewDir));
+		if (deviation < 32.0f/60.0f/180.f*3.1415926f) {
+			// HINT: 1.6e9 is the luminance of the sun disk at noon
+			skyColor += lightColor*1e9f;
+		}
+		
+		//color = samplegBuffer0.rgb;
+		// HINT: 7e3 is the luminance of a clear sky
+		skyColor.rgb *= 9.0e3f;
+		Out.color = float4(skyColor.rgb, 1.0f);
+		return Out;
+	}
+	
+	// calculate lighting terms
+	float lightAtten = LightAttenuation();
+	
+	// diffuse and specular
+	float3 diffuseTerm = diffuseColor * DiffuseLight(lightDir, lightColor, normal);
+	float3 specularTerm = SpecularLight(lightDir, lightColor, normal, normalize(posW-camPos), glossiness);
+	color = (diffuseTerm + specularTerm) * lightAtten;
+	// ambient & AO
+	float aoFactor = 1.0f;
+	aoFactor = 1.0f - ambientocclusionprocess(In.tex0);
+	color += ambientColor * diffuseColor;
+	color *= aoFactor;
+	
+	if (isnan(color.r) || isnan(color.b) || isnan(color.g)) {
+		color.rgb = float3(0,0,0);
+	}
+	
+	Out.color = float4(color, 1.0f);
+	
+	/*
 	// World space Position and Normal
 	float3 posW = depthToWorldSpace(tex2D(depthBuffer , In.tex0).r, In.tex0);
 	float3 normal = GetNormal(In.tex0);
 
-	
-	// DEBUG INCOMING NORMALS!
-	/*
-	float lightness = Out.color.r*0.27+Out.color.g*0.67+Out.color.b*0.06;
-	float4 lightnessColor = float4(float3(lightness, lightness, lightness)*0.4f, 0.f);
-	Out.color = float4(normal+float3(1,1,1)*0.5, 1.f);
-	Out.color = float4(normal*0.5+float3(0.5,0.5,0.5), 1);
-
-	float4 dbgNormal = tex2D(gBuffer2, In.tex0);
-	if (In.tex0.x>0.5)
-		Out.color = dbgNormal;
-	if (In.tex0.x>0.498 && In.tex0.x<0.502)
-		Out.color = float4(0,0,0,1);
-	*/
 	
 	// Not so plausible term using, FUCK YOU, need some new shits, to work good
 	float lighting = Directionallight(float3(1,0,-1), normal, posW, 5.0f, 0.7f, 0.4f);
@@ -238,6 +371,25 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	//return Out;
 	float ambient = 0.6f;
 	float4 diffuseColor = tex2D(gBuffer0, In.tex0);
-		Out.color = diffuseColor * lighting + diffuseColor * ao * ambient;
+	Out.color = diffuseColor * lighting + diffuseColor * ao * ambient;
+	*/
+	
 	return Out;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

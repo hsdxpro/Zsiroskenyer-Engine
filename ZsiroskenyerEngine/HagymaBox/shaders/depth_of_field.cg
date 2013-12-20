@@ -25,7 +25,6 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 
 PS_OUT PS_MAIN(VS_OUT In) {
 	PS_OUT Out;
-	// TODO REMOVE THAT SHIT, camera from c++ : nearPlane = 0.01; farPlane = 5000;
 	float avgRefDepth = 0;
 
 	avgRefDepth += tex2D(depthTexture, float2(0.45f, 0.45f));
@@ -52,8 +51,8 @@ PS_OUT PS_MAIN(VS_OUT In) {
 		color += tex2D(texture0, In.tex0 + float2(0, -1.0f / 800) * i * radius);
 		color += tex2D(texture0, In.tex0 + float2(-1.0f / 800, 0) * i * radius);
 	}
-	//Out.color = float4(depth, depth, depth, 1.0f);//ex2D(depthTexture, In.tex0);
-	Out.color = color / (quality * 4);
+
+	Out.color = color / (quality * 4 + 1);
 
 	return Out;
 }
