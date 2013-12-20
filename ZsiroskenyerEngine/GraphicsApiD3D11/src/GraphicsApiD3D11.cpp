@@ -386,7 +386,7 @@ eGapiResult cGraphicsApiD3D11::CreateDefaultStates(const D3D11_CULL_MODE& cullMo
 HRESULT cGraphicsApiD3D11::CompileShaderFromFile(const zsString& fileName, const zsString& entry, const zsString& profile, ID3DBlob** ppBlobOut) {
 	HRESULT hr = S_OK;
 
-	DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+	DWORD dwShaderFlags = D3D10_SHADER_OPTIMIZATION_LEVEL3;
 
 	ID3DBlob* pErrorBlob;
 	char ansiEntry[256];
