@@ -196,7 +196,8 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	
 	// compose to destination buffer
 	shaderConstants.logAvgLum = adaptedLuminance;
-	shaderConstants.blueShift = 1.0f - std::min(0.5f*std::max((adaptedLuminance + 2.0f), 0.0f), 1.0f);
+	// blueshift: mesopic range from -2.3 to 0.7 mcd/m2
+	shaderConstants.blueShift = 1.0f - std::min(std::max((adaptedLuminance + 2.3f) / (0.7f + 2.3f), 0.0f), 1.0f);
 
 	gApi->SetRenderTargets(1, &dest);
 	gApi->SetTexture(source, 0);
