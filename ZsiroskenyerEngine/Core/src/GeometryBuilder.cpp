@@ -33,7 +33,7 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 	zsString::ConvertUniToAnsi(filePath, ansiFilePath, 256);
 	const aiScene* scene = importer.ReadFile(ansiFilePath, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_ImproveCacheLocality | aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_FlipWindingOrder);
 	if(scene == NULL) {
-		ILog::GetInstance()->MsgBox(L"Can found 3D model: " + filePath);
+		ILog::GetInstance()->MsgBox(L"Can't found 3D model: " + filePath);
 		throw FileNotFoundException();
 	}
 

@@ -245,10 +245,10 @@ Matrix44& Matrix44::Inverse() {
 	return *this;
 }
 
-Matrix44& Matrix44::Scale(float scX, float scY, float scZ) {
-	_11 *= scX;
-	_22 *= scY;
-	_33 *= scZ;
+Matrix44& Matrix44::Scale(float x, float y, float z) {
+	_11 *= x;
+	_22 *= y;
+	_33 *= z;
 	return *this;
 }
 
@@ -273,11 +273,11 @@ Matrix44& Matrix44::Translate(const Vec3& t) {
 	return *this;
 }
 
-Matrix44& Matrix44::Translation( float vX, float vY, float vZ) {
+Matrix44& Matrix44::Translation( float x, float y, float z) {
 	Identity();
-	_41 = vX;
-	_42 = vY;
-	_43 = vZ;
+	_41 = x;
+	_42 = y;
+	_43 = z;
 	return *this;
 }
 
@@ -293,8 +293,8 @@ Matrix44 Matrix44::RotationEuler(const Vec3& rot) {
 	return Matrix44::RotationEulerX(rot.x) * Matrix44::RotationEulerY(rot.y) * Matrix44::RotationEulerZ(rot.z);
 }
 
-Matrix44 Matrix44::RotationEuler(float rotX, float rotY, float rotZ) {
-	return Matrix44::RotationEulerX(rotX) * Matrix44::RotationEulerY(rotY) * Matrix44::RotationEulerZ(rotZ);
+Matrix44 Matrix44::RotationEuler(float x, float y, float z) {
+	return Matrix44::RotationEulerX(x) * Matrix44::RotationEulerY(y) * Matrix44::RotationEulerZ(z);
 }
 
 Matrix44 Matrix44::RotationEulerX(float angle) {
@@ -381,6 +381,18 @@ Matrix44 Matrix44::MatrixProjPerspective(float nearPlane, float farPlane, float 
 	mat._44 = 0;
 	return mat;
 }
+
+Matrix44 Matrix44::MatrixProjOrtographic(float nearPlane, float farPlane, float left, float right, float bottom, float top) {
+	Matrix44 m;
+		m._11 = 2 / (right - left);
+		m._22 = 2 / (top - bottom);
+		m._33 = -2 / (farPlane - nearPlane);
+		m._43 = (farPlane + nearPlane) / (farPlane - nearPlane);
+		m._41 = (right + left) / (right - left);
+		m._42 = (top + bottom) / (top - bottom);
+	return m;
+}
+
 ///////////////////////////////////////////////////////////////////////////
 // utility functions
 void MatrixPrint (const Matrix44& m, std::ostream& os/*=std::cout*/) {

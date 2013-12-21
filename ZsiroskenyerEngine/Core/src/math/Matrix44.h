@@ -25,7 +25,7 @@ useful combinations of the above:
 
 class Matrix44 {
 public:
-	// data, accessible in two ways
+	// Data, accessible more ways
 	union {
 		struct {
 			float _11, _12, _13, _14;
@@ -47,21 +47,28 @@ public:
 				float _41, float _42, float _43, float _44);
 
 	Matrix44& Identity();
-	float Determinant();
-
-	static Matrix44 Inverse(const Matrix44& in);
 	Matrix44& Inverse();
-	static Matrix44 Transpose(const Matrix44& in);
 	Matrix44& Transpose();
 
-	Matrix44& Scale(float scX, float scY, float scZ);
+	float Determinant();
+
+	Matrix44& Scale(float x, float y, float z);
 	Matrix44& Scale(const Vec3& s);
 
-	Matrix44& Translate(float scX, float scY, float scZ);
+	Matrix44& Translate(float x, float y, float z);
 	Matrix44& Translate(const Vec3& t);
 
+	Matrix44& RotationAxisAngle(const Vec3& axis, float angle);
+	Matrix44& RotationQuat(const Quat&); // typecast ((Matrix44)quaternion) is possibly slower than this shit
+
+	Matrix44& Translation(float x, float y, float z);
+	Matrix44& Translation(const Vec3& v);
+
+	static Matrix44 Inverse(const Matrix44& in);
+	static Matrix44 Transpose(const Matrix44& in);
+
 	static Matrix44 RotationEuler(const Vec3& rot);
-	static Matrix44 RotationEuler(float rotX, float rotY, float rotZ);
+	static Matrix44 RotationEuler(float x, float y, float z);
 
 	static Matrix44 RotationEulerX (float angle);
 	static Matrix44 RotationEulerY(float angle);
@@ -69,13 +76,7 @@ public:
 
 	static Matrix44 MatrixViewRH(const Vec3& eye, const Vec3& target, const Vec3& up);
 	static Matrix44 MatrixProjPerspective(float nearPlane, float farPlane, float fovRad, float aspectRatio);
-
-	Matrix44& RotationAxisAngle (const Vec3& axis, float angle);
-	Matrix44& RotationQuat (const Quat&); // typecast ((Matrix44)quaternion) is possibly slower than this shit
-
-	Matrix44& Translation(float vX, float vY, float vZ);
-	Matrix44& Translation(const Vec3& v);
-
+	static Matrix44 MatrixProjOrtographic(float nearPlane, float farPlane, float left, float right, float bottom, float top);
 
 	void SetColumn(size_t idx, const Vec4& v);
 
