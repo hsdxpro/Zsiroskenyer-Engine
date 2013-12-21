@@ -120,7 +120,7 @@ public:
 	void SetWindow(IWindow *renderWindow) override;
 
 	eGapiResult SetBlendState(tBlendDesc desc) override;
-	eGapiResult SetDepthStencilState(tDepthStencilDesc desc) override;
+	eGapiResult SetDepthStencilState(tDepthStencilDesc desc, uint8_t stencilRef) override;
 
 	// --- misc --- //
 	ITexture2D* GetDefaultRenderTarget() const override;

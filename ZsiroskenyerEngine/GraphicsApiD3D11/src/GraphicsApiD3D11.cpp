@@ -1254,7 +1254,7 @@ eGapiResult cGraphicsApiD3D11::SetBlendState(tBlendDesc desc) {
 }
 
 // Set depth-stencil state
-eGapiResult cGraphicsApiD3D11::SetDepthStencilState(tDepthStencilDesc desc) {
+eGapiResult cGraphicsApiD3D11::SetDepthStencilState(tDepthStencilDesc desc, uint8_t stencilRef) {
 	D3D11_DEPTH_STENCIL_DESC d3ddesc = ConvertToNativeDepthStencil(desc);
 	ID3D11DepthStencilState* newState = NULL;
 	HRESULT hr = d3ddev->CreateDepthStencilState(&d3ddesc, &newState);
@@ -1266,7 +1266,7 @@ eGapiResult cGraphicsApiD3D11::SetDepthStencilState(tDepthStencilDesc desc) {
 	}
 	SAFE_RELEASE(depthStencilState);
 	depthStencilState = newState;
-	d3dcon->OMSetDepthStencilState(newState, 0);
+	d3dcon->OMSetDepthStencilState(newState, stencilRef);
 	return eGapiResult::OK;
 }
 

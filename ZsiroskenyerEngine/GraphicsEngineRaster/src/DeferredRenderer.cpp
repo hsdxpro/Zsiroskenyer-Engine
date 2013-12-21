@@ -90,28 +90,23 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	SAFE_RELEASE(helperBuffer);
 
 	// create new buffers
-	eGapiResult results[6];
+	eGapiResult results[7];
 	ITexture2D::tDesc desc;
 	desc.width = bufferWidth;
 	desc.height = bufferHeight;
 	desc.bind = (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE;
 	desc.usage = eUsage::DEFAULT;
-	/*
-	results[0] = gApi->CreateTexture(&gBuffer[0], bufferWidth, bufferHeight, 1, 1, eFormat::R8G8B8A8_UNORM, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
-	results[1] = gApi->CreateTexture(&gBuffer[1], bufferWidth, bufferHeight, 1, 1, eFormat::R16G16_SNORM, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
-	results[2] = gApi->CreateTexture(&gBuffer[2], bufferWidth, bufferHeight, 1, 1, eFormat::R8G8B8A8_UNORM, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
-	results[3] = gApi->CreateTexture(&compositionBuffer, bufferWidth, bufferHeight, 1, 1, eFormat::R16G16B16A16_FLOAT, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
-	results[4] = gApi->CreateTexture(&helperBuffer, bufferWidth, bufferHeight, 1, 1, eFormat::R16G16B16A16_FLOAT, (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE);
-	results[5] = gApi->CreateTexture(&depthBuffer, bufferWidth, bufferHeight, 1, 1, eFormat::UNKNOWN, (int)eBind::SHADER_RESOURCE | (int)eBind::DEPTH_STENCIL, eFormat::D24_UNORM_S8_UINT);
-	*/
+
 	desc.format = eFormat::R8G8B8A8_UNORM;		results[0] = gApi->CreateTexture(&gBuffer[0], desc);
 	desc.format = eFormat::R16G16_SNORM;		results[1] = gApi->CreateTexture(&gBuffer[1], desc);
 	desc.format = eFormat::R8G8B8A8_UNORM;		results[2] = gApi->CreateTexture(&gBuffer[2], desc);
 	desc.format = eFormat::R16G16B16A16_FLOAT;	results[3] = gApi->CreateTexture(&compositionBuffer, desc);
 	desc.format = eFormat::R16G16B16A16_FLOAT;	results[4] = gApi->CreateTexture(&helperBuffer, desc);
 
-	desc.format = eFormat::R24_UNORM_X8_TYPELESS;	desc.depthFormat = eFormat::D24_UNORM_S8_UINT;	desc.bind = (int)eBind::SHADER_RESOURCE | (int)eBind::DEPTH_STENCIL;
+	desc.format = eFormat::R24_UNORM_X8_TYPELESS;	desc.depthFormat = eFormat::D24_UNORM_S8_UINT;	desc.bind = (int)eBind::DEPTH_STENCIL;
 	results[5] = gApi->CreateTexture(&depthBuffer, desc);
+	desc.bind = (int)eBind::SHADER_RESOURCE;
+	results[6] = gApi->CreateTexture(&depthBufferShader, desc);
 
 	for (int i = 0; i < sizeof(results) / sizeof(results[0]); i++) {
 		if (results[i] != eGapiResult::OK) {
@@ -119,6 +114,7 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 			SAFE_RELEASE(compositionBuffer);
 			SAFE_RELEASE(helperBuffer);
 			SAFE_RELEASE(depthBuffer);
+			SAFE_RELEASE(depthBufferShader);
 			return results[i];
 		}
 	}
@@ -127,6 +123,9 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 
 // Render the scene to composition buffer
 void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
+	// Declared here, will be used throughout whole function
+	tDepthStencilDesc depthStencilState;
+
 	// Clear buffers
 	gApi->ClearTexture(depthBuffer);
 	gApi->ClearTexture(gBuffer[0], 0, Vec4(0.5f, 0.7f, 0.8f, 0.0f));
@@ -137,14 +136,23 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	//----------------------------------------------------------------------//
 	// --- --- --- --- --- --- --- GBUFFER PASS --- --- --- --- --- --- --- //
 	//----------------------------------------------------------------------//
-	// Set BackBuffer
+
+	// Set g-buffer multiple-render targets
 	gApi->SetRenderTargets(3, gBuffer, depthBuffer);
-
-	// Set ShaderProgram
+	// Set g-buffer shader
 	gApi->SetShaderProgram(shaderGBuffer);
-
 	// Get camera params
 	cCamera* cam = parent.camera;
+
+	// Set stencil and blend state
+	depthStencilState = depthStencilDefault;
+	depthStencilState.stencilEnable = true;
+	depthStencilState.stencilOpBackFace.stencilCompare = eComparisonFunc::ALWAYS;
+	depthStencilState.stencilOpBackFace.stencilPass = eStencilOp::REPLACE;
+	depthStencilState.stencilOpFrontFace = depthStencilState.stencilOpBackFace;
+	depthStencilState.stencilReadMask = depthStencilState.stencilWriteMask = 0x01;
+	eGapiResult r = gApi->SetDepthStencilState(depthStencilState, 0x01);
+
 
 	// Just lerping view, then combine how you want
 	Matrix44 currView = cam->GetViewMatrix();
@@ -170,13 +178,13 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 			ITexture2D* displace = mtl[i].textureDisplace.get();
 
 			if (diffuse != NULL)
-				gApi->SetTexture(diffuse, 0); // TODO NEVET KELLJEN BEÍRNI NE INDEXET WAWOOSOSOSO
+				gApi->SetTexture(diffuse, 0);
 			if (normal != NULL)
-				gApi->SetTexture(normal, 1); // TODO NEVET KELLJEN BEÍRNI NE INDEXET, ÜDV :)
+				gApi->SetTexture(normal, 1);
 			if (specular != NULL)
-				gApi->SetTexture(specular, 2); // TODO NEVET KELLJEN BEÍRNI NE INDEXET
+				gApi->SetTexture(specular, 2);
 			if (displace != NULL)
-				gApi->SetTexture(displace, 3); // TODO NEVET KELLJEN BEÍRNI NE INDEXET
+				gApi->SetTexture(displace, 3);
 		}
 
 		// Draw each entity
@@ -204,12 +212,28 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		}
 	}
 
+	// copy depth to shader resource
+	gApi->CopyResource(depthBuffer, depthBufferShader);
 
 	//--------------------------------------------------------------------------//
 	// --- --- --- --- --- --- --- COMPOSITION PASS --- --- --- --- --- --- --- //
 	//--------------------------------------------------------------------------//
-	gApi->SetRenderTargets(1, &compositionBuffer, NULL);
+	
+	// Set render states
+	depthStencilState = depthStencilDefault;
+	depthStencilState.depthCompare = eComparisonFunc::ALWAYS;
+	depthStencilState.depthWriteEnable = false;
+	depthStencilState.stencilEnable = true;
+	depthStencilState.stencilOpBackFace.stencilCompare = eComparisonFunc::EQUAL;
+	depthStencilState.stencilOpBackFace.stencilFail = eStencilOp::KEEP;
+	depthStencilState.stencilOpBackFace.stencilPass = eStencilOp::KEEP;
+	depthStencilState.stencilOpBackFace.stencilPassDepthFail = eStencilOp::KEEP;
+	depthStencilState.stencilReadMask = depthStencilState.stencilWriteMask = 0x01;
+	depthStencilState.stencilOpFrontFace = depthStencilState.stencilOpBackFace;
+	r = gApi->SetDepthStencilState(depthStencilState, 0x01);
 
+	// Set render target
+	gApi->SetRenderTargets(1, &compositionBuffer, depthBuffer);
 	// Set ShaderProgram
 	gApi->SetShaderProgram(shaderComposition);
 
@@ -231,11 +255,13 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		gApi->SetTexture(gBuffer[i], i);
 
 	// Load up depth buffer
-	gApi->SetTexture(depthBuffer, 3);
+	gApi->SetTexture(depthBufferShader, 3);
 
 	// Draw triangle, hardware will quadify them automatically :)
 	gApi->Draw(3);
 
+	// Set back render state to default
+	gApi->SetDepthStencilState(depthStencilDefault, 0x00);
 
 
 	// MOTION BLUR______________________________________________________________________________________________________________________________________
@@ -260,7 +286,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetPSConstantBuffer(shitBuffer, 0);
 
 	gApi->SetTexture(compositionBuffer, 0);
-	gApi->SetTexture(depthBuffer, 1);
+	gApi->SetTexture(depthBufferShader, 1);
 
 	// asd new
 	prevView = currLerpedView;
@@ -276,7 +302,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetShaderProgram(dofShProg);
 
 	gApi->SetTexture(helperBuffer, 0);
-	gApi->SetTexture(depthBuffer, 1);
+	gApi->SetTexture(depthBufferShader, 1);
 
 	// Draw triangle, hardware will quadify them automatically :)
 	gApi->Draw(3);

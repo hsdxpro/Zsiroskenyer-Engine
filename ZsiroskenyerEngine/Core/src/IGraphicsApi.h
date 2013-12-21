@@ -13,6 +13,7 @@
 #include "ITexture2D.h"
 
 #include <climits>
+#include <cstdint>
 
 
 class IVertexBuffer;
@@ -76,7 +77,7 @@ public:
 	virtual void SetPrimitiveTopology(ePrimitiveTopology t) = 0;
 
 	virtual eGapiResult SetBlendState(tBlendDesc desc) = 0;
-	virtual eGapiResult SetDepthStencilState(tDepthStencilDesc desc) = 0;
+	virtual eGapiResult SetDepthStencilState(tDepthStencilDesc desc, uint8_t stencilRef) = 0;
 
 
 	// --- misc --- //

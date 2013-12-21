@@ -37,6 +37,29 @@ __declspec(dllexport) IGraphicsEngine* CreateGraphicsEngineRaster(IWindow* targe
 	return engine;
 }
 
+
+////////////////////////////////////////////////////////////////////////////////
+//	Static members
+
+// in short: depth is fully enabled, object further are overdrawn
+const tDepthStencilDesc cGraphicsEngine::depthStencilDefault = [](){
+	tDepthStencilDesc depthStencilDefault;
+	depthStencilDefault.depthCompare = eComparisonFunc::LESS_EQUAL;
+	depthStencilDefault.depthEnable = true;
+	depthStencilDefault.depthWriteEnable = true;
+	depthStencilDefault.stencilEnable = false;
+	return depthStencilDefault;
+}();
+// in short: no blanding, just overwrite
+const tBlendDesc cGraphicsEngine::blendDefault = [](){
+	tBlendDesc blendDefault;
+	blendDefault.alphaToCoverageEnable = false;
+	blendDefault.independentBlendEnable = false;
+	blendDefault[0].enable = false;
+	return blendDefault;
+}();
+
+
 ////////////////////////////////////////////////////////////////////////////////
 //	Constructor of the graphics engine
 cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config) 
@@ -63,11 +86,13 @@ cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, un
 	resourceManager = new cResourceManager(gApi);
 	sceneManager = new cSceneManager();
 
+
 	// Create shader
 		// Basic 3D geom rendering
 	shaderManager->LoadShader(L"shaders/test.cg");
 		// For debugging
 	shaderManager->LoadShader(L"shaders/LINE_RENDERER.cg");
+
 
 	// Create deferred renderer
 	try {
@@ -76,6 +101,7 @@ cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, un
 	catch (std::exception& e) {
 		throw std::runtime_error(std::string("failed to create deferred renderer: ") + e.what());
 	}
+
 
 	// Create hdr post-processor
 	try {
@@ -160,24 +186,6 @@ void cGraphicsEngine::DeleteScene(const IGraphicsScene* scene) {
 	}
 }
 
-// DEPRECATED
-/*
-void cGraphicsEngine::SetActiveCamera(cCamera* cam) {
-	//sceneManager->SetActiveCamera(cam);
-}
-*/
-// DEPRECATED
-/*
-cGraphicsEntity* cGraphicsEngine::CreateEntity(const zsString& geomPath, const zsString& mtlPath) {
-	cGeometryRef geom = resourceManager->GetGeometry(geomPath);
-	cMaterialRef mtl = resourceManager->GetMaterial(mtlPath);
-
-	if (!geom || !mtl)
-		return NULL;
-
-	return sceneManager->AddEntity(std::move(geom), std::move(mtl));
-}
-*/
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -188,11 +196,6 @@ eGraphicsResult cGraphicsEngine::Update(float elapsed) {
 	}
 	gApi->Clear(true, true);
 
-	/*
-	//RenderSceneForward();
-	RenderSceneDeferred();
-	return eGraphicsResult::OK;
-	*/
 	for (auto& scene : graphicsSceneOrder) {
 		RenderScene(*scene, elapsed);
 	}
@@ -230,109 +233,6 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, float elapsed) {
 	gApi->GetDefaultRenderTarget();
 	
 }
-
-////////////////////////////////////////////////////////////////////////////////
-//	Internal private functionality
-/*
-void cGraphicsEngine::RenderForward() {
-
-	ASSERT(sceneManager->GetActiveCamera() != NULL);
-
-	// Set BackBuffer
-	gApi->SetRenderTargetDefault();
-
-	// Set ShaderProgram
-	IShaderProgram* shaderP = shaderManager->GetShaderByName(L"test.cg");
-	gApi->SetShaderProgram(shaderP);
-	
-	// Get camera params
-	cCamera* cam = sceneManager->GetActiveCamera();
-	Matrix44 viewMat = cam->GetViewMatrix();
-	Matrix44 projMat = cam->GetProjMatrix();
-	
-	// Render each instanceGroup
-	for (auto& group : sceneManager->GetInstanceGroups()) {
-
-		// Set Geometry
-		const IIndexBuffer* ib = (*group->geom).GetIndexBuffer();
-		gApi->SetIndexBuffer(ib);
-		gApi->SetVertexBuffer((*(group->geom)).GetVertexBuffer(), shaderP->GetVertexFormatSize());
-
-		// Set SubMaterials
-		auto& mtl = *group->mtl;
-		for(size_t i = 0; i < mtl.GetNSubMaterials(); i++) {
-			ITexture2D* diffuse = mtl[i].textureDiffuse.get();
-			ITexture2D* normal = mtl[i].textureNormal.get();
-			ITexture2D* specular = mtl[i].textureSpecular.get();
-			ITexture2D* displace = mtl[i].textureDisplace.get();
-
-			if (diffuse != NULL)
-				gApi->SetTexture(diffuse, 0); // TODO NEVET KELLJEN BEÍRNI NE INDEXET WAWOOSOSOSO
-			if (normal != NULL)
-				gApi->SetTexture(normal, 1); // TODO NEVET KELLJEN BEÍRNI NE INDEXET, ÜDV :)
-			if (specular != NULL)
-				gApi->SetTexture(specular, 2); // TODO NEVET KELLJEN BEÍRNI NE INDEXET
-			if (displace != NULL)
-				gApi->SetTexture(displace, 3); // TODO NEVET KELLJEN BEÍRNI NE INDEXET
-		}
-		
-		// Draw each entity
-		for (auto& entity : group->entities) {
-
-			// Entity world matrix
-			Matrix44 world = entity->GetWorldMatrix();
-
-			// WorldViewProj matrix
-			Matrix44 wvp = world * viewMat * projMat;
-
-			struct myBuffer
-			{
-				Matrix44 wvp;
-				Matrix44 world;
-				Vec3 camPos;
-
-			} buff;
-			buff.wvp = wvp;
-			buff.world = world;
-			buff.camPos = cam->GetPos();
-
-			IConstantBuffer* buffer;
-			gApi->CreateConstantBuffer(&buffer, sizeof(buff), eUsage::DEFAULT, &buff);
-			gApi->SetVSConstantBuffer(buffer, 0);
-
-			// Draw entity..
-			gApi->DrawIndexed(ib->GetSize() / sizeof(unsigned));
-
-			// Free up constantBuffer
-			buffer->Release();
-		}
-	}
-}
-*/
-
-/*
-// Render scene in deferred mode w/ post-processing
-void cGraphicsEngine::RenderDeferred() {
-	ASSERT(deferredRenderer);
-
-	// --- --- composition w/ deferred --- --- //
-	deferredRenderer->RenderComposition();
-
-	// --- --- post-process --- --- //
-	static ITexture2D* compBuf_Check = NULL; // TODO: Remove this or i kill myself
-	ITexture2D* composedBuffer = deferredRenderer->GetCompositionBuffer();
-
-	// HDR
-	if (composedBuffer != compBuf_Check) {
-		compBuf_Check = composedBuffer;
-		hdrProcessor->SetSource(composedBuffer, screenWidth, screenHeight);
-	}
-	hdrProcessor->SetDestination(gApi->GetDefaultRenderTarget());
-	hdrProcessor->Update();
-
-	gApi->GetDefaultRenderTarget();
-}
-*/
 
 //	Get sub-components where allowed
 cSceneManager* cGraphicsEngine::GetSceneManager()  {
