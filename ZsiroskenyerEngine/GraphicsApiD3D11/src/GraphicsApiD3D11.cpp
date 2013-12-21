@@ -246,8 +246,8 @@ eGapiResult cGraphicsApiD3D11::CreateMostAcceptableSwapChain(size_t width, size_
 	SAFE_RELEASE(mainAdapter);
 	SAFE_RELEASE(fact);
 
-	delete[] filteredVideoModes;
-	delete[] modeDesc;
+	SAFE_DELETE_ARRAY(filteredVideoModes);
+	SAFE_DELETE_ARRAY(modeDesc);
 
 	switch (hr) {
 		case S_OK:
