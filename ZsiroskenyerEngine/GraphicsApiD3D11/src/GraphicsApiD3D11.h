@@ -143,4 +143,8 @@ protected:
 	ID3D11Device *d3ddev;
 	IDXGISwapChain *d3dsc;
 	static tDxConfig swapChainConfig;
+
+	// you better remove these muhaha -> gányolt fos
+	ID3D11DepthStencilState* depthStencilState;
+	ID3D11BlendState* blendState;
 };

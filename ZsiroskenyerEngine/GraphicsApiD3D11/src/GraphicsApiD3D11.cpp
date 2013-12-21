@@ -71,6 +71,10 @@ cGraphicsApiD3D11::cGraphicsApiD3D11()
 	// Create default states
 	CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_BACK, D3D11_FILL_MODE::D3D11_FILL_SOLID);
 
+	// render states
+	blendState = NULL;
+	depthStencilState = NULL;
+
 	// no-no senior, you are not gonna set wireframe mode here
 	// If you want WIREFRAME MODE
 	//CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_NONE,D3D11_FILL_MODE::D3D11_FILL_WIREFRAME);
@@ -1234,12 +1238,36 @@ eGapiResult cGraphicsApiD3D11::SetRenderTargetDefault() {
 
 // Set blend state
 eGapiResult cGraphicsApiD3D11::SetBlendState(tBlendDesc desc) {
-	return eGapiResult::ERROR_UNKNOWN;
+	D3D11_BLEND_DESC d3ddesc = ConvertToNativeBlend(desc);
+	ID3D11BlendState* newState = NULL;
+	HRESULT hr = d3ddev->CreateBlendState(&d3ddesc, &newState);
+	if (FAILED(hr)) {
+		switch (hr) {
+			case E_OUTOFMEMORY: return eGapiResult::ERROR_OUT_OF_MEMORY;
+			default: return eGapiResult::ERROR_UNKNOWN;
+		}
+	}
+	SAFE_RELEASE(blendState);
+	blendState = newState;
+	d3dcon->OMSetBlendState(newState, NULL, 0xFFFFFFFF);
+	return eGapiResult::OK;
 }
 
 // Set depth-stencil state
 eGapiResult cGraphicsApiD3D11::SetDepthStencilState(tDepthStencilDesc desc) {
-	return eGapiResult::ERROR_UNKNOWN;
+	D3D11_DEPTH_STENCIL_DESC d3ddesc = ConvertToNativeDepthStencil(desc);
+	ID3D11DepthStencilState* newState = NULL;
+	HRESULT hr = d3ddev->CreateDepthStencilState(&d3ddesc, &newState);
+	if (FAILED(hr)) {
+		switch (hr) {
+			case E_OUTOFMEMORY: return eGapiResult::ERROR_OUT_OF_MEMORY;
+			default: return eGapiResult::ERROR_UNKNOWN;
+		}
+	}
+	SAFE_RELEASE(depthStencilState);
+	depthStencilState = newState;
+	d3dcon->OMSetDepthStencilState(newState, 0);
+	return eGapiResult::OK;
 }
 
 // Set Target Window
