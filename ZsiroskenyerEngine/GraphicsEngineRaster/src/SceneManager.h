@@ -19,6 +19,7 @@
 
 
 class cGraphicsEntity;
+class cGraphicsLight;
 class cResourceManager;
 class cCamera;
 
@@ -44,9 +45,13 @@ public:
 
 	cGraphicsEntity* AddEntity(cGeometryRef geom, cMaterialRef mtl);
 	void RemoveEntity(const cGraphicsEntity* entity);
+	cGraphicsLight* AddLight();
+	void RemoveLight(const cGraphicsLight* light);
 	void Clear();
 
 	const std::unordered_set<cInstanceGroup*, cInstGroupPtrHasher,cInstGroupPtrCompare>& GetInstanceGroups() const;
+	const std::unordered_set<cGraphicsLight*>& GetLights() const;
 private:
 	std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare> instanceGroups;
+	std::unordered_set<cGraphicsLight*> lights;
 };

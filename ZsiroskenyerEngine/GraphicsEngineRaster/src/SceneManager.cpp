@@ -10,6 +10,7 @@
 #include "ResourceManager.h"
 #include "InstanceGroup.h"
 #include "../../Core/src/GraphicsEntity.h"
+#include "../../Core/src/GraphicsLight.h"
 #include "../../Core/src/Exception.h"
 #include "../../Core/src/Camera.h"
 
@@ -72,6 +73,20 @@ void cSceneManager::RemoveEntity(const cGraphicsEntity* entity) {
 	delete entity;
 }
 
+
+// Add/Remove scene lights
+cGraphicsLight* cSceneManager::AddLight() {
+	cGraphicsLight* light = new cGraphicsLight();
+	lights.insert(light);
+	return light;
+}
+void cSceneManager::RemoveLight(const cGraphicsLight* light) {
+	auto it = lights.find(const_cast<cGraphicsLight*>(light));
+	if (it != lights.end()) {
+		lights.erase(it);
+	}
+}
+
 // Clear scene
 void cSceneManager::Clear() {
 	for (auto instGroup : instanceGroups) {
@@ -85,4 +100,9 @@ void cSceneManager::Clear() {
 //	Get entity list
 const std::unordered_set<cInstanceGroup*, cInstGroupPtrHasher,cInstGroupPtrCompare>& cSceneManager::GetInstanceGroups() const {
 	return instanceGroups;
+}
+
+// Get light list
+const std::unordered_set<cGraphicsLight*>& cSceneManager::GetLights() const {
+	return lights;
 }

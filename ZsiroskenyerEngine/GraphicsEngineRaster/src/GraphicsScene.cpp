@@ -36,10 +36,10 @@ void cGraphicsScene::DeleteEntity(const cGraphicsEntity* entity) {
 
 //	Add/Remove scene lights
 cGraphicsLight* cGraphicsScene::CreateLight() {
-	throw std::runtime_error("azt hitted mi? :D");
+	return sceneManager.AddLight();
 }
 void cGraphicsScene::DeleteLight(const cGraphicsLight* light) {
-
+	sceneManager.RemoveLight(light);
 }
 
 //	Interface
