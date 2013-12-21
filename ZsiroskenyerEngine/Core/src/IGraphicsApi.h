@@ -8,10 +8,12 @@
 #include "../../Core/src/math/Vec4.h"
 
 #include "ResourceProperty.h"
+#include "PipelineState.h"
 #include "GapiResult.h"
 #include "ITexture2D.h"
 
 #include <climits>
+
 
 class IVertexBuffer;
 class IIndexBuffer;
@@ -27,7 +29,7 @@ class IGraphicsApi {
 public:
 	virtual void Release() = 0;
 
-	// resources
+	// --- resources --- //
 	virtual eGapiResult	CreateVertexBuffer(IVertexBuffer** resource, size_t size, eUsage usage, void* data = NULL) = 0;
 	virtual eGapiResult	CreateIndexBuffer(IIndexBuffer** resource, size_t size, eUsage usage, void* data = NULL) = 0;
 
@@ -35,7 +37,6 @@ public:
 	virtual eGapiResult CreateConstantBuffer(IConstantBuffer** resource, size_t size, eUsage usage, void* data = NULL) = 0;
 	virtual eGapiResult CreateTexture(ITexture2D** resource, const zsString& filePath) = 0;
 	virtual eGapiResult CreateTexture(ITexture2D** resource, ITexture2D::tDesc desc, void* data = NULL) = 0;
-	//virtual eGapiResult CreateTexture(ITexture2D** resource, unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, unsigned bind, eFormat depthStencilFormat = eFormat::UNKNOWN) = 0;
 	virtual eGapiResult CreateShaderProgram(IShaderProgram** resource, const zsString& shaderPath) = 0;
 
 
@@ -48,7 +49,7 @@ public:
 
 	virtual eGapiResult CopyResource(ITexture2D* src, ITexture2D* dst) = 0;
 
-	// rendering
+	// --- rendering --- //
 	virtual void Clear(bool target = true, bool depth = false, bool stencil = false) = 0;
 	virtual void ClearTexture(ITexture2D* t, unsigned clearFlag = 0, const Vec4& clearColor = Vec4(), float depthVal = 1.0f, size_t stencilVal = 0) = 0;
 
@@ -59,6 +60,7 @@ public:
 
 	virtual void Present() = 0;
 
+	// --- state --- //
 	virtual eGapiResult SetRenderTargetDefault() = 0;
 	virtual eGapiResult SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget = NULL) = 0;
 	virtual eGapiResult SetBackBufferSize(unsigned width, unsigned height) = 0;
@@ -73,7 +75,11 @@ public:
 	virtual void SetShaderProgram(IShaderProgram* shProg) = 0;
 	virtual void SetPrimitiveTopology(ePrimitiveTopology t) = 0;
 
-	// misc
+	virtual eGapiResult SetBlendState(tBlendDesc desc) = 0;
+	virtual eGapiResult SetDepthStencilState(tDepthStencilDesc desc) = 0;
+
+
+	// --- misc --- //
 	virtual void SetWindow(IWindow *renderWindow) = 0;
 
 	virtual ITexture2D* GetDefaultRenderTarget() const = 0;

@@ -21,3 +21,5 @@
 #include "IVertexBuffer.h"
 #include "ITexture2D.h"
 #include "IShaderProgram.h"
+
+#include "PipelineState.h"

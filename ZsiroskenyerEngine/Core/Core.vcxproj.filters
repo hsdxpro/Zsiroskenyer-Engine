@@ -158,6 +158,9 @@
     <ClInclude Include="src\GraphicsLight.h">
       <Filter>M_GraphicsEngine\Classes</Filter>
     </ClInclude>
+    <ClInclude Include="src\PipelineState.h">
+      <Filter>M_GraphicsApi</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\math\color.cpp">

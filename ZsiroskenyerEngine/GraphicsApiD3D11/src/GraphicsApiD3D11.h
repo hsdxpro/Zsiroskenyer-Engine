@@ -75,13 +75,12 @@ public:
 	~cGraphicsApiD3D11();
 	void Release() override;
 
-	// buffers
+	// --- resources --- //
 	eGapiResult	CreateVertexBuffer(IVertexBuffer** resource, size_t size, eUsage usage, void* data = NULL) override;
 	eGapiResult	CreateIndexBuffer(IIndexBuffer** resource, size_t size, eUsage usage, void* data = NULL) override;
 	eGapiResult CreateConstantBuffer(IConstantBuffer** resource, size_t size, eUsage usage, void* data = NULL) override;
 	eGapiResult CreateTexture(ITexture2D** resource, const zsString& filePath) override;
 	eGapiResult CreateTexture(ITexture2D** resource, ITexture2D::tDesc desc, void* data = NULL) override;
-	//eGapiResult CreateTexture(ITexture2D** resource, unsigned width, unsigned height, unsigned mipLevels, unsigned arraySize, eFormat format, unsigned bind, eFormat depthStencilFormat = eFormat::UNKNOWN) override;
 	eGapiResult CreateShaderProgram(IShaderProgram** resource, const zsString& shaderPath) override;
 
 	eGapiResult WriteResource(IIndexBuffer* buffer, void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) override;
@@ -93,7 +92,7 @@ public:
 
 	eGapiResult CopyResource(ITexture2D* src, ITexture2D* dst) override;
 
-	// draw
+	// --- render --- //
 	void Clear(bool target = true, bool depth = false, bool stencil = false) override;
 	void ClearTexture(ITexture2D* t, unsigned clearFlag = 0, const Vec4& clearColor = Vec4(), float depthVal = 1.0f, size_t stencilVal = 0);
 
@@ -104,6 +103,7 @@ public:
 
 	void Present() override;
 
+	// --- render state --- //
 	eGapiResult SetRenderTargetDefault() override;
 	eGapiResult SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget = NULL) override;
 	eGapiResult SetBackBufferSize(unsigned width, unsigned height) override;
@@ -119,6 +119,10 @@ public:
 	void SetPrimitiveTopology(ePrimitiveTopology t) override;
 	void SetWindow(IWindow *renderWindow) override;
 
+	eGapiResult SetBlendState(tBlendDesc desc) override;
+	eGapiResult SetDepthStencilState(tDepthStencilDesc desc) override;
+
+	// --- misc --- //
 	ITexture2D* GetDefaultRenderTarget() const override;
 
 private:

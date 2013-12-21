@@ -11,6 +11,7 @@
 #include "../../Core/src/IFile.h"
 
 
+////////////////////////////////////////////////////////////////////////////////
 // GraphicsApi instance creation
 extern "C"
 __declspec(dllexport)
@@ -29,13 +30,25 @@ IGraphicsApi* CreateGraphicsApiD3D11(IWindow* targetWindow, unsigned backBufferW
 }
 
 
+////////////////////////////////////////////////////////////////////////////////
 // Internal helper functions
+
+// convert stuff to d3d11-native format
 DXGI_FORMAT ConvertToNativeFormat(eFormat fmt);
 unsigned ConvertToNativeBind(unsigned flags);
 D3D11_USAGE ConvertToNativeUsage(eUsage usage);
 
+D3D11_BLEND_OP ConvertToNativeBlendOp(eBlendOp blendOp);
+D3D11_BLEND ConvertToNativeBlendFactor(eBlendFactor blendFactor);
+uint8_t ConvertToNativeBlendMask(eBlendWriteMask blendMask);
+D3D11_BLEND_DESC ConvertToNativeBlend(tBlendDesc blend);
+
+D3D11_COMPARISON_FUNC ConvertToNativeCompFunc(eComparisonFunc compFunc);
+D3D11_STENCIL_OP ConvertToNativeStencilOp(eStencilOp stencilOp);
+D3D11_DEPTH_STENCIL_DESC ConvertToNativeDepthStencil(tDepthStencilDesc depthStencil);
 
 
+////////////////////////////////////////////////////////////////////////////////
 // Config
 cGraphicsApiD3D11::tDxConfig cGraphicsApiD3D11::tDxConfig::DEFAULT = cGraphicsApiD3D11::tDxConfig();
 cGraphicsApiD3D11::tDxConfig cGraphicsApiD3D11::tDxConfig::MEDIUM = cGraphicsApiD3D11::tDxConfig();
@@ -47,7 +60,9 @@ cGraphicsApiD3D11::tDxConfig::tDxConfig()
 }
 
 
-// Construction
+////////////////////////////////////////////////////////////////////////////////
+// Constructor, Destructor
+
 cGraphicsApiD3D11::cGraphicsApiD3D11()
 : d3ddev(NULL), d3dcon(NULL), d3dsc(NULL), defaultRenderTarget(NULL) {
 	// Create d3ddevice, d3dcontext
@@ -56,34 +71,9 @@ cGraphicsApiD3D11::cGraphicsApiD3D11()
 	// Create default states
 	CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_BACK, D3D11_FILL_MODE::D3D11_FILL_SOLID);
 
+	// no-no senior, you are not gonna set wireframe mode here
 	// If you want WIREFRAME MODE
 	//CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_NONE,D3D11_FILL_MODE::D3D11_FILL_WIREFRAME);
-}
-
-void cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
-	size_t clientWidth = renderWindow->GetClientWidth();
-	size_t clientHeight = renderWindow->GetClientHeight();
-	// Same window size : don't need new swap chain
-	if (defaultRenderTarget != NULL)
-	if (clientWidth == defaultRenderTarget->GetWidth() && clientHeight == defaultRenderTarget->GetHeight())
-		return;
-
-	// Create swap chain for device
-	CreateMostAcceptableSwapChain(clientWidth, clientHeight, (HWND)(renderWindow->GetHandle()), cGraphicsApiD3D11::swapChainConfig);
-
-	// Create main render target (BackBuffer)
-	CreateViewsForBB(swapChainConfig);
-
-	// Create default viewport for swapChain rendering
-	defaultVP.TopLeftX = 0,
-	defaultVP.TopLeftY = 0;
-	defaultVP.Width = clientWidth;
-	defaultVP.Height = clientHeight;
-	defaultVP.MaxDepth = 1.0f;
-	defaultVP.MinDepth = 0.0f;
-
-	// BackBuffer will be the render target in default
-	SetRenderTargetDefault();
 }
 
 void cGraphicsApiD3D11::Release() {
@@ -110,6 +100,8 @@ cGraphicsApiD3D11::~cGraphicsApiD3D11() {
 	SAFE_RELEASE(d3dsc);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// Direct3D helper functions
 
 eGapiResult cGraphicsApiD3D11::CreateDevice() {
 	// create Graphic Infrastructure factory
@@ -413,7 +405,6 @@ HRESULT cGraphicsApiD3D11::CompileShaderFromFile(const zsString& fileName, const
 	return S_OK;
 }
 
-
 eGapiResult cGraphicsApiD3D11::CompileCgToHLSL(const zsString& cgFilePath, const zsString& hlslFilePath, eProfileCG compileProfile) {
 	// Paths
 	zsString cgcExePath = L"bin\\cgc.exe";
@@ -487,6 +478,13 @@ eGapiResult cGraphicsApiD3D11::CompileCgToHLSL(const zsString& cgFilePath, const
 	return eGapiResult::OK;
 }
 
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//	Manage graphics resources
+
+// Create index and vertex buffes for indexed poly-meshes
 eGapiResult	cGraphicsApiD3D11::CreateVertexBuffer(IVertexBuffer** resource, size_t size, eUsage usage, void* data/*= NULL*/) {
 	ID3D11Buffer* buffer = NULL;
 
@@ -551,6 +549,7 @@ eGapiResult	cGraphicsApiD3D11::CreateIndexBuffer(IIndexBuffer** resource, size_t
 	}
 }
 
+// Create constant buffer for shader programs
 eGapiResult cGraphicsApiD3D11::CreateConstantBuffer(IConstantBuffer** resource, size_t size, eUsage usage, void* data/* = NULL*/) {
 	ID3D11Buffer* buffer = NULL;
 
@@ -583,6 +582,7 @@ eGapiResult cGraphicsApiD3D11::CreateConstantBuffer(IConstantBuffer** resource, 
 	}
 }
 
+// Create texture from file
 eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const zsString& filePath) {
 	// Shader Resource View of texture
 	ID3D11ShaderResourceView* srv;
@@ -614,6 +614,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const zsStri
 	}
 }
 
+// Create texture in memory
 eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::tDesc desc, void* data /*= NULL*/) {
 	ID3D11Texture2D* tex = NULL;
 	// Outputs
@@ -723,133 +724,10 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 
 	*resource = new cTexture2DD3D11(desc.width, desc.height, tex, srv, rtv, dsv);
 	return eGapiResult::OK;
-
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// WARNING: THIS BELOW THING IS BULLSHIT! & THE ABOVE MIGHT FAIL TO WORK
-	/*//
-	HRESULT hr = S_OK;
-	if (isRenderTarget) {
-		// Create texture
-		hr = d3ddev->CreateTexture2D(&texDesc, NULL, &tex);
-		if (FAILED(hr)) {
-			ASSERT_MSG(false, L"Can't create texture2D");
-			if (hr == E_OUTOFMEMORY)
-				return eGapiResult::ERROR_OUT_OF_MEMORY;
-			else
-				return eGapiResult::ERROR_INVALID_ARG;
-		}
-
-		// Create RenderTarget view
-		hr = d3ddev->CreateRenderTargetView(tex, NULL, &rtv);
-		if (FAILED(hr)) {
-			SAFE_RELEASE(tex)
-			if (hr == E_OUTOFMEMORY)
-				return eGapiResult::ERROR_OUT_OF_MEMORY;
-			else
-				return eGapiResult::ERROR_INVALID_ARG;
-		}
-
-		// Create ShaderResource view
-		if (isShaderBindable) {
-			hr = d3ddev->CreateShaderResourceView(tex, NULL, &srv);
-			if (FAILED(hr)) {
-				SAFE_RELEASE(tex);
-				SAFE_RELEASE(rtv);
-				if (hr == E_OUTOFMEMORY)
-					return eGapiResult::ERROR_OUT_OF_MEMORY;
-				else
-					return eGapiResult::ERROR_INVALID_ARG;
-			}
-		}
-	}
-
-	SAFE_RELEASE(tex);
-
-	// Create DepthStencil texture
-	if (hasDepthStencil) {
-		// Convert depthStencil format
-		DXGI_FORMAT typelessFormat;
-		DXGI_FORMAT dsvFormat;
-		DXGI_FORMAT srvFormat;
-		switch (desc.depthFormat) {
-			case eFormat::D24_UNORM_S8_UINT:
-				typelessFormat = DXGI_FORMAT_R24G8_TYPELESS;
-				dsvFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-				srvFormat = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
-				break;
-
-			case eFormat::D32_FLOAT:
-				typelessFormat = DXGI_FORMAT_R32_TYPELESS;
-				dsvFormat = DXGI_FORMAT_D32_FLOAT;
-				srvFormat = DXGI_FORMAT_R32_FLOAT;
-				break;
-
-			default:
-				SAFE_RELEASE(tex);
-				SAFE_RELEASE(rtv);
-				SAFE_RELEASE(srv);
-				return eGapiResult::ERROR_INVALID_ARG;
-				break;
-		}
-
-		if (!isRenderTarget && isShaderBindable)
-			texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
-		else
-			texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-
-		texDesc.CPUAccessFlags = 0; // TODO YOU CAN'T WRITE TEXTURES MUHAHA
-		texDesc.Format = typelessFormat;
-		texDesc.MipLevels = 1;
-
-		hr = d3ddev->CreateTexture2D(&texDesc, 0, &tex);
-		if (FAILED(hr)) {
-			if (hr == E_OUTOFMEMORY)
-				return eGapiResult::ERROR_OUT_OF_MEMORY;
-			else
-				return eGapiResult::ERROR_INVALID_ARG;
-		}
-
-		D3D11_DEPTH_STENCIL_VIEW_DESC vDesc; memset(&vDesc, 0, sizeof(vDesc));
-		vDesc.Format = dsvFormat;
-		vDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-		vDesc.Texture2D.MipSlice = 0;
-
-		hr = d3ddev->CreateDepthStencilView(tex, &vDesc, &dsv);
-		if (FAILED(hr)) {
-			SAFE_RELEASE(tex);
-			if (hr == E_OUTOFMEMORY)
-				return eGapiResult::ERROR_OUT_OF_MEMORY;
-			else
-				return eGapiResult::ERROR_INVALID_ARG;
-		}
-
-		if (!isRenderTarget && isShaderBindable) {
-			D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc; memset(&srvDesc, 0, sizeof(srvDesc));
-			srvDesc.Format = srvFormat;
-			srvDesc.Texture2D.MipLevels = texDesc.MipLevels;
-			srvDesc.Texture2D.MostDetailedMip = 0;
-			srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-
-			hr = d3ddev->CreateShaderResourceView(tex, &srvDesc, &srv);
-			if (FAILED(hr)) {
-				SAFE_RELEASE(tex);
-				SAFE_RELEASE(dsv);
-				if (hr == E_OUTOFMEMORY)
-					return eGapiResult::ERROR_OUT_OF_MEMORY;
-				else
-					return eGapiResult::ERROR_INVALID_ARG;
-			}
-		}
-	}	
-	*resource = new cTexture2DD3D11(desc.width, desc.height, tex, srv, rtv, dsv);
-	return eGapiResult::OK;
-	//*/
 }
 
+// Create shader program
 eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, const zsString& shaderPath) {
-
-
 	// asd/asd/myShader cut extension
 	zsString pathNoExt = shaderPath.substr(0, shaderPath.size() - 3);
 
@@ -1052,6 +930,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	return eGapiResult::OK;
 }
 
+//	Write to various resources
 eGapiResult cGraphicsApiD3D11::WriteResource(IIndexBuffer* buffer, void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
 	ASSERT(buffer != NULL);
 
@@ -1094,6 +973,7 @@ eGapiResult cGraphicsApiD3D11::WriteResource(IVertexBuffer* buffer, void* source
 	return eGapiResult::OK;
 }
 
+// Read from various resources
 eGapiResult cGraphicsApiD3D11::ReadResource(IIndexBuffer* buffer, void* dest, size_t size, size_t offset /*= 0*/) {
 	ASSERT(buffer != NULL);
 
@@ -1161,15 +1041,19 @@ eGapiResult cGraphicsApiD3D11::ReadResource(ITexture2D* texture, void* dest, siz
 	return eGapiResult::OK;
 }
 
+// Copy among resources
 eGapiResult cGraphicsApiD3D11::CopyResource(ITexture2D* src, ITexture2D* dst) {
 	d3dcon->CopyResource((ID3D11Resource*)((cTexture2DD3D11*)dst)->Get(), (ID3D11Resource*)((cTexture2DD3D11*)src)->Get());
 	return eGapiResult::OK;
 }
 
 
-////////////////////
-// draw
-////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////////
+//	Draw and rendering
+
+// Clear render-target
 void cGraphicsApiD3D11::Clear(bool target /*= true*/, bool depth /*= false*/, bool stencil /*= false*/) {
 	static const FLOAT defaultClearColor[4] = {0.3f, 0.3f, 0.3f, 0.0f};
 
@@ -1189,6 +1073,7 @@ void cGraphicsApiD3D11::Clear(bool target /*= true*/, bool depth /*= false*/, bo
 		d3dcon->ClearRenderTargetView((ID3D11RenderTargetView*)defaultRenderTarget->GetRTV(), defaultClearColor);
 }
 
+// Clear texture
 void cGraphicsApiD3D11::ClearTexture(ITexture2D* t, unsigned clearFlag /*= 0*/, const Vec4& clearColor /*= Vec4()*/, float depthVal /*= 1.0f*/, size_t stencilVal /*= 0*/) {
 	ID3D11DepthStencilView* dsv = ((cTexture2DD3D11*)t)->GetDSV();
 	if (dsv)
@@ -1199,11 +1084,14 @@ void cGraphicsApiD3D11::ClearTexture(ITexture2D* t, unsigned clearFlag /*= 0*/, 
 		d3dcon->ClearRenderTargetView(rtv, (FLOAT*)&clearColor);
 }
 
+// Present
 void cGraphicsApiD3D11::Present() {
 	ASSERT_MSG(d3dsc != NULL, L"Need to set window for rendering");
 	d3dsc->Present(0, 0);
 }
 
+
+// Draw functions
 void cGraphicsApiD3D11::Draw(size_t nVertices, size_t idxStartVertex /*= 0*/) {
 	d3dcon->Draw(nVertices, idxStartVertex);
 }
@@ -1220,30 +1108,38 @@ void cGraphicsApiD3D11::DrawInstancedIndexed(size_t nIndicesPerInstance, size_t 
 	d3dcon->DrawIndexedInstanced(nIndicesPerInstance, nInstances, idxStartIndex, 0, idxStartInstance);
 }
 
+
+////////////////////////////////////////////////////////////////////////////////
+//	Pipeline state
+
+// Set indexed poly-mesh buffers
 void cGraphicsApiD3D11::SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) {
 	const UINT strides = vertexStride;
 	const UINT offset = 0;
 	ID3D11Buffer* vertices = ((cVertexBufferD3D11*)vertexBuffer)->GetBufferPointer();
 	d3dcon->IASetVertexBuffers(0, 1, &vertices, &strides, &offset);
 }
-
 void cGraphicsApiD3D11::SetIndexBuffer(const IIndexBuffer* indexBuffer) {
 	d3dcon->IASetIndexBuffer(((cIndexBufferD3D11*)indexBuffer)->GetBufferPointer(), DXGI_FORMAT_R32_UINT, 0);
 }
 
+// Set instance data for instanced rendering
 void cGraphicsApiD3D11::SetInstanceData() {
 }
 
+// Write to constant buffer
 void cGraphicsApiD3D11::SetConstantBufferData(IConstantBuffer* b, void* data) {
 	d3dcon->UpdateSubresource(((cConstantBufferD3D11*)b)->GetBufferPointer(), 0, NULL, data, 0, 0);
 }
 
+// Set shader texture resource
 void cGraphicsApiD3D11::SetTexture(const ITexture2D* tex, size_t slotIdx) {
 	ASSERT(tex != NULL);
 	const ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)tex)->GetSRV();
 	d3dcon->PSSetShaderResources(slotIdx, 1, (ID3D11ShaderResourceView**)&srv);
 }
 
+// Set compiled-linked shader program
 void cGraphicsApiD3D11::SetShaderProgram(IShaderProgram* shProg) {
 	const cShaderProgramD3D11* shProgD3D11 = (cShaderProgramD3D11*)shProg;
 	d3dcon->IASetInputLayout(shProgD3D11->GetInputLayout());
@@ -1251,6 +1147,7 @@ void cGraphicsApiD3D11::SetShaderProgram(IShaderProgram* shProg) {
 	d3dcon->PSSetShader(shProgD3D11->GetPixelShader(), 0, 0);
 }
 
+// Set primitive topology
 void cGraphicsApiD3D11::SetPrimitiveTopology(ePrimitiveTopology t) {
 	switch (t) {
 		case ePrimitiveTopology::LINE_LIST:
@@ -1262,16 +1159,17 @@ void cGraphicsApiD3D11::SetPrimitiveTopology(ePrimitiveTopology t) {
 	}
 }
 
+// Set shader constant buffers
 void cGraphicsApiD3D11::SetVSConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) {
 	ID3D11Buffer* cBuffer = ((cConstantBufferD3D11*)buffer)->GetBufferPointer();
 	d3dcon->VSSetConstantBuffers(slotIdx, 1, &cBuffer);
 }
-
 void cGraphicsApiD3D11::SetPSConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) {
 	ID3D11Buffer* cBuffer = ((cConstantBufferD3D11*)buffer)->GetBufferPointer();
 	d3dcon->PSSetConstantBuffers(slotIdx, 1, &cBuffer);
 }
 
+// Set (multiple) render targets
 eGapiResult cGraphicsApiD3D11::SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget /* = NULL */) {
 	// RTVS
 	static D3D11_VIEWPORT viewPorts[16];
@@ -1302,15 +1200,8 @@ eGapiResult cGraphicsApiD3D11::SetRenderTargets(unsigned nTargets, const ITextur
 	return eGapiResult::OK;
 }
 
-eGapiResult cGraphicsApiD3D11::SetRenderTargetDefault() {
-	d3dcon->RSSetViewports(1, &defaultVP);
-	ID3D11RenderTargetView* rtv = defaultRenderTarget->GetRTV();
-	d3dcon->OMSetRenderTargets(1, &rtv, (ID3D11DepthStencilView*)defaultRenderTarget->GetDSV());
-	return eGapiResult::OK;
-}
-
+// Resize swap chain
 eGapiResult cGraphicsApiD3D11::SetBackBufferSize(unsigned width, unsigned height) {
-
 	// Release default render target (BackBuffer)
 	SAFE_DELETE(defaultRenderTarget);
 
@@ -1329,12 +1220,63 @@ eGapiResult cGraphicsApiD3D11::SetBackBufferSize(unsigned width, unsigned height
 	}
 }
 
+// Get default render target == backbuffer
 ITexture2D* cGraphicsApiD3D11::GetDefaultRenderTarget() const {
 	return defaultRenderTarget;
 }
+// Set backBuffer as render-target
+eGapiResult cGraphicsApiD3D11::SetRenderTargetDefault() {
+	d3dcon->RSSetViewports(1, &defaultVP);
+	ID3D11RenderTargetView* rtv = defaultRenderTarget->GetRTV();
+	d3dcon->OMSetRenderTargets(1, &rtv, (ID3D11DepthStencilView*)defaultRenderTarget->GetDSV());
+	return eGapiResult::OK;
+}
+
+// Set blend state
+eGapiResult cGraphicsApiD3D11::SetBlendState(tBlendDesc desc) {
+	return eGapiResult::ERROR_UNKNOWN;
+}
+
+// Set depth-stencil state
+eGapiResult cGraphicsApiD3D11::SetDepthStencilState(tDepthStencilDesc desc) {
+	return eGapiResult::ERROR_UNKNOWN;
+}
+
+// Set Target Window
+void cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
+	size_t clientWidth = renderWindow->GetClientWidth();
+	size_t clientHeight = renderWindow->GetClientHeight();
+	// Same window size : don't need new swap chain
+	if (defaultRenderTarget != NULL)
+	if (clientWidth == defaultRenderTarget->GetWidth() && clientHeight == defaultRenderTarget->GetHeight())
+		return;
+
+	// Create swap chain for device
+	CreateMostAcceptableSwapChain(clientWidth, clientHeight, (HWND)(renderWindow->GetHandle()), cGraphicsApiD3D11::swapChainConfig);
+
+	// Create main render target (BackBuffer)
+	CreateViewsForBB(swapChainConfig);
+
+	// Create default viewport for swapChain rendering
+	defaultVP.TopLeftX = 0,
+		defaultVP.TopLeftY = 0;
+	defaultVP.Width = clientWidth;
+	defaultVP.Height = clientHeight;
+	defaultVP.MaxDepth = 1.0f;
+	defaultVP.MinDepth = 0.0f;
+
+	// BackBuffer will be the render target in default
+	SetRenderTargetDefault();
+}
 
 
+
+
+////////////////////////////////////////////////////////////////////////////////
 // Internal helper functions
+
+
+// Convert stuff to native format
 #include <unordered_map>
 
 unsigned ConvertToNativeBind(unsigned flags) {
@@ -1483,4 +1425,120 @@ DXGI_FORMAT ConvertToNativeFormat(eFormat fmt) {
 	auto it = lookupTable.find(fmt);
 	assert(it != lookupTable.end());
 	return it->second;
+}
+
+
+// blend to native
+D3D11_BLEND_OP ConvertToNativeBlendOp(eBlendOp blendOp) {
+	switch (blendOp) {
+		case eBlendOp::ADD: return D3D11_BLEND_OP_ADD;
+		case eBlendOp::SUBTRACT: return D3D11_BLEND_OP_SUBTRACT;
+		case eBlendOp::REV_SUBTRACT: return D3D11_BLEND_OP_REV_SUBTRACT;
+		case eBlendOp::MAX: return D3D11_BLEND_OP_MAX;
+		case eBlendOp::MIN: return D3D11_BLEND_OP_MIN;
+		default: return D3D11_BLEND_OP_ADD;
+	}
+}
+D3D11_BLEND ConvertToNativeBlendFactor(eBlendFactor blendFactor) {
+	switch (blendFactor) {
+		case eBlendFactor::ZERO:				return D3D11_BLEND_ZERO;
+		case eBlendFactor::ONE:					return D3D11_BLEND_ONE;
+		case eBlendFactor::SRC_COLOR:			return D3D11_BLEND_SRC_COLOR;
+		case eBlendFactor::INV_SRC_COLOR:		return D3D11_BLEND_INV_SRC_COLOR;
+		case eBlendFactor::SRC_ALPHA:			return D3D11_BLEND_SRC_ALPHA;
+		case eBlendFactor::INV_SRC_ALPHA:		return D3D11_BLEND_INV_SRC_ALPHA;
+		case eBlendFactor::DEST_ALPHA:			return D3D11_BLEND_DEST_ALPHA;
+		case eBlendFactor::INV_DEST_ALPHA:		return D3D11_BLEND_INV_DEST_ALPHA;
+		case eBlendFactor::DEST_COLOR:			return D3D11_BLEND_DEST_COLOR;
+		case eBlendFactor::INV_DEST_COLOR:		return D3D11_BLEND_INV_DEST_COLOR;
+		case eBlendFactor::SRC_ALPHA_SAT:		return D3D11_BLEND_SRC_ALPHA_SAT;
+		case eBlendFactor::BLEND_FACTOR:		return D3D11_BLEND_BLEND_FACTOR;
+		case eBlendFactor::INV_BLEND_FACTOR:	return D3D11_BLEND_INV_BLEND_FACTOR;
+		case eBlendFactor::SRC1_COLOR:			return D3D11_BLEND_SRC1_COLOR;
+		case eBlendFactor::INV_SRC1_COLOR:		return D3D11_BLEND_INV_SRC1_COLOR;
+		case eBlendFactor::SRC1_ALPHA:			return D3D11_BLEND_SRC1_ALPHA;
+		case eBlendFactor::INV_SRC1_ALPHA:		return D3D11_BLEND_INV_SRC1_ALPHA;
+		default:								return D3D11_BLEND_ONE;
+	}
+}
+uint8_t ConvertToNativeBlendMask(uint8_t blendMask) {
+	uint8_t ret = 0u;
+	if (blendMask & (uint8_t)eBlendWriteMask::ALPHA)
+		ret |= D3D11_COLOR_WRITE_ENABLE_ALPHA;
+	if (blendMask & (uint8_t)eBlendWriteMask::RED)
+		ret |= D3D11_COLOR_WRITE_ENABLE_RED;
+	if (blendMask & (uint8_t)eBlendWriteMask::GREEN)
+		ret |= D3D11_COLOR_WRITE_ENABLE_GREEN;
+	if (blendMask & (uint8_t)eBlendWriteMask::BLUE)
+		ret |= D3D11_COLOR_WRITE_ENABLE_BLUE;
+	if (blendMask & (uint8_t)eBlendWriteMask::ALL)
+		ret |= D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	return ret;
+}
+D3D11_BLEND_DESC ConvertToNativeBlend(tBlendDesc blend) {
+	D3D11_BLEND_DESC ret;
+	ret.AlphaToCoverageEnable = (blend.alphaToCoverageEnable ? TRUE : FALSE);
+	ret.IndependentBlendEnable = (blend.independentBlendEnable ? TRUE : FALSE);
+	for (int i = 0; i < 8; i++) {
+		ret.RenderTarget[i].BlendEnable				= blend[i].enable;
+		ret.RenderTarget[i].BlendOp					= ConvertToNativeBlendOp(blend[i].blendOp);
+		ret.RenderTarget[i].BlendOpAlpha			= ConvertToNativeBlendOp(blend[i].blendOpAlpha);
+		ret.RenderTarget[i].DestBlend				= ConvertToNativeBlendFactor(blend[i].destBlend);
+		ret.RenderTarget[i].DestBlendAlpha			= ConvertToNativeBlendFactor(blend[i].destBlendAlpha);
+		ret.RenderTarget[i].RenderTargetWriteMask	= ConvertToNativeBlendMask(blend[i].writeMask);
+		ret.RenderTarget[i].SrcBlend				= ConvertToNativeBlendFactor(blend[i].srcBlend);
+		ret.RenderTarget[i].SrcBlendAlpha			= ConvertToNativeBlendFactor(blend[i].srcBlendAlpha);
+	}
+
+	return ret;
+}
+
+// depth-stencil to native
+D3D11_COMPARISON_FUNC ConvertToNativeCompFunc(eComparisonFunc compFunc) {
+	switch (compFunc) {
+		case eComparisonFunc::ALWAYS:		return D3D11_COMPARISON_ALWAYS;
+		case eComparisonFunc::EQUAL:		return D3D11_COMPARISON_EQUAL;
+		case eComparisonFunc::GREATER:		return D3D11_COMPARISON_GREATER;
+		case eComparisonFunc::GREATER_EQUAL:return D3D11_COMPARISON_GREATER_EQUAL;
+		case eComparisonFunc::LESS:			return D3D11_COMPARISON_LESS;
+		case eComparisonFunc::LESS_EQUAL:	return D3D11_COMPARISON_LESS_EQUAL;
+		case eComparisonFunc::NEVER:		return D3D11_COMPARISON_NEVER;
+		case eComparisonFunc::NOT_EQUAL:	return D3D11_COMPARISON_NOT_EQUAL;
+		default: return D3D11_COMPARISON_LESS_EQUAL;
+	}
+}
+D3D11_STENCIL_OP ConvertToNativeStencilOp(eStencilOp stencilOp) {
+	switch (stencilOp) {
+		case eStencilOp::DECR:		return D3D11_STENCIL_OP_DECR;
+		case eStencilOp::DECR_SAT:	return D3D11_STENCIL_OP_DECR_SAT;
+		case eStencilOp::INCR:		return D3D11_STENCIL_OP_INCR;
+		case eStencilOp::INCR_SAT:	return D3D11_STENCIL_OP_INCR_SAT;
+		case eStencilOp::INVERT:	return D3D11_STENCIL_OP_INVERT;
+		case eStencilOp::KEEP:		return D3D11_STENCIL_OP_KEEP;
+		case eStencilOp::REPLACE:	return D3D11_STENCIL_OP_REPLACE;
+		case eStencilOp::ZERO:		return D3D11_STENCIL_OP_ZERO;
+		default: return D3D11_STENCIL_OP_REPLACE;
+	}
+}
+D3D11_DEPTH_STENCIL_DESC ConvertToNativeDepthStencil(tDepthStencilDesc depthStencil) {
+	D3D11_DEPTH_STENCIL_DESC ret;
+	ret.DepthEnable = (depthStencil.depthEnable ? TRUE : FALSE);
+	ret.DepthFunc = ConvertToNativeCompFunc(depthStencil.depthCompare);
+	ret.DepthWriteMask = (depthStencil.depthWriteEnable ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO);
+	ret.StencilEnable = (depthStencil.stencilEnable ? TRUE : FALSE);
+	ret.StencilReadMask = depthStencil.stencilReadMask;
+	ret.StencilWriteMask = depthStencil.stencilWriteMask;
+
+	ret.BackFace.StencilDepthFailOp = ConvertToNativeStencilOp(depthStencil.stencilOpBackFace.stencilPassDepthFail);
+	ret.BackFace.StencilFailOp = ConvertToNativeStencilOp(depthStencil.stencilOpBackFace.stencilFail);
+	ret.BackFace.StencilPassOp = ConvertToNativeStencilOp(depthStencil.stencilOpBackFace.stencilPass);
+	ret.BackFace.StencilFunc = ConvertToNativeCompFunc(depthStencil.stencilOpBackFace.stencilCompare);
+
+	ret.FrontFace.StencilDepthFailOp = ConvertToNativeStencilOp(depthStencil.stencilOpFrontFace.stencilPassDepthFail);
+	ret.FrontFace.StencilFailOp = ConvertToNativeStencilOp(depthStencil.stencilOpFrontFace.stencilFail);
+	ret.FrontFace.StencilPassOp = ConvertToNativeStencilOp(depthStencil.stencilOpFrontFace.stencilPass);
+	ret.FrontFace.StencilFunc = ConvertToNativeCompFunc(depthStencil.stencilOpFrontFace.stencilCompare);
+
+	return ret;
 }
