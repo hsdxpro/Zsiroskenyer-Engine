@@ -6,13 +6,13 @@
       <authoring_tool>FBX COLLADA exporter</authoring_tool>
       <comments></comments>
     </contributor>
-    <created>2013-12-17T21:03:19Z</created>
+    <created>2013-12-21T09:47:00Z</created>
     <keywords></keywords>
-    <modified>2013-12-17T21:03:19Z</modified>
+    <modified>2013-12-21T09:47:00Z</modified>
     <revision></revision>
     <subject></subject>
     <title></title>
-    <unit meter="0.025400" name="centimeter"></unit>
+    <unit meter="0.010000" name="centimeter"></unit>
     <up_axis>Y_UP</up_axis>
   </asset>
   <library_geometries>
@@ -208,10 +208,17 @@
       </mesh>
     </geometry>
   </library_geometries>
+  <library_animations>
+    <animation id="Plane001-anim" name="Plane001"></animation>
+  </library_animations>
   <library_visual_scenes>
     <visual_scene id="" name="">
       <node name="Plane001" id="Plane001" sid="Plane001">
-        <matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 -0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix>
+        <rotate sid="jointOrientX">1 0 0 -90.000000</rotate>
+        <rotate sid="rotateZ">0 0 1 90.000003</rotate>
+        <rotate sid="rotateY">0 1 0 -0.000000</rotate>
+        <rotate sid="rotateX">1 0 0 0.000000</rotate>
+        <scale sid="scale">2.540000 2.540000 2.540000</scale>
         <instance_geometry url="#Plane001-lib"/>
         <extra>
           <technique profile="FCOLLADA">

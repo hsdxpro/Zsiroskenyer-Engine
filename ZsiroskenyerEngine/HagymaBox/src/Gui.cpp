@@ -12,7 +12,7 @@ cGui::cGui(IGraphicsScene* s)
 }
 
 cGuiImage* cGui::CreateImage(const zsString& mtlPath) {
-	return new cGuiImage(scene->CreateEntity(L"objects/quad.dae", mtlPath));
+	return new cGuiImage(scene->CreateEntity(L"objects/quad.obj", mtlPath));
 }
 
 cCamera& cGui::GetCamera() {
