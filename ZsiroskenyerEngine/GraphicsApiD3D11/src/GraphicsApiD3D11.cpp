@@ -513,7 +513,7 @@ eGapiResult	cGraphicsApiD3D11::CreateVertexBuffer(IVertexBuffer** resource, size
 	switch (hr) {
 		case S_OK:
 			*resource = new cVertexBufferD3D11(buffer, desc.ByteWidth, usage);
-			eGapiResult::OK;
+			return eGapiResult::OK;
 		case E_OUTOFMEMORY:
 			return eGapiResult::ERROR_OUT_OF_MEMORY;
 		default:
@@ -545,7 +545,7 @@ eGapiResult	cGraphicsApiD3D11::CreateIndexBuffer(IIndexBuffer** resource, size_t
 	switch (hr) {
 		case S_OK:
 			*resource = new cIndexBufferD3D11(buffer, desc.ByteWidth, usage);
-			eGapiResult::OK;
+			return eGapiResult::OK;
 		case E_OUTOFMEMORY:
 			return eGapiResult::ERROR_OUT_OF_MEMORY;
 		default:

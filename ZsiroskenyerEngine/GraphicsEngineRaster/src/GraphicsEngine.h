@@ -155,13 +155,19 @@ private:
 		IGraphicsApi* gApi;
 		IShaderProgram* shaderGBuffer;
 		IShaderProgram* shaderComposition;
+		IShaderProgram *shaderDirectional, *shaderPoint, *shaderSpot, *shaderAmbient;
 		cGraphicsEngine& parent;
 
+		IVertexBuffer *vbSpot, *vbPoint;
+		IIndexBuffer *ibSpot, *ibPoint;
+
 		eGapiResult ReallocBuffers();
+		void Cleanup();
 
 		// Constant buffers for shaders TODO, move them to IShaderProgram
 		IConstantBuffer* gBufferConstantBuffer;
 		IConstantBuffer* compConstantBuffer;
+		IConstantBuffer* lightPassConstants;
 
 		// Remove that also..
 		ITexture2D* motionBlurredBuffer;

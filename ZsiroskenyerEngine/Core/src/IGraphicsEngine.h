@@ -115,15 +115,7 @@ public:
 
 	virtual eGraphicsResult Update(float elapsed = 0.0f) = 0;
 
-	// DEPRECATED
-	/*
-	virtual cGraphicsEntity* CreateEntity(const zsString& geomPath, const zsString& mtlPath) = 0;
-	virtual void			SetActiveCamera(cCamera* cam) = 0;
-	virtual cCamera*		GetActiveCamera() = 0;
-#pragma deprecated(CreateEntity, SetActiveCamera, GetActiveCamera)
-	*/
-
-	// NEW - scene management
+	// scene management
 	virtual IGraphicsScene*	CreateScene(tRenderState state = tRenderState()) = 0;
 	virtual void			DeleteScene(const IGraphicsScene* scene) = 0;
 };

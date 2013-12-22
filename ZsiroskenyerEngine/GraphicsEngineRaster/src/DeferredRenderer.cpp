@@ -8,6 +8,7 @@
 
 #include "GraphicsEngine.h"
 #include "SceneManager.h"
+#include "DeferredLightVolume.h"
 
 #include "../../Core/src/IGraphicsApi.h"
 #include "../../Core/src/IShaderManager.h"
@@ -17,6 +18,7 @@
 #include "../../Core/src/IIndexBuffer.h"
 
 #include "../../Core/src/GraphicsEntity.h"
+#include "../../Core/src/GraphicsLight.h"
 #include "../../Core/src/Camera.h"
 
 // For lerping
@@ -24,6 +26,7 @@
 
 #include <string>
 #include <stdexcept>
+#include <vector>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,6 +38,9 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 	compositionBuffer = NULL;
 	depthBuffer = NULL;
 	helperBuffer = NULL;
+	shaderAmbient = shaderDirectional = shaderPoint = shaderSpot = NULL;
+	ibSpot = ibPoint = NULL;
+	vbSpot = vbPoint = NULL;
 	for (auto& v : gBuffer)
 		v = NULL;
 
@@ -45,36 +51,56 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 	// "Creating" shaders
 	ReloadShaders();
 
-	if (!shaderGBuffer || !shaderComposition) {
+	if (!shaderGBuffer || !shaderComposition || !shaderDirectional || !shaderAmbient || !shaderPoint) {
 		std::string msg = std::string("Failed to create shaders:") + (shaderGBuffer ? "" : " g-buffer") + (shaderComposition ? "" : " composition");
-		if (shaderGBuffer) parent.shaderManager->UnloadShader(shaderGBuffer);
-		if (shaderComposition) parent.shaderManager->UnloadShader(shaderComposition);
-		shaderGBuffer = shaderComposition = NULL;
 		throw std::runtime_error(msg);
 	}
 	// Create buffers
 	if (ReallocBuffers() != eGapiResult::OK) {
-		parent.shaderManager->UnloadShader(shaderGBuffer);
-		parent.shaderManager->UnloadShader(shaderComposition);
 		throw std::runtime_error("failed to create texture buffers");
 	}
 
-	// Prepare constant buffers for shaders gBuffer
-	// Matrix44, worldViewProj, world.   Vec3 camPos, + 1 byte dummy ( GBUFFER)
-	eGapiResult gr = gApi->CreateConstantBuffer(&gBufferConstantBuffer, 2 * sizeof(Matrix44)+sizeof(Vec4), eUsage::DEFAULT, NULL);
-
-	// Matrix44 invViewProj, Vec3 campos, + 1 byte dummy( COMPOSITION)
+	// Create shader constant buffers
+	eGapiResult gr;
+	gr = gApi->CreateConstantBuffer(&gBufferConstantBuffer, 2 * sizeof(Matrix44)+sizeof(Vec4), eUsage::DEFAULT, NULL);
+	if (gr != eGapiResult::OK) { Cleanup(); throw std::runtime_error("failed to create constant buffers"); }
+	gr = gApi->CreateConstantBuffer(&lightPassConstants, 240, eUsage::DEFAULT, NULL);
+	if (gr != eGapiResult::OK) { Cleanup(); throw std::runtime_error("failed to create constant buffers"); }
 	gr = gApi->CreateConstantBuffer(&compConstantBuffer, 2 * sizeof(Matrix44)+sizeof(Vec4), eUsage::DEFAULT, NULL);
+	if (gr != eGapiResult::OK) { Cleanup(); throw std::runtime_error("failed to create constant buffers"); }
+
+	// Create light volume buffers
+	size_t size = sizeof(vbDataLightPoint);
+	gr = gApi->CreateVertexBuffer(&vbPoint, sizeof(vbDataLightPoint), eUsage::IMMUTABLE, vbDataLightPoint);
+	if (gr != eGapiResult::OK) { Cleanup(); throw std::runtime_error("failed to create light volume buffers"); }
+	gr = gApi->CreateIndexBuffer(&ibPoint, sizeof(ibDataLightPoint), eUsage::IMMUTABLE, ibDataLightPoint);
+	if (gr != eGapiResult::OK) { Cleanup(); throw std::runtime_error("failed to create light volume buffers"); }
+	gr = gApi->CreateVertexBuffer(&vbSpot, sizeof(vbDataLightSpot), eUsage::IMMUTABLE, vbDataLightSpot);
+	if (gr != eGapiResult::OK) { Cleanup(); throw std::runtime_error("failed to create light volume buffers"); }
+	gr = gApi->CreateIndexBuffer(&ibSpot, sizeof(ibDataLightSpot), eUsage::IMMUTABLE, ibDataLightSpot);
+	if (gr != eGapiResult::OK) { Cleanup(); throw std::runtime_error("failed to create light volume buffers"); }
 }
 
-cGraphicsEngine::cDeferredRenderer::~cDeferredRenderer() {
+
+void cGraphicsEngine::cDeferredRenderer::Cleanup() {
 	for (auto& v : gBuffer)
 		SAFE_RELEASE(v);
 	SAFE_RELEASE(compositionBuffer);
 	SAFE_RELEASE(depthBuffer);
+	SAFE_RELEASE(depthBufferShader);
 
-	SAFE_DELETE(gBufferConstantBuffer);
-	SAFE_DELETE(compConstantBuffer);
+	SAFE_RELEASE(ibPoint);
+	SAFE_RELEASE(vbPoint);
+	SAFE_RELEASE(ibSpot);
+	SAFE_RELEASE(vbSpot);
+
+	SAFE_RELEASE(gBufferConstantBuffer);
+	SAFE_RELEASE(compConstantBuffer);
+	SAFE_RELEASE(lightPassConstants);
+}
+
+cGraphicsEngine::cDeferredRenderer::~cDeferredRenderer() {
+	Cleanup();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -132,7 +158,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->ClearTexture(gBuffer[0], 0, Vec4(0.5f, 0.7f, 0.8f, 0.0f));
 	gApi->ClearTexture(gBuffer[1], 0, Vec4(0.5f, 0.5f, 0.0f, 0.0f));
 	gApi->ClearTexture(gBuffer[2], 0, Vec4(0.0f, 0.0f, 0.0f, 0.0f));
-
+	gApi->ClearTexture(compositionBuffer, 0, Vec4(0.0f, 0.0f, 0.0f, 0.0f));
 	
 	//----------------------------------------------------------------------//
 	// --- --- --- --- --- --- --- GBUFFER PASS --- --- --- --- --- --- --- //
@@ -232,10 +258,131 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	depthStencilState.stencilOpBackFace.stencilPassDepthFail = eStencilOp::KEEP;
 	depthStencilState.stencilReadMask = depthStencilState.stencilWriteMask = 0x01;
 	depthStencilState.stencilOpFrontFace = depthStencilState.stencilOpBackFace;
-	gApi->SetDepthStencilState(depthStencilState, 0x01);
 		// Additive blending
+	blendState[0].blendOp = eBlendOp::ADD;
+	blendState[0].blendOpAlpha = eBlendOp::MAX;
+	blendState[0].destBlend = eBlendFactor::ONE;
+	blendState[0].destBlendAlpha = eBlendFactor::ZERO;
+	blendState[0].srcBlend = eBlendFactor::ONE;
+	blendState[0].srcBlendAlpha = eBlendFactor::ONE;
+	blendState[0].enable = true;
+	blendState[0].writeMask = (uint8_t)eBlendWriteMask::ALL;
+
+	gApi->SetDepthStencilState(depthStencilState, 0x01);
+	gApi->SetBlendState(blendState);
+
+	// NEW LIGHTING PASS
+
+	// Set render target
+	gApi->SetRenderTargets(1, &compositionBuffer, depthBuffer);
+
+	// Sort scene lights by type
+	std::vector<cGraphicsLight*> directionalLights;
+	std::vector<cGraphicsLight*> spotLights;
+	std::vector<cGraphicsLight*> pointLights;
+	Vec3 ambientLight(0.0f, 0.0f, 0.0f);
+
+	auto& lightList = parent.sceneManager->GetLights();
+	for (auto light : lightList) {
+		switch (light->type) {
+			case cGraphicsLight::AMBIENT:
+				ambientLight += light->color;
+				break;
+			case cGraphicsLight::DIRECTIONAL:
+				directionalLights.push_back(light);
+				break;
+			case cGraphicsLight::POINT:
+				pointLights.push_back(light);
+				break;
+			case cGraphicsLight::SPOT:
+				spotLights.push_back(light);
+				break;
+			default:
+				break;
+		}
+	}
+		
+	// Struct for shader constants
+	/*
+	float4x4 invViewProj : register(c0);
+	float4x4 viewProj : register(c4);
+	float4 camPos : register(c8);
+	float3 lightColor : register(c9);
+	float3 lightPos : register(c10);
+	float3 lightDir : register(c11);
+	float lightRange : register(c12);
+	float3 lightAtten : register(c13);
+	float2 lightAngle : register(c14);
+	*/
+	struct {
+		Matrix44 invViewProj;
+		Matrix44 viewProj;
+		Vec3 camPos;		float _pad0;
+		Vec3 lightColor;	float _pad1;
+		Vec3 lightPos;		float _pad3;
+		Vec3 lightDir;		float _pad4;
+		float lightRange;	float _pad5[3];
+		Vec3 lightAtten;	float _pad6;
+		float lightAngleInner, lightAngleOuter;	float _pad7[2];
+	} shaderConstants;
+
+	Matrix44 viewProj = cam->GetViewMatrix() * cam->GetProjMatrix();
+	shaderConstants.invViewProj = Matrix44::Inverse(viewProj);
+	shaderConstants.viewProj = viewProj;
+
+	// Render each light group
+
+	gApi->SetTexture(gBuffer[0], 0);
+	gApi->SetTexture(gBuffer[1], 1);
+	gApi->SetTexture(gBuffer[2], 2);
+	gApi->SetTexture(depthBufferShader, 3);
 
 
+	// Directional lights
+	gApi->SetShaderProgram(shaderDirectional);
+	for (auto light : directionalLights) {
+		// fill shader constants
+		
+		shaderConstants.lightColor = light->color;
+		shaderConstants.lightDir = light->direction;
+		// load shader constants
+		gApi->SetConstantBufferData(lightPassConstants, &shaderConstants);
+		gApi->SetPSConstantBuffer(lightPassConstants, 0);
+
+		// draw an FSQ
+		gApi->Draw(3);
+	}
+
+
+	// Ambient lights
+	gApi->SetShaderProgram(shaderAmbient);
+	// fill shader constants
+	shaderConstants.lightColor = ambientLight;
+	// load shader constants
+	gApi->SetConstantBufferData(lightPassConstants, &shaderConstants);
+	gApi->SetPSConstantBuffer(lightPassConstants, 0);
+	// draw an FSQ
+	gApi->Draw(3);
+
+
+	// Point lights
+	gApi->SetShaderProgram(shaderPoint);
+	gApi->SetVertexBuffer(vbPoint, 4*2*sizeof(float));
+	gApi->SetIndexBuffer(ibPoint);
+	for (auto light : pointLights) {
+		// set shader constants
+		shaderConstants.lightAtten = Vec3(light->atten0, light->atten1, light->atten2);
+		shaderConstants.lightColor = light->color;
+		shaderConstants.lightPos = light->position;
+		shaderConstants.lightRange = light->range;
+		gApi->SetConstantBufferData(lightPassConstants, &shaderConstants);
+		gApi->SetPSConstantBuffer(lightPassConstants, 0);
+		// draw that bullshit
+		gApi->DrawIndexed(sizeof(ibDataLightPoint) / 3 / sizeof(unsigned));
+	}
+
+	// OLD LIGHTING PASS
+	/* 
 	// Set render target
 	gApi->SetRenderTargets(1, &compositionBuffer, depthBuffer);
 	// Set ShaderProgram
@@ -263,6 +410,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 	// Draw triangle, hardware will quadify them automatically :)
 	gApi->Draw(3);
+	*/
 
 	// Set back render state to default
 	gApi->SetDepthStencilState(depthStencilDefault, 0x00);
@@ -316,6 +464,12 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {
 	shaderGBuffer = parent.shaderManager->ReloadShader(L"shaders/deferred_gbuffer.cg");
 	shaderComposition = parent.shaderManager->ReloadShader(L"shaders/deferred_compose.cg");
+
+	shaderAmbient = parent.shaderManager->ReloadShader(L"shaders/deferred_light_ambient.cg");;
+	shaderDirectional = parent.shaderManager->ReloadShader(L"shaders/deferred_light_dir.cg");
+	shaderPoint = parent.shaderManager->ReloadShader(L"shaders/deferred_light_point.cg");
+	shaderSpot = NULL;
+
 	parent.screenCopyShader = parent.shaderManager->ReloadShader(L"shaders/screen_copy.cg");
 	parent.shaderManager->ReloadShader(L"shaders/motion_blur.cg");
 	parent.shaderManager->ReloadShader(L"shaders/depth_of_field.cg");

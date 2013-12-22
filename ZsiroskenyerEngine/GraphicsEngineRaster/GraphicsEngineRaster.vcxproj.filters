@@ -73,5 +73,6 @@
     <ClInclude Include="src\_GeometryBuilder.h">
       <Filter>Geometry</Filter>
     </ClInclude>
+    <ClInclude Include="src\DeferredLightVolume.h" />
   </ItemGroup>
 </Project>

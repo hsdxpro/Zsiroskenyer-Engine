@@ -25,6 +25,7 @@
     <ClCompile Include="src\Material.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\DeferredLightVolume.h" />
     <ClInclude Include="src\Geometry.h" />
     <ClInclude Include="src\GraphicsEngine.h" />
     <ClInclude Include="src\InstanceGroup.h" />

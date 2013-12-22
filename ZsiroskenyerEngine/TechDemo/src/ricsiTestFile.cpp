@@ -2,6 +2,7 @@
 
 // Visualities
 #include "../../Core/src/IGraphicsEngine.h"
+#include "../../Core/src/GraphicsLight.h"
 #include "../../GraphicsEngineRaster/src/ResourceManager.h"
 #include "../../Core/src/Camera.h"
 #include "../../Core/src/Game.h"
@@ -60,6 +61,34 @@ int ricsiMain() {
 	// Create scene with camera
 	IGraphicsScene* s = gEngine->CreateScene();
 	s->GetCamera() = cCamera(/*0.5*3.141592653589*/1.15f, (float)winDesc.clientWidth / winDesc.clientHeight, 0.01f, 5000.0f);
+
+	// Add some fucking lights :)
+	cGraphicsLight* sunLight = s->CreateLight();
+	cGraphicsLight* secondSunLight = s->CreateLight();
+	cGraphicsLight* thirdSunLight = s->CreateLight();
+	cGraphicsLight* skyLight = s->CreateLight();
+	cGraphicsLight* pointLight = s->CreateLight();
+
+	sunLight->type = cGraphicsLight::DIRECTIONAL;
+	sunLight->color = Vec3(0.9f, 0.8f, 0.77f);
+	sunLight->direction = Vec3(0.5f, 0.5f, -0.5f).Normalize();
+
+	secondSunLight->type = cGraphicsLight::DIRECTIONAL;
+	secondSunLight->color = Vec3(1.2, 0.03, 0.95);
+	secondSunLight->direction = Vec3(-0.8f, 0.0f, -0.2f).Normalize();
+
+	thirdSunLight->type = cGraphicsLight::DIRECTIONAL;
+	thirdSunLight->color = Vec3(0.2, 0.8f, 0.77f);
+	thirdSunLight->direction = Vec3(0.8, -0.1f, -0.3f).Normalize();
+
+	skyLight->type = cGraphicsLight::AMBIENT;
+	skyLight->color = Vec3(0.2, 0.3, 0.35);
+
+	pointLight->atten0 = pointLight->atten1 = pointLight->atten2 = 0.0f;
+	pointLight->color = Vec3(0.2, 0.2, 0.9);
+	pointLight->position = Vec3(8, 8, 2);
+	pointLight->range = 20.f;
+	pointLight->type = cGraphicsLight::POINT;
 
 	// Static terrain
 	zsString staticBaseNames[9] = { "coyote",

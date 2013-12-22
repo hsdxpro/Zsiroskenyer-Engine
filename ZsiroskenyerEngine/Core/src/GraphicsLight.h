@@ -17,7 +17,7 @@ public:
 		DIRECTIONAL,
 	};
 	eLightType type;
-	Vec4 color;
+	Vec3 color;
 	Vec3 position, direction;
 	float atten0, atten1, atten2; // attenuation factors
 	float range;
