@@ -71,13 +71,11 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 
 	for(size_t i = 0; i < nMeshes;i++) {
 		aiMesh* mesh = meshes[i];
-		for (size_t j = 0; j < mesh->mNumFaces; indexI += 3, j++)
-		{
+		for (size_t j = 0; j < mesh->mNumFaces; indexI += 3, j++) {
 			aiFace& face = mesh->mFaces[j];
 			
 			// For each face index
-			for (size_t k = 0; k < 3; k++) 
-			{
+			for (size_t k = 0; k < 3; k++) {
 				if (face.mNumIndices < 3)
 					break;
 
