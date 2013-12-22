@@ -1,0 +1,50 @@
+////////////////////////////////////////////////////////////////////////////////
+//	Lighting shader for DIRECTIONAL lights
+//
+////////////////////////////////////////////////////////////////////////////////
+
+#include "deferred_lightpass_cmn.cginc"
+
+
+//------------------------------------------------------------------------------
+//	Vertex shader
+//------------------------------------------------------------------------------
+
+struct VS_IN {
+	float3 posL 	: POSITION;
+	float2 tex0 	: TEXCOORD0;
+};
+struct VS_OUT {
+	float4 posH 	: SV_POSITION;
+	float2 tex0 	: TEXCOORD2;
+};
+
+VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
+	VS_OUT vout;
+	vout.tex0 = float2( (VertexID << 1) & 2, VertexID & 2 );
+	vout.posH = float4(  vout.tex0 * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f), 0.0f, 1.0f );
+	return vout;
+}
+
+
+//------------------------------------------------------------------------------
+//	Pixel shader
+//------------------------------------------------------------------------------
+float4 PS_MAIN(VS_OUT In) : COLOR0 {
+	float4 color;
+	float3 normal;
+	float3 worldPos;
+	float3 diffuseColor;
+	float depth;
+	DecodeGBuffer(In.tex0, diffuseColor, normal, worldPos, depth);
+	
+	// calculate lighting terms
+	float3 diffuseTerm = DiffuseLight(lightDir, lightColor, normal);
+	float3 specTerm = SpecularLight(lightDir, lightColor, normal, normalize(worldPos-camPos), 0.2f);
+
+	color.rgb += diffuseTerm*diffuseColor + specTerm; // note: no light attenuation
+
+	color.a = 1.f;
+	
+	return color;
+}
