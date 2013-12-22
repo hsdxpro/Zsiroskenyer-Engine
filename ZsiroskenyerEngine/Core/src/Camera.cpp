@@ -2,16 +2,23 @@
 #include "Camera.h"
 #include "../../Core/src/common.h"
 
-cCamera::cCamera(float fovRad, float aspectRatio, float nearPlane, float farPlane) 
-:fovRad(fovRad), aspectRatio(aspectRatio), nearPlane(nearPlane), farPlane(farPlane), target(0, 1, 0), pos(0, 0, 0) {
+
+cCamera::cCamera(cCamera::tProjOrtho proj, float nearPlane, float farPlane)
+:nearPlane(nearPlane), farPlane(farPlane), target(0, 1, 0), pos(0, 0, 0), projOrtho(proj), projType(cCamera::ORTHO) {
+
+}
+
+cCamera::cCamera(cCamera::tProjPersp proj, float nearPlane, float farPlane)
+:nearPlane(nearPlane), farPlane(farPlane), target(0, 1, 0), pos(0, 0, 0), projPersp(proj), projType(cCamera::PERSP) {
+
 }
 
 void cCamera::SetFOV(float rad) {
-	this->fovRad = rad;
+	projPersp.fovRad = rad;
 }
 
 void cCamera::SetAspectRatio(float r) {
-	aspectRatio = r;
+	projPersp.aspectRatio = r;
 }
 
 void cCamera::SetNearPlane(float nP) {
@@ -35,11 +42,11 @@ void cCamera::SetDir(const Vec3& p) {
 }
 
 float cCamera::GetFOV() const {
-	return fovRad;
+	return projPersp.fovRad;
 }
 
 float cCamera::GetAspectRatio() const {
-	return aspectRatio;
+	return projPersp.aspectRatio;
 }
 
 float cCamera::GetNearPlane() const {
@@ -56,7 +63,15 @@ Matrix44 cCamera::GetViewMatrix() const {
 }
 
 Matrix44 cCamera::GetProjMatrix() const {
-	return Matrix44::MatrixProjPerspective(nearPlane, farPlane, fovRad, aspectRatio);
+	switch (projType)
+	{
+		case ORTHO:
+			return Matrix44::MatrixProjOrtographic(nearPlane, farPlane, projOrtho.left, projOrtho.right, projOrtho.bottom, projOrtho.top);
+		case PERSP:
+			return Matrix44::MatrixProjPerspective(nearPlane, farPlane, projPersp.fovRad, projPersp.aspectRatio);
+	}
+	ASSERT_MSG(false, L"OMG wtf camera not ORTHO and not PERSP");
+	return Matrix44();
 }
 
 Vec3 cCamera::GetDirFront() const {
@@ -94,4 +109,16 @@ const Quat& cCamera::GetRot() const {
 
 const Vec3& cCamera::GetTarget() const {
 	return target;
+}
+
+
+
+
+///////////-------------- PROJECTION STRUCTS ------------------/////////////
+cCamera::tProjOrtho::tProjOrtho(float left, float right, float bottom, float top)
+:left(left), right(right), bottom(bottom), top(top) {
+}
+
+cCamera::tProjPersp::tProjPersp(float fovRad, float aspectRatio)
+:fovRad(fovRad), aspectRatio(aspectRatio) {
 }

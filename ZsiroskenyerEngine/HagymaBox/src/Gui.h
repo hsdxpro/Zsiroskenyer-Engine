@@ -15,7 +15,7 @@ public:
 
 	cGuiImage* CreateImage(const zsString& mtlPath);
 
-	cCamera& GetCamera();
+	IGraphicsScene* GetScene();
 
 protected:
 	cGui();

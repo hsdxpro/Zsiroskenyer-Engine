@@ -2,19 +2,21 @@
 
 #include "GuiImage.h"
 #include "../../GraphicsEngineRaster/src/GraphicsEngine.h"
-
+#include "../../Core/src/GraphicsEntity.h"
 cGui::cGui() {
 }
 
 cGui::cGui(IGraphicsScene* s) 
 :scene(s) {
-	s->GetCamera() = cCamera(/*0.5*3.141592653589*/1.15f, 1.0f, 0.01f, 5000.0f);
+	s->GetCamera() = cCamera(cCamera::tProjOrtho(0, 1, 0, 1), 0.01f, 5000.0f);
 }
 
 cGuiImage* cGui::CreateImage(const zsString& mtlPath) {
-	return new cGuiImage(scene->CreateEntity(L"objects/quad.obj", mtlPath));
+	cGraphicsEntity* e = scene->CreateEntity(L"objects/quad.obj", mtlPath);
+	e->SetPos(1, 1, 1);
+	return new cGuiImage(e);
 }
 
-cCamera& cGui::GetCamera() {
-	return scene->GetCamera();
+IGraphicsScene* cGui::GetScene() {
+	return scene;
 }

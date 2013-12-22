@@ -60,7 +60,7 @@ int ricsiMain() {
 
 	// Create scene with camera
 	IGraphicsScene* s = gEngine->CreateScene();
-	s->GetCamera() = cCamera(/*0.5*3.141592653589*/1.15f, (float)winDesc.clientWidth / winDesc.clientHeight, 0.01f, 5000.0f);
+	s->GetCamera() = cCamera(cCamera::tProjPersp(/*0.5*3.141592653589*/1.15f, (float)winDesc.clientWidth / winDesc.clientHeight), 0.01f, 5000.0f);
 
 	// Add some fucking lights :)
 	cGraphicsLight* sunLight = s->CreateLight();
