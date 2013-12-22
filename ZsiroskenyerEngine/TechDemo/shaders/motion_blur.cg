@@ -1,5 +1,19 @@
-sampler2D texture0 : register(s0);
-sampler2D depthTexture : register(s1);
+sampler2D texture0 : register(s0) = {
+    MipFilter = POINT,
+    MinFilter = POINT,
+    MagFilter = POINT,
+	AddressU = Clamp,
+	AddressW = Clamp,
+};
+
+sampler2D depthTexture: register(s1) = {
+    MipFilter = POINT,
+    MinFilter = POINT,
+    MagFilter = POINT,
+	AddressU = Clamp,
+	AddressW = Clamp,
+};
+
 
 float4x4 invViewProj : register(c0); // inv curr
 float4x4 prevViewProj: register(c4); // prev
@@ -42,7 +56,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 
 	int nSamples = 8;
 	for(int i = 1; i < nSamples; ++i)     
-   		color += tex2D(texture0, clamp(In.tex0 + i * velocity, 0.005f, 0.993f));
+   		color += tex2D(texture0, clamp(In.tex0 + i * velocity, 0.001f, 0.999f));
  
 	Out.color = color / (nSamples + 1);
 	return Out;

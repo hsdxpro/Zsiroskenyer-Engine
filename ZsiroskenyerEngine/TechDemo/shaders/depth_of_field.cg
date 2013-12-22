@@ -1,6 +1,18 @@
-sampler2D texture0 : register(s0);
-sampler2D depthTexture : register(s1);
+sampler2D texture0 : register(s0) = {
+    MipFilter = POINT,
+    MinFilter = POINT,
+    MagFilter = POINT,
+	AddressU = Clamp,
+	AddressW = Clamp,
+};
 
+sampler2D depthTexture: register(s1) = {
+    MipFilter = POINT,
+    MinFilter = POINT,
+    MagFilter = POINT,
+	AddressU = Clamp,
+	AddressW = Clamp,
+};
 
 struct VS_IN {
 	float3 posL 	: POSITION;
