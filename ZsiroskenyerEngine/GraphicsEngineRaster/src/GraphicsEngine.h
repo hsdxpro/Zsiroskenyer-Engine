@@ -83,16 +83,8 @@ public:
 	eGraphicsResult ReloadResources() override;
 	eGraphicsResult SetConfig(tGraphicsConfig config) override;
 	eGraphicsResult Resize(unsigned width, unsigned height) override;
-
-	// DEPRECATED
-	/*
-	void SetActiveCamera(cCamera* cam) override;
-	cGraphicsEntity* CreateEntity(const zsString& geomPath, const zsString& mtlPath) override;
-	cCamera* GetActiveCamera() override;
-#pragma deprecated(SetActiveCamera, CreateEntity, GetActiveCamera)
-	*/
-
-	// NEW - scene management
+	
+	// scene management
 	IGraphicsScene*	CreateScene(tRenderState state = tRenderState()) override;
 	void			DeleteScene(const IGraphicsScene* scene) override;
 
@@ -113,6 +105,9 @@ private:
 	void RenderScene(cGraphicsScene& scene, float elapsed);
 	void RenderForward();
 	void RenderDeferred();
+	// render states
+	static const tDepthStencilDesc depthStencilDefault;
+	static const tBlendDesc blendDefault;
 
 	// state
 	unsigned screenWidth, screenHeight;
@@ -155,6 +150,7 @@ private:
 		ITexture2D* compositionBuffer;
 		ITexture2D* helperBuffer;
 		ITexture2D* depthBuffer;
+		ITexture2D* depthBufferShader;
 
 		IGraphicsApi* gApi;
 		IShaderProgram* shaderGBuffer;

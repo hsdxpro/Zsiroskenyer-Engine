@@ -120,7 +120,7 @@ public:
 	void SetWindow(IWindow *renderWindow) override;
 
 	eGapiResult SetBlendState(tBlendDesc desc) override;
-	eGapiResult SetDepthStencilState(tDepthStencilDesc desc) override;
+	eGapiResult SetDepthStencilState(tDepthStencilDesc desc, uint8_t stencilRef) override;
 
 	// --- misc --- //
 	ITexture2D* GetDefaultRenderTarget() const override;
@@ -143,4 +143,8 @@ protected:
 	ID3D11Device *d3ddev;
 	IDXGISwapChain *d3dsc;
 	static tDxConfig swapChainConfig;
+
+	// you better remove these muhaha -> gányolt fos
+	ID3D11DepthStencilState* depthStencilState;
+	ID3D11BlendState* blendState;
 };
