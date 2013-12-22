@@ -125,6 +125,7 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// Declared here, will be used throughout whole function
 	tDepthStencilDesc depthStencilState;
+	tBlendDesc blendState;
 
 	// Clear buffers
 	gApi->ClearTexture(depthBuffer);
@@ -220,6 +221,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	//--------------------------------------------------------------------------//
 	
 	// Set render states
+		// Depth-stencil
 	depthStencilState = depthStencilDefault;
 	depthStencilState.depthCompare = eComparisonFunc::ALWAYS;
 	depthStencilState.depthWriteEnable = false;
@@ -230,7 +232,9 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	depthStencilState.stencilOpBackFace.stencilPassDepthFail = eStencilOp::KEEP;
 	depthStencilState.stencilReadMask = depthStencilState.stencilWriteMask = 0x01;
 	depthStencilState.stencilOpFrontFace = depthStencilState.stencilOpBackFace;
-	r = gApi->SetDepthStencilState(depthStencilState, 0x01);
+	gApi->SetDepthStencilState(depthStencilState, 0x01);
+		// Additive blending
+
 
 	// Set render target
 	gApi->SetRenderTargets(1, &compositionBuffer, depthBuffer);
@@ -262,6 +266,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 	// Set back render state to default
 	gApi->SetDepthStencilState(depthStencilDefault, 0x00);
+	gApi->SetBlendState(blendDefault);
 
 
 	// MOTION BLUR______________________________________________________________________________________________________________________________________
