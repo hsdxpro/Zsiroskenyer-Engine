@@ -1,4 +1,8 @@
-sampler2D texture0 : register(s0);
+sampler2D texture0 : register(s0) = {
+    MipFilter = POINT,
+    MinFilter = POINT,
+    MagFilter = POINT,
+};
 
 
 struct VS_IN {

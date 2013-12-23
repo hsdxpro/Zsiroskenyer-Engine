@@ -221,14 +221,23 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, float elapsed) {
 	ITexture2D* composedBuffer = deferredRenderer->GetCompositionBuffer();
 
 	// HDR
-	if (composedBuffer != compBuf_Check) {
-		compBuf_Check = composedBuffer;
-		hdrProcessor->SetSource(composedBuffer, screenWidth, screenHeight);
+	if (scene.state.hdr.enabled) {
+		if (composedBuffer != compBuf_Check) {
+			compBuf_Check = composedBuffer;
+			hdrProcessor->SetSource(composedBuffer, screenWidth, screenHeight);
+		}
+		hdrProcessor->adaptedLuminance = scene.luminanceAdaptation; // copy luminance value
+		hdrProcessor->SetDestination(gApi->GetDefaultRenderTarget());	// set destination as backbuffer
+		hdrProcessor->Update(elapsed);									// update hdr
+		scene.luminanceAdaptation = hdrProcessor->adaptedLuminance; // copy luminance value
 	}
-	hdrProcessor->adaptedLuminance = scene.luminanceAdaptation; // copy luminance value
-	hdrProcessor->SetDestination(gApi->GetDefaultRenderTarget());	// set destination as backbuffer
-	hdrProcessor->Update(elapsed);									// update hdr
-	scene.luminanceAdaptation = hdrProcessor->adaptedLuminance; // copy luminance value
+	else {
+		gApi->SetRenderTargetDefault();
+		gApi->SetShaderProgram(screenCopyShader);
+		gApi->SetTexture(composedBuffer, 0);
+		gApi->Draw(3);
+	}
+
 
 	gApi->GetDefaultRenderTarget();
 	
