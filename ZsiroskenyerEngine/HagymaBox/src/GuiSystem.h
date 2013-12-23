@@ -14,7 +14,7 @@ public:
 	cGuiSystem();
 	~cGuiSystem();
 
-	cGui* CreateGui(IGraphicsScene* s);
+	cGui* CreateGui(IGraphicsScene* s, size_t width, size_t height);
 protected:
 	// Image gui controls
 	std::vector<cGuiImage*> images;

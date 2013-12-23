@@ -23,7 +23,7 @@ cHagymaBox::cHagymaBox(IWindow* w) {
 	guiSystem = new cGuiSystem();
 
 	// Create gui
-	mainGui = guiSystem->CreateGui(engineCore->GetGraphicsEngine()->CreateScene());
+	mainGui = guiSystem->CreateGui(engineCore->GetGraphicsEngine()->CreateScene(), w->GetClientWidth(), w->GetClientHeight());
 	
 	IGraphicsScene* s = mainGui->GetScene();
 
@@ -38,19 +38,19 @@ cHagymaBox::cHagymaBox(IWindow* w) {
 	sunLight->direction = Vec3(0.5f, 0.5f, -0.5f).Normalize();
 
 	secondSunLight->type = cGraphicsLight::DIRECTIONAL;
-	secondSunLight->color = Vec3(1.2, 0.03, 0.95);
+	secondSunLight->color = Vec3(1.2f, 0.03f, 0.95f);
 	secondSunLight->direction = Vec3(-0.8f, 0.0f, -0.2f).Normalize();
 
 	thirdSunLight->type = cGraphicsLight::DIRECTIONAL;
-	thirdSunLight->color = Vec3(0.2, 0.8f, 0.77f);
-	thirdSunLight->direction = Vec3(0.8, -0.1f, -0.3f).Normalize();
+	thirdSunLight->color = Vec3(0.2f, 0.8f, 0.77f);
+	thirdSunLight->direction = Vec3(0.8f, -0.1f, -0.3f).Normalize();
 
 	skyLight->type = cGraphicsLight::AMBIENT;
-	skyLight->color = Vec3(0.2, 0.3, 0.35);
+	skyLight->color = Vec3(0.2f, 0.3f, 0.35f);
 
 	pointLight->atten0 = pointLight->atten1 = pointLight->atten2 = 0.0f;
-	pointLight->color = Vec3(0.2, 0.2, 0.9);
-	pointLight->position = Vec3(8, 8, 2);
+	pointLight->color = Vec3(0.2f, 0.2f, 0.9f);
+	pointLight->position = Vec3(8.0f, 8.0f, 2.0f);
 	pointLight->range = 20.f;
 	pointLight->type = cGraphicsLight::POINT;
 
@@ -64,7 +64,10 @@ cHagymaBox::~cHagymaBox() {
 }
 
 void cHagymaBox::InitGui() {
-	cGuiImage* img = mainGui->CreateImage(L"materials/cliff.zsm");
+	mainGui->CreateImage(L"materials/cliff.zsm", 0, 0, 400, 300);
+	mainGui->CreateImage(L"materials/cliff.zsm", 400, 0, 400, 300);
+	mainGui->CreateImage(L"materials/cliff.zsm", 0, 300, 400, 300);
+	mainGui->CreateImage(L"materials/cliff.zsm", 400, 300, 400, 300);
 }
 
 void cHagymaBox::Update(float deltaT) {

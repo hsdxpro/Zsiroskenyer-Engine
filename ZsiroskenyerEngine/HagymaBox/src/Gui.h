@@ -2,27 +2,36 @@
 // Holding GuiControls
 #pragma once
 
-#include "../../Core/src/Camera.h"
 #include "../../Core/src/zsString.h"
-#include <list>
+#include <vector>
 
 class IGraphicsScene;
 class cGuiImage;
+class cGraphicsEntity;
 
 class cGui {
 public:
 	friend class cGuiSystem;
 
-	cGuiImage* CreateImage(const zsString& mtlPath);
-
+	// Create image on the gui with material etc
+	cGuiImage* CreateImage(const zsString& mtlPath, size_t posX, size_t posY, size_t width, size_t height);
 	IGraphicsScene* GetScene();
 
 protected:
+	// Internal function to create quad graphics entity with material etc
+	cGraphicsEntity* CreateQuad(const zsString& mtlPath, size_t posX, size_t posY, size_t width, size_t height);
+
+protected:
 	cGui();
-	cGui(IGraphicsScene* s);
+	cGui(IGraphicsScene* s, size_t width, size_t height);
+
 protected:
 	// Gui represented with cGraphicsScene
 	IGraphicsScene* scene;
 
-	std::list<cGuiImage*> images;
+	// Width, height of gui
+	size_t width, height;
+
+	// Image gui controls
+	std::vector<cGuiImage*> images;
 };

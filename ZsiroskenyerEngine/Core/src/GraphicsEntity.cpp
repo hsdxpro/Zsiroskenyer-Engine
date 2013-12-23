@@ -7,6 +7,7 @@
 
 #include "GraphicsEntity.h"
 #include "common.h"
+#include "../../GraphicsEngineRaster/src/InstanceGroup.h"
 
 cGraphicsEntity::cGraphicsEntity()
 :isVisible(true), instanceGroup(NULL) {
@@ -45,4 +46,24 @@ const Quat& cGraphicsEntity::GetRot() {
 
 const Vec3& cGraphicsEntity::GetScale() {
 	return worldTransform.GetScale();
+}
+
+const ITexture2D* cGraphicsEntity::GetTextureDiffuse(size_t subMtlIdx)	const {
+	ASSERT(subMtlIdx >= 0 && subMtlIdx < (*instanceGroup->mtl.get()).GetNSubMaterials());
+	return (*instanceGroup->mtl.get())[subMtlIdx].textureDiffuse.get();
+}
+
+const ITexture2D* cGraphicsEntity::GetTextureNormal(size_t subMtlIdx)	const {
+	ASSERT(subMtlIdx >= 0 && subMtlIdx < (*instanceGroup->mtl.get()).GetNSubMaterials());
+	return (*instanceGroup->mtl.get())[subMtlIdx].textureNormal.get();
+}
+
+const ITexture2D* cGraphicsEntity::GetTextureSpecular(size_t subMtlIdx)	const {
+	ASSERT(subMtlIdx >= 0 && subMtlIdx < (*instanceGroup->mtl.get()).GetNSubMaterials());
+	return (*instanceGroup->mtl.get())[subMtlIdx].textureSpecular.get();
+}
+
+const ITexture2D* cGraphicsEntity::GetTextureDisplace(size_t subMtlIdx)	const {
+	ASSERT(subMtlIdx >= 0 && subMtlIdx < (*instanceGroup->mtl.get()).GetNSubMaterials());
+	return (*instanceGroup->mtl.get())[subMtlIdx].textureDisplace.get();
 }

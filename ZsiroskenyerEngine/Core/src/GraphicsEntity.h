@@ -11,6 +11,7 @@
 #include "Transform3D.h"
 
 class cInstanceGroup;
+class ITexture2D;
 
 class cGraphicsEntity : public ITransformable3D {
 	friend class cSceneManager;
@@ -29,6 +30,11 @@ public:
 	const Vec3& GetPos() override;
 	const Quat& GetRot() override;
 	const Vec3& GetScale() override;
+
+	const ITexture2D* GetTextureDiffuse(size_t subMtlIdx)	const;
+	const ITexture2D* GetTextureNormal(size_t subMtlIdx)	const;
+	const ITexture2D* GetTextureSpecular(size_t subMtlIdx)	const;
+	const ITexture2D* GetTextureDisplace(size_t subMtlIdx)	const;
 
 protected:
 	cInstanceGroup* instanceGroup;

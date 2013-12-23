@@ -16,8 +16,8 @@ cGuiSystem::~cGuiSystem() {
 		SAFE_DELETE(*i);
 }
 
-cGui* cGuiSystem::CreateGui(IGraphicsScene* s) {
-	cGui* g = new cGui(s);
+cGui* cGuiSystem::CreateGui(IGraphicsScene* s, size_t width, size_t height) {
+	cGui* g = new cGui(s, width, height);
 	guis.push_back(g);
 	return g;
 }
