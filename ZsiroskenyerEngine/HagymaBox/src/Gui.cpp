@@ -9,6 +9,7 @@ cGui::cGui() {
 cGui::cGui(IGraphicsScene* s, size_t width, size_t height)
 :scene(s), width(width), height(height) {
 	s->GetCamera() = cCamera(cCamera::tProjOrtho(0, width, height, 0), 0.001f, 5000.0f);
+	//s->GetCamera() = cCamera(cCamera::tProjPersp(1.151f, (float)width/height), 0.001f, 5000.0f);
 }
 
 cGuiImage* cGui::CreateImage(const zsString& mtlPath, size_t posX, size_t posY, size_t width, size_t height) {

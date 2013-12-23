@@ -22,8 +22,8 @@ cHagymaBox::cHagymaBox(IWindow* w) {
 	// Create gui system
 	guiSystem = new cGuiSystem();
 
-	// Create gui
-	mainGui = guiSystem->CreateGui(engineCore->GetGraphicsEngine()->CreateScene(), w->GetClientWidth(), w->GetClientHeight());
+	// Create gui, developed in 1280 * 1024
+	mainGui = guiSystem->CreateGui(engineCore->GetGraphicsEngine()->CreateScene(), 1280, 1024);
 	
 	IGraphicsScene* s = mainGui->GetScene();
 
