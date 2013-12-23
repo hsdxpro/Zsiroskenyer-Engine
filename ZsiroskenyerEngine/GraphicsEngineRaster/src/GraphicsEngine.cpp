@@ -240,7 +240,6 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, float elapsed) {
 
 
 	gApi->GetDefaultRenderTarget();
-	
 }
 
 //	Get sub-components where allowed
