@@ -12,6 +12,12 @@
     <ClCompile Include="src\Gui.cpp">
       <Filter>GuiSystem\Gui</Filter>
     </ClCompile>
+    <ClCompile Include="src\GuiButton.cpp">
+      <Filter>GuiSystem\Gui\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GuiText.cpp">
+      <Filter>GuiSystem\Gui\Controls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\HagymaBox.h" />
@@ -23,6 +29,12 @@
     </ClInclude>
     <ClInclude Include="src\Gui.h">
       <Filter>GuiSystem\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GuiButton.h">
+      <Filter>GuiSystem\Gui\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GuiText.h">
+      <Filter>GuiSystem\Gui\Controls</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

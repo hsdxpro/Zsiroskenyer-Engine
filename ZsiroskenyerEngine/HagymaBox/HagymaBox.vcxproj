@@ -92,15 +92,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Gui.cpp" />
+    <ClCompile Include="src\GuiButton.cpp" />
     <ClCompile Include="src\GuiImage.cpp" />
     <ClCompile Include="src\GuiSystem.cpp" />
+    <ClCompile Include="src\GuiText.cpp" />
     <ClCompile Include="src\HagymaBox.cpp" />
     <ClCompile Include="src\hagymaMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Gui.h" />
+    <ClInclude Include="src\GuiButton.h" />
     <ClInclude Include="src\GuiImage.h" />
     <ClInclude Include="src\GuiSystem.h" />
+    <ClInclude Include="src\GuiText.h" />
     <ClInclude Include="src\HagymaBox.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

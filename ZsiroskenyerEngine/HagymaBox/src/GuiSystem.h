@@ -9,6 +9,7 @@ class IGraphicsScene;
 class cGuiImage;
 class cGui;
 
+
 class cGuiSystem {
 public:
 	cGuiSystem();

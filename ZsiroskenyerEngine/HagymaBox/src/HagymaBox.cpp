@@ -3,6 +3,7 @@
 #include "GUISystem.h"
 #include "Gui.h"
 #include "GuiImage.h"
+#include "GuiButton.h"
 
 #include "../../Core/src/common.h"
 #include "../../Core/src/Core.h"
@@ -64,10 +65,13 @@ cHagymaBox::~cHagymaBox() {
 }
 
 void cHagymaBox::InitGui() {
-	mainGui->CreateImage(L"materials/cliff.zsm", 0, 0, 400, 300);
-	mainGui->CreateImage(L"materials/cliff.zsm", 400, 0, 400, 300);
-	mainGui->CreateImage(L"materials/cliff.zsm", 0, 300, 400, 300);
-	mainGui->CreateImage(L"materials/cliff.zsm", 400, 300, 400, 300);
+	cGuiButton* loadEntityBtn = mainGui->CreateButton(L"materials/buttonBG.zsm",0, 0, 1280, 1024);
+	loadEntityBtn->SetText(L"ALMA");
+
+	//mainGui->CreateImage(L"materials/cliff.zsm", 0, 0, 400, 300);
+	//mainGui->CreateImage(L"materials/cliff.zsm", 400, 0, 400, 300);
+	//mainGui->CreateImage(L"materials/cliff.zsm", 0, 300, 400, 300);
+	//mainGui->CreateImage(L"materials/cliff.zsm", 400, 300, 400, 300);
 }
 
 void cHagymaBox::Update(float deltaT) {

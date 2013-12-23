@@ -6,8 +6,15 @@
 #include <vector>
 
 class IGraphicsScene;
-class cGuiImage;
 class cGraphicsEntity;
+class cGuiImage;
+class cGuiButton;
+class cGuiText;
+
+// TODO WRONG PLACE
+enum class eFontType {
+	DEFAULT,
+};
 
 class cGui {
 public:
@@ -15,6 +22,9 @@ public:
 
 	// Create image on the gui with material etc
 	cGuiImage* CreateImage(const zsString& mtlPath, size_t posX, size_t posY, size_t width, size_t height);
+	cGuiButton* CreateButton(const zsString& mtlPath, size_t posX, size_t posY, size_t width, size_t height);
+	cGuiText* CreateText(eFontType fT, size_t posX, size_t posY, const zsString& str);
+
 	IGraphicsScene* GetScene();
 
 protected:

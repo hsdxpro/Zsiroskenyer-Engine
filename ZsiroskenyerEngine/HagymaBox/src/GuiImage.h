@@ -6,7 +6,9 @@ class cGraphicsEntity;
 class cGuiImage {
 	friend class cGui;
 protected:
-	cGuiImage(cGraphicsEntity* e);
+	cGuiImage(cGui* parent, cGraphicsEntity* e, size_t width, size_t height);
 protected:
 	cGraphicsEntity* entity;
+	size_t width, height;
+	cGui* parent;
 };
