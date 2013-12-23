@@ -8,6 +8,31 @@
 
 class cCamera {
 public:
+	enum eProjType
+	{
+		ORTHO,
+		PERSP,
+	};
+
+	struct tProjOrtho
+	{
+		public:
+		tProjOrtho(){}
+		tProjOrtho(float left, float right, float bottom, float top);
+
+		float left, right, top, bottom;
+	};
+
+	struct tProjPersp
+	{
+		public:
+		tProjPersp(){}
+		tProjPersp(float fovRad, float aspectRatio);
+
+		float fovRad;
+		float aspectRatio;
+	};
+
 	void SetFOV(float rad);
 	void SetAspectRatio(float r);
 	void SetNearPlane(float nP);
@@ -25,7 +50,6 @@ public:
 	Matrix44 GetViewMatrix() const;
 	Matrix44 GetProjMatrix() const;
 
-
 	Vec3 GetDirFront() const;
 	Vec3 GetDirBack() const;
 	Vec3 GetDirUp() const;
@@ -37,15 +61,20 @@ public:
 	const Quat& GetRot() const;
 	const Vec3& GetTarget() const;
 
-	cCamera(float radFOV, float aspectRatio, float nearPlane, float farPlane);
+	cCamera(cCamera::tProjOrtho proj, float nearPlane, float farPlane);
+	cCamera(cCamera::tProjPersp proj, float nearPlane, float farPlane);
+
 private:
-	// Pos, Rot
+	// Pos, Target ( World space )
 	Vec3 pos;
 	Vec3 target;
 
-	// Camera params
-	float fovRad;
-	float aspectRatio;
+	// View params
 	float nearPlane;
 	float farPlane;
+
+	// Projection params ( TODO: little bit stupid to prepare camera class for every projection )
+	eProjType projType;
+	tProjOrtho projOrtho;
+	tProjPersp projPersp;
 };

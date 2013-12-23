@@ -60,7 +60,7 @@ int ricsiMain() {
 
 	// Create scene with camera
 	IGraphicsScene* s = gEngine->CreateScene();
-	s->GetCamera() = cCamera(/*0.5*3.141592653589*/1.15f, (float)winDesc.clientWidth / winDesc.clientHeight, 0.01f, 5000.0f);
+	s->GetCamera() = cCamera(cCamera::tProjPersp(/*0.5*3.141592653589*/1.15f, (float)winDesc.clientWidth / winDesc.clientHeight), 0.01f, 5000.0f);
 
 	// Add some fucking lights :)
 	cGraphicsLight* sunLight = s->CreateLight();
@@ -91,23 +91,34 @@ int ricsiMain() {
 	pointLight->type = cGraphicsLight::POINT;
 
 	// Static terrain
-	zsString staticBaseNames[9] = { "coyote",
-									"crate",
-									"demo_cliff_fence",
-									"demo_ground",
-									"demo_house",
-									"demo_road",
-									"demo_tunnel",
-									"fake_tunnel",
-									"tower"
-								  };
+	zsString staticBaseNames[9] = {		"coyote",
+										"crate",
+										"demo_cliff_fence",
+										"demo_ground",
+										"demo_house",
+										"demo_road",
+										"demo_tunnel",
+										"fake_tunnel",
+										"tower",
+									};
+
+	zsString staticExtension[9] = {		".dae",
+										".dae",
+										".dae",
+										".dae",
+										".dae",
+										".dae",
+										".dae",
+										".dae",
+										".dae",
+									};
 
 	const float mass = 0.0;
 	zsString basePath = L"../../Game Assets/";
 
 	ASSERT(sizeof(staticBaseNames) > 0);
 	for (size_t i = 0; i < sizeof(staticBaseNames) / sizeof(staticBaseNames[0]); i++) {
-		zsString geomPath = basePath + L"objects/" + staticBaseNames[i] + L".dae";
+		zsString geomPath = basePath + L"objects/" + staticBaseNames[i] + staticExtension[i];
 		core.AddEntity(s, geomPath, geomPath, basePath + L"materials/" + staticBaseNames[i] + L".zsm", mass);
 	}
 	
