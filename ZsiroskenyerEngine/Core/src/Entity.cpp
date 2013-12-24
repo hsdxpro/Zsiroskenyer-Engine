@@ -23,6 +23,7 @@ void cEntity::SetScale(const Vec3& scale) {
 
 const Vec3& cEntity::GetPos() {
 	return physicsEntity->GetPos();
+	//return graphicsEntity->GetPos();
 }
 
 cGraphicsEntity* cEntity::GetGraphicsEntity() {
