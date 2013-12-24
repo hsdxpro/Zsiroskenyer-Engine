@@ -353,31 +353,36 @@ eGapiResult cGraphicsApiD3D11::CreateDefaultStates(const D3D11_CULL_MODE& cullMo
 	// Default geometry topology
 	d3dcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	// Default sampler
-	ID3D11SamplerState* sampler;
+	// Default samplers DESC
 	D3D11_SAMPLER_DESC d;
 	d.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	d.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	d.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	d.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
-	d.Filter = D3D11_FILTER_ANISOTROPIC;
+	d.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	d.MaxAnisotropy = 16;
 	d.MaxLOD = 0;
 	d.MinLOD = 0;
 	d.MipLODBias = 0;
-	HRESULT hr = d3ddev->CreateSamplerState(&d, &sampler);
 
-	if (FAILED(hr)) {
-		ASSERT_MSG(false, "Failed to create default sampler state");
-		if (hr == E_OUTOFMEMORY)
-			return eGapiResult::ERROR_OUT_OF_MEMORY;
-		else
-			return eGapiResult::ERROR_UNKNOWN;
+	static ID3D11SamplerState* defaultSamplers[16];
+	// Create 16 default sampler lol..
+	for (size_t i = 0; i < 16; i++)
+	{
+		HRESULT hr = d3ddev->CreateSamplerState(&d, &defaultSamplers[i]);
+
+		if (FAILED(hr)) {
+			ASSERT_MSG(false, "Failed to create default sampler state");
+			if (hr == E_OUTOFMEMORY)
+				return eGapiResult::ERROR_OUT_OF_MEMORY;
+			else
+				return eGapiResult::ERROR_UNKNOWN;
+		}
+
 	}
 
-	d3dcon->PSSetSamplers(0, 1, (ID3D11SamplerState**)&sampler);
-
-	SAFE_RELEASE(sampler);
+	// Set default samplers
+	d3dcon->PSSetSamplers(0, 16, defaultSamplers);
 
 	return eGapiResult::OK;
 }
