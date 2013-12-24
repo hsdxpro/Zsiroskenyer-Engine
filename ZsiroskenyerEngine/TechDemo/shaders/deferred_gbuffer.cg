@@ -67,7 +67,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 
 	// EZ A JÓ PETI :
 	Out.gBuffer0.xyz = tex2D(normalTex, In.tex0).xyz + saturate(dot(normalize(float3(0.0f, 0.0f, 1.0f)), n));
-	Out.gBuffer0.xyz = tex2D(normalTex, In.tex0).xyz;
+	//Out.gBuffer0.xyz = tex2D(normalTex, In.tex0).xyz;
 
 	// EZ A FOS PETI : 
 	//Out.gBuffer0.xyz = tex2D(diffuseTex, In.tex0).xyz + saturate(dot(normalize(float3(0.0f, 0.0f, 1.0f)), n));
