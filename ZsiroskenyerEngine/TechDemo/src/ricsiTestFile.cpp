@@ -66,23 +66,22 @@ int ricsiMain() {
 
 
 	// Add some fucking lights :)
-	//cGraphicsLight* sunLight = s->CreateLight();
+	cGraphicsLight* sunLight = s->CreateLight();
 	cGraphicsLight* skyLight = s->CreateLight();
-	/*
 	cGraphicsLight* secondSunLight = s->CreateLight();
 	cGraphicsLight* thirdSunLight = s->CreateLight();	
 	cGraphicsLight* pointLight = s->CreateLight();
-	*/
+	
 
-	/*
+	
 	sunLight->type = cGraphicsLight::DIRECTIONAL;
 	sunLight->color = Vec3(1, 1, 1);
 	sunLight->direction = Vec3(0.5f, 0.5f, -0.5f).Normalize();
-	*/
+	
 	skyLight->type = cGraphicsLight::AMBIENT;
 	skyLight->color = Vec3(1, 1, 1);
 
-	/*
+	
 	secondSunLight->type = cGraphicsLight::DIRECTIONAL;
 	secondSunLight->color = Vec3(1.2, 0.03, 0.95);
 	secondSunLight->direction = Vec3(-0.8f, 0.0f, -0.2f).Normalize();
@@ -97,7 +96,6 @@ int ricsiMain() {
 	pointLight->position = Vec3(8, 8, 2);
 	pointLight->range = 20.f;
 	pointLight->type = cGraphicsLight::POINT;
-	*/
 
 	// Static terrain
 	zsString staticBaseNames[9] = {		"coyote",
@@ -133,7 +131,7 @@ int ricsiMain() {
 	
 	// Our player
 	player = core.AddEntity(s, basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 10.0, false);
-	player->SetPos(Vec3(9, 0, 20));
+	player->SetPos(Vec3(0.3, -19, 0.35));
 
 	// Soft body test
 	//cEntity* crate =  core.AddEntity(s, basePath + L"objects/crate.dae", basePath + L"objects/crate.dae", basePath + L"materials/crate.zsm", 10.0, true);
