@@ -55,27 +55,20 @@ PS_OUT PS_MAIN(VS_OUT In) {
 //-----------------gBuffer0: DIFFUSECOLOR------------------//
 //--------------------------------------------------------//
 	Out.gBuffer0.xyz = tex2D(diffuseTex, In.tex0);//float3(0.4f, 0.4f, 0.4f); 
+
 //----------------------------------------------------------//
 //--------------------gBuffer1: NORMALS--------------------//
 //--------------------------------------------------------//
 
 	// Normals from NORMAL MAP
-	float3 n = mul( In.TBN, normalize(tex2D(normalTex, In.tex0).xyz * 2.0f - 1.0f));
+	float3 n = mul(normalize(tex2D(normalTex, In.tex0).xyz * 2.0f - 1.0f), In.TBN);
 
 	// Normals FROM GEOMETRY
 	//float3 n = In.normalW;
 
-	// EZ A JÓ PETI :
-	Out.gBuffer0.xyz = tex2D(normalTex, In.tex0).xyz + saturate(dot(normalize(float3(0.0f, 0.0f, 1.0f)), n));
-	//Out.gBuffer0.xyz = tex2D(normalTex, In.tex0).xyz;
-
-	// EZ A FOS PETI : 
-	//Out.gBuffer0.xyz = tex2D(diffuseTex, In.tex0).xyz + saturate(dot(normalize(float3(0.0f, 0.0f, 1.0f)), n));
-
 	// Pack normalsw
 	Out.gBuffer1.r = n.x;
 	Out.gBuffer1.g = 0.5f*n.y + (n.z>0.f ? 0.5f:-0.5f);
-
 	
 //----------------------------------------------------------//
 //---------------gBuffer2: DEBUG PURPOSES------------------//
