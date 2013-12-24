@@ -62,7 +62,9 @@ int ricsiMain() {
 	IGraphicsScene* s = gEngine->CreateScene();
 	s->GetCamera() = cCamera(cCamera::tProjPersp(/*0.5*3.141592653589*/1.15f, (float)winDesc.clientWidth / winDesc.clientHeight), 0.01f, 5000.0f);
 
-	
+	s->GetState().hdr.enabled = true;
+
+
 	// Add some fucking lights :)
 	//cGraphicsLight* sunLight = s->CreateLight();
 	cGraphicsLight* skyLight = s->CreateLight();
