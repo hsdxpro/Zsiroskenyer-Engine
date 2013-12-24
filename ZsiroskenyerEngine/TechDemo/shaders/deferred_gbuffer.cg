@@ -33,13 +33,14 @@ struct PS_OUT {
 
 VS_OUT VS_MAIN(VS_IN In) {
 	VS_OUT Out;
-	Out.tex0 = In.tex0;
 
 	Out.posW = In.posL.x * world[0].xyz + ( In.posL.y * world[1].xyz + (In.posL.z * world[2].xyz) + world[3].xyz);
 	Out.normalW = In.normalL.x* world[0].xyz + ( In.normalL.y * world[1].xyz + (In.normalL.z * world[2].xyz));
 	Out.tangentW = In.tangentL.x* world[0].xyz + ( In.tangentL.y * world[1].xyz + (In.tangentL.z * world[2].xyz));
 	Out.posH = In.posL.x * wvp[0] + ( In.posL.y * wvp[1] + (In.posL.z * wvp[2] + wvp[3]));
-	Out.savedZW = Out.posH.zw;
+
+	Out.savedZW = Out.posH.zw; // Need for linearized depth
+	Out.tex0 = In.tex0;
 
 	// Calculate TBN base per vertex (CHEAP) (Tangent to World space)
 		float3 N = Out.normalW;
@@ -52,24 +53,30 @@ VS_OUT VS_MAIN(VS_IN In) {
 PS_OUT PS_MAIN(VS_OUT In) {
 	PS_OUT Out;
 
-	// Linearly corrected depth
-	Out.depth = In.savedZW.x / In.savedZW.y;//In.posH.z;
+	// Linearized depth
+	Out.depth = In.savedZW.x / In.savedZW.y;;
 
-	// Storing color good
-	Out.gBuffer0 = tex2D(diffuseTex, In.tex0);// * float4(intensity, intensity, intensity, 1.0f);
-
-	// Sample normal, in tangent space
-	float3 normalT = normalize(tex2D(normalTex, In.tex0).xyz * 2.0f - 1.0f);
-
-	//float3 normalW = mul(In.TBN, normalT);
-	float3 normalW = In.normalW; // Normals from geometry
+//----------------------------------------------------------//
+//-----------------gBuffer0: DIFFUSECOLOR------------------//
+//--------------------------------------------------------//
+	Out.gBuffer0 = tex2D(diffuseTex, In.tex0); 
+//----------------------------------------------------------//
+//--------------------gBuffer1: NORMALS--------------------//
+//--------------------------------------------------------//
 	
+	// Normals from NORMAL MAP
+	//float3 n = mul(In.TBN, normalize(tex2D(normalTex, In.tex0).xyz * 2.0f - 1.0f));
+
+	// Normals FROM GEOMETRY
+	float3 n = In.normalW;
+
 	// Pack normals
-	float3 n = normalize(normalW);
 	Out.gBuffer1.r = n.x;
 	Out.gBuffer1.g = 0.5f*n.y + (n.z>0.f ? 0.5f:-0.5f);
 
-	
+//----------------------------------------------------------//
+//---------------gBuffer2: DEBUG PURPOSES------------------//
+//--------------------------------------------------------//	
 	// Buffer2 reserved for future use
 	Out.gBuffer2 = float4(In.tangentW.xyz*0.5+float3(0.5,0.5,0.5),1.0f); // NOT USED YET | FOR DEBUG
 
