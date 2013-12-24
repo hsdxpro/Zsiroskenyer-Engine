@@ -87,15 +87,15 @@ void cGraphicsApiD3D11::Release() {
 	delete this;
 }
 cGraphicsApiD3D11::~cGraphicsApiD3D11() {
-	ID3D11ShaderResourceView* nullSrvS[16] = {0};
+	ID3D11ShaderResourceView* nullSrvS[16] = { 0 };
 	d3dcon->PSSetShaderResources(0, 16, nullSrvS);
 	d3dcon->VSSetShaderResources(0, 16, nullSrvS);
 
-	ID3D11SamplerState* nullSamplers[16] = {0};
+	ID3D11SamplerState* nullSamplers[16] = { 0 };
 	d3dcon->VSSetSamplers(0, 16, nullSamplers);
 	d3dcon->PSSetSamplers(0, 16, nullSamplers);
 
-	ID3D11RenderTargetView *nulltarget[4] = {0};
+	ID3D11RenderTargetView *nulltarget[4] = { 0 };
 	d3dcon->OMSetRenderTargets(4, nulltarget, 0);
 
 	if (d3dcon)d3dcon->ClearState();
@@ -257,12 +257,12 @@ eGapiResult cGraphicsApiD3D11::CreateMostAcceptableSwapChain(size_t width, size_
 	SAFE_DELETE_ARRAY(modeDesc);
 
 	switch (hr) {
-		case S_OK:
-			return eGapiResult::OK;
-		case E_OUTOFMEMORY:
-			return eGapiResult::ERROR_OUT_OF_MEMORY;
-		default:
-			return eGapiResult::ERROR_UNKNOWN;
+	case S_OK:
+		return eGapiResult::OK;
+	case E_OUTOFMEMORY:
+		return eGapiResult::ERROR_OUT_OF_MEMORY;
+	default:
+		return eGapiResult::ERROR_UNKNOWN;
 	}
 }
 
@@ -287,7 +287,7 @@ eGapiResult cGraphicsApiD3D11::CreateViewsForBB(const tDxConfig& config) {
 		else
 			return eGapiResult::ERROR_UNKNOWN;
 	}
-	
+
 	hr = d3ddev->CreateShaderResourceView(backBuffer, NULL, &srv);
 	if (FAILED(hr)) {
 		ASSERT_MSG(false, L"Failed to create shader resource view for SwapChain's BackBuffer");
@@ -340,7 +340,7 @@ eGapiResult cGraphicsApiD3D11::CreateViewsForBB(const tDxConfig& config) {
 	}
 
 	defaultRenderTarget = new cTexture2DD3D11(bbDesc.Width, bbDesc.Height, backBuffer, srv, rtv, dsv);
-	
+
 	SAFE_RELEASE(depthTexture);
 	SAFE_RELEASE(backBuffer);
 
@@ -353,31 +353,36 @@ eGapiResult cGraphicsApiD3D11::CreateDefaultStates(const D3D11_CULL_MODE& cullMo
 	// Default geometry topology
 	d3dcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	// Default sampler
-	ID3D11SamplerState* sampler;
+	// Default samplers DESC
 	D3D11_SAMPLER_DESC d;
 	d.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	d.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	d.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	d.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
-	d.Filter = D3D11_FILTER_ANISOTROPIC;
+	d.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	d.MaxAnisotropy = 16;
 	d.MaxLOD = 0;
 	d.MinLOD = 0;
 	d.MipLODBias = 0;
-	HRESULT hr = d3ddev->CreateSamplerState(&d, &sampler);
 
-	if (FAILED(hr)) {
-		ASSERT_MSG(false, "Failed to create default sampler state");
-		if (hr == E_OUTOFMEMORY)
-			return eGapiResult::ERROR_OUT_OF_MEMORY;
-		else
-			return eGapiResult::ERROR_UNKNOWN;
+	static ID3D11SamplerState* defaultSamplers[16];
+	// Create 16 default sampler lol..
+	for (size_t i = 0; i < 16; i++)
+	{
+		HRESULT hr = d3ddev->CreateSamplerState(&d, &defaultSamplers[i]);
+
+		if (FAILED(hr)) {
+			ASSERT_MSG(false, "Failed to create default sampler state");
+			if (hr == E_OUTOFMEMORY)
+				return eGapiResult::ERROR_OUT_OF_MEMORY;
+			else
+				return eGapiResult::ERROR_UNKNOWN;
+		}
+
 	}
 
-	d3dcon->PSSetSamplers(0, 1, (ID3D11SamplerState**)&sampler);
-
-	SAFE_RELEASE(sampler);
+	// Set default samplers
+	d3dcon->PSSetSamplers(0, 16, defaultSamplers);
 
 	return eGapiResult::OK;
 }
@@ -418,48 +423,48 @@ eGapiResult cGraphicsApiD3D11::CompileCgToHLSL(const zsString& cgFilePath, const
 	zsString entryAndProfile;
 	switch (compileProfile)
 	{
-		case eProfileCG::VS_5_0:
-			entryAndProfile = L"-profile vs_5_0 -entry VS_MAIN";
-			break;
-		case eProfileCG::HS_5_0:
-			entryAndProfile = L"-profile hs_5_0 -entry HS_MAIN";
-			break;
-		case eProfileCG::DS_5_0:
-			entryAndProfile = L"-profile ds_5_0 -entry DS_MAIN";
-			break;
-		case eProfileCG::GS_5_0:
-			entryAndProfile = L"-profile gs_5_0 -entry GS_MAIN";
-			break;
-		case eProfileCG::PS_5_0:
-			entryAndProfile = L"-profile ps_5_0 -entry PS_MAIN";
-			break;
-		case eProfileCG::VS_4_0:
-			entryAndProfile = L"-profile vs_4_0 -entry VS_MAIN";
-			break;
-		case eProfileCG::HS_4_0:
-			entryAndProfile = L"-profile hs_4_0 -entry HS_MAIN";
-			break;
-		case eProfileCG::DS_4_0:
-			entryAndProfile = L"-profile ds_4_0 -entry DS_MAIN";
-			break;
-		case eProfileCG::GS_4_0:
-			entryAndProfile = L"-profile gs_4_0 -entry GS_MAIN";
-			break;
-		case eProfileCG::PS_4_0:
-			entryAndProfile = L"-profile ps_4_0 -entry PS_MAIN";
-			break;
-		case eProfileCG::VS_3_0:
-			entryAndProfile = L"-profile vs_3_0 -entry VS_MAIN";
-			break;
-		case eProfileCG::PS_3_0:
-			entryAndProfile = L"-profile ps_3_0 -entry PS_MAIN";
-			break;
-		case eProfileCG::VS_2_0:
-			entryAndProfile = L"-profile vs_2_0 -entry VS_MAIN";
-			break;
-		case eProfileCG::PS_2_0:
-			entryAndProfile = L"-profile ps_2_0 -entry PS_MAIN";
-			break;
+	case eProfileCG::VS_5_0:
+		entryAndProfile = L"-profile vs_5_0 -entry VS_MAIN";
+		break;
+	case eProfileCG::HS_5_0:
+		entryAndProfile = L"-profile hs_5_0 -entry HS_MAIN";
+		break;
+	case eProfileCG::DS_5_0:
+		entryAndProfile = L"-profile ds_5_0 -entry DS_MAIN";
+		break;
+	case eProfileCG::GS_5_0:
+		entryAndProfile = L"-profile gs_5_0 -entry GS_MAIN";
+		break;
+	case eProfileCG::PS_5_0:
+		entryAndProfile = L"-profile ps_5_0 -entry PS_MAIN";
+		break;
+	case eProfileCG::VS_4_0:
+		entryAndProfile = L"-profile vs_4_0 -entry VS_MAIN";
+		break;
+	case eProfileCG::HS_4_0:
+		entryAndProfile = L"-profile hs_4_0 -entry HS_MAIN";
+		break;
+	case eProfileCG::DS_4_0:
+		entryAndProfile = L"-profile ds_4_0 -entry DS_MAIN";
+		break;
+	case eProfileCG::GS_4_0:
+		entryAndProfile = L"-profile gs_4_0 -entry GS_MAIN";
+		break;
+	case eProfileCG::PS_4_0:
+		entryAndProfile = L"-profile ps_4_0 -entry PS_MAIN";
+		break;
+	case eProfileCG::VS_3_0:
+		entryAndProfile = L"-profile vs_3_0 -entry VS_MAIN";
+		break;
+	case eProfileCG::PS_3_0:
+		entryAndProfile = L"-profile ps_3_0 -entry PS_MAIN";
+		break;
+	case eProfileCG::VS_2_0:
+		entryAndProfile = L"-profile vs_2_0 -entry VS_MAIN";
+		break;
+	case eProfileCG::PS_2_0:
+		entryAndProfile = L"-profile ps_2_0 -entry PS_MAIN";
+		break;
 	}
 	//cgc.exe proba.fx -profile vs_5_0 -entry MAIN -o proba.vs
 	zsString shellParams = cgcExePath + L" " + cgFilePath + L" " + entryAndProfile + L" -o " + hlslFilePath;
@@ -514,13 +519,13 @@ eGapiResult	cGraphicsApiD3D11::CreateVertexBuffer(IVertexBuffer** resource, size
 
 	HRESULT hr = d3ddev->CreateBuffer(&desc, &resData, &buffer);
 	switch (hr) {
-		case S_OK:
-			*resource = new cVertexBufferD3D11(buffer, desc.ByteWidth, usage);
-			return eGapiResult::OK;
-		case E_OUTOFMEMORY:
-			return eGapiResult::ERROR_OUT_OF_MEMORY;
-		default:
-			return eGapiResult::ERROR_UNKNOWN;
+	case S_OK:
+		*resource = new cVertexBufferD3D11(buffer, desc.ByteWidth, usage);
+		return eGapiResult::OK;
+	case E_OUTOFMEMORY:
+		return eGapiResult::ERROR_OUT_OF_MEMORY;
+	default:
+		return eGapiResult::ERROR_UNKNOWN;
 	}
 }
 
@@ -546,13 +551,13 @@ eGapiResult	cGraphicsApiD3D11::CreateIndexBuffer(IIndexBuffer** resource, size_t
 
 	HRESULT hr = d3ddev->CreateBuffer(&desc, &resData, &buffer);
 	switch (hr) {
-		case S_OK:
-			*resource = new cIndexBufferD3D11(buffer, desc.ByteWidth, usage);
-			return eGapiResult::OK;
-		case E_OUTOFMEMORY:
-			return eGapiResult::ERROR_OUT_OF_MEMORY;
-		default:
-			return eGapiResult::ERROR_UNKNOWN;
+	case S_OK:
+		*resource = new cIndexBufferD3D11(buffer, desc.ByteWidth, usage);
+		return eGapiResult::OK;
+	case E_OUTOFMEMORY:
+		return eGapiResult::ERROR_OUT_OF_MEMORY;
+	default:
+		return eGapiResult::ERROR_UNKNOWN;
 	}
 }
 
@@ -579,13 +584,13 @@ eGapiResult cGraphicsApiD3D11::CreateConstantBuffer(IConstantBuffer** resource, 
 
 	HRESULT hr = d3ddev->CreateBuffer(&desc, resData.pSysMem ? &resData : NULL, &buffer);
 	switch (hr) {
-		case S_OK:
-			*resource = new cConstantBufferD3D11(buffer, desc.ByteWidth, usage);
-			return eGapiResult::OK;
-		case E_OUTOFMEMORY:
-			return eGapiResult::ERROR_OUT_OF_MEMORY;
-		default:
-			return eGapiResult::ERROR_UNKNOWN;
+	case S_OK:
+		*resource = new cConstantBufferD3D11(buffer, desc.ByteWidth, usage);
+		return eGapiResult::OK;
+	case E_OUTOFMEMORY:
+		return eGapiResult::ERROR_OUT_OF_MEMORY;
+	default:
+		return eGapiResult::ERROR_UNKNOWN;
 	}
 }
 
@@ -599,25 +604,25 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const zsStri
 	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(d3ddev, filePath.c_str(), &info, 0, &srv, 0);
 
 	switch (hr) {
-		case S_OK: {
-					   // Get Width, Height
-					   size_t width;
-					   size_t height;
+	case S_OK: {
+				   // Get Width, Height
+				   size_t width;
+				   size_t height;
 
-					   ID3D11Texture2D* tex2D;
-					   srv->GetResource((ID3D11Resource**)&tex2D);
+				   ID3D11Texture2D* tex2D;
+				   srv->GetResource((ID3D11Resource**)&tex2D);
 
-					   D3D11_TEXTURE2D_DESC texDesc; tex2D->GetDesc(&texDesc);
-					   width = texDesc.Width;
-					   height = texDesc.Height;
-					   tex2D->Release();
+				   D3D11_TEXTURE2D_DESC texDesc; tex2D->GetDesc(&texDesc);
+				   width = texDesc.Width;
+				   height = texDesc.Height;
+				   tex2D->Release();
 
-					   // return
-					   *resource = new cTexture2DD3D11(width, height, tex2D, srv);
-					   return eGapiResult::OK;
-		}
-		default:
-			return eGapiResult::ERROR_UNKNOWN;
+				   // return
+				   *resource = new cTexture2DD3D11(width, height, tex2D, srv);
+				   return eGapiResult::OK;
+	}
+	default:
+		return eGapiResult::ERROR_UNKNOWN;
 	}
 }
 
@@ -629,9 +634,9 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 	ID3D11ShaderResourceView* srv = NULL;
 	ID3D11DepthStencilView* dsv = NULL;
 
-	bool isRenderTarget   = 0 != ((int)desc.bind & (int)eBind::RENDER_TARGET);
+	bool isRenderTarget = 0 != ((int)desc.bind & (int)eBind::RENDER_TARGET);
 	bool isShaderBindable = 0 != ((int)desc.bind & (int)eBind::SHADER_RESOURCE);
-	bool hasDepthStencil  = 0 != ((int)desc.bind & (int)eBind::DEPTH_STENCIL);
+	bool hasDepthStencil = 0 != ((int)desc.bind & (int)eBind::DEPTH_STENCIL);
 
 	D3D11_TEXTURE2D_DESC texDesc;
 	texDesc.ArraySize = desc.arraySize;
@@ -657,10 +662,10 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 	// make the format typeless if it has depth:
 	if (hasDepthStencil) {
 		switch (desc.depthFormat) {
-			case eFormat::D16_UNORM: texDesc.Format = DXGI_FORMAT_R16_TYPELESS; break;
-			case eFormat::D24_UNORM_S8_UINT: texDesc.Format = DXGI_FORMAT_R24G8_TYPELESS; break;
-			case eFormat::D32_FLOAT: texDesc.Format = DXGI_FORMAT_R32_TYPELESS; break;
-			case eFormat::D32_FLOAT_S8X24_UINT: texDesc.Format = DXGI_FORMAT_R32G32_TYPELESS; break;
+		case eFormat::D16_UNORM: texDesc.Format = DXGI_FORMAT_R16_TYPELESS; break;
+		case eFormat::D24_UNORM_S8_UINT: texDesc.Format = DXGI_FORMAT_R24G8_TYPELESS; break;
+		case eFormat::D32_FLOAT: texDesc.Format = DXGI_FORMAT_R32_TYPELESS; break;
+		case eFormat::D32_FLOAT_S8X24_UINT: texDesc.Format = DXGI_FORMAT_R32G32_TYPELESS; break;
 		}
 	}
 
@@ -677,7 +682,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 	// view descriptors
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	D3D11_SHADER_RESOURCE_VIEW_DESC* pSrvDesc=NULL;
+	D3D11_SHADER_RESOURCE_VIEW_DESC* pSrvDesc = NULL;
 	// create views as needed
 	if (hasDepthStencil) {
 		// fill ds view desc
@@ -744,11 +749,11 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	zsString pathNoExt = shaderPath.substr(0, shaderPath.size() - 3);
 
 	const size_t nShaders = 5;
-	zsString binPaths[nShaders] = {pathNoExt + L"_vs.bin",
+	zsString binPaths[nShaders] = { pathNoExt + L"_vs.bin",
 		pathNoExt + L"_hs.bin",
 		pathNoExt + L"_ds.bin",
 		pathNoExt + L"_gs.bin",
-		pathNoExt + L"_ps.bin"};
+		pathNoExt + L"_ps.bin" };
 
 	bool binExistences[nShaders];
 	for (size_t i = 0; i < nShaders; i++) {
@@ -756,8 +761,8 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		binExistences[i] = false; // FORCING ALWAYS GENERATE SHADERS FROM CG's TODO TMP STATE
 	}
 
-	zsString entryNames[nShaders] = {"VS_MAIN", "HS_MAIN", "DS_MAIN", "GS_MAIN", "PS_MAIN"};
-	zsString profileNames[nShaders] = {"vs_4_0", "hs_4_0", "ds_4_0", "gs_4_0", "ps_4_0"};
+	zsString entryNames[nShaders] = { "VS_MAIN", "HS_MAIN", "DS_MAIN", "GS_MAIN", "PS_MAIN" };
+	zsString profileNames[nShaders] = { "vs_4_0", "hs_4_0", "ds_4_0", "gs_4_0", "ps_4_0" };
 
 	// Shader Output data
 	ID3D11VertexShader* vs = NULL;
@@ -946,7 +951,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 eGapiResult cGraphicsApiD3D11::WriteResource(IIndexBuffer* buffer, void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
 	ASSERT(buffer != NULL);
 
-	if (buffer->GetSize()<size + offset)
+	if (buffer->GetSize() < size + offset)
 		return eGapiResult::ERROR_OUT_OF_RANGE;
 
 	HRESULT hr;
@@ -967,7 +972,7 @@ eGapiResult cGraphicsApiD3D11::WriteResource(IIndexBuffer* buffer, void* source,
 eGapiResult cGraphicsApiD3D11::WriteResource(IVertexBuffer* buffer, void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
 	ASSERT(buffer != NULL);
 
-	if (buffer->GetSize()<size + offset)
+	if (buffer->GetSize() < size + offset)
 		return eGapiResult::ERROR_OUT_OF_RANGE;
 
 	HRESULT hr = S_OK;
@@ -989,7 +994,7 @@ eGapiResult cGraphicsApiD3D11::WriteResource(IVertexBuffer* buffer, void* source
 eGapiResult cGraphicsApiD3D11::ReadResource(IIndexBuffer* buffer, void* dest, size_t size, size_t offset /*= 0*/) {
 	ASSERT(buffer != NULL);
 
-	if (buffer->GetSize()<size + offset)
+	if (buffer->GetSize() < size + offset)
 		return eGapiResult::ERROR_OUT_OF_RANGE;
 
 	HRESULT hr = S_OK;
@@ -1011,7 +1016,7 @@ eGapiResult cGraphicsApiD3D11::ReadResource(IIndexBuffer* buffer, void* dest, si
 eGapiResult cGraphicsApiD3D11::ReadResource(IVertexBuffer* buffer, void* dest, size_t size, size_t offset /*= 0*/) {
 	ASSERT(buffer != NULL);
 
-	if (buffer->GetSize()<size + offset)
+	if (buffer->GetSize() < size + offset)
 		return eGapiResult::ERROR_OUT_OF_RANGE;
 
 	HRESULT hr = S_OK;
@@ -1035,7 +1040,7 @@ eGapiResult cGraphicsApiD3D11::ReadResource(ITexture2D* texture, void* dest, siz
 
 	// TODO OUT OF RANGE CHECK
 	//if (buffer->GetSize() < size + offset)
-		//return eGapiResult::ERROR_OUT_OF_RANGE;
+	//return eGapiResult::ERROR_OUT_OF_RANGE;
 
 	HRESULT hr = S_OK;
 	ID3D11Texture2D* d3dBuffer = ((cTexture2DD3D11*)texture)->Get();
@@ -1067,7 +1072,7 @@ eGapiResult cGraphicsApiD3D11::CopyResource(ITexture2D* src, ITexture2D* dst) {
 
 // Clear render-target
 void cGraphicsApiD3D11::Clear(bool target /*= true*/, bool depth /*= false*/, bool stencil /*= false*/) {
-	static const FLOAT defaultClearColor[4] = {0.3f, 0.3f, 0.3f, 0.0f};
+	static const FLOAT defaultClearColor[4] = { 0.3f, 0.3f, 0.3f, 0.0f };
 
 	// Setup clear flags
 	UINT clearFlags = 0;
@@ -1164,12 +1169,12 @@ void cGraphicsApiD3D11::SetShaderProgram(IShaderProgram* shProg) {
 // Set primitive topology
 void cGraphicsApiD3D11::SetPrimitiveTopology(ePrimitiveTopology t) {
 	switch (t) {
-		case ePrimitiveTopology::LINE_LIST:
-			d3dcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-			break;
-		case ePrimitiveTopology::TRIANGLE_LIST:
-			d3dcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			break;
+	case ePrimitiveTopology::LINE_LIST:
+		d3dcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+		break;
+	case ePrimitiveTopology::TRIANGLE_LIST:
+		d3dcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		break;
 	}
 }
 
@@ -1226,11 +1231,11 @@ eGapiResult cGraphicsApiD3D11::SetBackBufferSize(unsigned width, unsigned height
 		return CreateViewsForBB(swapChainConfig);
 	}
 	switch (hr) {
-		case S_OK: return eGapiResult::OK;   break;
-		case E_OUTOFMEMORY: return eGapiResult::ERROR_OUT_OF_MEMORY; break;
-		case E_INVALIDARG:	return eGapiResult::ERROR_INVALID_ARG; break;
-		default:
-			return eGapiResult::ERROR_UNKNOWN;
+	case S_OK: return eGapiResult::OK;   break;
+	case E_OUTOFMEMORY: return eGapiResult::ERROR_OUT_OF_MEMORY; break;
+	case E_INVALIDARG:	return eGapiResult::ERROR_INVALID_ARG; break;
+	default:
+		return eGapiResult::ERROR_UNKNOWN;
 	}
 }
 
@@ -1253,8 +1258,8 @@ eGapiResult cGraphicsApiD3D11::SetBlendState(tBlendDesc desc) {
 	HRESULT hr = d3ddev->CreateBlendState(&d3ddesc, &newState);
 	if (FAILED(hr)) {
 		switch (hr) {
-			case E_OUTOFMEMORY: return eGapiResult::ERROR_OUT_OF_MEMORY;
-			default: return eGapiResult::ERROR_UNKNOWN;
+		case E_OUTOFMEMORY: return eGapiResult::ERROR_OUT_OF_MEMORY;
+		default: return eGapiResult::ERROR_UNKNOWN;
 		}
 	}
 	SAFE_RELEASE(blendState);
@@ -1270,8 +1275,8 @@ eGapiResult cGraphicsApiD3D11::SetDepthStencilState(tDepthStencilDesc desc, uint
 	HRESULT hr = d3ddev->CreateDepthStencilState(&d3ddesc, &newState);
 	if (FAILED(hr)) {
 		switch (hr) {
-			case E_OUTOFMEMORY: return eGapiResult::ERROR_OUT_OF_MEMORY;
-			default: return eGapiResult::ERROR_UNKNOWN;
+		case E_OUTOFMEMORY: return eGapiResult::ERROR_OUT_OF_MEMORY;
+		default: return eGapiResult::ERROR_UNKNOWN;
 		}
 	}
 	SAFE_RELEASE(depthStencilState);
@@ -1331,10 +1336,10 @@ unsigned ConvertToNativeBind(unsigned flags) {
 
 D3D11_USAGE ConvertToNativeUsage(eUsage usage) {
 	static const std::unordered_map<eUsage, D3D11_USAGE> lookupTable = {
-		{eUsage::DEFAULT, D3D11_USAGE_DEFAULT},
-		{eUsage::DYNAMIC, D3D11_USAGE_DYNAMIC},
-		{eUsage::IMMUTABLE, D3D11_USAGE_IMMUTABLE},
-		{eUsage::STAGING, D3D11_USAGE_STAGING},
+		{ eUsage::DEFAULT, D3D11_USAGE_DEFAULT },
+		{ eUsage::DYNAMIC, D3D11_USAGE_DYNAMIC },
+		{ eUsage::IMMUTABLE, D3D11_USAGE_IMMUTABLE },
+		{ eUsage::STAGING, D3D11_USAGE_STAGING },
 	};
 	auto it = lookupTable.find(usage);
 	assert(it != lookupTable.end());
@@ -1343,122 +1348,122 @@ D3D11_USAGE ConvertToNativeUsage(eUsage usage) {
 
 DXGI_FORMAT ConvertToNativeFormat(eFormat fmt) {
 	static const std::unordered_map<eFormat, DXGI_FORMAT> lookupTable = {
-		{eFormat::UNKNOWN,						DXGI_FORMAT_UNKNOWN},
-		{eFormat::R32G32B32A32_TYPELESS,		DXGI_FORMAT_R32G32B32A32_TYPELESS},
-		{eFormat::R32G32B32A32_FLOAT,			DXGI_FORMAT_R32G32B32A32_FLOAT},
-		{eFormat::R32G32B32A32_UINT,			DXGI_FORMAT_R32G32B32A32_UINT},
-		{eFormat::R32G32B32A32_SINT,			DXGI_FORMAT_R32G32B32A32_SINT},
-		{eFormat::R32G32B32_TYPELESS,			DXGI_FORMAT_R32G32B32_TYPELESS},
-		{eFormat::R32G32B32_FLOAT,				DXGI_FORMAT_R32G32B32_FLOAT},
-		{eFormat::R32G32B32_UINT,				DXGI_FORMAT_R32G32B32_UINT},
-		{eFormat::R32G32B32_SINT,				DXGI_FORMAT_R32G32B32_SINT},
-		{eFormat::R16G16B16A16_TYPELESS,		DXGI_FORMAT_R16G16B16A16_TYPELESS},
-		{eFormat::R16G16B16A16_FLOAT,			DXGI_FORMAT_R16G16B16A16_FLOAT},
-		{eFormat::R16G16B16A16_UNORM,			DXGI_FORMAT_R16G16B16A16_UNORM},
-		{eFormat::R16G16B16A16_UINT,			DXGI_FORMAT_R16G16B16A16_UINT},
-		{eFormat::R16G16B16A16_SNORM,			DXGI_FORMAT_R16G16B16A16_SNORM},
-		{eFormat::R16G16B16A16_SINT,			DXGI_FORMAT_R16G16B16A16_SINT},
-		{eFormat::R32G32_TYPELESS,				DXGI_FORMAT_R32G32_TYPELESS},
-		{ eFormat::R32G32_FLOAT,				DXGI_FORMAT_R32G32_FLOAT },
-		{ eFormat::R32G32_UINT,					DXGI_FORMAT_R32G32_UINT },
-		{ eFormat::R32G32_SINT,					DXGI_FORMAT_R32G32_SINT },
-		{eFormat::R32G8X24_TYPELESS,			DXGI_FORMAT_R32G8X24_TYPELESS},
-		{eFormat::D32_FLOAT_S8X24_UINT,			DXGI_FORMAT_D32_FLOAT_S8X24_UINT},
-		{eFormat::R32_FLOAT_X8X24_TYPELESS,		DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS},
-		{eFormat::X32_TYPELESS_G8X24_UINT,		DXGI_FORMAT_X32_TYPELESS_G8X24_UINT},
-		{eFormat::R10G10B10A2_TYPELESS,			DXGI_FORMAT_R10G10B10A2_TYPELESS},
-		{eFormat::R10G10B10A2_UNORM,			DXGI_FORMAT_R10G10B10A2_UNORM},
-		{eFormat::R10G10B10A2_UINT,				DXGI_FORMAT_R10G10B10A2_UINT},
-		{eFormat::R11G11B10_FLOAT,				DXGI_FORMAT_R11G11B10_FLOAT},
-		{eFormat::R8G8B8A8_TYPELESS,			DXGI_FORMAT_R8G8B8A8_TYPELESS},
-		{eFormat::R8G8B8A8_UNORM,				DXGI_FORMAT_R8G8B8A8_UNORM},
-		{eFormat::R8G8B8A8_UNORM_SRGB,			DXGI_FORMAT_R8G8B8A8_UNORM_SRGB},
-		{eFormat::R8G8B8A8_UINT,				DXGI_FORMAT_R8G8B8A8_UINT},
-		{eFormat::R8G8B8A8_SNORM,				DXGI_FORMAT_R8G8B8A8_SNORM},
-		{eFormat::R8G8B8A8_SINT,				DXGI_FORMAT_R8G8B8A8_SINT},
-		{eFormat::R16G16_TYPELESS,				DXGI_FORMAT_R16G16_TYPELESS},
-		{eFormat::R16G16_FLOAT,					DXGI_FORMAT_R16G16_FLOAT},
-		{eFormat::R16G16_UNORM,					DXGI_FORMAT_R16G16_UNORM},
-		{eFormat::R16G16_UINT,					DXGI_FORMAT_R16G16_UINT},
-		{eFormat::R16G16_SNORM,					DXGI_FORMAT_R16G16_SNORM},
-		{eFormat::R16G16_SINT,					DXGI_FORMAT_R16G16_SINT},
-		{eFormat::R32_TYPELESS,					DXGI_FORMAT_R32_TYPELESS},
-		{eFormat::D32_FLOAT,					DXGI_FORMAT_D32_FLOAT},
-		{eFormat::R32_FLOAT,					DXGI_FORMAT_R32_FLOAT},
-		{ eFormat::R32_UINT,					DXGI_FORMAT_R32_UINT },
-		{ eFormat::R32_SINT,					DXGI_FORMAT_R32_SINT },
-		{eFormat::R24G8_TYPELESS,				DXGI_FORMAT_R24G8_TYPELESS},
-		{eFormat::D24_UNORM_S8_UINT,			DXGI_FORMAT_D24_UNORM_S8_UINT},
-		{eFormat::R24_UNORM_X8_TYPELESS,		DXGI_FORMAT_R24_UNORM_X8_TYPELESS},
-		{eFormat::X24_TYPELESS_G8_UINT,			DXGI_FORMAT_X24_TYPELESS_G8_UINT},
-		{eFormat::R8G8_TYPELESS,				DXGI_FORMAT_R8G8_TYPELESS},
-		{ eFormat::R8G8_UNORM,					DXGI_FORMAT_R8G8_UNORM },
-		{ eFormat::R8G8_UINT,					DXGI_FORMAT_R8G8_UINT },
-		{ eFormat::R8G8_SNORM,					DXGI_FORMAT_R8G8_SNORM },
-		{ eFormat::R8G8_SINT,					DXGI_FORMAT_R8G8_SINT },
-		{eFormat::R16_TYPELESS,					DXGI_FORMAT_R16_TYPELESS},
-		{eFormat::R16_FLOAT,					DXGI_FORMAT_R16_FLOAT},
-		{eFormat::D16_UNORM,					DXGI_FORMAT_D16_UNORM},
-		{eFormat::R16_UNORM,					DXGI_FORMAT_R16_UNORM},
-		{eFormat::R16_UINT,						DXGI_FORMAT_R16_UINT},
-		{eFormat::R16_SNORM,					DXGI_FORMAT_R16_SNORM},
-		{eFormat::R16_SINT,						DXGI_FORMAT_R16_SINT},
-		{eFormat::R8_TYPELESS,					DXGI_FORMAT_R8_TYPELESS},
-		{eFormat::R8_UNORM,						DXGI_FORMAT_R8_UNORM},
-		{eFormat::R8_UINT,						DXGI_FORMAT_R8_UINT},
-		{eFormat::R8_SNORM,						DXGI_FORMAT_R8_SNORM},
-		{eFormat::R8_SINT,						DXGI_FORMAT_R8_SINT},
-		{eFormat::A8_UNORM,						DXGI_FORMAT_A8_UNORM},
-		{eFormat::R1_UNORM,						DXGI_FORMAT_R1_UNORM},
-		{eFormat::R9G9B9E5_SHAREDEXP,			DXGI_FORMAT_R9G9B9E5_SHAREDEXP},
-		{eFormat::R8G8_B8G8_UNORM,				DXGI_FORMAT_R8G8_B8G8_UNORM},
-		{eFormat::G8R8_G8B8_UNORM,				DXGI_FORMAT_G8R8_G8B8_UNORM},
-		{eFormat::BC1_TYPELESS,					DXGI_FORMAT_BC1_TYPELESS},
-		{eFormat::BC1_UNORM,					DXGI_FORMAT_BC1_UNORM},
-		{eFormat::BC1_UNORM_SRGB,				DXGI_FORMAT_BC1_UNORM_SRGB},
-		{eFormat::BC2_TYPELESS,					DXGI_FORMAT_BC2_TYPELESS},
-		{eFormat::BC2_UNORM,					DXGI_FORMAT_BC2_UNORM},
-		{eFormat::BC2_UNORM_SRGB,				DXGI_FORMAT_BC2_UNORM_SRGB},
-		{eFormat::BC3_TYPELESS,					DXGI_FORMAT_BC3_TYPELESS},
-		{eFormat::BC3_UNORM,					DXGI_FORMAT_BC3_UNORM},
-		{eFormat::BC3_UNORM_SRGB,				DXGI_FORMAT_BC3_UNORM_SRGB},
-		{eFormat::BC4_TYPELESS,					DXGI_FORMAT_BC4_TYPELESS},
-		{ eFormat::BC4_UNORM,					DXGI_FORMAT_BC4_UNORM },
-		{ eFormat::BC4_SNORM,					DXGI_FORMAT_BC4_SNORM },
-		{eFormat::BC5_TYPELESS,					DXGI_FORMAT_BC5_TYPELESS},
-		{eFormat::BC5_UNORM,					DXGI_FORMAT_BC5_UNORM},
-		{eFormat::BC5_SNORM,					DXGI_FORMAT_BC5_SNORM},
-		{eFormat::B5G6R5_UNORM,					DXGI_FORMAT_B5G6R5_UNORM},
-		{ eFormat::B5G5R5A1_UNORM,				DXGI_FORMAT_B5G5R5A1_UNORM },
-		{ eFormat::B8G8R8A8_UNORM,				DXGI_FORMAT_B8G8R8A8_UNORM },
-		{ eFormat::B8G8R8X8_UNORM,				DXGI_FORMAT_B8G8R8X8_UNORM },
-		{eFormat::R10G10B10_XR_BIAS_A2_UNORM,	DXGI_FORMAT_R10G10B10_XR_BIAS_A2_UNORM},
-		{eFormat::B8G8R8A8_TYPELESS,			DXGI_FORMAT_B8G8R8A8_TYPELESS},
-		{eFormat::B8G8R8A8_UNORM_SRGB,			DXGI_FORMAT_B8G8R8A8_UNORM_SRGB},
-		{eFormat::B8G8R8X8_TYPELESS,			DXGI_FORMAT_B8G8R8X8_TYPELESS},
-		{eFormat::B8G8R8X8_UNORM_SRGB,			DXGI_FORMAT_B8G8R8X8_UNORM_SRGB},
-		{eFormat::BC6H_TYPELESS,				DXGI_FORMAT_BC6H_TYPELESS},
-		{eFormat::BC6H_UF16,					DXGI_FORMAT_BC6H_UF16},
-		{eFormat::BC6H_SF16,					DXGI_FORMAT_BC6H_SF16},
-		{eFormat::BC7_TYPELESS,					DXGI_FORMAT_BC7_TYPELESS},
-		{eFormat::BC7_UNORM,					DXGI_FORMAT_BC7_UNORM},
-		{eFormat::BC7_UNORM_SRGB,				DXGI_FORMAT_BC7_UNORM_SRGB},
-		{eFormat::AYUV,							DXGI_FORMAT_AYUV},
-		{eFormat::Y410,							DXGI_FORMAT_Y410},
-		{eFormat::Y416,							DXGI_FORMAT_Y416},
-		{eFormat::NV12,							DXGI_FORMAT_NV12},
-		{eFormat::P010,							DXGI_FORMAT_P010},
-		{eFormat::P016,							DXGI_FORMAT_P016},
-		{eFormat::_420_OPAQUE,					DXGI_FORMAT_420_OPAQUE},
-		{eFormat::YUY2,							DXGI_FORMAT_YUY2},
-		{eFormat::Y210,							DXGI_FORMAT_Y210},
-		{eFormat::Y216,							DXGI_FORMAT_Y216},
-		{eFormat::NV11,							DXGI_FORMAT_NV11},
-		{eFormat::AI44,							DXGI_FORMAT_AI44},
-		{eFormat::IA44,							DXGI_FORMAT_IA44},
-		{eFormat::P8,							DXGI_FORMAT_P8},
-		{eFormat::A8P8,							DXGI_FORMAT_A8P8},
-		{eFormat::B4G4R4A4_UNORM,				DXGI_FORMAT_B4G4R4A4_UNORM},
+		{ eFormat::UNKNOWN, DXGI_FORMAT_UNKNOWN },
+		{ eFormat::R32G32B32A32_TYPELESS, DXGI_FORMAT_R32G32B32A32_TYPELESS },
+		{ eFormat::R32G32B32A32_FLOAT, DXGI_FORMAT_R32G32B32A32_FLOAT },
+		{ eFormat::R32G32B32A32_UINT, DXGI_FORMAT_R32G32B32A32_UINT },
+		{ eFormat::R32G32B32A32_SINT, DXGI_FORMAT_R32G32B32A32_SINT },
+		{ eFormat::R32G32B32_TYPELESS, DXGI_FORMAT_R32G32B32_TYPELESS },
+		{ eFormat::R32G32B32_FLOAT, DXGI_FORMAT_R32G32B32_FLOAT },
+		{ eFormat::R32G32B32_UINT, DXGI_FORMAT_R32G32B32_UINT },
+		{ eFormat::R32G32B32_SINT, DXGI_FORMAT_R32G32B32_SINT },
+		{ eFormat::R16G16B16A16_TYPELESS, DXGI_FORMAT_R16G16B16A16_TYPELESS },
+		{ eFormat::R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT },
+		{ eFormat::R16G16B16A16_UNORM, DXGI_FORMAT_R16G16B16A16_UNORM },
+		{ eFormat::R16G16B16A16_UINT, DXGI_FORMAT_R16G16B16A16_UINT },
+		{ eFormat::R16G16B16A16_SNORM, DXGI_FORMAT_R16G16B16A16_SNORM },
+		{ eFormat::R16G16B16A16_SINT, DXGI_FORMAT_R16G16B16A16_SINT },
+		{ eFormat::R32G32_TYPELESS, DXGI_FORMAT_R32G32_TYPELESS },
+		{ eFormat::R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT },
+		{ eFormat::R32G32_UINT, DXGI_FORMAT_R32G32_UINT },
+		{ eFormat::R32G32_SINT, DXGI_FORMAT_R32G32_SINT },
+		{ eFormat::R32G8X24_TYPELESS, DXGI_FORMAT_R32G8X24_TYPELESS },
+		{ eFormat::D32_FLOAT_S8X24_UINT, DXGI_FORMAT_D32_FLOAT_S8X24_UINT },
+		{ eFormat::R32_FLOAT_X8X24_TYPELESS, DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS },
+		{ eFormat::X32_TYPELESS_G8X24_UINT, DXGI_FORMAT_X32_TYPELESS_G8X24_UINT },
+		{ eFormat::R10G10B10A2_TYPELESS, DXGI_FORMAT_R10G10B10A2_TYPELESS },
+		{ eFormat::R10G10B10A2_UNORM, DXGI_FORMAT_R10G10B10A2_UNORM },
+		{ eFormat::R10G10B10A2_UINT, DXGI_FORMAT_R10G10B10A2_UINT },
+		{ eFormat::R11G11B10_FLOAT, DXGI_FORMAT_R11G11B10_FLOAT },
+		{ eFormat::R8G8B8A8_TYPELESS, DXGI_FORMAT_R8G8B8A8_TYPELESS },
+		{ eFormat::R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM },
+		{ eFormat::R8G8B8A8_UNORM_SRGB, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB },
+		{ eFormat::R8G8B8A8_UINT, DXGI_FORMAT_R8G8B8A8_UINT },
+		{ eFormat::R8G8B8A8_SNORM, DXGI_FORMAT_R8G8B8A8_SNORM },
+		{ eFormat::R8G8B8A8_SINT, DXGI_FORMAT_R8G8B8A8_SINT },
+		{ eFormat::R16G16_TYPELESS, DXGI_FORMAT_R16G16_TYPELESS },
+		{ eFormat::R16G16_FLOAT, DXGI_FORMAT_R16G16_FLOAT },
+		{ eFormat::R16G16_UNORM, DXGI_FORMAT_R16G16_UNORM },
+		{ eFormat::R16G16_UINT, DXGI_FORMAT_R16G16_UINT },
+		{ eFormat::R16G16_SNORM, DXGI_FORMAT_R16G16_SNORM },
+		{ eFormat::R16G16_SINT, DXGI_FORMAT_R16G16_SINT },
+		{ eFormat::R32_TYPELESS, DXGI_FORMAT_R32_TYPELESS },
+		{ eFormat::D32_FLOAT, DXGI_FORMAT_D32_FLOAT },
+		{ eFormat::R32_FLOAT, DXGI_FORMAT_R32_FLOAT },
+		{ eFormat::R32_UINT, DXGI_FORMAT_R32_UINT },
+		{ eFormat::R32_SINT, DXGI_FORMAT_R32_SINT },
+		{ eFormat::R24G8_TYPELESS, DXGI_FORMAT_R24G8_TYPELESS },
+		{ eFormat::D24_UNORM_S8_UINT, DXGI_FORMAT_D24_UNORM_S8_UINT },
+		{ eFormat::R24_UNORM_X8_TYPELESS, DXGI_FORMAT_R24_UNORM_X8_TYPELESS },
+		{ eFormat::X24_TYPELESS_G8_UINT, DXGI_FORMAT_X24_TYPELESS_G8_UINT },
+		{ eFormat::R8G8_TYPELESS, DXGI_FORMAT_R8G8_TYPELESS },
+		{ eFormat::R8G8_UNORM, DXGI_FORMAT_R8G8_UNORM },
+		{ eFormat::R8G8_UINT, DXGI_FORMAT_R8G8_UINT },
+		{ eFormat::R8G8_SNORM, DXGI_FORMAT_R8G8_SNORM },
+		{ eFormat::R8G8_SINT, DXGI_FORMAT_R8G8_SINT },
+		{ eFormat::R16_TYPELESS, DXGI_FORMAT_R16_TYPELESS },
+		{ eFormat::R16_FLOAT, DXGI_FORMAT_R16_FLOAT },
+		{ eFormat::D16_UNORM, DXGI_FORMAT_D16_UNORM },
+		{ eFormat::R16_UNORM, DXGI_FORMAT_R16_UNORM },
+		{ eFormat::R16_UINT, DXGI_FORMAT_R16_UINT },
+		{ eFormat::R16_SNORM, DXGI_FORMAT_R16_SNORM },
+		{ eFormat::R16_SINT, DXGI_FORMAT_R16_SINT },
+		{ eFormat::R8_TYPELESS, DXGI_FORMAT_R8_TYPELESS },
+		{ eFormat::R8_UNORM, DXGI_FORMAT_R8_UNORM },
+		{ eFormat::R8_UINT, DXGI_FORMAT_R8_UINT },
+		{ eFormat::R8_SNORM, DXGI_FORMAT_R8_SNORM },
+		{ eFormat::R8_SINT, DXGI_FORMAT_R8_SINT },
+		{ eFormat::A8_UNORM, DXGI_FORMAT_A8_UNORM },
+		{ eFormat::R1_UNORM, DXGI_FORMAT_R1_UNORM },
+		{ eFormat::R9G9B9E5_SHAREDEXP, DXGI_FORMAT_R9G9B9E5_SHAREDEXP },
+		{ eFormat::R8G8_B8G8_UNORM, DXGI_FORMAT_R8G8_B8G8_UNORM },
+		{ eFormat::G8R8_G8B8_UNORM, DXGI_FORMAT_G8R8_G8B8_UNORM },
+		{ eFormat::BC1_TYPELESS, DXGI_FORMAT_BC1_TYPELESS },
+		{ eFormat::BC1_UNORM, DXGI_FORMAT_BC1_UNORM },
+		{ eFormat::BC1_UNORM_SRGB, DXGI_FORMAT_BC1_UNORM_SRGB },
+		{ eFormat::BC2_TYPELESS, DXGI_FORMAT_BC2_TYPELESS },
+		{ eFormat::BC2_UNORM, DXGI_FORMAT_BC2_UNORM },
+		{ eFormat::BC2_UNORM_SRGB, DXGI_FORMAT_BC2_UNORM_SRGB },
+		{ eFormat::BC3_TYPELESS, DXGI_FORMAT_BC3_TYPELESS },
+		{ eFormat::BC3_UNORM, DXGI_FORMAT_BC3_UNORM },
+		{ eFormat::BC3_UNORM_SRGB, DXGI_FORMAT_BC3_UNORM_SRGB },
+		{ eFormat::BC4_TYPELESS, DXGI_FORMAT_BC4_TYPELESS },
+		{ eFormat::BC4_UNORM, DXGI_FORMAT_BC4_UNORM },
+		{ eFormat::BC4_SNORM, DXGI_FORMAT_BC4_SNORM },
+		{ eFormat::BC5_TYPELESS, DXGI_FORMAT_BC5_TYPELESS },
+		{ eFormat::BC5_UNORM, DXGI_FORMAT_BC5_UNORM },
+		{ eFormat::BC5_SNORM, DXGI_FORMAT_BC5_SNORM },
+		{ eFormat::B5G6R5_UNORM, DXGI_FORMAT_B5G6R5_UNORM },
+		{ eFormat::B5G5R5A1_UNORM, DXGI_FORMAT_B5G5R5A1_UNORM },
+		{ eFormat::B8G8R8A8_UNORM, DXGI_FORMAT_B8G8R8A8_UNORM },
+		{ eFormat::B8G8R8X8_UNORM, DXGI_FORMAT_B8G8R8X8_UNORM },
+		{ eFormat::R10G10B10_XR_BIAS_A2_UNORM, DXGI_FORMAT_R10G10B10_XR_BIAS_A2_UNORM },
+		{ eFormat::B8G8R8A8_TYPELESS, DXGI_FORMAT_B8G8R8A8_TYPELESS },
+		{ eFormat::B8G8R8A8_UNORM_SRGB, DXGI_FORMAT_B8G8R8A8_UNORM_SRGB },
+		{ eFormat::B8G8R8X8_TYPELESS, DXGI_FORMAT_B8G8R8X8_TYPELESS },
+		{ eFormat::B8G8R8X8_UNORM_SRGB, DXGI_FORMAT_B8G8R8X8_UNORM_SRGB },
+		{ eFormat::BC6H_TYPELESS, DXGI_FORMAT_BC6H_TYPELESS },
+		{ eFormat::BC6H_UF16, DXGI_FORMAT_BC6H_UF16 },
+		{ eFormat::BC6H_SF16, DXGI_FORMAT_BC6H_SF16 },
+		{ eFormat::BC7_TYPELESS, DXGI_FORMAT_BC7_TYPELESS },
+		{ eFormat::BC7_UNORM, DXGI_FORMAT_BC7_UNORM },
+		{ eFormat::BC7_UNORM_SRGB, DXGI_FORMAT_BC7_UNORM_SRGB },
+		{ eFormat::AYUV, DXGI_FORMAT_AYUV },
+		{ eFormat::Y410, DXGI_FORMAT_Y410 },
+		{ eFormat::Y416, DXGI_FORMAT_Y416 },
+		{ eFormat::NV12, DXGI_FORMAT_NV12 },
+		{ eFormat::P010, DXGI_FORMAT_P010 },
+		{ eFormat::P016, DXGI_FORMAT_P016 },
+		{ eFormat::_420_OPAQUE, DXGI_FORMAT_420_OPAQUE },
+		{ eFormat::YUY2, DXGI_FORMAT_YUY2 },
+		{ eFormat::Y210, DXGI_FORMAT_Y210 },
+		{ eFormat::Y216, DXGI_FORMAT_Y216 },
+		{ eFormat::NV11, DXGI_FORMAT_NV11 },
+		{ eFormat::AI44, DXGI_FORMAT_AI44 },
+		{ eFormat::IA44, DXGI_FORMAT_IA44 },
+		{ eFormat::P8, DXGI_FORMAT_P8 },
+		{ eFormat::A8P8, DXGI_FORMAT_A8P8 },
+		{ eFormat::B4G4R4A4_UNORM, DXGI_FORMAT_B4G4R4A4_UNORM },
 	};
 	auto it = lookupTable.find(fmt);
 	assert(it != lookupTable.end());
@@ -1469,34 +1474,34 @@ DXGI_FORMAT ConvertToNativeFormat(eFormat fmt) {
 // blend to native
 D3D11_BLEND_OP ConvertToNativeBlendOp(eBlendOp blendOp) {
 	switch (blendOp) {
-		case eBlendOp::ADD: return D3D11_BLEND_OP_ADD;
-		case eBlendOp::SUBTRACT: return D3D11_BLEND_OP_SUBTRACT;
-		case eBlendOp::REV_SUBTRACT: return D3D11_BLEND_OP_REV_SUBTRACT;
-		case eBlendOp::MAX: return D3D11_BLEND_OP_MAX;
-		case eBlendOp::MIN: return D3D11_BLEND_OP_MIN;
-		default: return D3D11_BLEND_OP_ADD;
+	case eBlendOp::ADD: return D3D11_BLEND_OP_ADD;
+	case eBlendOp::SUBTRACT: return D3D11_BLEND_OP_SUBTRACT;
+	case eBlendOp::REV_SUBTRACT: return D3D11_BLEND_OP_REV_SUBTRACT;
+	case eBlendOp::MAX: return D3D11_BLEND_OP_MAX;
+	case eBlendOp::MIN: return D3D11_BLEND_OP_MIN;
+	default: return D3D11_BLEND_OP_ADD;
 	}
 }
 D3D11_BLEND ConvertToNativeBlendFactor(eBlendFactor blendFactor) {
 	switch (blendFactor) {
-		case eBlendFactor::ZERO:				return D3D11_BLEND_ZERO;
-		case eBlendFactor::ONE:					return D3D11_BLEND_ONE;
-		case eBlendFactor::SRC_COLOR:			return D3D11_BLEND_SRC_COLOR;
-		case eBlendFactor::INV_SRC_COLOR:		return D3D11_BLEND_INV_SRC_COLOR;
-		case eBlendFactor::SRC_ALPHA:			return D3D11_BLEND_SRC_ALPHA;
-		case eBlendFactor::INV_SRC_ALPHA:		return D3D11_BLEND_INV_SRC_ALPHA;
-		case eBlendFactor::DEST_ALPHA:			return D3D11_BLEND_DEST_ALPHA;
-		case eBlendFactor::INV_DEST_ALPHA:		return D3D11_BLEND_INV_DEST_ALPHA;
-		case eBlendFactor::DEST_COLOR:			return D3D11_BLEND_DEST_COLOR;
-		case eBlendFactor::INV_DEST_COLOR:		return D3D11_BLEND_INV_DEST_COLOR;
-		case eBlendFactor::SRC_ALPHA_SAT:		return D3D11_BLEND_SRC_ALPHA_SAT;
-		case eBlendFactor::BLEND_FACTOR:		return D3D11_BLEND_BLEND_FACTOR;
-		case eBlendFactor::INV_BLEND_FACTOR:	return D3D11_BLEND_INV_BLEND_FACTOR;
-		case eBlendFactor::SRC1_COLOR:			return D3D11_BLEND_SRC1_COLOR;
-		case eBlendFactor::INV_SRC1_COLOR:		return D3D11_BLEND_INV_SRC1_COLOR;
-		case eBlendFactor::SRC1_ALPHA:			return D3D11_BLEND_SRC1_ALPHA;
-		case eBlendFactor::INV_SRC1_ALPHA:		return D3D11_BLEND_INV_SRC1_ALPHA;
-		default:								return D3D11_BLEND_ONE;
+	case eBlendFactor::ZERO:				return D3D11_BLEND_ZERO;
+	case eBlendFactor::ONE:					return D3D11_BLEND_ONE;
+	case eBlendFactor::SRC_COLOR:			return D3D11_BLEND_SRC_COLOR;
+	case eBlendFactor::INV_SRC_COLOR:		return D3D11_BLEND_INV_SRC_COLOR;
+	case eBlendFactor::SRC_ALPHA:			return D3D11_BLEND_SRC_ALPHA;
+	case eBlendFactor::INV_SRC_ALPHA:		return D3D11_BLEND_INV_SRC_ALPHA;
+	case eBlendFactor::DEST_ALPHA:			return D3D11_BLEND_DEST_ALPHA;
+	case eBlendFactor::INV_DEST_ALPHA:		return D3D11_BLEND_INV_DEST_ALPHA;
+	case eBlendFactor::DEST_COLOR:			return D3D11_BLEND_DEST_COLOR;
+	case eBlendFactor::INV_DEST_COLOR:		return D3D11_BLEND_INV_DEST_COLOR;
+	case eBlendFactor::SRC_ALPHA_SAT:		return D3D11_BLEND_SRC_ALPHA_SAT;
+	case eBlendFactor::BLEND_FACTOR:		return D3D11_BLEND_BLEND_FACTOR;
+	case eBlendFactor::INV_BLEND_FACTOR:	return D3D11_BLEND_INV_BLEND_FACTOR;
+	case eBlendFactor::SRC1_COLOR:			return D3D11_BLEND_SRC1_COLOR;
+	case eBlendFactor::INV_SRC1_COLOR:		return D3D11_BLEND_INV_SRC1_COLOR;
+	case eBlendFactor::SRC1_ALPHA:			return D3D11_BLEND_SRC1_ALPHA;
+	case eBlendFactor::INV_SRC1_ALPHA:		return D3D11_BLEND_INV_SRC1_ALPHA;
+	default:								return D3D11_BLEND_ONE;
 	}
 }
 uint8_t ConvertToNativeBlendMask(uint8_t blendMask) {
@@ -1519,14 +1524,14 @@ D3D11_BLEND_DESC ConvertToNativeBlend(tBlendDesc blend) {
 	ret.AlphaToCoverageEnable = (blend.alphaToCoverageEnable ? TRUE : FALSE);
 	ret.IndependentBlendEnable = (blend.independentBlendEnable ? TRUE : FALSE);
 	for (int i = 0; i < 8; i++) {
-		ret.RenderTarget[i].BlendEnable				= blend[i].enable;
-		ret.RenderTarget[i].BlendOp					= ConvertToNativeBlendOp(blend[i].blendOp);
-		ret.RenderTarget[i].BlendOpAlpha			= ConvertToNativeBlendOp(blend[i].blendOpAlpha);
-		ret.RenderTarget[i].DestBlend				= ConvertToNativeBlendFactor(blend[i].destBlend);
-		ret.RenderTarget[i].DestBlendAlpha			= ConvertToNativeBlendFactor(blend[i].destBlendAlpha);
-		ret.RenderTarget[i].RenderTargetWriteMask	= ConvertToNativeBlendMask(blend[i].writeMask);
-		ret.RenderTarget[i].SrcBlend				= ConvertToNativeBlendFactor(blend[i].srcBlend);
-		ret.RenderTarget[i].SrcBlendAlpha			= ConvertToNativeBlendFactor(blend[i].srcBlendAlpha);
+		ret.RenderTarget[i].BlendEnable = blend[i].enable;
+		ret.RenderTarget[i].BlendOp = ConvertToNativeBlendOp(blend[i].blendOp);
+		ret.RenderTarget[i].BlendOpAlpha = ConvertToNativeBlendOp(blend[i].blendOpAlpha);
+		ret.RenderTarget[i].DestBlend = ConvertToNativeBlendFactor(blend[i].destBlend);
+		ret.RenderTarget[i].DestBlendAlpha = ConvertToNativeBlendFactor(blend[i].destBlendAlpha);
+		ret.RenderTarget[i].RenderTargetWriteMask = ConvertToNativeBlendMask(blend[i].writeMask);
+		ret.RenderTarget[i].SrcBlend = ConvertToNativeBlendFactor(blend[i].srcBlend);
+		ret.RenderTarget[i].SrcBlendAlpha = ConvertToNativeBlendFactor(blend[i].srcBlendAlpha);
 	}
 
 	return ret;
@@ -1535,28 +1540,28 @@ D3D11_BLEND_DESC ConvertToNativeBlend(tBlendDesc blend) {
 // depth-stencil to native
 D3D11_COMPARISON_FUNC ConvertToNativeCompFunc(eComparisonFunc compFunc) {
 	switch (compFunc) {
-		case eComparisonFunc::ALWAYS:		return D3D11_COMPARISON_ALWAYS;
-		case eComparisonFunc::EQUAL:		return D3D11_COMPARISON_EQUAL;
-		case eComparisonFunc::GREATER:		return D3D11_COMPARISON_GREATER;
-		case eComparisonFunc::GREATER_EQUAL:return D3D11_COMPARISON_GREATER_EQUAL;
-		case eComparisonFunc::LESS:			return D3D11_COMPARISON_LESS;
-		case eComparisonFunc::LESS_EQUAL:	return D3D11_COMPARISON_LESS_EQUAL;
-		case eComparisonFunc::NEVER:		return D3D11_COMPARISON_NEVER;
-		case eComparisonFunc::NOT_EQUAL:	return D3D11_COMPARISON_NOT_EQUAL;
-		default: return D3D11_COMPARISON_LESS_EQUAL;
+	case eComparisonFunc::ALWAYS:		return D3D11_COMPARISON_ALWAYS;
+	case eComparisonFunc::EQUAL:		return D3D11_COMPARISON_EQUAL;
+	case eComparisonFunc::GREATER:		return D3D11_COMPARISON_GREATER;
+	case eComparisonFunc::GREATER_EQUAL:return D3D11_COMPARISON_GREATER_EQUAL;
+	case eComparisonFunc::LESS:			return D3D11_COMPARISON_LESS;
+	case eComparisonFunc::LESS_EQUAL:	return D3D11_COMPARISON_LESS_EQUAL;
+	case eComparisonFunc::NEVER:		return D3D11_COMPARISON_NEVER;
+	case eComparisonFunc::NOT_EQUAL:	return D3D11_COMPARISON_NOT_EQUAL;
+	default: return D3D11_COMPARISON_LESS_EQUAL;
 	}
 }
 D3D11_STENCIL_OP ConvertToNativeStencilOp(eStencilOp stencilOp) {
 	switch (stencilOp) {
-		case eStencilOp::DECR:		return D3D11_STENCIL_OP_DECR;
-		case eStencilOp::DECR_SAT:	return D3D11_STENCIL_OP_DECR_SAT;
-		case eStencilOp::INCR:		return D3D11_STENCIL_OP_INCR;
-		case eStencilOp::INCR_SAT:	return D3D11_STENCIL_OP_INCR_SAT;
-		case eStencilOp::INVERT:	return D3D11_STENCIL_OP_INVERT;
-		case eStencilOp::KEEP:		return D3D11_STENCIL_OP_KEEP;
-		case eStencilOp::REPLACE:	return D3D11_STENCIL_OP_REPLACE;
-		case eStencilOp::ZERO:		return D3D11_STENCIL_OP_ZERO;
-		default: return D3D11_STENCIL_OP_REPLACE;
+	case eStencilOp::DECR:		return D3D11_STENCIL_OP_DECR;
+	case eStencilOp::DECR_SAT:	return D3D11_STENCIL_OP_DECR_SAT;
+	case eStencilOp::INCR:		return D3D11_STENCIL_OP_INCR;
+	case eStencilOp::INCR_SAT:	return D3D11_STENCIL_OP_INCR_SAT;
+	case eStencilOp::INVERT:	return D3D11_STENCIL_OP_INVERT;
+	case eStencilOp::KEEP:		return D3D11_STENCIL_OP_KEEP;
+	case eStencilOp::REPLACE:	return D3D11_STENCIL_OP_REPLACE;
+	case eStencilOp::ZERO:		return D3D11_STENCIL_OP_ZERO;
+	default: return D3D11_STENCIL_OP_REPLACE;
 	}
 }
 D3D11_DEPTH_STENCIL_DESC ConvertToNativeDepthStencil(tDepthStencilDesc depthStencil) {
