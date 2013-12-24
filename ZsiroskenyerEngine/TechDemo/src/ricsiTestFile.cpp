@@ -64,17 +64,21 @@ int ricsiMain() {
 
 	
 	// Add some fucking lights :)
-	cGraphicsLight* sunLight = s->CreateLight();
+	//cGraphicsLight* sunLight = s->CreateLight();
+	cGraphicsLight* skyLight = s->CreateLight();
 	/*
 	cGraphicsLight* secondSunLight = s->CreateLight();
-	cGraphicsLight* thirdSunLight = s->CreateLight();
-	cGraphicsLight* skyLight = s->CreateLight();
+	cGraphicsLight* thirdSunLight = s->CreateLight();	
 	cGraphicsLight* pointLight = s->CreateLight();
 	*/
 
+	/*
 	sunLight->type = cGraphicsLight::DIRECTIONAL;
 	sunLight->color = Vec3(1, 1, 1);
 	sunLight->direction = Vec3(0.5f, 0.5f, -0.5f).Normalize();
+	*/
+	skyLight->type = cGraphicsLight::AMBIENT;
+	skyLight->color = Vec3(1, 1, 1);
 
 	/*
 	secondSunLight->type = cGraphicsLight::DIRECTIONAL;
@@ -85,8 +89,6 @@ int ricsiMain() {
 	thirdSunLight->color = Vec3(0.2, 0.8f, 0.77f);
 	thirdSunLight->direction = Vec3(0.8, -0.1f, -0.3f).Normalize();
 
-	skyLight->type = cGraphicsLight::AMBIENT;
-	skyLight->color = Vec3(0.2, 0.3, 0.35);
 
 	pointLight->atten0 = pointLight->atten1 = pointLight->atten2 = 0.0f;
 	pointLight->color = Vec3(0.2, 0.2, 0.9);

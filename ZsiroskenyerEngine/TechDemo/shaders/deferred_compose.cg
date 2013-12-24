@@ -207,32 +207,6 @@ float CookTorranceMagic(float3 N, float3 I, float L)
         return clamp((F*D*G)/(PI*NdotV),0.1f, 2.0f);
 }
 
-/* garbage
-float Directionallight(float3 dir, float3 norm, float3 posW,float specexponent, float specularIntensity, float diffuseIntensity)
-{
-	float4 result = float4(0,0,0,0);
-	float3 lightvec = -normalize(dir);
-
-	float difflight = saturate(dot(lightvec,norm));
-
-	float speclight = 0.0f;
-	
-	result = difflight * diffuseIntensity;
-
-	if(difflight > 0.0f)
-	{	
-		//result += CookTorranceMagic(norm, posW - camPos);
-
-		float3 viewvec = normalize( camPos - posW );
-		float3 halfvec = normalize( lightvec + viewvec );
-	  	speclight = pow(saturate(dot(norm,halfvec)),specexponent) * specularIntensity;
-		result+= speclight;	
-	}
-
-	return result;		
-}
-*/
-
 //------------------------------------------------------------------------------
 //	Diffuse lighting term
 //------------------------------------------------------------------------------
