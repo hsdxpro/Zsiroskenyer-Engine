@@ -18,8 +18,7 @@ struct VS_OUT {
 	float3 tangentW	: TEXCOORD1;
 	float2 tex0 	: TEXCOORD2;
 	float3 posW 	: TEXCOORD3;
-	float2 savedZW  : TEXCOORD4;
-	float3x3 TBN	: TEXCOORD5;
+	float3x3 TBN	: TEXCOORD4;
 };
 
 struct PS_OUT {
@@ -37,7 +36,6 @@ VS_OUT VS_MAIN(VS_IN In) {
 	Out.tangentW = In.tangentL.x* world[0].xyz + ( In.tangentL.y * world[1].xyz + (In.tangentL.z * world[2].xyz));
 	Out.posH = In.posL.x * wvp[0] + ( In.posL.y * wvp[1] + (In.posL.z * wvp[2] + wvp[3]));
 
-	Out.savedZW = Out.posH.zw; // Need for linearized depth
 	Out.tex0 = In.tex0;
 
 	// Calculate TBN base per vertex (CHEAP) (Tangent to World space)
