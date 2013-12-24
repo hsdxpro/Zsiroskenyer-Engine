@@ -83,11 +83,11 @@ Vec3 cCamera::GetDirBack() const {
 }
 
 Vec3 cCamera::GetDirUp() const {
-	return Vec3::Cross(GetDirFront(), GetDirRight());
+	return Vec3::Cross(GetDirRight(), GetDirFront());
 }
 
 Vec3 cCamera::GetDirDown() const {
-	return Vec3::Cross(GetDirRight(), GetDirFront());
+	return Vec3::Cross(GetDirFront(), GetDirRight());
 }
 
 Vec3 cCamera::GetDirRight() const {
@@ -103,8 +103,8 @@ const Vec3& cCamera::GetPos() const {
 }
 
 const Quat& cCamera::GetRot() const {
-	const Vec3 up(0, 0, 1);
-	return Quat::DirToRot(target - pos, up);
+	//const Vec3 up(0, 0, 1);
+	return Quat::DirToRot(target - pos, GetDirUp());
 }
 
 const Vec3& cCamera::GetTarget() const {

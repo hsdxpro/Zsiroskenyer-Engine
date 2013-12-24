@@ -350,14 +350,14 @@ Matrix44& Matrix44::RotationQuat ( const Quat& q) {
 
 
 Matrix44 Matrix44::MatrixViewRH(const Vec3& eye, const Vec3& target, const Vec3& up) {
-	Vec3 zaxis = (target - eye).Normalize();		// The "look-at" vector.
-	Vec3 xaxis = Vec3::Cross(zaxis, up).Normalize();// The "right" vector.
-	Vec3 yaxis = Vec3::Cross(xaxis, zaxis);			// The "up" vector.
+	Vec3 baseFront = (target - eye).Normalize();		// The "look-at" vector.
+	Vec3 baseRight = Vec3::Cross(baseFront, up).Normalize();// The "right" vector.
+	Vec3 baseUp = Vec3::Cross(baseRight, baseFront);			// The "up" vector.
 
 	// Create a 4x4 orientation matrix from the right, up, and at vectors
-	Matrix44 orientation (	xaxis.x, yaxis.x, zaxis.x, 0,
-							xaxis.y, yaxis.y, zaxis.y, 0,
-							xaxis.z, yaxis.z, zaxis.z, 0,
+	Matrix44 orientation (	baseRight.x, baseUp.x, baseFront.x, 0,
+							baseRight.y, baseUp.y, baseFront.y, 0,
+							baseRight.z, baseUp.z, baseFront.z, 0,
 							0	   , 0      , 0      , 1 );
 
 	// Create a 4x4 translation matrix by negating the eye position.
