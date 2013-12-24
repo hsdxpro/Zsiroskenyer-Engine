@@ -56,11 +56,16 @@ void cRigidEntityBullet::SetScale(float x, float y, float z) {
 }
 
 const Vec3& cRigidEntityBullet::GetPos() {
+	return worldTransform.GetPos();
+
+	/*
 	btTransform trans;
-		body->getMotionState()->getWorldTransform(trans);
+	trans = body->getWorldTransform();
+		//body->getMotionState()->getWorldTransform(trans);
 		const btVector3& pos = trans.getOrigin();
 		worldTransform.SetPos(pos.x(), pos.y(), pos.z());
 	return worldTransform.GetPos();
+	*/
 }
 
 const Quat& cRigidEntityBullet::GetRot()  { 
