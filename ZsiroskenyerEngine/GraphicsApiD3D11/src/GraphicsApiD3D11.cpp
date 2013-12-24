@@ -11,6 +11,9 @@
 #include "../../Core/src/IFile.h"
 
 
+// Ugly create shader last_write_time..
+//#include <boost/filesystem.hpp>
+
 ////////////////////////////////////////////////////////////////////////////////
 // GraphicsApi instance creation
 extern "C"
@@ -732,6 +735,11 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 
 // Create shader program
 eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, const zsString& shaderPath) {
+	// TODO read last write of that shader if last_write < curr_last_write (elavult)
+	//last_write_time()
+	//boost::filesystem::last_write_time(boost::filesystem::path(shaderPath.c_str()));
+	//LINK : fatal error LNK1104: cannot open file 'libboost_filesystem-vc120-mt-sgd-1_55.lib'
+
 	// asd/asd/myShader cut extension
 	zsString pathNoExt = shaderPath.substr(0, shaderPath.size() - 3);
 
@@ -1140,11 +1148,13 @@ void cGraphicsApiD3D11::SetConstantBufferData(IConstantBuffer* b, void* data) {
 void cGraphicsApiD3D11::SetTexture(const ITexture2D* tex, size_t slotIdx) {
 	ASSERT(tex != NULL);
 	const ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)tex)->GetSRV();
+	ASSERT(srv != NULL);
 	d3dcon->PSSetShaderResources(slotIdx, 1, (ID3D11ShaderResourceView**)&srv);
 }
 
 // Set compiled-linked shader program
 void cGraphicsApiD3D11::SetShaderProgram(IShaderProgram* shProg) {
+	ASSERT(shProg != NULL);
 	const cShaderProgramD3D11* shProgD3D11 = (cShaderProgramD3D11*)shProg;
 	d3dcon->IASetInputLayout(shProgD3D11->GetInputLayout());
 	d3dcon->VSSetShader(shProgD3D11->GetVertexShader(), 0, 0);

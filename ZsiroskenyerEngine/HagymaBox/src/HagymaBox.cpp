@@ -28,32 +28,10 @@ cHagymaBox::cHagymaBox(IWindow* w) {
 	
 	IGraphicsScene* s = mainGui->GetScene();
 
-	cGraphicsLight* sunLight = s->CreateLight();
-	cGraphicsLight* secondSunLight = s->CreateLight();
-	cGraphicsLight* thirdSunLight = s->CreateLight();
-	cGraphicsLight* skyLight = s->CreateLight();
-	cGraphicsLight* pointLight = s->CreateLight();
-
-	sunLight->type = cGraphicsLight::DIRECTIONAL;
-	sunLight->color = Vec3(0.9f, 0.8f, 0.77f);
-	sunLight->direction = Vec3(0.5f, 0.5f, -0.5f).Normalize();
-
-	secondSunLight->type = cGraphicsLight::DIRECTIONAL;
-	secondSunLight->color = Vec3(1.2f, 0.03f, 0.95f);
-	secondSunLight->direction = Vec3(-0.8f, 0.0f, -0.2f).Normalize();
-
-	thirdSunLight->type = cGraphicsLight::DIRECTIONAL;
-	thirdSunLight->color = Vec3(0.2f, 0.8f, 0.77f);
-	thirdSunLight->direction = Vec3(0.8f, -0.1f, -0.3f).Normalize();
-
-	skyLight->type = cGraphicsLight::AMBIENT;
-	skyLight->color = Vec3(0.2f, 0.3f, 0.35f);
-
-	pointLight->atten0 = pointLight->atten1 = pointLight->atten2 = 0.0f;
-	pointLight->color = Vec3(0.2f, 0.2f, 0.9f);
-	pointLight->position = Vec3(8.0f, 8.0f, 2.0f);
-	pointLight->range = 20.f;
-	pointLight->type = cGraphicsLight::POINT;
+	cGraphicsLight* ambient = s->CreateLight();
+	
+	ambient->type = cGraphicsLight::AMBIENT;
+	ambient->color = Vec3(1.0f, 1.0f, 1.0f);
 
 	// Init gui
 	InitGui();
@@ -65,10 +43,10 @@ cHagymaBox::~cHagymaBox() {
 }
 
 void cHagymaBox::InitGui() {
-	cGuiButton* loadEntityBtn = mainGui->CreateButton(L"materials/buttonBG.zsm",0, 0, 1280, 1024);
-	loadEntityBtn->SetText(L"ALMA");
+	//cGuiButton* loadEntityBtn = mainGui->CreateButton(L"materials/buttonBG.zsm",0, 0, 1280, 1024);
+	//loadEntityBtn->SetText(L"ALMA");
 
-	//mainGui->CreateImage(L"materials/cliff.zsm", 0, 0, 400, 300);
+	mainGui->CreateImage(L"materials/cliff.zsm", 0, 0, 1280, 1024);
 	//mainGui->CreateImage(L"materials/cliff.zsm", 400, 0, 400, 300);
 	//mainGui->CreateImage(L"materials/cliff.zsm", 0, 300, 400, 300);
 	//mainGui->CreateImage(L"materials/cliff.zsm", 400, 300, 400, 300);
