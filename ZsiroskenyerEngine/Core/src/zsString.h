@@ -178,6 +178,22 @@ public:
 			*src = '\0';
 	}
 
+	void Between(wchar_t left, wchar_t right) {
+		wchar_t const* str = c_str();
+		size_t leftIdx = 0;
+
+		// Reach left bound
+		while (str[leftIdx] != left || str[leftIdx] == '\0')
+			leftIdx++;
+
+		// Reach right bound
+		size_t rightIdx = leftIdx;
+		while (str[rightIdx] != right || str[rightIdx] == '\0')
+			rightIdx++;
+
+		*this = substr(leftIdx + 1, (rightIdx - 1) - leftIdx);
+	}
+
 	void CutDirectory() {
 		const wchar_t *str = c_str();
 		size_t nDelimIdx = 0;
@@ -191,10 +207,16 @@ public:
 		nDelimIdx++; // go after delim..
 
 		// Okay so we found the index of the last '\\' or '/'
-		// do memove, resize
-		size_t newSize = size() - nDelimIdx;
+		size_t newSize = size() - nDelimIdx; // TODO size() slow solution
 
 		*this = substr(nDelimIdx, newSize);
+	}
+	
+	void CutFrontFromDelim(wchar_t ch) {
+		const wchar_t *str = c_str();
+		size_t idx = 0;
+		while (str[idx] != '\0' && str[idx++] != ch);
+		*this = substr(idx, size() - idx);
 	}
 
 	void GetNumberFromEnd(char* src, char* buf_out) {
