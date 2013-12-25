@@ -60,7 +60,7 @@ int ricsiMain() {
 
 	// Create scene with camera
 	IGraphicsScene* s = gEngine->CreateScene();
-	s->GetCamera() = cCamera(cCamera::tProjPersp(/*0.5*3.141592653589*/1.15f, (float)winDesc.clientWidth / winDesc.clientHeight), 0.01f, 5000.0f);
+	s->GetCamera() = cCamera(cCamera::tProjPersp(/*0.5*3.141592653589*/1.15f, 1.75f), 0.01f, 5000.0f);
 
 	s->GetState().hdr.enabled = true;
 
@@ -141,9 +141,10 @@ int ricsiMain() {
 	IWindow::eMessage msg;
 	while(window->IsOpened()) {
 		while (window->HandleMessage(&msg)) {
-			if (msg == IWindow::eMessage::SIZE_CHANGED)
-			gEngine->Resize(window->GetClientWidth(), window->GetClientHeight());
-			s->GetCamera().SetAspectRatio(window->GetClientAspectRatio());
+			if (msg == IWindow::eMessage::SIZE_CHANGED) {
+				gEngine->Resize((float)GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
+				s->GetCamera().SetAspectRatio((float)GetSystemMetrics(SM_CXSCREEN) / GetSystemMetrics(SM_CYSCREEN));
+			}
 		}
 	
 		// Update everything

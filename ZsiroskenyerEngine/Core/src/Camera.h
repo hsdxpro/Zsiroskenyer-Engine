@@ -63,8 +63,9 @@ public:
 
 	cCamera(cCamera::tProjOrtho proj, float nearPlane, float farPlane);
 	cCamera(cCamera::tProjPersp proj, float nearPlane, float farPlane);
-
-private:
+protected:
+	void CalcProjMatrix();
+protected:
 	// Pos, Target ( World space )
 	Vec3 pos;
 	Vec3 target;
@@ -77,4 +78,5 @@ private:
 	eProjType projType;
 	tProjOrtho projOrtho;
 	tProjPersp projPersp;
+	Matrix44 proj;
 };

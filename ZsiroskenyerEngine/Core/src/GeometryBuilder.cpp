@@ -31,9 +31,9 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 	// read up dae scene
 	char ansiFilePath[256];
 	zsString::ConvertUniToAnsi(filePath, ansiFilePath, 256);
-	const aiScene* scene = importer.ReadFile(ansiFilePath, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_ImproveCacheLocality | aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_FlipWindingOrder);
-	if(scene == NULL) {
-		ILog::GetInstance()->MsgBox(L"Can't found 3D model: " + filePath);
+	const aiScene* scene = importer.ReadFile(ansiFilePath, aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_Triangulate /*| aiProcess_ImproveCacheLocality | aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes*/ | aiProcess_FlipWindingOrder);
+	if (scene == NULL) {
+			ILog::GetInstance()->MsgBox(L"Can't found 3D model: " + filePath);
 		throw FileNotFoundException();
 	}
 
@@ -109,9 +109,9 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 	}
 
 	// Finally Index reordering for optimal post vertex cache
-	size_t* reorderedIndices = new size_t[nIndex];
-	reorderedIndices = tipsify(indices, nIndex / 3, nVertices, 16); // For vertexCache size 16 . I think it's ideal
-	SAFE_DELETE_ARRAY(indices);
+	//size_t* reorderedIndices = new size_t[nIndex];
+	//reorderedIndices = tipsify(indices, nIndex / 3, nVertices, 16); // For vertexCache size 16 . I think it's ideal
+	//SAFE_DELETE_ARRAY(indices);
 
 	// Return geometric description about loaded DAE
 	tGeometryDesc geomDesc;
@@ -119,7 +119,8 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 		geomDesc.nVertices = nVertices;
 		geomDesc.vertexStride = sizeof(baseVertex);
 
-		geomDesc.indices = reorderedIndices;
+		//geomDesc.indices = reorderedIndices;
+		geomDesc.indices = indices;
 		geomDesc.nIndices = nIndex;
 		geomDesc.indexStride = sizeof(unsigned);
 	return geomDesc;
