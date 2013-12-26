@@ -37,7 +37,10 @@ public:
 	virtual zsString GetWordAfter(const zsString& str) = 0;
 
 	// Get list of lines which is between str and endLine
-	virtual std::list<zsString> GetLinesUnder(const zsString& str, const zsString& endLine) = 0;
+	virtual std::list<zsString> GetLinesBetween(const zsString& str, const zsString& endLine) = 0;
+
+	// Get list of lines which is beginning with str
+	virtual std::list<zsString> GetLinesBeginsWith(const zsString& str) = 0;
 
 	// Gor each call you get the next line of the file, at creation you are at start
 	virtual const zsString& GetLine() = 0;

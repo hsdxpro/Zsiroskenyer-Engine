@@ -149,7 +149,8 @@ size_t cWindow::GetClientHeight() const {
 }
 
 float cWindow::GetClientAspectRatio() const {
-	return 1.0f;
+	RECT rect; GetClientRect(handle, &rect);
+	return (float)(rect.right - rect.left) / (rect.bottom - rect.top);
 }
 
 IWindow::Handle cWindow::GetHandle() const {

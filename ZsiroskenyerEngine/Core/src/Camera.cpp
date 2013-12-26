@@ -5,20 +5,22 @@
 
 cCamera::cCamera(cCamera::tProjOrtho proj, float nearPlane, float farPlane)
 :nearPlane(nearPlane), farPlane(farPlane), target(0, 1, 0), pos(0, 0, 0), projOrtho(proj), projType(cCamera::ORTHO) {
-
+	CalcProjMatrix();
 }
 
 cCamera::cCamera(cCamera::tProjPersp proj, float nearPlane, float farPlane)
 :nearPlane(nearPlane), farPlane(farPlane), target(0, 1, 0), pos(0, 0, 0), projPersp(proj), projType(cCamera::PERSP) {
-
+	CalcProjMatrix();
 }
 
 void cCamera::SetFOV(float rad) {
 	projPersp.fovRad = rad;
+	CalcProjMatrix();
 }
 
 void cCamera::SetAspectRatio(float r) {
 	projPersp.aspectRatio = r;
+	CalcProjMatrix();
 }
 
 void cCamera::SetNearPlane(float nP) {
@@ -62,16 +64,23 @@ Matrix44 cCamera::GetViewMatrix() const {
 	return Matrix44::MatrixViewRH(pos, target, up);
 }
 
-Matrix44 cCamera::GetProjMatrix() const {
+void cCamera::CalcProjMatrix() {
 	switch (projType)
 	{
-		case ORTHO:
-			return Matrix44::MatrixProjOrtographic(nearPlane, farPlane, projOrtho.left, projOrtho.right, projOrtho.bottom, projOrtho.top);
-		case PERSP:
-			return Matrix44::MatrixProjPerspective(nearPlane, farPlane, projPersp.fovRad, projPersp.aspectRatio);
+	case ORTHO:
+		proj = Matrix44::MatrixProjOrtographic(nearPlane, farPlane, projOrtho.left, projOrtho.right, projOrtho.bottom, projOrtho.top);
+		break;
+	case PERSP:
+		proj = Matrix44::MatrixProjPerspective(nearPlane, farPlane, projPersp.fovRad, projPersp.aspectRatio);
+		break;
+	default:
+		ASSERT_MSG(false, L"OMG wtf camera not ORTHO and not PERSP");
+		break;
 	}
-	ASSERT_MSG(false, L"OMG wtf camera not ORTHO and not PERSP");
-	return Matrix44();
+}
+
+Matrix44 cCamera::GetProjMatrix() const {
+	return proj;
 }
 
 Vec3 cCamera::GetDirFront() const {

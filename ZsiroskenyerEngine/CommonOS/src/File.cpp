@@ -301,7 +301,7 @@ zsString cFile::GetWordAfter(const zsString& str) {
 	return zsString();
 }
 
-std::list<zsString> cFile::GetLinesUnder(const zsString& str, const zsString& endLine) {
+std::list<zsString> cFile::GetLinesBetween(const zsString& str, const zsString& endLine) {
 	std::list<zsString> result;
 	auto iter = lines.begin();
 	while(iter != lines.end()) {
@@ -314,6 +314,43 @@ std::list<zsString> cFile::GetLinesUnder(const zsString& str, const zsString& en
 			}
 			break;
 		}
+		iter++;
+	}
+	return result;
+}
+
+std::list<zsString> cFile::GetLinesBeginsWith(const zsString& str) {
+	std::list<zsString> result;
+	auto iter = lines.begin();
+	bool match = true;
+	while (iter != lines.end()) {
+		match = true;
+		wchar_t const* tmp1 = iter->c_str();
+		wchar_t const* tmp2 = str.c_str();
+
+		if (*tmp1 == '\0')
+			match = false;
+
+		while (*tmp2 != '\0')
+		{
+			if (*tmp1 != *tmp2)
+			{
+				match = false;
+				break;
+			}
+			else
+			{
+				int asd = 5;
+				asd++;
+			}
+
+			tmp1++;
+			tmp2++;
+		}
+
+		if (match)
+			result.push_back(*iter);
+
 		iter++;
 	}
 	return result;

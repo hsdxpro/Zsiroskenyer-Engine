@@ -765,9 +765,8 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	zsString profileNames[nShaders] = { "vs_4_0", "hs_4_0", "ds_4_0", "gs_4_0", "ps_4_0" };
 
 	// Shader Output data
-	ID3D11VertexShader* vs = NULL;
-	ID3D11InputLayout* inputLayout = NULL;
-
+	ID3D11InputLayout*		inputLayout = NULL;
+	ID3D11VertexShader*		vs = NULL;
 	ID3D11PixelShader*		ps = NULL;
 	ID3D11GeometryShader*	gs = NULL;
 	ID3D11DomainShader*		ds = NULL;
@@ -808,10 +807,20 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 					return eGapiResult::ERROR_UNKNOWN;
 				}
 
+				/*
+				// Parse hlsl code for samplers, textures
+				// sampler and texture slot equal
+				IFile* hlslFIle = IFile::Create(binPaths[i]);
+
+
+				std::list<zsString> samplers = hlslFIle->GetLinesBeginsWith("SamplerState");
+				for (auto i = samplers.begin(); i != samplers.end(); i++)
+					i->Between('_', ';');*/
+
 				byteCodes[i] = blobs[i]->GetBufferPointer();
 				byteCodeSizes[i] = blobs[i]->GetBufferSize();
 
-				// Write binaries
+				// Write byteCode as binary file
 				IFile::WriteBinary(binPaths[i], byteCodes[i], byteCodeSizes[i]);
 			}
 		}
@@ -867,7 +876,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	// 3. extract VERTEX DECLARATION from those lines
 
 	zsString vsInStructName = cgFile->GetWordAfter(L" VS_MAIN(");
-	std::list<zsString> vsInStructLines = cgFile->GetLinesUnder(vsInStructName, L"};");
+	std::list<zsString> vsInStructLines = cgFile->GetLinesBetween(vsInStructName, L"};");
 
 	int nVertexAttributes = 0;
 

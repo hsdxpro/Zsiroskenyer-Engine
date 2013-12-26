@@ -23,22 +23,22 @@ float2 lightAngle : register(c14);
 //------------------------------------------------------------------------------
 
 // texture samplers
-sampler2D gBuffer0 : register(s0)  = {
+sampler2D gBuffer0 = {
     MipFilter = POINT,
     MinFilter = POINT,
     MagFilter = POINT,
 };
-sampler2D gBuffer1 : register(s1) = {
+sampler2D gBuffer1 = {
     MipFilter = POINT,
     MinFilter = POINT,
     MagFilter = POINT,
 };
-sampler2D gBuffer2 : register(s2) = {
+sampler2D gBuffer2 = {
     MipFilter = POINT,
     MinFilter = POINT,
     MagFilter = POINT,
 };
-sampler2D depthBuffer : register(s3) = {
+sampler2D depthBuffer = {
     MipFilter = POINT,
     MinFilter = POINT,
     MagFilter = POINT,

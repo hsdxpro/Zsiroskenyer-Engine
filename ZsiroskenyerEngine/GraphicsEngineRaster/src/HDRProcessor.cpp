@@ -208,13 +208,14 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	gApi->SetPSConstantBuffer(cbCompose, 0);
 	gApi->Draw(3);
 
-	// display HDR information
+
+/*	// display HDR information
 	if (elapsedTotal >= 1.0f) {
 		std::cout << "Avg. luminance = " << avgLuminance << ", log10(lum) =  " << log10(avgLuminance) << std::endl;
 		std::cout << "   Adaptation = " << adaptedLuminance << std::endl;
 		std::cout << "   [" << avgLuminance*1.998e-3 << ", " << avgLuminance*1.998 << "]\n";
 		std::cout << "   Blueshift = " << shaderConstants.blueShift << std::endl;
 		elapsedTotal = 0.0f;
-	}
+	}*/
 }
 

@@ -31,7 +31,8 @@ public:
 	zsString GetStringBefore(const zsString& str) override;
 	zsString GetWordAfter(const zsString& str) override;
 
-	std::list<zsString> GetLinesUnder(const zsString& str, const zsString& endLine) override;
+	std::list<zsString> GetLinesBetween(const zsString& str, const zsString& endLine) override;
+	std::list<zsString> GetLinesBeginsWith(const zsString& str) override;
 
 	const zsString& GetLine() override;
 	const std::list<zsString>& GetLines() const override;
