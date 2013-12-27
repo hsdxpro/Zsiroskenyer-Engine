@@ -23,6 +23,7 @@
     <ClCompile Include="src\SceneManager.cpp" />
     <ClCompile Include="src\ShaderManager.cpp" />
     <ClCompile Include="src\Material.cpp" />
+    <ClCompile Include="_GeometryBuilder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\DeferredLightVolume.h" />

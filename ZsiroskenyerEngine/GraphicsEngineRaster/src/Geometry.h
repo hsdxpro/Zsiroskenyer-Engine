@@ -7,23 +7,27 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include <vector>
 
 class IVertexBuffer;
 class IIndexBuffer;
 
 
 class cGeometry {
+	friend class _cGeometryBuilder;
 public:
-	cGeometry(IVertexBuffer *VB, IIndexBuffer *IB);
+	struct tMatGroup {
+		size_t id, indexOffset, indexCount;
+	};
+
+	cGeometry(IVertexBuffer *VB, IIndexBuffer *IB, std::vector<tMatGroup>* mg = NULL);
 	~cGeometry();
 
 	const IIndexBuffer* GetIndexBuffer() const;
 	const IVertexBuffer* GetVertexBuffer() const;
-
-	struct tMatGroup {
-		size_t id, indexOffset, indexCount;
-	};
+	const std::vector<tMatGroup>& GetMatGroups() const;
 protected:
 	IVertexBuffer *VB;
 	IIndexBuffer *IB;
+	std::vector<tMatGroup> matGroups;
 };

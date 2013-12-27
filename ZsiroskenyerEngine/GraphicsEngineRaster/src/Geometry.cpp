@@ -9,8 +9,12 @@
 #include "../../Core/src/IVertexBuffer.h"
 #include "../../Core/src/IIndexBuffer.h"
 
-cGeometry::cGeometry(IVertexBuffer *VB, IIndexBuffer *IB) 
-:VB(VB), IB(IB) {
+cGeometry::cGeometry(IVertexBuffer *VB, IIndexBuffer *IB, std::vector<tMatGroup>* mg)
+	:VB(VB), IB(IB) 
+{
+	if (mg) {
+		matGroups = *mg;
+	}
 }
 
 cGeometry::~cGeometry() {
@@ -23,4 +27,8 @@ const IIndexBuffer* cGeometry::GetIndexBuffer() const {
 }
 const IVertexBuffer* cGeometry::GetVertexBuffer() const {
 	return VB;
+}
+
+const std::vector<cGeometry::tMatGroup>& cGeometry::GetMatGroups() const {
+	return matGroups;
 }
