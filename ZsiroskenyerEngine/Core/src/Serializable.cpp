@@ -37,22 +37,21 @@ void cSerializable::ReadFromFile(const zsString& str) {
 
 cSerializable& cSerializable::operator << (size_t val) {
 	InternalGrowing(sizeof(size_t));
-	memcpy(&data[size], &val, sizeof(size_t));
-	size += sizeof(size_t);
+	memcpy(&data[size - sizeof(size_t)], &val, sizeof(size_t));
 	return *this;
 }
 
 cSerializable& cSerializable::operator << (const zsString& str) { 
 	size_t dataSize = str.size() + 1;
 	InternalGrowing(dataSize);
-	memcpy(&data[size], str.c_str(), dataSize);
-	size += dataSize;
+	memcpy(&data[size - dataSize], str.c_str(), dataSize);
 	return *this; 
 }
 
 void cSerializable::InternalGrowing(size_t sizeToIncreaseWith) {
 	if (capacity < size + sizeToIncreaseWith) {
-		capacity = sizeToIncreaseWith < byteGrowing ? byteGrowing : sizeToIncreaseWith;
+		capacity = sizeToIncreaseWith < byteGrowing ? size + byteGrowing : size + sizeToIncreaseWith;
+		size += sizeToIncreaseWith;
 		data = (unsigned char*) realloc(data, capacity);
 	}
 }
