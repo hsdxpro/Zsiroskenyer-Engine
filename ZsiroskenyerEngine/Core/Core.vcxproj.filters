@@ -161,6 +161,9 @@
     <ClInclude Include="src\PipelineState.h">
       <Filter>M_GraphicsApi</Filter>
     </ClInclude>
+    <ClInclude Include="src\Serializable.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\math\color.cpp">
@@ -245,6 +248,9 @@
     </ClCompile>
     <ClCompile Include="src\GraphicsLight.cpp">
       <Filter>M_GraphicsEngine\Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Serializable.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

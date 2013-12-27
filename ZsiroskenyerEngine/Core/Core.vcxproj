@@ -61,6 +61,7 @@
     <ClInclude Include="src\PipelineState.h" />
     <ClInclude Include="src\Renderer.h" />
     <ClInclude Include="src\ResourceProperty.h" />
+    <ClInclude Include="src\Serializable.h" />
     <ClInclude Include="src\shared_ptr.h" />
     <ClInclude Include="src\storage\tree.h" />
     <ClInclude Include="src\TagParser.h" />
@@ -99,6 +100,7 @@
     <ClCompile Include="src\memory\tlsf.cpp" />
     <ClCompile Include="src\multithreading\spinlock.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
+    <ClCompile Include="src\Serializable.cpp" />
     <ClCompile Include="src\TagParser.cpp" />
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\Transform3D.cpp" />

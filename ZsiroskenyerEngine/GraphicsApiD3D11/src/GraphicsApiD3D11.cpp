@@ -9,6 +9,7 @@
 #include "Texture2DD3D11.h"
 
 #include "../../Core/src/IFile.h"
+#include "../../Core/src/Serializable.h"
 #include <map>
 
 // Ugly create shader last_write_time..
@@ -784,9 +785,10 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	// Cg file for parsing
 	IFile* cgFile = NULL;
 
-	// ShaderProg info file
-	zsString infPath = pathNoExt + L".inf";
-	//ISerializable* shaderProgInf = NULL;
+	// samplersate, etc parsed data from Cg file
+	cSerializable shaderProgInfo;
+	zsString shaderProgInfoPath = pathNoExt + L".inf";
+	
 
 	for (size_t i = 0; i < nShaders; i++) {
 		byteCodeSizes[i] = 0;
@@ -802,10 +804,6 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			// If cg File not opened open it
 			if (cgFile == NULL) 
 				cgFile = IFile::Create(shaderPath);
-
-			// .inf clearing if not clear
-			//if (shaderProgInf == NULL)
-				//shaderProgInf->Clear();
 
 			// Found entry in cg
 			if (cgFile->Find(entryNames[i])) {
@@ -834,12 +832,12 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 					// Save that
 					textureSlots[i][*j] = idx;
 
-					
-					// Write to .inf
-					shaderProgInf->WriteBinary((void*)j->c_str(), j->size());
-					shaderProgInf->WriteBinary(&idx, sizeof(size_t));
+					//Collec sampler states, for serialization
+					shaderProgInfo << *j;
+					shaderProgInfo << idx;
 				}
-				*/				
+				hlslFIle->Close();
+				*/
 
 				byteCodes[i] = blobs[i]->GetBufferPointer();
 				byteCodeSizes[i] = blobs[i]->GetBufferSize();
