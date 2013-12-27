@@ -7,13 +7,25 @@
 
 class IFile {
 public:
+	// Instantiate
+	static IFile* Create(const zsString& filePath);
+
 	virtual void Release() = 0;
 
 	// Closes the file stream
-	virtual void Close() = 0; 
+	virtual void Close() = 0;
 
 	// Clear contents of the file
+	static bool Clear(const zsString& path);
 	virtual void Clear() = 0;
+
+	// Read up binary file to buffer
+	static bool ReadBinary(const zsString& path, void* data_out, size_t dataSize);
+	virtual bool ReadBinary(void* data_out, size_t dataSize) = 0;
+
+	// Write data to binary file
+	static bool WriteBinary(const zsString& path, void* data, size_t dataSize);
+	virtual bool WriteBinary(void* data, size_t dataSize) = 0;
 
 	// Deletes nLines line from the top of the file
 	virtual void DeleteFirstLines(size_t nLines) = 0;
@@ -29,6 +41,12 @@ public:
 
 	// Remove lines that duplicated
 	virtual bool RemoveDuplicatedLines() = 0;
+
+	// file Exists?
+	static bool isFileExits(const zsString& str);
+
+	// We reach the end of the file stream ? It's possible with GetLine() func
+	virtual bool IsEOF() const = 0;
 
 	// Get string before first founded string "str" in the file
 	virtual zsString GetStringBefore(const zsString& str) = 0;
@@ -53,26 +71,6 @@ public:
 
 	// Get byte size of the file
 	virtual size_t GetSize() const = 0;
-
-	// We reach the end of the file stream ? It's possible with GetLine() func
-	virtual bool IsEOF() const = 0;
-
-
-// STATIC UTILITY
-	// Create new instance of file
-	static IFile* Create(const zsString& filePath);
-
-	// file Exists?
-	static bool isFileExits(const zsString& str);
-
-	// Read up binary file to buffer
-	static bool ReadBinary(const zsString& path, void* data_out, const size_t& dataSize);
-
-	// Write data to binary file
-	static bool WriteBinary(const zsString& path, void* data, const size_t& dataSize);
-
-	// Clear file to 0 bytes (empty it)
-	static bool Clear(const zsString& path);
 
 	// Get byte size of the file
 	static size_t GetSize(const zsString& path);

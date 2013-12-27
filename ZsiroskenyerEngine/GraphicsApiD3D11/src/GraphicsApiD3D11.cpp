@@ -9,7 +9,7 @@
 #include "Texture2DD3D11.h"
 
 #include "../../Core/src/IFile.h"
-
+#include <map>
 
 // Ugly create shader last_write_time..
 //#include <boost/filesystem.hpp>
@@ -771,6 +771,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	ID3D11GeometryShader*	gs = NULL;
 	ID3D11DomainShader*		ds = NULL;
 	ID3D11HullShader*		hs = NULL;
+	std::map<zsString, size_t> textureSlots[nShaders];
 
 	// Shader ByteCodes
 	ID3DBlob* blobs[nShaders];
@@ -780,7 +781,13 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	// tmp hold shaderByteCode
 	static char byteCodeHolder[nShaders][64000];
 
+	// Cg file for parsing
 	IFile* cgFile = NULL;
+
+	// ShaderProg info file
+	zsString infPath = pathNoExt + L".inf";
+	//ISerializable* shaderProgInf = NULL;
+
 	for (size_t i = 0; i < nShaders; i++) {
 		byteCodeSizes[i] = 0;
 		blobs[i] = NULL;
@@ -793,7 +800,12 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		}
 		else { // There is no binary
 			// If cg File not opened open it
-			if (cgFile == NULL) cgFile = IFile::Create(shaderPath);
+			if (cgFile == NULL) 
+				cgFile = IFile::Create(shaderPath);
+
+			// .inf clearing if not clear
+			//if (shaderProgInf == NULL)
+				//shaderProgInf->Clear();
 
 			// Found entry in cg
 			if (cgFile->Find(entryNames[i])) {
@@ -812,15 +824,28 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 				// sampler and texture slot equal
 				IFile* hlslFIle = IFile::Create(binPaths[i]);
 
-
 				std::list<zsString> samplers = hlslFIle->GetLinesBeginsWith("SamplerState");
-				for (auto i = samplers.begin(); i != samplers.end(); i++)
-					i->Between('_', ';');*/
+				size_t idx = 0;
+				for (auto j = samplers.begin(); j != samplers.end(); j++, idx++)
+				{
+					// Sampler name
+					j->Between('_', ';');
+
+					// Save that
+					textureSlots[i][*j] = idx;
+
+					
+					// Write to .inf
+					shaderProgInf->WriteBinary((void*)j->c_str(), j->size());
+					shaderProgInf->WriteBinary(&idx, sizeof(size_t));
+				}
+				*/				
 
 				byteCodes[i] = blobs[i]->GetBufferPointer();
 				byteCodeSizes[i] = blobs[i]->GetBufferSize();
 
 				// Write byteCode as binary file
+				IFile::Clear(binPaths[i]);
 				IFile::WriteBinary(binPaths[i], byteCodes[i], byteCodeSizes[i]);
 			}
 		}

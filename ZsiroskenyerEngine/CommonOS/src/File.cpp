@@ -62,7 +62,7 @@ void cFile::Close() {
 	stream.close();
 }
 
-bool cFile::ReadBinary(const zsString& path, void* data_out, const size_t& dataSize) {
+bool cFile::ReadBinary(const zsString& path, void* data_out, size_t dataSize) {
 	std::fstream is(path.c_str(), std::ios::in |std::ios::binary);
 	ASSERT(is.is_open() == true);
 
@@ -79,8 +79,39 @@ bool cFile::ReadBinary(const zsString& path, void* data_out, const size_t& dataS
 	return true;
 }
 
-bool cFile::WriteBinary(const zsString& path, void* data, const size_t& dataSize) {
-	std::ofstream os(path.c_str(), std::ofstream::binary | std::ofstream::trunc);
+bool cFile::ReadBinary(void* data_out, size_t dataSize) {
+	std::fstream is(filePath.c_str(), std::ios::in | std::ios::binary);
+	ASSERT(is.is_open() == true);
+
+	if (!is.is_open())
+		return false;
+
+	static char ansiPath[256];
+	zsString::ConvertUniToAnsi(filePath, ansiPath, 256);
+
+
+	is.read((char*)data_out, dataSize);
+	is.close();
+
+	return true;
+}
+
+bool cFile::WriteBinary(const zsString& path, void* data, size_t dataSize) {
+	std::ofstream os(path.c_str(), std::ofstream::binary);
+	ASSERT(os.is_open() == true);
+
+	// Fail to open
+	if (!os.is_open()) {
+		return false;
+	}
+
+	os.write((char*)data, dataSize);
+	os.close();
+	return true;
+}
+
+bool cFile::WriteBinary(void* data, size_t dataSize) {
+	std::ofstream os(filePath.c_str(), std::ofstream::binary);
 	ASSERT(os.is_open() == true);
 
 	// Fail to open

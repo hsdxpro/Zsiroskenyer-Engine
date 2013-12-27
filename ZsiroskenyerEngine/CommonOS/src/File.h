@@ -16,9 +16,11 @@ public:
 	void Clear() override;
 	static bool Clear(const zsString& path);
 
-	static bool ReadBinary(const zsString& path, void* data, const size_t& dataSize);
+	static bool ReadBinary(const zsString& path, void* data, size_t dataSize);
+	bool ReadBinary(void* data, size_t dataSize);
 
-	static bool WriteBinary(const zsString& path, void* data, const size_t& dataSize);
+	static bool WriteBinary(const zsString& path, void* data, size_t dataSize);
+	bool WriteBinary(void* data, size_t dataSize);
 
 	void DeleteFirstLines(size_t nLines) override;
 
@@ -27,6 +29,9 @@ public:
 	bool Find(const zsString& str) override;
 	bool ReplaceAll(const zsString& repThat, const zsString& withThat) override;
 	bool RemoveDuplicatedLines() override;
+
+	bool IsEOF() const override;
+	static bool isFileExits(const zsString& str);
 
 	zsString GetStringBefore(const zsString& str) override;
 	zsString GetWordAfter(const zsString& str) override;
@@ -39,9 +44,6 @@ public:
 	size_t  GetNLines() const override;
 	size_t GetSize() const override;
 	static size_t GetSize(const zsString& path);
-
-	bool IsEOF() const override;
-	static bool isFileExits(const zsString& str);
 protected:
 	// The file stream, that we read up
 	std::wfstream stream;
