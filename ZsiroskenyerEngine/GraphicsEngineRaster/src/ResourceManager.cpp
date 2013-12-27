@@ -80,7 +80,7 @@ cMaterialRef cResourceManager::GetMaterial(const zsString& filePath) {
 	auto it = materials.left.find(filePath);
 	if (it == materials.left.end()) {
 		// Open material file
-		IFile* file = IFile::Create(filePath);
+		IFile* file = IFile::Create(filePath, eFileOpenMode::READ);
 
 		// Number of subMaterials
 		size_t nSubMaterials = file->GetNLines() / 9;

@@ -1,4 +1,6 @@
 #include "Serializable.h"
+#include "IFile.h"
+#include "common.h"
 
 cSerializable::cSerializable(size_t startSize, size_t byteGrowing)
 :capacity(startSize), size(0), byteGrowing(byteGrowing) {
@@ -16,6 +18,21 @@ cSerializable::cSerializable()
 
 cSerializable::~cSerializable() {
 	free(data);
+}
+
+void cSerializable::WriteToFile(const zsString& str) {
+	IFile* f = IFile::Create(str, eFileOpenMode::BINWRITE);
+		f->WriteBinary(&size, sizeof(size_t));
+		f->WriteBinary(&data, size);
+	SAFE_RELEASE(f);
+}
+void cSerializable::ReadFromFile(const zsString& str) {
+	IFile* f = IFile::Create(str, eFileOpenMode::BINREAD);
+	size_t dataSize;
+		f->ReadBinary(&dataSize, sizeof(size_t));
+			InternalGrowing(-(int)size + dataSize);
+		f->ReadBinary(&data, dataSize);
+	SAFE_RELEASE(f);
 }
 
 cSerializable& cSerializable::operator << (size_t val) {

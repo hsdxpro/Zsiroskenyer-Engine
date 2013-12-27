@@ -803,7 +803,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		else { // There is no binary
 			// If cg File not opened open it
 			if (cgFile == NULL) 
-				cgFile = IFile::Create(shaderPath);
+				cgFile = IFile::Create(shaderPath, eFileOpenMode::READ);
 
 			// Found entry in cg
 			if (cgFile->Find(entryNames[i])) {
@@ -817,10 +817,10 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 					return eGapiResult::ERROR_UNKNOWN;
 				}
 
-				/*
+				
 				// Parse hlsl code for samplers, textures
 				// sampler and texture slot equal
-				IFile* hlslFIle = IFile::Create(binPaths[i]);
+				IFile* hlslFIle = IFile::Create(binPaths[i], eFileOpenMode::READ);
 
 				std::list<zsString> samplers = hlslFIle->GetLinesBeginsWith("SamplerState");
 				size_t idx = 0;
@@ -837,7 +837,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 					shaderProgInfo << idx;
 				}
 				hlslFIle->Close();
-				*/
+				
 
 				byteCodes[i] = blobs[i]->GetBufferPointer();
 				byteCodeSizes[i] = blobs[i]->GetBufferSize();
@@ -848,6 +848,9 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			}
 		}
 	}
+
+	// Write info file
+	shaderProgInfo.WriteToFile(shaderProgInfoPath);
 
 	HRESULT hr = S_OK;
 	if (byteCodeSizes[0] != 0) {

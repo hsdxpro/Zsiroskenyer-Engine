@@ -11,12 +11,12 @@ cFile::cFile()
 :isEof(false) {
 }
 
-cFile::cFile(const zsString& filePath)
+cFile::cFile(const zsString& filePath, eFileOpenMode m)
 :isEof(false), filePath(filePath) {
 	lines.clear();
 
 	// Open stream
-	stream.open(filePath.c_str(), std::ios_base::in);
+	stream.open(filePath.c_str(), ConvertToNativeOpenMode(m));
 	if(!stream.is_open()) {
 		throw FileNotFoundException();
 		ILog::GetInstance()->MsgBox(L"Can't open file: " + filePath);
@@ -383,6 +383,28 @@ std::list<zsString> cFile::GetLinesBeginsWith(const zsString& str) {
 			result.push_back(*iter);
 
 		iter++;
+	}
+	return result;
+}
+
+
+
+//-----------------------INTERNALS------------------------------//
+std::ios_base::openmode cFile::ConvertToNativeOpenMode(eFileOpenMode m) {
+	std::ios_base::openmode result;
+	switch (m) {
+		case eFileOpenMode::WRITE:
+			result = std::ios_base::out;
+			break;
+		case eFileOpenMode::BINWRITE:
+			result = std::ios_base::out | std::ios_base::binary;
+			break;
+		case eFileOpenMode::READ:
+			result = std::ios_base::in;
+			break;
+		case eFileOpenMode::BINREAD:
+			result = std::ios_base::in | std::ios_base::binary;
+			break;
 	}
 	return result;
 }

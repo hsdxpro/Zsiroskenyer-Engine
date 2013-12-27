@@ -9,7 +9,7 @@
 class cFile : public IFile {
 public:
 	void Release() override;
-	cFile(const zsString& file);
+	cFile(const zsString& file, eFileOpenMode m);
 	cFile();
 
 	void Close() override;
@@ -44,6 +44,10 @@ public:
 	size_t  GetNLines() const override;
 	size_t GetSize() const override;
 	static size_t GetSize(const zsString& path);
+
+protected:
+	std::ios_base::openmode ConvertToNativeOpenMode(eFileOpenMode m);
+
 protected:
 	// The file stream, that we read up
 	std::wfstream stream;

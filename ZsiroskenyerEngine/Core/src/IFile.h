@@ -5,10 +5,17 @@
 #include <list>
 #include "zsString.h"
 
+enum class eFileOpenMode {
+	WRITE = 1,
+	READ = 2,
+	BINWRITE = 4,
+	BINREAD = 8,
+};
+
 class IFile {
 public:
 	// Instantiate
-	static IFile* Create(const zsString& filePath);
+	static IFile* Create(const zsString& filePath, eFileOpenMode m_);
 
 	virtual void Release() = 0;
 

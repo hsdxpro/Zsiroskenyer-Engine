@@ -7,7 +7,7 @@ cTagParser::cTagParser(const zsString& filePath)
 	fileNode = new tTagData();
 
 	// parse File
-	IFile* file = IFile::Create(filePath);
+	IFile* file = IFile::Create(filePath, eFileOpenMode::READ);
 
 	size_t currNestedLevel = 1;
 	tTagData *entryNodes[TAGPARSER_MAX_NESTED_LEVEL];

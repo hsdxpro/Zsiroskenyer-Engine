@@ -6,8 +6,8 @@ bool IFile::isFileExits(const zsString& str) {
 	return cFile::isFileExits(str);
 }
 
-IFile* IFile::Create(const zsString& filePath) {
-	return new cFile(filePath);
+IFile* IFile::Create(const zsString& filePath, eFileOpenMode m) {
+	return new cFile(filePath, m);
 }
 
 bool IFile::ReadBinary(const zsString& path, void* data_out, size_t dataSize) {
