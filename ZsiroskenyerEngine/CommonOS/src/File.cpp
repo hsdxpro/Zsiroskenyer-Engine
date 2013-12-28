@@ -97,7 +97,7 @@ bool cFile::ReadBinary(void* data_out, size_t dataSize) {
 }
 
 bool cFile::WriteBinary(const zsString& path, void* data, size_t dataSize) {
-	std::ofstream os(path.c_str(), std::ofstream::binary);
+	std::ofstream os(path.c_str(), std::ios::out | std::ios::binary | std::ios::app);
 	ASSERT(os.is_open() == true);
 
 	// Fail to open
@@ -111,7 +111,7 @@ bool cFile::WriteBinary(const zsString& path, void* data, size_t dataSize) {
 }
 
 bool cFile::WriteBinary(void* data, size_t dataSize) {
-	std::ofstream os(filePath.c_str(), std::ofstream::binary);
+	std::ofstream os(filePath.c_str(), std::ios::out | std::ios::binary | std::ios::app);
 	ASSERT(os.is_open() == true);
 
 	// Fail to open
@@ -129,7 +129,7 @@ void cFile::DeleteFirstLines(size_t nLines) {
 
 	// Reopen stream
 	stream.close();
-	stream.open(filePath.c_str(), std::ios::trunc | std::ios_base::out);
+	stream.open(filePath.c_str(), std::ios::trunc | std::ios::out);
 
 	// Move iteraton behind nLines
 	auto iter = lines.begin();
@@ -150,7 +150,7 @@ void cFile::DeleteFirstLines(size_t nLines) {
 
 void cFile::Append(const IFile& file) {
 	stream.close();
-	stream.open(filePath.c_str(), std::ios_base::app);
+	stream.open(filePath.c_str(), std::ios::app);
 	auto iter = file.GetLines().begin();
 	while(iter != file.GetLines().end()) {
 		lines.push_back(*iter);
@@ -174,7 +174,7 @@ bool cFile::Find(const zsString& str) {
 bool cFile::ReplaceAll(const zsString& repThat, const zsString& withThat) {
 	// Reopen stream
 	stream.close();
-	stream.open(filePath.c_str(), std::ios::trunc | std::ios_base::out);
+	stream.open(filePath.c_str(), std::ios::trunc | std::ios::out);
 
 	// Replace strings
 	auto iter = lines.begin();
@@ -252,7 +252,7 @@ bool cFile::IsEOF() const {
 }
 
 bool cFile::isFileExits(const zsString& str) {
-	std::wfstream is(str.c_str(), std::ios_base::in);
+	std::wfstream is(str.c_str(), std::ios::in);
 	bool isOpen = is.is_open();
 	is.close();
 	return isOpen;
@@ -261,7 +261,7 @@ bool cFile::isFileExits(const zsString& str) {
 bool cFile::RemoveDuplicatedLines() {
 	// Reopen stream
 	stream.close();
-	stream.open(filePath.c_str(), std::ios::trunc | std::ios_base::out);
+	stream.open(filePath.c_str(), std::ios::trunc | std::ios::out);
 
 	// Lines that are duplicated
 	std::list<zsString> duplicatedLines;
@@ -390,20 +390,20 @@ std::list<zsString> cFile::GetLinesBeginsWith(const zsString& str) {
 
 
 //-----------------------INTERNALS------------------------------//
-std::ios_base::openmode cFile::ConvertToNativeOpenMode(eFileOpenMode m) {
-	std::ios_base::openmode result;
+std::ios::openmode cFile::ConvertToNativeOpenMode(eFileOpenMode m) {
+	std::ios::openmode result;
 	switch (m) {
 		case eFileOpenMode::WRITE:
-			result = std::ios_base::out;
+			result = std::ios::out;
 			break;
 		case eFileOpenMode::BINWRITE:
-			result = std::ios_base::out | std::ios_base::binary;
+			result = std::ios::out | std::ios::binary;
 			break;
 		case eFileOpenMode::READ:
-			result = std::ios_base::in;
+			result = std::ios::in;
 			break;
 		case eFileOpenMode::BINREAD:
-			result = std::ios_base::in | std::ios_base::binary;
+			result = std::ios::in | std::ios::binary;
 			break;
 	}
 	return result;

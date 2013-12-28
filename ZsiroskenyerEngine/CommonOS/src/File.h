@@ -46,7 +46,7 @@ public:
 	static size_t GetSize(const zsString& path);
 
 protected:
-	std::ios_base::openmode ConvertToNativeOpenMode(eFileOpenMode m);
+	std::ios::openmode ConvertToNativeOpenMode(eFileOpenMode m);
 
 protected:
 	// The file stream, that we read up
