@@ -1,11 +1,11 @@
-sampler2D textureInput = {
+sampler2D textureInput : register(s0)  = {
     MipFilter = POINT,
     MinFilter = POINT,
     MagFilter = POINT,
 	AddressU = Clamp,
 	AddressW = Clamp,
 };
-sampler2D blurTexture = {
+sampler2D blurTexture : register(s1) = {
     MipFilter = LINEAR,
     MinFilter = LINEAR,
     MagFilter = LINEAR,
