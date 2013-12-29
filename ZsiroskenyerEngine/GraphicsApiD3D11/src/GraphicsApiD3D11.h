@@ -13,13 +13,13 @@
 #include "../../Core/src/IWindow.h"
 #include "../../Core/src/common.h"
 
-class cTexture2DD3D11;
 class IVertexBuffer;
 class IIndexBuffer;
 class IConstantBuffer;
 class IShaderProgram;
 class IGraphicsApi;
-
+class cTexture2DD3D11;
+class cShaderProgramD3D11;
 
 // DLL accessor
 extern "C"
@@ -113,7 +113,7 @@ public:
 	void SetInstanceData(/*whatever*/) override;
 	void SetConstantBufferData(IConstantBuffer* b, void* data) override;
 	void SetTexture(const ITexture2D* t, size_t slotIdx) override;
-	void SetTexture(const zsString varName, const ITexture2D* t, const IShaderProgram* s) override;
+	void SetTexture(const zsString& varName, const ITexture2D* t) override;
 	void SetVSConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) override;
 	void SetPSConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) override;
 	void SetShaderProgram(IShaderProgram* shProg) override;
@@ -144,6 +144,9 @@ protected:
 	ID3D11Device *d3ddev;
 	IDXGISwapChain *d3dsc;
 	static tDxConfig swapChainConfig;
+
+	// Active shader program
+	cShaderProgramD3D11* activeShaderProg;
 
 	// you better remove these muhaha -> gányolt fos
 	ID3D11DepthStencilState* depthStencilState;

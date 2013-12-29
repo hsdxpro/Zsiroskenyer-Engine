@@ -68,7 +68,7 @@ cGraphicsApiD3D11::tDxConfig::tDxConfig()
 // Constructor, Destructor
 
 cGraphicsApiD3D11::cGraphicsApiD3D11()
-: d3ddev(NULL), d3dcon(NULL), d3dsc(NULL), defaultRenderTarget(NULL) {
+: d3ddev(NULL), d3dcon(NULL), d3dsc(NULL), defaultRenderTarget(NULL), activeShaderProg(NULL) {
 	// Create d3ddevice, d3dcontext
 	CreateDevice();
 
@@ -1200,15 +1200,16 @@ void cGraphicsApiD3D11::SetTexture(const ITexture2D* t, size_t slotIdx) {
 }
 
 // Set shader texture resource
-void cGraphicsApiD3D11::SetTexture(const zsString varName, const ITexture2D* t, const IShaderProgram* s) {
+void cGraphicsApiD3D11::SetTexture(const zsString& varName, const ITexture2D* t) {
 	const ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)t)->GetSRV();
 	ASSERT(srv != NULL);
-	d3dcon->PSSetShaderResources(((cShaderProgramD3D11*)s)->GetTextureSlot(varName), 1, (ID3D11ShaderResourceView**)&srv);
+	d3dcon->PSSetShaderResources(((cShaderProgramD3D11*)activeShaderProg)->GetTextureSlot(varName), 1, (ID3D11ShaderResourceView**)&srv);
 }
 
 // Set compiled-linked shader program
 void cGraphicsApiD3D11::SetShaderProgram(IShaderProgram* shProg) {
 	ASSERT(shProg != NULL);
+	activeShaderProg = (cShaderProgramD3D11*)shProg;
 	const cShaderProgramD3D11* shProgD3D11 = (cShaderProgramD3D11*)shProg;
 	d3dcon->IASetInputLayout(shProgD3D11->GetInputLayout());
 	d3dcon->VSSetShader(shProgD3D11->GetVertexShader(), 0, 0);
