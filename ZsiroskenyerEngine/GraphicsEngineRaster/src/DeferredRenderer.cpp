@@ -205,10 +205,10 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 			ITexture2D* specular = mtl[i].textureSpecular.get();
 			ITexture2D* displace = mtl[i].textureDisplace.get();
 
-			//if(diffuse)	gApi->SetTexture(L"diffuseTex",	diffuse,	shaderGBuffer);
-			//if(normal)	gApi->SetTexture(L"normalTex",	normal,		shaderGBuffer);
-			//if(specular)	gApi->SetTexture(L"specularTex",specular,	shaderGBuffer);
-			//if(displace)	gApi->SetTexture(L"displaceTex",displace,	shaderGBuffer);
+			if(diffuse)	gApi->SetTexture(L"diffuseTex",	diffuse,	shaderGBuffer);
+			if(normal)	gApi->SetTexture(L"normalTex",	normal,		shaderGBuffer);
+			if(specular)	gApi->SetTexture(L"specularTex",specular,	shaderGBuffer);
+			if(displace)	gApi->SetTexture(L"displaceTex",displace,	shaderGBuffer);
 		}
 
 		// Draw each entity

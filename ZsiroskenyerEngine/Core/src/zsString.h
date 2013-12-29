@@ -155,7 +155,7 @@ template <class T>
 TLSF TLSFAllocator<T>::memPool(4096, 5);
 
 // zsString type
-typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, TLSFAllocator<wchar_t>> zsBasicString;
+typedef std::basic_string<wchar_t, std::char_traits<wchar_t>/*, TLSFAllocator<wchar_t>*/> zsBasicString;
 
 
 class zsString : public zsBasicString {
