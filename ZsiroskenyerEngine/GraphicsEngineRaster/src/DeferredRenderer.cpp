@@ -205,15 +205,10 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 			ITexture2D* specular = mtl[i].textureSpecular.get();
 			ITexture2D* displace = mtl[i].textureDisplace.get();
 			
-			//if(diffuse)	gApi->SetTexture(L"diffuseTex",	diffuse);
-			//if(normal)	gApi->SetTexture(L"normalTex",	normal);
+			if(diffuse)	gApi->SetTexture(L"diffuseTex",	diffuse);
+			if(normal)	gApi->SetTexture(L"normalTex",	normal);
 			//if(specular)	gApi->SetTexture(L"specularTex",specular);
 			//if(displace)	gApi->SetTexture(L"displaceTex",displace);
-
-			if (diffuse)	gApi->SetTexture(diffuse, 0);
-			if (normal)		gApi->SetTexture(normal, 1);
-			//if (specular)	gApi->SetTexture(specular, 2);
-			//if (displace)	gApi->SetTexture(displace, 3);
 		}
 
 		// Draw each entity
@@ -437,11 +432,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetConstantBufferData(shitBuffer, &asd);
 	gApi->SetPSConstantBuffer(shitBuffer, 0);
 
-	//gApi->SetTexture(L"textureInput",compositionBuffer);
-	//gApi->SetTexture(L"depthTexture", depthBufferCopy);
-
-	gApi->SetTexture(compositionBuffer, 0);
-	gApi->SetTexture(depthBufferCopy, 1);
+	gApi->SetTexture(L"textureInput",compositionBuffer);
+	gApi->SetTexture(L"depthTexture", depthBufferCopy);
 
 	// asd new
 	prevView = currLerpedView;
@@ -456,11 +448,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	IShaderProgram* DOFShader = parent.GetShaderManager()->GetShaderByName(L"depth_of_field.cg");
 	gApi->SetShaderProgram(DOFShader);
 
-	//gApi->SetTexture(L"inputTexture",DOFInput);
-	//gApi->SetTexture(L"depthTexture", depthBufferCopy);
-
-	gApi->SetTexture(DOFInput, 0);
-	gApi->SetTexture(depthBufferCopy, 1);
+	gApi->SetTexture(L"inputTexture",DOFInput);
+	gApi->SetTexture(L"depthTexture", depthBufferCopy);
 
 	// Draw triangle, hardware will quadify them automatically :)
 	gApi->Draw(3);
