@@ -772,11 +772,11 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	ID3D11GeometryShader*	gs = NULL;
 	ID3D11DomainShader*		ds = NULL;
 	ID3D11HullShader*		hs = NULL;
-	std::map<zsString, size_t> textureSlots[nShaders];
+	std::map<zsString, size_t> textureSlots;
 
 	// Shader ByteCodes
 	ID3DBlob* blobs[nShaders];
-	void* byteCodes[nShaders];
+	void* byteCodes[nShaders]; memset(byteCodes, 0, nShaders* sizeof(size_t));
 	size_t byteCodeSizes[nShaders];
 
 	// tmp hold shaderByteCode
@@ -817,7 +817,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 					return eGapiResult::ERROR_UNKNOWN;
 				}
 
-				/*
+				
 				// Parse hlsl code for samplers, textures
 				// sampler and texture slot equal
 				IFile* hlslFIle = IFile::Create(binPaths[i], eFileOpenMode::READ);
@@ -828,17 +828,18 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 				for (auto j = samplers.begin(); j != samplers.end(); j++, idx++)
 				{
 					// Sampler name
-					j->Between('_', ';');
+					const wchar_t delimList[2] = { ';', ' ' };
+					j->Between('_', delimList, 2);
 
 					// Save that
-					textureSlots[i][*j] = idx;
+					textureSlots[*j] = idx;
 
 					//Collec sampler states, for serialization
 					shaderProgInfo << *j;
 					shaderProgInfo << idx;
 				}
 				hlslFIle->Close();
-				*/
+				
 
 				byteCodes[i] = blobs[i]->GetBufferPointer();
 				byteCodeSizes[i] = blobs[i]->GetBufferSize();
@@ -849,27 +850,9 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			}
 		}
 	}
-
-	/*
+	
 	// Write info file
 	shaderProgInfo.WriteToFile(shaderProgInfoPath);
-
-	// Read info from file
-	shaderProgInfo.ReadFromFile(shaderProgInfoPath);
-
-	// Read up shits
-	size_t nSamplers;
-	zsString samplerName;
-	size_t samplerSlot;
-	for (size_t i = 0; i < nShaders; i++) {
-		shaderProgInfo >> nSamplers;
-
-		for (size_t j = 0; j < nSamplers; j++) {
-			shaderProgInfo >> samplerName;
-			shaderProgInfo >> samplerSlot;
-		}
-	}
-	*/
 
 	HRESULT hr = S_OK;
 	if (byteCodeSizes[0] != 0) {
@@ -997,7 +980,13 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		SAFE_RELEASE(blobs[i]);
 	SAFE_RELEASE(cgFile);
 
-	*resource = new cShaderProgramD3D11(alignedByteOffset, inputLayout, vs, hs, ds, gs, ps);
+	// Create shader program
+	cShaderProgramD3D11* shProg = new cShaderProgramD3D11(alignedByteOffset, inputLayout, vs, hs, ds, gs, ps);
+	
+	// Set look up maps
+	shProg->SetSlotLookups(textureSlots);
+
+	*resource = shProg;
 	return eGapiResult::OK;
 }
 
@@ -1204,11 +1193,17 @@ void cGraphicsApiD3D11::SetConstantBufferData(IConstantBuffer* b, void* data) {
 }
 
 // Set shader texture resource
-void cGraphicsApiD3D11::SetTexture(const ITexture2D* tex, size_t slotIdx) {
-	ASSERT(tex != NULL);
-	const ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)tex)->GetSRV();
+void cGraphicsApiD3D11::SetTexture(const ITexture2D* t, size_t slotIdx) {
+	const ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)t)->GetSRV();
 	ASSERT(srv != NULL);
 	d3dcon->PSSetShaderResources(slotIdx, 1, (ID3D11ShaderResourceView**)&srv);
+}
+
+// Set shader texture resource
+void cGraphicsApiD3D11::SetTexture(const zsString varName, const ITexture2D* t, const IShaderProgram* s) {
+	const ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)t)->GetSRV();
+	ASSERT(srv != NULL);
+	d3dcon->PSSetShaderResources(((cShaderProgramD3D11*)s)->GetTextureSlot(varName), 1, (ID3D11ShaderResourceView**)&srv);
 }
 
 // Set compiled-linked shader program

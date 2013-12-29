@@ -2,8 +2,8 @@ float4x4 wvp : register(c0);
 float4x4 world : register(c4);
 float3 camPos : register(c8);
 
-sampler2D diffuseTex : register(s0);
-sampler2D normalTex : register(s1);
+sampler2D diffuseTex;
+sampler2D normalTex;
 
 struct VS_IN {
 	float3 posL 	: POSITION;

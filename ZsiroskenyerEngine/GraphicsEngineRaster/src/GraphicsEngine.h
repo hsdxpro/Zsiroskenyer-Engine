@@ -148,9 +148,9 @@ private:
 	private:
 		ITexture2D* gBuffer[3];
 		ITexture2D* compositionBuffer;
-		ITexture2D* helperBuffer;
+		ITexture2D* DOFInput;
 		ITexture2D* depthBuffer;
-		ITexture2D* depthBufferShader;
+		ITexture2D* depthBufferCopy;
 
 		IGraphicsApi* gApi;
 		IShaderProgram* shaderGBuffer;

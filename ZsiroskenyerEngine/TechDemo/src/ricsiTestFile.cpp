@@ -21,11 +21,11 @@
 #include <iostream>
 
 #include "../../Core/src/Timer.h"
+#include "../../Core/src/Serializable.h"
 
 // TODO REMOVE THAT OR I KILL MYSELF
-#define NOMINMAX
 #include <windows.h>
-#include <tchar.h> // even worse
+
 cEntity* player;
 IPhysicsEngine* pEngine;
 
@@ -35,6 +35,24 @@ IPhysicsEngine* pEngine;
 void updateDemo(cCamera& cam, float tDelta);
 
 int ricsiMain() {
+	/*
+	cSerializable ser;
+	ser << L"STR1";
+	ser << 5;
+	ser << L"STR2";
+	ser << 10;
+	ser << L"STR3";
+
+	zsString strs[3];
+	size_t val1 = 0;
+	size_t val2 = 0;
+	ser >> strs[0];
+	ser >> val1;
+	ser >> strs[1];
+	ser >> val2;
+	ser >> strs[2];
+*/
+
 	// Window description
 	IWindow::tDesc winDesc;
 		winDesc.brush = IWindow::eBrush::RENDER_;

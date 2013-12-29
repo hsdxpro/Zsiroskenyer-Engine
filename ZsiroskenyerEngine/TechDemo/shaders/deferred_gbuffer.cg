@@ -2,8 +2,10 @@ float4x4 wvp : register(c0);
 float4x4 world : register(c4);
 float3 camPos : register(c8);
 
-sampler2D diffuseTex : register(s0);
-sampler2D normalTex  : register(s1);
+sampler2D diffuseTex;
+sampler2D normalTex;
+sampler2D specularTex;
+sampler2D displaceTex;
 
 struct VS_IN {
 	float3 posL 	: POSITION;
@@ -72,7 +74,9 @@ PS_OUT PS_MAIN(VS_OUT In) {
 //---------------gBuffer2: DEBUG PURPOSES------------------//
 //--------------------------------------------------------//	
 	// Buffer2 reserved for future use
-	Out.gBuffer2 = float4(In.tangentW.xyz*0.5+float3(0.5,0.5,0.5),1.0f); // NOT USED YET | FOR DEBUG
+	//Out.gBuffer2 = float4(In.tangentW.xyz*0.5+float3(0.5,0.5,0.5),1.0f); // NOT USED YET | FOR DEBUG
 	
+	// Dummy to let the compile don't optimize out the textures..
+	Out.gBuffer2 = tex2D(specularTex,In.tex0) * tex2D(displaceTex, In.tex0);
 	return Out;
 };

@@ -1,5 +1,5 @@
-sampler2D texture0 : register(s0);
-sampler2D depthTexture: register(s1);
+sampler2D textureInput;
+sampler2D depthTexture;
 
 float4x4 invViewProj : register(c0); // inv curr
 float4x4 prevViewProj: register(c4); // prev
@@ -38,11 +38,11 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	float2 velocity = (currPosH.xy - prevPosH.xy) / 2.0f/ 8;
 
 	// Get the initial color at this pixel.  
-   	float4 color = tex2D(texture0, In.tex0);
+   	float4 color = tex2D(textureInput, In.tex0);
 
 	int nSamples = 8;
 	for(int i = 1; i < nSamples; ++i)     
-   		color += tex2D(texture0, clamp(In.tex0 + i * velocity, 0.001f, 0.999f));
+   		color += tex2D(textureInput, clamp(In.tex0 + i * velocity, 0.001f, 0.999f));
  
 	Out.color = color / (nSamples + 1);
 	return Out;

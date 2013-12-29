@@ -1,5 +1,5 @@
-sampler2D texture0 : register(s0);
-sampler2D depthTexture: register(s1);
+sampler2D inputTexture;
+sampler2D depthTexture;
 
 struct VS_IN {
 	float3 posL 	: POSITION;
@@ -41,14 +41,14 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	// Bluring radius
 	float radius = min((depthComponent  + radialComponent)*2.8,2.8f);
 
-	float4 color = tex2D(texture0, In.tex0);
+	float4 color = tex2D(inputTexture, In.tex0);
 	int quality = 4;
 	for( int i = 0; i < quality; i++)
 	{
-		color += tex2D(texture0, In.tex0 + float2(1.0f / 800, 0) * i * radius);
-		color += tex2D(texture0, In.tex0 + float2(0, 1.0f / 800) * i * radius);
-		color += tex2D(texture0, In.tex0 + float2(0, -1.0f / 800) * i * radius);
-		color += tex2D(texture0, In.tex0 + float2(-1.0f / 800, 0) * i * radius);
+		color += tex2D(inputTexture, In.tex0 + float2(1.0f / 800, 0) * i * radius);
+		color += tex2D(inputTexture, In.tex0 + float2(0, 1.0f / 800) * i * radius);
+		color += tex2D(inputTexture, In.tex0 + float2(0, -1.0f / 800) * i * radius);
+		color += tex2D(inputTexture, In.tex0 + float2(-1.0f / 800, 0) * i * radius);
 	}
 
 	Out.color = color / (quality * 4 + 1);

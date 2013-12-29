@@ -42,7 +42,7 @@ cSerializable& cSerializable::operator << (size_t val) {
 	return *this;
 }
 cSerializable& cSerializable::operator << (const zsString& str) { 
-	size_t dataSize = str.size() + 1;
+	size_t dataSize = sizeof(wchar_t) * (str.size() + 1);
 	InternalGrowing(size + dataSize);
 	memcpy(&data[size - dataSize], str.c_str(), dataSize);
 	return *this; 
@@ -55,8 +55,15 @@ cSerializable& cSerializable::operator >> (size_t& valOut) {
 	return *this;
 }
 cSerializable& cSerializable::operator >> (zsString& strOut) {
-	strOut = zsString(data + readIdx);
-	readIdx += strOut.size() + 1;
+	zsString res;
+	wchar_t* tmp = (wchar_t*)(data + readIdx);
+	while (*tmp != '\0') {
+		res += *tmp;
+		tmp++;
+	}
+	
+	strOut = res;
+	readIdx += sizeof(wchar_t) * (strOut.size() + 1);
 	return *this;
 }
 

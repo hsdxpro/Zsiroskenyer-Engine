@@ -140,13 +140,13 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	// calculate average luminance
 	gApi->SetShaderProgram(shaderLumSample);
 	gApi->SetRenderTargets(1, &luminanceBuffer[0], NULL);
-	gApi->SetTexture(source, 0);
+	gApi->SetTexture(L"textureInput", source, shaderLumSample);
 	gApi->Draw(3);
 
 	parent.gApi->SetShaderProgram(shaderLumAvg);
 	for (int i = 1; i < 10; i++) {
 		gApi->SetRenderTargets(1, &luminanceBuffer[i], NULL);
-		gApi->SetTexture(luminanceBuffer[i - 1], 0);
+		gApi->SetTexture(L"textureInput", luminanceBuffer[i - 1], shaderLumAvg);
 		gApi->Draw(3);
 	}
 
@@ -179,20 +179,20 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	shaderConstants.logAvgLum = adaptedLuminance;
 
 	gApi->SetRenderTargets(1, &downSampled);
-	gApi->SetTexture(source, 0);
 	gApi->SetShaderProgram(shaderOverbright);
 	gApi->SetConstantBufferData(cbCompose, &shaderConstants);
 	gApi->SetPSConstantBuffer(cbCompose, 0);
+	gApi->SetTexture(L"textureInput", source, shaderOverbright);
 	gApi->Draw(3);
 	
 	// now blur that bullshit
 	gApi->SetRenderTargets(1, &blurBuffer);
-	gApi->SetTexture(downSampled, 0);
 	gApi->SetShaderProgram(shaderBlurHoriz);
+	gApi->SetTexture(L"textureInput", downSampled, shaderBlurHoriz);
 	gApi->Draw(3);
 	gApi->SetRenderTargets(1, &downSampled);
-	gApi->SetTexture(blurBuffer, 0);
 	gApi->SetShaderProgram(shaderBlurVert);
+	gApi->SetTexture(L"textureInput", blurBuffer, shaderBlurVert);
 	gApi->Draw(3);
 	
 	// compose to destination buffer
@@ -201,11 +201,11 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	shaderConstants.blueShift = 1.0f - std::min(std::max((adaptedLuminance + 2.3f) / (0.7f + 2.3f), 0.0f), 1.0f);
 
 	gApi->SetRenderTargets(1, &dest);
-	gApi->SetTexture(source, 0);
-	gApi->SetTexture(downSampled, 1);
 	gApi->SetShaderProgram(shaderCompose);
 	gApi->SetConstantBufferData(cbCompose, &shaderConstants);
 	gApi->SetPSConstantBuffer(cbCompose, 0);
+	gApi->SetTexture(L"textureInput", source, shaderCompose);
+	//gApi->SetTexture(L"blurTexture ", downSampled, shaderCompose); // That texture doesn't used in the shader (overwritten, optimized out)
 	gApi->Draw(3);
 
 

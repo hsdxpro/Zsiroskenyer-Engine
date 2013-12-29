@@ -7,6 +7,7 @@
 
 #include "../../Core/src/IShaderProgram.h"	
 #include "../../Core/src/common.h"
+#include <map>
 
 struct ID3D11InputLayout;
 struct ID3D11VertexShader;
@@ -21,6 +22,9 @@ public:
 	~cShaderProgramD3D11();
 	void Release() override;
 
+	void SetSlotLookups(std::map<zsString, size_t> textureSlots);
+	size_t GetTextureSlot(const zsString& varName);
+
 	ID3D11VertexShader* GetVertexShader() const;
 	ID3D11HullShader* GetHullShader() const;
 	ID3D11DomainShader* GetDomainShader() const;
@@ -34,10 +38,13 @@ private:
 	ID3D11InputLayout* inputLayout;
 	size_t vertexFormatSize;
 
-	// In Sequence of the Dx pipeline :) To learn something new
-	ID3D11VertexShader* vs;
-	ID3D11HullShader* hs;
-	ID3D11DomainShader* ds;
-	ID3D11GeometryShader* gs;
-	ID3D11PixelShader* ps;
+	// In Sequence of the Dx pipeline :) 
+	ID3D11VertexShader*		vs;
+	ID3D11HullShader*		hs;
+	ID3D11DomainShader*		ds;
+	ID3D11GeometryShader*	gs;
+	ID3D11PixelShader*		ps;
+
+	// Texture slot look up
+	std::map<zsString, size_t> textureSlots;
 };

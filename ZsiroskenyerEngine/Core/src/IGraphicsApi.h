@@ -72,7 +72,8 @@ public:
 	virtual void SetConstantBufferData(IConstantBuffer* b, void* data) = 0;
 	virtual void SetVSConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) = 0;
 	virtual void SetPSConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) = 0;
-	virtual void SetTexture(const ITexture2D* tex, size_t slotIdx) = 0;
+	virtual void SetTexture(const ITexture2D* t, size_t slotIdx) = 0;
+	virtual void SetTexture(const zsString varName, const ITexture2D* t, const IShaderProgram* s) = 0;
 	virtual void SetShaderProgram(IShaderProgram* shProg) = 0;
 	virtual void SetPrimitiveTopology(ePrimitiveTopology t) = 0;
 

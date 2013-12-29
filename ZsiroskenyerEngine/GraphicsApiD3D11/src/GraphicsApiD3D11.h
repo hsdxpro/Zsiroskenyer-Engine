@@ -112,7 +112,8 @@ public:
 	void SetIndexBuffer(const IIndexBuffer* indexBuffer) override;
 	void SetInstanceData(/*whatever*/) override;
 	void SetConstantBufferData(IConstantBuffer* b, void* data) override;
-	void SetTexture(const ITexture2D* tex, size_t slotIdx) override;
+	void SetTexture(const ITexture2D* t, size_t slotIdx) override;
+	void SetTexture(const zsString varName, const ITexture2D* t, const IShaderProgram* s) override;
 	void SetVSConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) override;
 	void SetPSConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) override;
 	void SetShaderProgram(IShaderProgram* shProg) override;

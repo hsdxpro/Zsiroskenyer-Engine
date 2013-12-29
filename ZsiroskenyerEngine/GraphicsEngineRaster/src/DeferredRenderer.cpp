@@ -37,7 +37,7 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 	// buffers to null
 	compositionBuffer = NULL;
 	depthBuffer = NULL;
-	helperBuffer = NULL;
+	DOFInput = NULL;
 	shaderAmbient = shaderDirectional = shaderPoint = shaderSpot = NULL;
 	ibSpot = ibPoint = NULL;
 	vbSpot = vbPoint = NULL;
@@ -87,7 +87,7 @@ void cGraphicsEngine::cDeferredRenderer::Cleanup() {
 		SAFE_RELEASE(v);
 	SAFE_RELEASE(compositionBuffer);
 	SAFE_RELEASE(depthBuffer);
-	SAFE_RELEASE(depthBufferShader);
+	SAFE_RELEASE(depthBufferCopy);
 
 	SAFE_RELEASE(ibPoint);
 	SAFE_RELEASE(vbPoint);
@@ -113,7 +113,7 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 		SAFE_RELEASE(v);
 	SAFE_RELEASE(compositionBuffer);
 	SAFE_RELEASE(depthBuffer);
-	SAFE_RELEASE(helperBuffer);
+	SAFE_RELEASE(DOFInput);
 
 	// create new buffers
 	eGapiResult results[7];
@@ -127,20 +127,20 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	desc.format = eFormat::R16G16_SNORM;		results[1] = gApi->CreateTexture(&gBuffer[1], desc);
 	desc.format = eFormat::R8G8B8A8_UNORM;		results[2] = gApi->CreateTexture(&gBuffer[2], desc);
 	desc.format = eFormat::R16G16B16A16_FLOAT;	results[3] = gApi->CreateTexture(&compositionBuffer, desc);
-	desc.format = eFormat::R16G16B16A16_FLOAT;	results[4] = gApi->CreateTexture(&helperBuffer, desc);
+	desc.format = eFormat::R16G16B16A16_FLOAT;	results[4] = gApi->CreateTexture(&DOFInput, desc);
 
 	desc.format = eFormat::R24_UNORM_X8_TYPELESS;	desc.depthFormat = eFormat::D24_UNORM_S8_UINT;	desc.bind = (int)eBind::DEPTH_STENCIL;
 	results[5] = gApi->CreateTexture(&depthBuffer, desc);
 	desc.bind = (int)eBind::SHADER_RESOURCE;
-	results[6] = gApi->CreateTexture(&depthBufferShader, desc);
+	results[6] = gApi->CreateTexture(&depthBufferCopy, desc);
 
 	for (int i = 0; i < sizeof(results) / sizeof(results[0]); i++) {
 		if (results[i] != eGapiResult::OK) {
 			for (auto& p : gBuffer) SAFE_RELEASE(p);
 			SAFE_RELEASE(compositionBuffer);
-			SAFE_RELEASE(helperBuffer);
+			SAFE_RELEASE(DOFInput);
 			SAFE_RELEASE(depthBuffer);
-			SAFE_RELEASE(depthBufferShader);
+			SAFE_RELEASE(depthBufferCopy);
 			return results[i];
 		}
 	}
@@ -199,19 +199,16 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		// Set SubMaterials
 		auto& mtl = *group->mtl;
 		for (size_t i = 0; i < mtl.GetNSubMaterials(); i++) {
+			// Set textures
 			ITexture2D* diffuse = mtl[i].textureDiffuse.get();
 			ITexture2D* normal = mtl[i].textureNormal.get();
 			ITexture2D* specular = mtl[i].textureSpecular.get();
 			ITexture2D* displace = mtl[i].textureDisplace.get();
 
-			if (diffuse != NULL)
-				gApi->SetTexture(diffuse, 0);
-			if (normal != NULL)
-				gApi->SetTexture(normal, 1);
-			if (specular != NULL)
-				gApi->SetTexture(specular, 2);
-			if (displace != NULL)
-				gApi->SetTexture(displace, 3);
+			//if(diffuse)	gApi->SetTexture(L"diffuseTex",	diffuse,	shaderGBuffer);
+			//if(normal)	gApi->SetTexture(L"normalTex",	normal,		shaderGBuffer);
+			//if(specular)	gApi->SetTexture(L"specularTex",specular,	shaderGBuffer);
+			//if(displace)	gApi->SetTexture(L"displaceTex",displace,	shaderGBuffer);
 		}
 
 		// Draw each entity
@@ -240,7 +237,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	}
 
 	// copy depth to shader resource
-	gApi->CopyResource(depthBuffer, depthBufferShader);
+	gApi->CopyResource(depthBuffer, depthBufferCopy);
 
 	//--------------------------------------------------------------------------//
 	// --- --- --- --- --- --- --- COMPOSITION PASS --- --- --- --- --- --- --- //
@@ -331,21 +328,18 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	shaderConstants.viewProj = viewProj;
 
 	// Render each light group
-
+	// Directional lights
+	gApi->SetShaderProgram(shaderDirectional);
 	gApi->SetTexture(gBuffer[0], 0);
 	gApi->SetTexture(gBuffer[1], 1);
 	gApi->SetTexture(gBuffer[2], 2);
-	gApi->SetTexture(depthBufferShader, 3);
+	gApi->SetTexture(depthBufferCopy, 3);
 
-
-	// Directional lights
-	gApi->SetShaderProgram(shaderDirectional);
 	for (auto light : directionalLights) {
-		// fill shader constants
-		
+
+		// load shader constants
 		shaderConstants.lightColor = light->color;
 		shaderConstants.lightDir = light->direction;
-		// load shader constants
 		gApi->SetConstantBufferData(lightPassConstants, &shaderConstants);
 		gApi->SetPSConstantBuffer(lightPassConstants, 0);
 
@@ -356,13 +350,12 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 	// Ambient lights
 	gApi->SetShaderProgram(shaderAmbient);
-	// fill shader constants
-	shaderConstants.lightColor = ambientLight;
+
 	// load shader constants
+	shaderConstants.lightColor = ambientLight;
 	gApi->SetConstantBufferData(lightPassConstants, &shaderConstants);
 	gApi->SetPSConstantBuffer(lightPassConstants, 0);
-	// draw an FSQ
-	gApi->Draw(3);
+	gApi->Draw(3); //FSQ
 
 
 	// Point lights
@@ -370,6 +363,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetVertexBuffer(vbPoint, 4*2*sizeof(float));
 	gApi->SetIndexBuffer(ibPoint);
 	for (auto light : pointLights) {
+
 		// set shader constants
 		shaderConstants.lightAtten = Vec3(light->atten0, light->atten1, light->atten2);
 		shaderConstants.lightColor = light->color;
@@ -377,6 +371,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		shaderConstants.lightRange = light->range;
 		gApi->SetConstantBufferData(lightPassConstants, &shaderConstants);
 		gApi->SetPSConstantBuffer(lightPassConstants, 0);
+
 		// draw that bullshit
 		gApi->DrawIndexed(sizeof(ibDataLightPoint) / 3 / sizeof(unsigned));
 	}
@@ -406,7 +401,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		gApi->SetTexture(gBuffer[i], i);
 
 	// Load up depth buffer
-	gApi->SetTexture(depthBufferShader, 3);
+	gApi->SetTexture(depthBufferCopy, 3);
 
 	// Draw triangle, hardware will quadify them automatically :)
 	gApi->Draw(3);
@@ -416,12 +411,11 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetDepthStencilState(depthStencilDefault, 0x00);
 	gApi->SetBlendState(blendDefault);
 
-
 	// MOTION BLUR______________________________________________________________________________________________________________________________________
-	gApi->SetRenderTargets(1, &helperBuffer, NULL);
+	gApi->SetRenderTargets(1, &DOFInput, NULL);
 
-	IShaderProgram* motionBlurShProg = parent.GetShaderManager()->GetShaderByName(L"motion_blur.cg");
-	gApi->SetShaderProgram(motionBlurShProg);
+	IShaderProgram* motionBlurShader = parent.GetShaderManager()->GetShaderByName(L"motion_blur.cg");
+	gApi->SetShaderProgram(motionBlurShader);
 
 	static IConstantBuffer* shitBuffer;
 	static eGapiResult gr = gApi->CreateConstantBuffer(&shitBuffer, 2 * sizeof(Matrix44), eUsage::DEFAULT, NULL);
@@ -438,8 +432,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetConstantBufferData(shitBuffer, &asd);
 	gApi->SetPSConstantBuffer(shitBuffer, 0);
 
-	gApi->SetTexture(compositionBuffer, 0);
-	gApi->SetTexture(depthBufferShader, 1);
+	gApi->SetTexture(L"textureInput",compositionBuffer, motionBlurShader);
+	gApi->SetTexture(L"depthTexture", depthBufferCopy,	motionBlurShader);
 
 	// asd new
 	prevView = currLerpedView;
@@ -451,11 +445,11 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// DEPTH OF FIELD______________________________________________________________________________________________________________________________________
 	gApi->SetRenderTargets(1, &compositionBuffer, NULL);
 
-	IShaderProgram* dofShProg = parent.GetShaderManager()->GetShaderByName(L"depth_of_field.cg");
-	gApi->SetShaderProgram(dofShProg);
+	IShaderProgram* DOFShader = parent.GetShaderManager()->GetShaderByName(L"depth_of_field.cg");
+	gApi->SetShaderProgram(DOFShader);
 
-	gApi->SetTexture(helperBuffer, 0);
-	gApi->SetTexture(depthBufferShader, 1);
+	gApi->SetTexture(L"inputTexture",DOFInput,		 DOFShader);
+	gApi->SetTexture(L"depthTexture", depthBufferCopy,DOFShader);
 
 	// Draw triangle, hardware will quadify them automatically :)
 	gApi->Draw(3);

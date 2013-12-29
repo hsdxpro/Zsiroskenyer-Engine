@@ -234,7 +234,7 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, float elapsed) {
 	else {
 		gApi->SetRenderTargetDefault();
 		gApi->SetShaderProgram(screenCopyShader);
-		gApi->SetTexture(composedBuffer, 0);
+		gApi->SetTexture(L"texture0", composedBuffer, screenCopyShader);
 		gApi->Draw(3);
 	}
 
