@@ -822,21 +822,36 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 				// sampler and texture slot equal
 				IFile* hlslFIle = IFile::Create(binPaths[i], eFileOpenMode::READ);
 
-				std::list<zsString> samplers = hlslFIle->GetLinesBeginsWith("SamplerState");
-				shaderProgInfo << samplers.size();
+				std::list<zsString> textures = hlslFIle->GetLinesBeginsWith("Texture");
+				std::list<zsString> samplerStates = hlslFIle->GetLinesBeginsWith("SamplerState");
+				shaderProgInfo << textures.size();
 				size_t idx = 0;
-				for (auto j = samplers.begin(); j != samplers.end(); j++, idx++)
-				{
+				auto j = textures.begin();
+				auto k = samplerStates.begin();
+
+				for (; j != textures.end(); j++, k++, idx++) {
+
+					size_t slotIdx = 0;
+					/*
+					if (j->Find(L"register")) {
+						zsString slotIdxStr = *j;
+						slotIdxStr.Between(L"(t", L")");
+						slotIdx = slotIdxStr.ToUnsigned();
+					} else {
+						slotIdx = idx;
+					}
+					*/
+					slotIdx = idx;
 					// Sampler name
 					const wchar_t delimList[2] = { ';', ' ' };
-					j->Between('_', delimList, 2);
+					k->Between('_', delimList, 2);
 
-					// Save that
-					textureSlots[*j] = idx;
+					// Save slot index
+					textureSlots[*k] = slotIdx;
 
-					//Collec sampler states, for serialization
-					shaderProgInfo << *j;
-					shaderProgInfo << idx;
+					// Serialize sampler states
+					shaderProgInfo << *k;
+					shaderProgInfo << slotIdx;
 				}
 				hlslFIle->Close();
 
