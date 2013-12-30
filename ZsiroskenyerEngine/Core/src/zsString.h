@@ -168,6 +168,41 @@ public:
 		wcstombs(dst, c_str(), nChars);
 	}
 
+	size_t ToUnsigned() {
+		std::wstringstream ss;
+		ss << c_str();
+		size_t res;
+		ss >> res;
+		return res;
+	}
+
+	bool Find(const wchar_t* str) {
+		size_t mainIndex = 0;
+		wchar_t const* self = c_str();
+		wchar_t ch = '\0';
+		while ((ch = self[mainIndex]) != '\0') {
+			if (str[0] == ch) {
+				bool equal = true;
+				size_t secIndex = 0;
+				size_t fIndex = mainIndex;
+				while (str[secIndex] != '\0') {
+					ch = self[fIndex];
+					if (str[secIndex] != ch) {
+						equal = false;
+						break;
+					}
+					fIndex++;
+					secIndex++;
+				}
+				if (equal) {
+					return true;
+				}
+			}
+			mainIndex++;
+		}
+		return false;
+	}
+
 	void CutNumberFromEnd(char* src) {
 		// Move to end
 		while (*src != '\0')
@@ -193,6 +228,80 @@ public:
 			rightIdx++;
 
 		*this = substr(leftIdx + 1, (rightIdx - 1) - leftIdx);
+	}
+
+	// Gather string between left and right strings, for ex. zsString ex = _asdasd; ex.Between('-',';') returns asdasd   
+	void Between(wchar_t* left, wchar_t* right) {
+		wchar_t const* str = c_str();
+
+		size_t leftIdx = 0;
+		size_t helperIdx = 0;
+		size_t startIdx;
+
+		// Reach index of var:left str in c_str()
+		while (str[leftIdx] != '\0') {
+			// Save left idx for BackUps
+			startIdx = leftIdx;
+
+			// Search var:left string in c_str() from current char
+			helperIdx = 0;
+			while (left[helperIdx] != '\0') {
+
+				// left string part not equal with current c_str() char
+				if (left[helperIdx] != str[leftIdx])
+					break;
+
+				helperIdx++;
+				leftIdx++;
+			}
+
+			// Yeah found left string, terminate loop
+			if (left[helperIdx] == '\0') {
+				break;
+			}
+
+			// Backup left idx
+			leftIdx = startIdx;
+
+			leftIdx++;
+		}
+
+
+
+		// Reach index of var:left str in c_str()
+		size_t rightIdx = leftIdx;
+		while (str[rightIdx] != '\0') {
+			// Save left idx for BackUps
+			startIdx = rightIdx;
+
+			// Search var:left string in c_str() from current char
+			helperIdx = 0;
+			while (right[helperIdx] != '\0') {
+
+				// left string part not equal with current c_str() char
+				if (right[helperIdx] != str[rightIdx])
+					break;
+
+				helperIdx++;
+				rightIdx++;
+			}
+
+			// Backup rightidx
+			rightIdx = startIdx;
+
+			// Yeah found var:right string, terminate loop
+			if (right[helperIdx] == '\0') {
+				break;
+			}
+
+			rightIdx++;
+		}
+
+		// ex   azt_bazt    (left:azt, right:bazt)
+		//leftIdx = index of 't'
+		// rightIDx = index of 'b'
+		*this = substr(leftIdx, rightIdx - leftIdx);
+		
 	}
 
 	void Between(wchar_t left, const wchar_t* rightDelims, size_t nRightDelims) {

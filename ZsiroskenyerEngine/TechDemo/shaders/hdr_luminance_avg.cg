@@ -1,5 +1,5 @@
 // input texture sampler
-sampler2D textureInput = {
+sampler2D textureInput : register(s0) = {
     MipFilter = LINEAR,
     MinFilter = LINEAR,
     MagFilter = LINEAR,

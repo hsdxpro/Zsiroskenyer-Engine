@@ -68,7 +68,7 @@ cGraphicsApiD3D11::tDxConfig::tDxConfig()
 // Constructor, Destructor
 
 cGraphicsApiD3D11::cGraphicsApiD3D11()
-: d3ddev(NULL), d3dcon(NULL), d3dsc(NULL), defaultRenderTarget(NULL) {
+: d3ddev(NULL), d3dcon(NULL), d3dsc(NULL), defaultRenderTarget(NULL), activeShaderProg(NULL) {
 	// Create d3ddevice, d3dcontext
 	CreateDevice();
 
@@ -822,24 +822,38 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 				// sampler and texture slot equal
 				IFile* hlslFIle = IFile::Create(binPaths[i], eFileOpenMode::READ);
 
-				std::list<zsString> samplers = hlslFIle->GetLinesBeginsWith("SamplerState");
-				shaderProgInfo << samplers.size();
+				std::list<zsString> textures = hlslFIle->GetLinesBeginsWith("Texture");
+				std::list<zsString> samplerStates = hlslFIle->GetLinesBeginsWith("SamplerState");
+				shaderProgInfo << textures.size();
 				size_t idx = 0;
-				for (auto j = samplers.begin(); j != samplers.end(); j++, idx++)
-				{
+				auto j = textures.begin();
+				auto k = samplerStates.begin();
+
+				for (; j != textures.end(); j++, k++, idx++) {
+
+					size_t slotIdx = 0;
+					/*
+					if (j->Find(L"register")) {
+						zsString slotIdxStr = *j;
+						slotIdxStr.Between(L"(t", L")");
+						slotIdx = slotIdxStr.ToUnsigned();
+					} else {
+						slotIdx = idx;
+					}
+					*/
+					slotIdx = idx;
 					// Sampler name
 					const wchar_t delimList[2] = { ';', ' ' };
-					j->Between('_', delimList, 2);
+					k->Between('_', delimList, 2);
 
-					// Save that
-					textureSlots[*j] = idx;
+					// Save slot index
+					textureSlots[*k] = slotIdx;
 
-					//Collec sampler states, for serialization
-					shaderProgInfo << *j;
-					shaderProgInfo << idx;
+					// Serialize sampler states
+					shaderProgInfo << *k;
+					shaderProgInfo << slotIdx;
 				}
 				hlslFIle->Close();
-				
 
 				byteCodes[i] = blobs[i]->GetBufferPointer();
 				byteCodeSizes[i] = blobs[i]->GetBufferSize();
@@ -1200,15 +1214,17 @@ void cGraphicsApiD3D11::SetTexture(const ITexture2D* t, size_t slotIdx) {
 }
 
 // Set shader texture resource
-void cGraphicsApiD3D11::SetTexture(const zsString varName, const ITexture2D* t, const IShaderProgram* s) {
+void cGraphicsApiD3D11::SetTexture(const zsString& varName, const ITexture2D* t) {
 	const ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)t)->GetSRV();
 	ASSERT(srv != NULL);
-	d3dcon->PSSetShaderResources(((cShaderProgramD3D11*)s)->GetTextureSlot(varName), 1, (ID3D11ShaderResourceView**)&srv);
+	size_t slot = ((cShaderProgramD3D11*)activeShaderProg)->GetTextureSlot(varName);
+	d3dcon->PSSetShaderResources(slot, 1, (ID3D11ShaderResourceView**)&srv);
 }
 
 // Set compiled-linked shader program
 void cGraphicsApiD3D11::SetShaderProgram(IShaderProgram* shProg) {
 	ASSERT(shProg != NULL);
+	activeShaderProg = (cShaderProgramD3D11*)shProg;
 	const cShaderProgramD3D11* shProgD3D11 = (cShaderProgramD3D11*)shProg;
 	d3dcon->IASetInputLayout(shProgD3D11->GetInputLayout());
 	d3dcon->VSSetShader(shProgD3D11->GetVertexShader(), 0, 0);

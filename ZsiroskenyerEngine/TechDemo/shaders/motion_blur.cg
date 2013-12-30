@@ -1,5 +1,5 @@
-sampler2D textureInput;
-sampler2D depthTexture;
+sampler2D textureInput : register(s0);
+sampler2D depthTexture : register(s1);
 
 float4x4 invViewProj : register(c0); // inv curr
 float4x4 prevViewProj: register(c4); // prev

@@ -1,5 +1,5 @@
-sampler2D inputTexture;
-sampler2D depthTexture;
+sampler2D inputTexture : register(s0);
+sampler2D depthTexture : register(s1);
 
 struct VS_IN {
 	float3 posL 	: POSITION;
