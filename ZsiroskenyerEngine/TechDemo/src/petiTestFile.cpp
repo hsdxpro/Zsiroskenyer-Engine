@@ -207,11 +207,22 @@ void TestSerializer() {
 		cout << "all string & numbers read back, but there were errors" << endl;
 }
 
+
+////////////////////////////////////////////////////////////////////////////////
+// Test strings
+void TestString(const zsString str) {
+	auto c = str.c_str();
+	wcout << c;
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // Main
 int petiMain() {	
-	TestSerializer();
-	TestTLSF();
+	//TestSerializer();
+	//TestTLSF();
+
+	TestString(L"Just go fuck yourself!");
 
 	_getch();
 	return 0;
