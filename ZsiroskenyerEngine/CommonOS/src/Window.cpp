@@ -112,6 +112,7 @@ IWindow::eMessage cWindow::ProcessMessage(const MSG& msg) {
 			if (LOWORD(msg.wParam) == VK_RETURN && ((msg.lParam >> 29 & 0x1) == 1))
 				return IWindow::eMessage::SIZE_CHANGED;
 	}
+	return IWindow::eMessage(95934292); // TODO xD
 }
 
 void cWindow::Close() {

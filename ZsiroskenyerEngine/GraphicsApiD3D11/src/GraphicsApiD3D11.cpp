@@ -806,7 +806,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 				cgFile = IFile::Create(shaderPath, eFileOpenMode::READ);
 
 			// Found entry in cg
-			if (cgFile->Find(entryNames[i])) {
+			if (cgFile->Contains(entryNames[i])) {
 				// Compile Cg to hlsl
 				CompileCgToHLSL(shaderPath, binPaths[i], (eProfileCG)((int)eProfileCG::SM_5_0_BEGIN + i));
 
@@ -819,28 +819,63 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 				
 				// Parse hlsl code for samplers, textures
-				// sampler and texture slot equal
-				IFile* hlslFIle = IFile::Create(binPaths[i], eFileOpenMode::READ);
+				IFile* hlslFile = IFile::Create(binPaths[i], eFileOpenMode::READ);
 
-				std::list<zsString> textures = hlslFIle->GetLinesBeginsWith("Texture");
-				std::list<zsString> samplerStates = hlslFIle->GetLinesBeginsWith("SamplerState");
-				shaderProgInfo << textures.size();
+				std::map<zsString, size_t> textureSlotsParsed;
+				std::list<zsString> samplerNames;
+
+				// For each line
+				size_t texIdx = 0;
+				bool reachTextures = false;
+				bool reachSampling = false;
+				while (!hlslFile->IsEOF()) {
+					const zsString& row = hlslFile->GetLine();
+
+					// Collect <texture names, slot numbers>
+					if ( ! reachSampling && row.Begins(L"Texture")) {
+						textureSlotsParsed[zsString::Between(row, L' ', L';')] = texIdx++;
+						reachTextures = true;
+					}
+
+					/*// Collect samplerNames
+					if (reachTextures && row.Begins(L"SamplerState")) {
+						samplerNames.push_back(zsString::Between(row, L'_', L';'));
+						reachSamplers = true;
+					}*/
+
+					// match textures, samplers
+					if (reachTextures && row.Contains(L".Sample")) {
+						reachSampling = true;
+						// Example : _pout._color = _TMP23.Sample(_diffuseTex, _In._tex01);
+						size_t chPos = row.Find(L".Sample");
+						zsString textureName = row.SubStrLeft(chPos - 1, '_');
+						zsString samplerName = row.SubStrRight(chPos + 9, ',', -1); // -- need solution fuck...
+
+						textureSlots[samplerName] = textureSlotsParsed[textureName];
+					}
+				}
+
+				/*
+				std::list<zsString> textureNames = hlslFile->GetLinesBeginsWithBetween("Texture", ' ', ';');
+				std::list<zsString> samplerNames = hlslFile->GetLinesBeginsWithBetween("SamplerState", '_', ';');
+
+				shaderProgInfo << textureNames.size();
 				size_t idx = 0;
-				auto j = textures.begin();
-				auto k = samplerStates.begin();
+				auto j = textureNames.begin();
+				auto k = samplerNames.begin();
 
-				for (; j != textures.end(); j++, k++, idx++) {
+				for (; j != textureNames.end(); j++, k++, idx++) {
 
 					size_t slotIdx = 0;
-					/*
-					if (j->Find(L"register")) {
-						zsString slotIdxStr = *j;
-						slotIdxStr.Between(L"(t", L")");
-						slotIdx = slotIdxStr.ToUnsigned();
-					} else {
-						slotIdx = idx;
-					}
-					*/
+					
+					//if (j->Find(L"register")) {
+					//	zsString slotIdxStr = *j;
+					//	slotIdxStr.Between(L"(t", L")");
+					//	slotIdx = slotIdxStr.ToUnsigned();
+					//} else {
+					//	slotIdx = idx;
+					//}
+					
 					slotIdx = idx;
 					// Sampler name
 					const wchar_t delimList[2] = { ';', ' ' };
@@ -853,7 +888,8 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 					shaderProgInfo << *k;
 					shaderProgInfo << slotIdx;
 				}
-				hlslFIle->Close();
+				*/
+				hlslFile->Close();
 
 				byteCodes[i] = blobs[i]->GetBufferPointer();
 				byteCodeSizes[i] = blobs[i]->GetBufferSize();
@@ -866,7 +902,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	}
 	
 	// Write info file
-	shaderProgInfo.WriteToFile(shaderProgInfoPath);
+	//shaderProgInfo.WriteToFile(shaderProgInfoPath);
 
 	HRESULT hr = S_OK;
 	if (byteCodeSizes[0] != 0) {

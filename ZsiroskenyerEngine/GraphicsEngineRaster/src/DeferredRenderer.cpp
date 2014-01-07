@@ -330,10 +330,10 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// Render each light group
 	// Directional lights
 	gApi->SetShaderProgram(shaderDirectional);
-	gApi->SetTexture(gBuffer[0], 0);
-	gApi->SetTexture(gBuffer[1], 1);
-	gApi->SetTexture(gBuffer[2], 2);
-	gApi->SetTexture(depthBufferCopy, 3);
+	gApi->SetTexture(L"gBuffer0", gBuffer[0]);
+	gApi->SetTexture(L"gBuffer1", gBuffer[1]);
+	//gApi->SetTexture(L"gBuffer2", gBuffer[2]);
+	//gApi->SetTexture(L"depthBuffer", depthBufferCopy);
 
 	for (auto light : directionalLights) {
 

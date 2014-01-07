@@ -26,7 +26,7 @@ public:
 
 	void Append(const IFile& file) override;
 
-	bool Find(const zsString& str) override;
+	bool Contains(const zsString& str) override;
 	bool ReplaceAll(const zsString& repThat, const zsString& withThat) override;
 	bool RemoveDuplicatedLines() override;
 
@@ -38,6 +38,7 @@ public:
 
 	std::list<zsString> GetLinesBetween(const zsString& str, const zsString& endLine) override;
 	std::list<zsString> GetLinesBeginsWith(const zsString& str) override;
+	std::list<zsString> GetLinesBeginsWithBetween(const zsString& str, const zsString& left, const zsString& right) override;
 
 	const zsString& GetLine() override;
 	const std::list<zsString>& GetLines() const override;

@@ -41,7 +41,7 @@ public:
 	virtual void Append(const IFile& file) = 0;
 
 	// return true if found the string
-	virtual bool Find(const zsString& str) = 0;
+	virtual bool Contains(const zsString& str) = 0;
 
 	// Replace all strings repThat to withThat in the file
 	virtual bool ReplaceAll(const zsString& repThat, const zsString& withThat) = 0;
@@ -66,6 +66,8 @@ public:
 
 	// Get list of lines which is beginning with str
 	virtual std::list<zsString> GetLinesBeginsWith(const zsString& str) = 0;
+
+	virtual std::list<zsString> GetLinesBeginsWithBetween(const zsString& str, const zsString& left, const zsString& right) = 0;
 
 	// Gor each call you get the next line of the file, at creation you are at start
 	virtual const zsString& GetLine() = 0;

@@ -147,7 +147,6 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	for (int i = 1; i < 10; i++) {
 		gApi->SetRenderTargets(1, &luminanceBuffer[i], NULL);
 		gApi->SetTexture(L"textureInput", luminanceBuffer[i - 1]);
-		//gApi->SetTexture(luminanceBuffer[i - 1], 0);
 		gApi->Draw(3);
 	}
 
@@ -184,7 +183,6 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	gApi->SetConstantBufferData(cbCompose, &shaderConstants);
 	gApi->SetPSConstantBuffer(cbCompose, 0);
 	gApi->SetTexture(L"textureInput", source);
-	//gApi->SetTexture(source, 0);
 	gApi->Draw(3);
 	
 	// now blur that bullshit
@@ -207,7 +205,7 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	gApi->SetConstantBufferData(cbCompose, &shaderConstants);
 	gApi->SetPSConstantBuffer(cbCompose, 0);
 	gApi->SetTexture(L"textureInput", source);
-	gApi->SetTexture(L"blurTexture", downSampled); // That texture doesn't used in the shader (overwritten, optimized out)
+	gApi->SetTexture(L"blurTexture", downSampled);
 	gApi->Draw(3);
 
 

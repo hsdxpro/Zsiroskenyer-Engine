@@ -176,7 +176,7 @@ public:
 		return res;
 	}
 
-	bool Find(const wchar_t* str) {
+	bool Contains(const wchar_t* str) const {
 		size_t mainIndex = 0;
 		wchar_t const* self = c_str();
 		wchar_t ch = '\0';
@@ -201,6 +201,72 @@ public:
 			mainIndex++;
 		}
 		return false;
+	}
+
+
+	// returns - 1 : string not found
+	// return >= 0 : index of the founded str in zsString
+	int Find(const wchar_t* str) const {
+		size_t mainIndex = 0;
+		wchar_t const* self = c_str();
+		wchar_t ch = '\0';
+		while ((ch = self[mainIndex]) != '\0') {
+			if (str[0] == ch) {
+				bool equal = true;
+				size_t secIndex = 0;
+				size_t fIndex = mainIndex;
+				while (str[secIndex] != '\0') {
+					ch = self[fIndex];
+					if (str[secIndex] != ch) {
+						equal = false;
+						break;
+					}
+					fIndex++;
+					secIndex++;
+				}
+				if (equal)
+					return mainIndex;
+				
+			}
+			mainIndex++;
+		}
+		return -1;
+	}
+
+	// returns - 1 : string not found
+	// return >= 0 : index of the founded str in zsString
+	int Find(const wchar_t ch) const {
+		wchar_t const* str = c_str();
+		size_t idx = 0;
+		while (str[idx] != '\0')
+			if (str[idx++] == ch)
+				return idx;
+			
+		return -1;
+	}
+
+	bool Begins(const wchar_t* str) const {
+		bool match = true;
+
+		wchar_t const* tmp1 = c_str();
+		wchar_t const* tmp2 = str;
+
+		if (*tmp1 == '\0')
+			match = false;
+
+		while (*tmp2 != '\0')
+		{
+			if (*tmp1 != *tmp2)
+			{
+				match = false;
+				break;
+			}
+
+			tmp1++;
+			tmp2++;
+		}
+
+		return match;
 	}
 
 	void CutNumberFromEnd(char* src) {
@@ -231,7 +297,7 @@ public:
 	}
 
 	// Gather string between left and right strings, for ex. zsString ex = _asdasd; ex.Between('-',';') returns asdasd   
-	void Between(wchar_t* left, wchar_t* right) {
+	void Between(const wchar_t* left, const wchar_t* right) {
 		wchar_t const* str = c_str();
 
 		size_t leftIdx = 0;
@@ -317,7 +383,7 @@ public:
 		size_t i = 0;
 		while (str[rightIdx] != '\0')
 		{
-			for ( i = 0; i < nRightDelims; i++)
+			for (i = 0; i < nRightDelims; i++)
 			if (str[rightIdx] == rightDelims[i])
 				break;
 
@@ -328,6 +394,147 @@ public:
 		}
 
 		*this = substr(leftIdx + 1, (rightIdx - 1) - leftIdx);
+	}
+
+	zsString SubStrLeft(size_t pos, wchar_t leftBound, size_t leftCutOffset = 0) const {
+		wchar_t const* str = c_str() + pos;
+		size_t idxLeft = pos;
+		while (*str != leftBound)
+		{
+			str--;
+			idxLeft--;
+		}
+
+		return substr(idxLeft + leftCutOffset, (pos + 1) - idxLeft - leftCutOffset);
+	}
+
+	zsString SubStrRight(size_t pos, wchar_t rightBound, size_t rightCutOffset = 0) const {
+		wchar_t const* str = c_str() + pos;
+		size_t idxRight = pos;
+		while (*str != rightBound)
+		{
+			str++;
+			idxRight++;
+		}
+
+		return substr(pos, (idxRight + 1) - pos + rightCutOffset);
+	}
+
+	static zsString Between(const zsString& s, wchar_t left, const wchar_t* rightDelims, size_t nRightDelims) {
+		wchar_t const* str = s.c_str();
+		size_t leftIdx = 0;
+
+		// Reach left bound
+		while (str[leftIdx] != left || str[leftIdx] == '\0')
+			leftIdx++;
+
+		// Reach right bound
+		size_t rightIdx = leftIdx;
+		size_t i = 0;
+		while (str[rightIdx] != '\0')
+		{
+			for ( i = 0; i < nRightDelims; i++)
+			if (str[rightIdx] == rightDelims[i])
+				break;
+
+			if (i != nRightDelims)
+				break;
+
+			rightIdx++;
+		}
+
+		return s.substr(leftIdx + 1, (rightIdx - 1) - leftIdx);
+	}
+
+
+	// Gather string between left and right characters, for ex. zsString ex = _asdasd; ex.Between('-',';') returns asdasd   
+	static zsString Between(const zsString& s, wchar_t left, wchar_t right) {
+		wchar_t const* str = s.c_str();
+		size_t leftIdx = 0;
+
+		// Reach left bound
+		while (str[leftIdx] != left || str[leftIdx] == '\0')
+			leftIdx++;
+
+		// Reach right bound
+		size_t rightIdx = leftIdx;
+		while (str[rightIdx] != right || str[rightIdx] == '\0')
+			rightIdx++;
+
+		return s.substr(leftIdx + 1, (rightIdx - 1) - leftIdx);
+	}
+
+	// Gather string between left and right strings, for ex. zsString ex = _asdasd; ex.Between('-',';') returns asdasd   
+	static zsString Between(const zsString& s, const wchar_t* left, const wchar_t* right) {
+		wchar_t const* str = s.c_str();
+
+		size_t leftIdx = 0;
+		size_t helperIdx = 0;
+		size_t startIdx;
+
+		// Reach index of var:left str in c_str()
+		while (str[leftIdx] != '\0') {
+			// Save left idx for BackUps
+			startIdx = leftIdx;
+
+			// Search var:left string in c_str() from current char
+			helperIdx = 0;
+			while (left[helperIdx] != '\0') {
+
+				// left string part not equal with current c_str() char
+				if (left[helperIdx] != str[leftIdx])
+					break;
+
+				helperIdx++;
+				leftIdx++;
+			}
+
+			// Yeah found left string, terminate loop
+			if (left[helperIdx] == '\0') {
+				break;
+			}
+
+			// Backup left idx
+			leftIdx = startIdx;
+
+			leftIdx++;
+		}
+
+
+
+		// Reach index of var:left str in c_str()
+		size_t rightIdx = leftIdx;
+		while (str[rightIdx] != '\0') {
+			// Save left idx for BackUps
+			startIdx = rightIdx;
+
+			// Search var:left string in c_str() from current char
+			helperIdx = 0;
+			while (right[helperIdx] != '\0') {
+
+				// left string part not equal with current c_str() char
+				if (right[helperIdx] != str[rightIdx])
+					break;
+
+				helperIdx++;
+				rightIdx++;
+			}
+
+			// Backup rightidx
+			rightIdx = startIdx;
+
+			// Yeah found var:right string, terminate loop
+			if (right[helperIdx] == '\0') {
+				break;
+			}
+
+			rightIdx++;
+		}
+
+		// ex   azt_bazt    (left:azt, right:bazt)
+		//leftIdx = index of 't'
+		// rightIDx = index of 'b'
+		return  s.substr(leftIdx, rightIdx - leftIdx);
 	}
 
 	void CutDirectory() {

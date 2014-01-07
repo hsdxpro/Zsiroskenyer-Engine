@@ -161,7 +161,7 @@ void cFile::Append(const IFile& file) {
 	Close();
 }
 
-bool cFile::Find(const zsString& str) {
+bool cFile::Contains(const zsString& str) {
 	auto iter = lines.begin();
 	while(iter != lines.end()) {
 		if(iter->find(str.c_str()) != std::wstring::npos)
@@ -369,11 +369,6 @@ std::list<zsString> cFile::GetLinesBeginsWith(const zsString& str) {
 				match = false;
 				break;
 			}
-			else
-			{
-				int asd = 5;
-				asd++;
-			}
 
 			tmp1++;
 			tmp2++;
@@ -387,7 +382,12 @@ std::list<zsString> cFile::GetLinesBeginsWith(const zsString& str) {
 	return result;
 }
 
-
+std::list<zsString> cFile::GetLinesBeginsWithBetween(const zsString& str, const zsString& left, const zsString& right) {
+	std::list<zsString> res = GetLinesBeginsWith(str);
+	for (auto i = res.begin(); i != res.end(); i++)
+		i->Between(left.c_str(), right.c_str());
+	return res;
+}
 
 //-----------------------INTERNALS------------------------------//
 std::ios::openmode cFile::ConvertToNativeOpenMode(eFileOpenMode m) {
