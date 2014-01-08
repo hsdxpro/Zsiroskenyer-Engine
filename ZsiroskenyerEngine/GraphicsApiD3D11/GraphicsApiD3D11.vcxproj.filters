@@ -19,9 +19,6 @@
       <Filter>DllMain</Filter>
     </ClCompile>
     <ClCompile Include="src\GraphicsApiD3D11.cpp" />
-    <ClCompile Include="src\ConstantBufferD3D11.cpp">
-      <Filter>Buffers</Filter>
-    </ClCompile>
     <ClCompile Include="src\IndexBufferD3D11.cpp">
       <Filter>Buffers</Filter>
     </ClCompile>
@@ -37,9 +34,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GraphicsApiD3D11.h" />
-    <ClInclude Include="src\ConstantBufferD3D11.h">
-      <Filter>Buffers</Filter>
-    </ClInclude>
     <ClInclude Include="src\IndexBufferD3D11.h">
       <Filter>Buffers</Filter>
     </ClInclude>

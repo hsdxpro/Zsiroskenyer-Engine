@@ -14,7 +14,6 @@
 #include "../../Core/src/IShaderManager.h"
 #include "../../Core/src/IShaderProgram.h"
 #include "../../Core/src/ITexture2D.h"
-#include "../../Core/src/IConstantBuffer.h"
 #include "../../Core/src/IIndexBuffer.h"
 
 #include "../../Core/src/GraphicsEntity.h"
@@ -60,10 +59,8 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 		throw std::runtime_error("failed to create texture buffers");
 	}
 
-	// Create shader constant buffers
-	eGapiResult gr;
-
 	// Create light volume buffers
+	eGapiResult gr;
 	size_t size = sizeof(vbDataLightPoint);
 	gr = gApi->CreateVertexBuffer(&vbPoint, sizeof(vbDataLightPoint), eUsage::IMMUTABLE, vbDataLightPoint);
 	if (gr != eGapiResult::OK) { Cleanup(); throw std::runtime_error("failed to create light volume buffers"); }
@@ -218,8 +215,6 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 			buff.world = world;
 			buff.camPos = cam->GetPos();
 
-			//gApi->SetConstantBufferData(gBufferConstantBuffer, &buff);
-			//gApi->SetVSConstantBuffer(gBufferConstantBuffer, 0);
 			gApi->SetVSConstantBuffer(&buff, sizeof(buff), 0);
 			// Draw entity..
 			gApi->DrawIndexed(ib->GetSize() / sizeof(unsigned));
@@ -330,9 +325,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		// load shader constants
 		shaderConstants.lightColor = light->color;
 		shaderConstants.lightDir = light->direction;
-		//gApi->SetConstantBufferData(lightPassConstants, &shaderConstants);
-		//gApi->SetPSConstantBuffer(lightPassConstants, 0);
-		gApi->SetPSConstantBuffer(&shaderConstants, 240, 0);
+		gApi->SetPSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
 
 		// draw an FSQ
 		gApi->Draw(3);
@@ -344,8 +337,6 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 	// load shader constants
 	shaderConstants.lightColor = ambientLight;
-	//gApi->SetConstantBufferData(lightPassConstants, &shaderConstants);
-	//gApi->SetPSConstantBuffer(lightPassConstants, 0);
 	gApi->SetPSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
 	gApi->Draw(3); //FSQ
 
@@ -361,8 +352,6 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		shaderConstants.lightColor = light->color;
 		shaderConstants.lightPos = light->position;
 		shaderConstants.lightRange = light->range;
-		//gApi->SetConstantBufferData(lightPassConstants, &shaderConstants);
-		//gApi->SetPSConstantBuffer(lightPassConstants, 0);
 		gApi->SetPSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
 
 		// draw that bullshit
@@ -410,10 +399,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	IShaderProgram* motionBlurShader = parent.GetShaderManager()->GetShaderByName(L"motion_blur.cg");
 	gApi->SetShaderProgram(motionBlurShader);
 
-	static IConstantBuffer* shitBuffer;
-	static eGapiResult gr = gApi->CreateConstantBuffer(&shitBuffer, 2 * sizeof(Matrix44), eUsage::DEFAULT, NULL);
-
-	struct shitBuffStruct
+	struct buffStruct
 	{
 		Matrix44 invViewProj;
 		Matrix44 prevViewProj;
@@ -422,8 +408,6 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	shaderConstants2.invViewProj = Matrix44::Inverse(viewProjMat);
 	shaderConstants2.prevViewProj = prevView * projMat;
 
-	//gApi->SetConstantBufferData(shitBuffer, &asd);
-	//gApi->SetPSConstantBuffer(shitBuffer, 0);
 	gApi->SetPSConstantBuffer(&shaderConstants2, sizeof(shaderConstants2), 0);
 
 	gApi->SetTexture(L"textureInput",compositionBuffer);

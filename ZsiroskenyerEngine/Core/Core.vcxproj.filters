@@ -64,9 +64,6 @@
     <ClInclude Include="src\ResourceProperty.h">
       <Filter>M_GraphicsApi</Filter>
     </ClInclude>
-    <ClInclude Include="src\IConstantBuffer.h">
-      <Filter>M_GraphicsApi</Filter>
-    </ClInclude>
     <ClInclude Include="src\IGraphicsApi.h">
       <Filter>M_GraphicsApi</Filter>
     </ClInclude>

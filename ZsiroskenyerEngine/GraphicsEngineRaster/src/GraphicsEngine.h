@@ -164,11 +164,6 @@ private:
 		eGapiResult ReallocBuffers();
 		void Cleanup();
 
-		// Constant buffers for shaders TODO, move them to IShaderProgram
-		IConstantBuffer* gBufferConstantBuffer;
-		IConstantBuffer* compConstantBuffer;
-		IConstantBuffer* lightPassConstants;
-
 		// Remove that also..
 		ITexture2D* motionBlurredBuffer;
 
@@ -196,7 +191,6 @@ private:
 		float avgLuminance;
 		float adaptedLuminance;
 		IShaderProgram *shaderLumSample, *shaderLumAvg, *shaderOverbright, *shaderBlurVert, *shaderBlurHoriz, *shaderCompose;
-		IConstantBuffer* cbCompose;
 		unsigned sourceWidth, sourceHeight;
 
 		void Cleanup();

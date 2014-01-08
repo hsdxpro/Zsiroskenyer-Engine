@@ -28,7 +28,6 @@
     <ClInclude Include="src\GeometryBuilder.h" />
     <ClInclude Include="src\GraphicsEntity.h" />
     <ClInclude Include="src\GraphicsLight.h" />
-    <ClInclude Include="src\IConstantBuffer.h" />
     <ClInclude Include="src\IDLLLoader.h" />
     <ClInclude Include="src\IFile.h" />
     <ClInclude Include="src\IGraphicsApi.h" />

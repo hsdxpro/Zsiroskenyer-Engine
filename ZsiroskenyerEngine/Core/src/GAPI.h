@@ -16,7 +16,6 @@
 
 #include "IGraphicsApi.h"
 
-#include "IConstantBuffer.h"
 #include "IIndexBuffer.h"
 #include "IVertexBuffer.h"
 #include "ITexture2D.h"

@@ -4,7 +4,6 @@
 
 #include "VertexBufferD3D11.h"
 #include "IndexBufferD3D11.h"
-#include "ConstantBufferD3D11.h"
 #include "ShaderProgramD3D11.h"
 #include "Texture2DD3D11.h"
 
@@ -578,39 +577,6 @@ eGapiResult	cGraphicsApiD3D11::CreateIndexBuffer(IIndexBuffer** resource, size_t
 	switch (hr) {
 	case S_OK:
 		*resource = new cIndexBufferD3D11(buffer, desc.ByteWidth, usage);
-		return eGapiResult::OK;
-	case E_OUTOFMEMORY:
-		return eGapiResult::ERROR_OUT_OF_MEMORY;
-	default:
-		return eGapiResult::ERROR_UNKNOWN;
-	}
-}
-
-// Create constant buffer for shader programs
-eGapiResult cGraphicsApiD3D11::CreateConstantBuffer(IConstantBuffer** resource, size_t size, eUsage usage, void* data/* = NULL*/) {
-	ID3D11Buffer* buffer = NULL;
-
-	D3D11_BUFFER_DESC desc;
-	desc.ByteWidth = size;
-	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	desc.MiscFlags = 0;
-	desc.StructureByteStride = 0;
-	desc.Usage = ConvertToNativeUsage(usage);
-	desc.CPUAccessFlags = 0;
-	if (desc.Usage == D3D11_USAGE_DYNAMIC)
-		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	else if (desc.Usage == D3D11_USAGE_STAGING)
-		desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
-
-	D3D11_SUBRESOURCE_DATA resData;
-	resData.pSysMem = data;
-	resData.SysMemPitch = 0;
-	resData.SysMemSlicePitch = 0;
-
-	HRESULT hr = d3ddev->CreateBuffer(&desc, resData.pSysMem ? &resData : NULL, &buffer);
-	switch (hr) {
-	case S_OK:
-		*resource = new cConstantBufferD3D11(buffer, desc.ByteWidth, usage);
 		return eGapiResult::OK;
 	case E_OUTOFMEMORY:
 		return eGapiResult::ERROR_OUT_OF_MEMORY;
@@ -1328,7 +1294,7 @@ void cGraphicsApiD3D11::SetVSConstantBuffer(const void* data, size_t size, size_
 			desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		HRESULT hr = d3ddev->CreateBuffer(&desc, NULL, &vsConstBuffer);
 		ASSERT(hr == S_OK);
-		d3dcon->PSSetConstantBuffers(0, 1, &vsConstBuffer); // Set Buffer
+		d3dcon->VSSetConstantBuffers(0, 1, &vsConstBuffer); // Set Buffer
 	}
 	memcpy((unsigned char*)vsConstBufferData + dstByteOffset, data, size);
 }
@@ -1361,17 +1327,6 @@ void cGraphicsApiD3D11::SetPSConstantBuffer(const void* data, size_t size, size_
 	}
 	memcpy((unsigned char*)psConstBufferData + dstByteOffset, data, size);
 }
-
-/*
-// Set shader constant buffers
-void cGraphicsApiD3D11::SetVSConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) {
-	ID3D11Buffer* cBuffer = ((cConstantBufferD3D11*)buffer)->GetBufferPointer();
-	d3dcon->VSSetConstantBuffers(slotIdx, 1, &cBuffer);
-}
-void cGraphicsApiD3D11::SetPSConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) {
-	ID3D11Buffer* cBuffer = ((cConstantBufferD3D11*)buffer)->GetBufferPointer();
-	d3dcon->PSSetConstantBuffers(slotIdx, 1, &cBuffer);
-}*/
 
 // Set (multiple) render targets
 eGapiResult cGraphicsApiD3D11::SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget /* = NULL */) {

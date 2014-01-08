@@ -36,13 +36,6 @@ cGraphicsEngine::cHDRProcessor::cHDRProcessor(cGraphicsEngine& parent) : parent(
 		throw std::runtime_error("failed to create shaders");
 	}
 
-	// create constant buffers
-	/*eGapiResult rcb = gApi->CreateConstantBuffer(&cbCompose, sizeof(float)+12, eUsage::DEFAULT);
-	if (rcb != eGapiResult::OK) {
-		Cleanup();
-		throw std::runtime_error("failed to create shader constant buffers");
-	}*/
-
 	// create luminance textures
 	unsigned resolution=1;
 	ITexture2D::tDesc desc;
@@ -181,7 +174,6 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	gApi->SetRenderTargets(1, &downSampled);
 	gApi->SetShaderProgram(shaderOverbright);
 	gApi->SetPSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
-	//gApi->SetPSConstantBuffer(cbCompose, 0);
 	gApi->SetTexture(L"textureInput", source);
 	gApi->Draw(3);
 	
@@ -202,8 +194,6 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 
 	gApi->SetRenderTargets(1, &dest);
 	gApi->SetShaderProgram(shaderCompose);
-	//gApi->SetConstantBufferData(cbCompose, &shaderConstants);
-	//gApi->SetPSConstantBuffer(cbCompose, 0);
 	gApi->SetPSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
 	gApi->SetTexture(L"textureInput", source);
 	gApi->SetTexture(L"blurTexture", downSampled);
