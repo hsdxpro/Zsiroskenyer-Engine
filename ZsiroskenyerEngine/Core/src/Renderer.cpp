@@ -16,13 +16,14 @@ void cRenderer::RenderLines(const Matrix44& viewProj, const Vec3* lines, size_t 
 	gApi->SetVertexBuffer(linesBuffer, sizeof(Vec3));
 
 	// Set camera constants
-	IConstantBuffer* viewProjBuffer;
-	gApi->CreateConstantBuffer(&viewProjBuffer, sizeof(Matrix44), eUsage::DEFAULT, (void*)&viewProj);
-	gApi->SetVSConstantBuffer(viewProjBuffer, 0);
+	//IConstantBuffer* viewProjBuffer;
+	//gApi->CreateConstantBuffer(&viewProjBuffer, sizeof(Matrix44), eUsage::DEFAULT, (void*)&viewProj);
+	gApi->SetVSConstantBuffer(&viewProj, sizeof(Matrix44), 0);
 
-	IConstantBuffer* colorBuffer;
-	gApi->CreateConstantBuffer(&colorBuffer, sizeof(Vec3), eUsage::DEFAULT, (void*)&color);
-	gApi->SetPSConstantBuffer(colorBuffer, 0);
+	//IConstantBuffer* colorBuffer;
+	//gApi->CreateConstantBuffer(&colorBuffer, sizeof(Vec3), eUsage::DEFAULT, (void*)&color);
+	//gApi->SetPSConstantBuffer(colorBuffer, 0);
+	gApi->SetVSConstantBuffer(&color, sizeof(Vec3), 0);
 
 	// Set BackBuffer
 	gApi->SetRenderTargetDefault();
@@ -39,8 +40,8 @@ void cRenderer::RenderLines(const Matrix44& viewProj, const Vec3* lines, size_t 
 
 	// Free up buffers
 	SAFE_RELEASE(linesBuffer);
-	SAFE_RELEASE(colorBuffer);
-	SAFE_RELEASE(viewProjBuffer);
+	//SAFE_RELEASE(colorBuffer);
+	//SAFE_RELEASE(viewProjBuffer);
 
 	// // Set TRIANGLE primitives for pipeline
 	gApi->SetPrimitiveTopology(ePrimitiveTopology::TRIANGLE_LIST);

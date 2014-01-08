@@ -72,6 +72,11 @@ cGraphicsApiD3D11::cGraphicsApiD3D11()
 	// Create d3ddevice, d3dcontext
 	CreateDevice();
 
+	// Const buffer handling init
+	vsConstBuffer = psConstBuffer = NULL;
+	vsConstBufferData = psConstBufferData = NULL;
+	vsConstBufferSize = psConstBufferSize = 0;
+
 	// Create default states
 	CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_BACK, D3D11_FILL_MODE::D3D11_FILL_SOLID);
 
@@ -88,20 +93,24 @@ void cGraphicsApiD3D11::Release() {
 	delete this;
 }
 cGraphicsApiD3D11::~cGraphicsApiD3D11() {
-	ID3D11ShaderResourceView* nullSrvS[16] = { 0 };
-	d3dcon->PSSetShaderResources(0, 16, nullSrvS);
-	d3dcon->VSSetShaderResources(0, 16, nullSrvS);
+	ID3D11ShaderResourceView* nullSrvs[16] = { 0 };
+	d3dcon->PSSetShaderResources(0, 16, nullSrvs);
+	d3dcon->VSSetShaderResources(0, 16, nullSrvs);
 
 	ID3D11SamplerState* nullSamplers[16] = { 0 };
 	d3dcon->VSSetSamplers(0, 16, nullSamplers);
 	d3dcon->PSSetSamplers(0, 16, nullSamplers);
 
-	ID3D11RenderTargetView *nulltarget[4] = { 0 };
-	d3dcon->OMSetRenderTargets(4, nulltarget, 0);
+	ID3D11RenderTargetView *nulltargets[4] = { 0 };
+	d3dcon->OMSetRenderTargets(4, nulltargets, 0);
 
 	if (d3dcon)d3dcon->ClearState();
 	if (d3dcon)d3dcon->Flush();
 
+	free(vsConstBufferData);
+	free(psConstBufferData);
+	SAFE_RELEASE(vsConstBuffer);
+	SAFE_RELEASE(psConstBuffer);
 	SAFE_RELEASE(defaultRenderTarget);
 	SAFE_RELEASE(d3ddev);
 	SAFE_RELEASE(d3dcon);
@@ -491,7 +500,22 @@ eGapiResult cGraphicsApiD3D11::CompileCgToHLSL(const zsString& cgFilePath, const
 	return eGapiResult::OK;
 }
 
-
+void cGraphicsApiD3D11::ApplyConstantBuffers() {
+	D3D11_MAPPED_SUBRESOURCE mapped;
+	// Update vertex shader constants
+	if (vsConstBuffer) {
+		d3dcon->Map(vsConstBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+			memcpy(mapped.pData, vsConstBufferData, vsConstBufferSize);
+		d3dcon->Unmap(vsConstBuffer, 0);
+	}
+	
+	if (psConstBuffer) {
+		// Update pixel shader constants
+		d3dcon->Map(psConstBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+			memcpy(mapped.pData, psConstBufferData, psConstBufferSize);
+		d3dcon->Unmap(psConstBuffer, 0);
+	}
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1203,18 +1227,22 @@ void cGraphicsApiD3D11::Present() {
 
 // Draw functions
 void cGraphicsApiD3D11::Draw(size_t nVertices, size_t idxStartVertex /*= 0*/) {
+	ApplyConstantBuffers();
 	d3dcon->Draw(nVertices, idxStartVertex);
 }
 
 void cGraphicsApiD3D11::DrawIndexed(size_t nIndices, size_t idxStartIndex /*= 0*/) {
+	ApplyConstantBuffers();
 	d3dcon->DrawIndexed(nIndices, idxStartIndex, 0);
 }
 
 void cGraphicsApiD3D11::DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex /*= 0*/, size_t idxStartInstance /*= 0*/) {
+	ApplyConstantBuffers();
 	d3dcon->DrawInstanced(nVerticesPerInstance, nInstances, idxStartVertex, idxStartInstance);
 }
 
 void cGraphicsApiD3D11::DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex /*= 0*/, size_t idxStartInstance /*= 0*/) {
+	ApplyConstantBuffers();
 	d3dcon->DrawIndexedInstanced(nIndicesPerInstance, nInstances, idxStartIndex, 0, idxStartInstance);
 }
 
@@ -1235,11 +1263,6 @@ void cGraphicsApiD3D11::SetIndexBuffer(const IIndexBuffer* indexBuffer) {
 
 // Set instance data for instanced rendering
 void cGraphicsApiD3D11::SetInstanceData() {
-}
-
-// Write to constant buffer
-void cGraphicsApiD3D11::SetConstantBufferData(IConstantBuffer* b, void* data) {
-	d3dcon->UpdateSubresource(((cConstantBufferD3D11*)b)->GetBufferPointer(), 0, NULL, data, 0, 0);
 }
 
 // Set shader texture resource
@@ -1279,6 +1302,67 @@ void cGraphicsApiD3D11::SetPrimitiveTopology(ePrimitiveTopology t) {
 	}
 }
 
+void cGraphicsApiD3D11::SetVSConstantBuffer(const void* data, size_t size, size_t slotIdx) {
+	// 16 means one register byte size... (vec4)
+	size_t dstByteOffset = slotIdx * 16;  // slotIdx * sizeof(float) * 4
+	// Need resize for constant buffer
+	if (vsConstBufferSize < dstByteOffset + size)
+	{
+		// Determine new size
+		// Not multiple of 16, for ex. 24, then size + 16 - (size % 16) = 32
+		vsConstBufferSize = dstByteOffset + size;
+		if (((dstByteOffset + size) % 16) != 0)
+			vsConstBufferSize = vsConstBufferSize + 16 - (vsConstBufferSize % 16);
+
+		// Resize our void*
+		vsConstBufferData = realloc(vsConstBufferData, vsConstBufferSize);
+
+		// Recreate constant buffer
+		SAFE_RELEASE(vsConstBuffer);
+		D3D11_BUFFER_DESC desc;
+			desc.ByteWidth = vsConstBufferSize;
+			desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+			desc.MiscFlags = 0;
+			desc.StructureByteStride = 0;
+			desc.Usage = D3D11_USAGE_DYNAMIC;
+			desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		HRESULT hr = d3ddev->CreateBuffer(&desc, NULL, &vsConstBuffer);
+		ASSERT(hr == S_OK);
+		d3dcon->PSSetConstantBuffers(0, 1, &vsConstBuffer); // Set Buffer
+	}
+	memcpy((unsigned char*)vsConstBufferData + dstByteOffset, data, size);
+}
+
+void cGraphicsApiD3D11::SetPSConstantBuffer(const void* data, size_t size, size_t slotIdx) {
+	// 16 means one register byte size... (vec4)
+	size_t dstByteOffset = slotIdx * 16;  // slotIdx * sizeof(float) * 4
+	// Need resize for constant buffer
+	if (psConstBufferSize < dstByteOffset + size)
+	{
+		psConstBufferSize = dstByteOffset + size;
+		if (((dstByteOffset + size) % 16) != 0)
+			psConstBufferSize = psConstBufferSize + 16 - (psConstBufferSize % 16);
+			
+		// Resize our void*
+		psConstBufferData = realloc(psConstBufferData, psConstBufferSize);
+
+		// Recreate constant buffer
+		SAFE_RELEASE( psConstBuffer );
+		D3D11_BUFFER_DESC desc;
+			desc.ByteWidth = psConstBufferSize;
+			desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+			desc.MiscFlags = 0;
+			desc.StructureByteStride = 0;
+			desc.Usage = D3D11_USAGE_DYNAMIC;
+			desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		HRESULT hr = d3ddev->CreateBuffer(&desc, NULL, &psConstBuffer);
+		ASSERT(hr == S_OK);
+		d3dcon->PSSetConstantBuffers(0, 1, &psConstBuffer); // Set Buffer
+	}
+	memcpy((unsigned char*)psConstBufferData + dstByteOffset, data, size);
+}
+
+/*
 // Set shader constant buffers
 void cGraphicsApiD3D11::SetVSConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) {
 	ID3D11Buffer* cBuffer = ((cConstantBufferD3D11*)buffer)->GetBufferPointer();
@@ -1287,7 +1371,7 @@ void cGraphicsApiD3D11::SetVSConstantBuffer(IConstantBuffer* buffer, size_t slot
 void cGraphicsApiD3D11::SetPSConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) {
 	ID3D11Buffer* cBuffer = ((cConstantBufferD3D11*)buffer)->GetBufferPointer();
 	d3dcon->PSSetConstantBuffers(slotIdx, 1, &cBuffer);
-}
+}*/
 
 // Set (multiple) render targets
 eGapiResult cGraphicsApiD3D11::SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget /* = NULL */) {

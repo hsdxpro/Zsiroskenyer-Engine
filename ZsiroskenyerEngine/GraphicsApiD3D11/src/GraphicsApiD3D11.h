@@ -111,11 +111,10 @@ public:
 	void SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) override;
 	void SetIndexBuffer(const IIndexBuffer* indexBuffer) override;
 	void SetInstanceData(/*whatever*/) override;
-	void SetConstantBufferData(IConstantBuffer* b, void* data) override;
 	void SetTexture(const ITexture2D* t, size_t slotIdx) override;
 	void SetTexture(const zsString& varName, const ITexture2D* t) override;
-	void SetVSConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) override;
-	void SetPSConstantBuffer(IConstantBuffer* buffer, size_t slotIdx) override;
+	void SetVSConstantBuffer(const void* data, size_t size, size_t slotIdx) override;
+	void SetPSConstantBuffer(const void* data, size_t size, size_t slotIdx) override;
 	void SetShaderProgram(IShaderProgram* shProg) override;
 	void SetPrimitiveTopology(ePrimitiveTopology t) override;
 	void SetWindow(IWindow *renderWindow) override;
@@ -133,7 +132,7 @@ private:
 	eGapiResult CreateDefaultStates(const D3D11_CULL_MODE& cullMode, const D3D11_FILL_MODE& fillMode);
 	HRESULT CompileShaderFromFile(const zsString& fileName, const zsString& entry, const zsString& profile, ID3DBlob** ppBlobOut);
 	eGapiResult CompileCgToHLSL(const zsString& cgFileName, const zsString& hlslFileName, eProfileCG compileProfile);
-
+	void ApplyConstantBuffers();
 protected:
 	// backBuffer will be the main render target
 	cTexture2DD3D11* defaultRenderTarget;
@@ -147,6 +146,14 @@ protected:
 
 	// Active shader program
 	cShaderProgramD3D11* activeShaderProg;
+
+	// Constant buffers handling
+	void* vsConstBufferData; // These updated every ex. SetPSConstantBuffer(.....) call
+	void* psConstBufferData;
+	size_t vsConstBufferSize;
+	size_t psConstBufferSize;
+	ID3D11Buffer* vsConstBuffer; // Then these gets updates when Draw called
+	ID3D11Buffer* psConstBuffer;
 
 	// you better remove these muhaha -> gányolt fos
 	ID3D11DepthStencilState* depthStencilState;

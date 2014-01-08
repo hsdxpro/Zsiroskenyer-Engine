@@ -62,12 +62,6 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 
 	// Create shader constant buffers
 	eGapiResult gr;
-	gr = gApi->CreateConstantBuffer(&gBufferConstantBuffer, 2 * sizeof(Matrix44)+sizeof(Vec4), eUsage::DEFAULT, NULL);
-	if (gr != eGapiResult::OK) { Cleanup(); throw std::runtime_error("failed to create constant buffers"); }
-	gr = gApi->CreateConstantBuffer(&lightPassConstants, 240, eUsage::DEFAULT, NULL);
-	if (gr != eGapiResult::OK) { Cleanup(); throw std::runtime_error("failed to create constant buffers"); }
-	gr = gApi->CreateConstantBuffer(&compConstantBuffer, 2 * sizeof(Matrix44)+sizeof(Vec4), eUsage::DEFAULT, NULL);
-	if (gr != eGapiResult::OK) { Cleanup(); throw std::runtime_error("failed to create constant buffers"); }
 
 	// Create light volume buffers
 	size_t size = sizeof(vbDataLightPoint);
@@ -93,10 +87,6 @@ void cGraphicsEngine::cDeferredRenderer::Cleanup() {
 	SAFE_RELEASE(vbPoint);
 	SAFE_RELEASE(ibSpot);
 	SAFE_RELEASE(vbSpot);
-
-	SAFE_RELEASE(gBufferConstantBuffer);
-	SAFE_RELEASE(compConstantBuffer);
-	SAFE_RELEASE(lightPassConstants);
 }
 
 cGraphicsEngine::cDeferredRenderer::~cDeferredRenderer() {
@@ -222,15 +212,15 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 			{
 				Matrix44 wvp;
 				Matrix44 world;
-				Vec3 camPos;
+				Vec3 camPos; float pad1;
 			} buff;
 			buff.wvp = wvp;
 			buff.world = world;
 			buff.camPos = cam->GetPos();
 
-			gApi->SetConstantBufferData(gBufferConstantBuffer, &buff);
-			gApi->SetVSConstantBuffer(gBufferConstantBuffer, 0);
-
+			//gApi->SetConstantBufferData(gBufferConstantBuffer, &buff);
+			//gApi->SetVSConstantBuffer(gBufferConstantBuffer, 0);
+			gApi->SetVSConstantBuffer(&buff, sizeof(buff), 0);
 			// Draw entity..
 			gApi->DrawIndexed(ib->GetSize() / sizeof(unsigned));
 		}
@@ -340,8 +330,9 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		// load shader constants
 		shaderConstants.lightColor = light->color;
 		shaderConstants.lightDir = light->direction;
-		gApi->SetConstantBufferData(lightPassConstants, &shaderConstants);
-		gApi->SetPSConstantBuffer(lightPassConstants, 0);
+		//gApi->SetConstantBufferData(lightPassConstants, &shaderConstants);
+		//gApi->SetPSConstantBuffer(lightPassConstants, 0);
+		gApi->SetPSConstantBuffer(&shaderConstants, 240, 0);
 
 		// draw an FSQ
 		gApi->Draw(3);
@@ -353,8 +344,9 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 	// load shader constants
 	shaderConstants.lightColor = ambientLight;
-	gApi->SetConstantBufferData(lightPassConstants, &shaderConstants);
-	gApi->SetPSConstantBuffer(lightPassConstants, 0);
+	//gApi->SetConstantBufferData(lightPassConstants, &shaderConstants);
+	//gApi->SetPSConstantBuffer(lightPassConstants, 0);
+	gApi->SetPSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
 	gApi->Draw(3); //FSQ
 
 
@@ -369,8 +361,9 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		shaderConstants.lightColor = light->color;
 		shaderConstants.lightPos = light->position;
 		shaderConstants.lightRange = light->range;
-		gApi->SetConstantBufferData(lightPassConstants, &shaderConstants);
-		gApi->SetPSConstantBuffer(lightPassConstants, 0);
+		//gApi->SetConstantBufferData(lightPassConstants, &shaderConstants);
+		//gApi->SetPSConstantBuffer(lightPassConstants, 0);
+		gApi->SetPSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
 
 		// draw that bullshit
 		gApi->DrawIndexed(sizeof(ibDataLightPoint) / 3 / sizeof(unsigned));
@@ -424,13 +417,14 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	{
 		Matrix44 invViewProj;
 		Matrix44 prevViewProj;
-	} asd;
+	} shaderConstants2;
 
-	asd.invViewProj = Matrix44::Inverse(viewProjMat);
-	asd.prevViewProj = prevView * projMat;
+	shaderConstants2.invViewProj = Matrix44::Inverse(viewProjMat);
+	shaderConstants2.prevViewProj = prevView * projMat;
 
-	gApi->SetConstantBufferData(shitBuffer, &asd);
-	gApi->SetPSConstantBuffer(shitBuffer, 0);
+	//gApi->SetConstantBufferData(shitBuffer, &asd);
+	//gApi->SetPSConstantBuffer(shitBuffer, 0);
+	gApi->SetPSConstantBuffer(&shaderConstants2, sizeof(shaderConstants2), 0);
 
 	gApi->SetTexture(L"textureInput",compositionBuffer);
 	gApi->SetTexture(L"depthTexture", depthBufferCopy);
