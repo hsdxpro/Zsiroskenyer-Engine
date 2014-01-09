@@ -39,12 +39,14 @@ void cFile::Release() {
 	delete this;
 }
 
-void cFile::Clear() {
+bool cFile::Clear() {
 	std::ofstream os(filePath.c_str(), std::ios::trunc);
 	ASSERT(os.is_open() == true);
-	
+	if (!os.is_open()) 	{
+		return false;
+	}
 	os.close();
-	lines.clear();
+	return true;
 }
 
 bool cFile::Clear(const zsString& path) {

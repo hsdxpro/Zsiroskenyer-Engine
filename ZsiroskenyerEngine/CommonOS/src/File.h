@@ -13,7 +13,7 @@ public:
 	cFile();
 
 	void Close() override;
-	void Clear() override;
+	bool Clear() override;
 	static bool Clear(const zsString& path);
 
 	static bool ReadBinary(const zsString& path, void* data, size_t dataSize);

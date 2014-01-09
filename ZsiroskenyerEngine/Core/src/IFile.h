@@ -14,6 +14,12 @@ enum class eFileOpenMode {
 
 class IFile {
 public:
+	enum class ePos
+	{
+		BEGIN,
+		END,
+	};
+
 	// Instantiate
 	static IFile* Create(const zsString& filePath, eFileOpenMode m_);
 
@@ -24,7 +30,7 @@ public:
 
 	// Clear contents of the file
 	static bool Clear(const zsString& path);
-	virtual void Clear() = 0;
+	virtual bool Clear() = 0;
 
 	// Read up binary file to buffer
 	static bool ReadBinary(const zsString& path, void* data_out, size_t dataSize);

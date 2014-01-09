@@ -22,13 +22,14 @@ cTagParser::cTagParser(const zsString& filePath)
 	//    |-----rootNode5
 	//
 
-	while (! file->IsEOF()) {
-		const zsString& row = file->GetLine();
-		currNestedLevel = GetNestedLevel(row);
+	auto lines = file->GetLines();
+	for (auto row = lines.begin(); row != lines.end(); row++) 
+	{
+		currNestedLevel = GetNestedLevel(*row);
 
 		// We found new entry point...
-		if (! IsClosingNode(row, currNestedLevel)) {
-			tTagData *newNode = CreateNode(row, currNestedLevel);
+		if (! IsClosingNode(*row, currNestedLevel)) {
+			tTagData *newNode = CreateNode(*row, currNestedLevel);
 			entryNodes[currNestedLevel] = newNode;
 			entryNodes[currNestedLevel - 1]->AddChild(newNode);
 		}

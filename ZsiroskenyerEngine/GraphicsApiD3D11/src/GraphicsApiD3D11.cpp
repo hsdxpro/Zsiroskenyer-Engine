@@ -814,10 +814,10 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 				std::map<zsString, size_t> textureSlotsParsed;
 				std::list<zsString> samplerNames;
 
-				// For each line
 				size_t texIdx = 0;
 				bool reachTextures = false;
 				bool reachSampling = false;
+				// For each line
 				while (!hlslFile->IsEOF()) {
 					const zsString& row = hlslFile->GetLine();
 
@@ -826,12 +826,6 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 						textureSlotsParsed[zsString::Between(row, L' ', L';')] = texIdx++;
 						reachTextures = true;
 					}
-
-					/*// Collect samplerNames
-					if (reachTextures && row.Begins(L"SamplerState")) {
-						samplerNames.push_back(zsString::Between(row, L'_', L';'));
-						reachSamplers = true;
-					}*/
 
 					// match textures, samplers
 					if (reachTextures && row.Contains(L".Sample")) {
@@ -845,40 +839,6 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 					}
 				}
 
-				/*
-				std::list<zsString> textureNames = hlslFile->GetLinesBeginsWithBetween("Texture", ' ', ';');
-				std::list<zsString> samplerNames = hlslFile->GetLinesBeginsWithBetween("SamplerState", '_', ';');
-
-				shaderProgInfo << textureNames.size();
-				size_t idx = 0;
-				auto j = textureNames.begin();
-				auto k = samplerNames.begin();
-
-				for (; j != textureNames.end(); j++, k++, idx++) {
-
-					size_t slotIdx = 0;
-					
-					//if (j->Find(L"register")) {
-					//	zsString slotIdxStr = *j;
-					//	slotIdxStr.Between(L"(t", L")");
-					//	slotIdx = slotIdxStr.ToUnsigned();
-					//} else {
-					//	slotIdx = idx;
-					//}
-					
-					slotIdx = idx;
-					// Sampler name
-					const wchar_t delimList[2] = { ';', ' ' };
-					k->Between('_', delimList, 2);
-
-					// Save slot index
-					textureSlots[*k] = slotIdx;
-
-					// Serialize sampler states
-					shaderProgInfo << *k;
-					shaderProgInfo << slotIdx;
-				}
-				*/
 				hlslFile->Close();
 
 				byteCodes[i] = blobs[i]->GetBufferPointer();
@@ -890,9 +850,6 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			}
 		}
 	}
-	
-	// Write info file
-	//shaderProgInfo.WriteToFile(shaderProgInfoPath);
 
 	HRESULT hr = S_OK;
 	if (byteCodeSizes[0] != 0) {

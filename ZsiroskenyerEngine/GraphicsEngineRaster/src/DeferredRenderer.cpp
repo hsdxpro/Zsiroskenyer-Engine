@@ -201,22 +201,21 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		// Draw each entity
 		for (auto& entity : group->entities) {
 			// Entity world matrix
-			Matrix44 world = entity->GetWorldMatrix();
+			Matrix44 worldMat = entity->GetWorldMatrix();
 			// WorldViewProj matrix
-			Matrix44 wvp = world * viewProjMat;
+			Matrix44 wvp = worldMat * viewProjMat;
 
 			struct gBuffConstantBuff
 			{
 				Matrix44 wvp;
-				Matrix44 world;
+				Matrix44 worldMat;
 				Vec3 camPos; float pad1;
 			} buff;
 			buff.wvp = wvp;
-			buff.world = world;
+			buff.worldMat = worldMat;
 			buff.camPos = cam->GetPos();
 
 			gApi->SetVSConstantBuffer(&buff, sizeof(buff), 0);
-			// Draw entity..
 			gApi->DrawIndexed(ib->GetSize() / sizeof(unsigned));
 		}
 	}
@@ -325,7 +324,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		// load shader constants
 		shaderConstants.lightColor = light->color;
 		shaderConstants.lightDir = light->direction;
-		gApi->SetPSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
+			gApi->SetPSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
 
 		// draw an FSQ
 		gApi->Draw(3);

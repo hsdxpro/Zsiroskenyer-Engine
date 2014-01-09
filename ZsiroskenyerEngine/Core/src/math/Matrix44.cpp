@@ -355,12 +355,14 @@ Matrix44 Matrix44::MatrixViewRH(const Vec3& eye, const Vec3& target, const Vec3&
 	Vec3 baseUp = Vec3::Cross(baseRight, baseFront);			// The "up" vector.
 
 	// Create a 4x4 orientation matrix from the right, up, and at vectors
+	// TRANPOSE of ROT
 	Matrix44 orientation (	baseRight.x, baseUp.x, baseFront.x, 0,
 							baseRight.y, baseUp.y, baseFront.y, 0,
 							baseRight.z, baseUp.z, baseFront.z, 0,
 							0	   , 0      , 0      , 1 );
 
 	// Create a 4x4 translation matrix by negating the eye position.
+	// NEGATE POS
 	Matrix44 translation (	1,      0,      0,    0,
 							0,      1,      0,     0, 
 							0,      0,      1,     0,
