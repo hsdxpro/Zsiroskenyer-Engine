@@ -14,7 +14,9 @@ void cRigidEntityBullet::SetPos(const Vec3& p) {
 	SetPos(p.x, p.y, p.z);
 }
 void cRigidEntityBullet::SetPos(float x, float y, float z) {
-	worldTransform.SetPos(x, y, z);
+	worldTransform.pos.x = x;
+	worldTransform.pos.y = y;
+	worldTransform.pos.z = z;
 
 	btTransform trans = body->getWorldTransform();
 		trans.setOrigin(btVector3(x, y, z));
@@ -29,7 +31,10 @@ void cRigidEntityBullet::SetRot(const Quat& r) {
 	SetRot(r.x, r.y, r.z, r.w);
 }
 void cRigidEntityBullet::SetRot(float x, float y, float z, float w) {
-	worldTransform.SetRot(x, y, z, w);
+	worldTransform.rot.x = x;
+	worldTransform.rot.y = y;
+	worldTransform.rot.z = z;
+	worldTransform.rot.w = w;
 
 	btTransform trans = body->getWorldTransform();
 		trans.setRotation(btQuaternion(x, y, z, w));
@@ -44,7 +49,9 @@ void cRigidEntityBullet::SetScale(const Vec3& s) {
 	SetScale(s.x, s.y, s.z);
 }
 void cRigidEntityBullet::SetScale(float x, float y, float z) {
-	worldTransform.SetScale(x, y, z);
+	worldTransform.scale.x = x;
+	worldTransform.scale.y = y;
+	worldTransform.scale.z = z;
 
 	btTransform trans = body->getWorldTransform();
 		trans.setBasis(trans.getBasis().scaled(btVector3(x, y, z)));
@@ -56,7 +63,7 @@ void cRigidEntityBullet::SetScale(float x, float y, float z) {
 }
 
 const Vec3& cRigidEntityBullet::GetPos() {
-	return worldTransform.GetPos();
+	return worldTransform.pos;
 
 	/*
 	btTransform trans;
@@ -72,10 +79,13 @@ const Quat& cRigidEntityBullet::GetRot()  {
 	btTransform trans;
 		body->getMotionState()->getWorldTransform(trans);
 		const btQuaternion& rot = trans.getRotation();
-		worldTransform.SetRot(rot.x(), rot.y(), rot.z(), rot.w());
-	return worldTransform.GetRot();
+		worldTransform.rot.x = rot.x();
+		worldTransform.rot.y = rot.y();
+		worldTransform.rot.z = rot.z();
+		worldTransform.rot.w = rot.w();
+	return worldTransform.rot;
 }
 
 const Vec3& cRigidEntityBullet::GetScale()  { 
-	return worldTransform.GetScale();
+	return worldTransform.scale;
 }

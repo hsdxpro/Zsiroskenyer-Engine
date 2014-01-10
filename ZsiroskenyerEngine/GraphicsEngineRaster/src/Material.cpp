@@ -21,24 +21,11 @@ cMaterial::cMaterial(size_t nSubMaterials)
 }
 
 cMaterial::~cMaterial() {
-	/* replaced by cTextureRef
-	for (size_t i=0; i < nSubMaterials; i++) {
-		SAFE_RELEASE(subMaterials[i].textureDiffuse);
-		SAFE_RELEASE(subMaterials[i].textureNormal);
-		SAFE_RELEASE(subMaterials[i].textureSpecular);
-		SAFE_RELEASE(subMaterials[i].textureDisplace);
-	}
-	*/
 	SAFE_DELETE_ARRAY(subMaterials);
 }
 
 cMaterial::tSubMaterial::tSubMaterial()
-:	// raplced by cTextureRef
-	//textureDiffuse(NULL),
-	//textureDisplace(NULL),
-	//textureNormal(NULL),
-	//textureSpecular(NULL),
-	diffuse(0,0,0,1),
+:	diffuse(0,0,0,1),
 	emissive(0,0,0,1),
 	specular(0,0,0,1)
 {

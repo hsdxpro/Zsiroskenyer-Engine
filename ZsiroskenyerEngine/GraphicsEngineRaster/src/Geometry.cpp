@@ -10,11 +10,9 @@
 #include "../../Core/src/IIndexBuffer.h"
 
 cGeometry::cGeometry(IVertexBuffer *VB, IIndexBuffer *IB, std::vector<tMatGroup>* mg)
-	:VB(VB), IB(IB) 
-{
-	if (mg) {
+:VB(VB), IB(IB) {
+	if (mg)
 		matGroups = *mg;
-	}
 }
 
 cGeometry::~cGeometry() {

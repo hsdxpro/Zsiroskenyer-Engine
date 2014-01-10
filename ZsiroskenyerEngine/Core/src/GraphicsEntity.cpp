@@ -17,14 +17,19 @@ void cGraphicsEntity::SetPos(const Vec3& p) {
 	SetPos(p.x, p.y, p.z);
 }
 void cGraphicsEntity::SetPos(float x, float y, float z) {
-	worldTransform.SetPos(x, y, z);
+	worldTransform.pos.x = x;
+	worldTransform.pos.y = y;
+	worldTransform.pos.z = z;
 }
 
 void cGraphicsEntity::SetRot(const Quat& r) {
 	SetRot(r.x, r.y, r.z, r.w);
 }
 void cGraphicsEntity::SetRot(float x, float y, float z, float w) {
-	worldTransform.SetRot(x, y, z, w);
+	worldTransform.rot.x = x;
+	worldTransform.rot.y = y;
+	worldTransform.rot.z = z;
+	worldTransform.rot.w = w;
 }
 
 void cGraphicsEntity::SetScale(const Vec3& s) {
@@ -32,20 +37,22 @@ void cGraphicsEntity::SetScale(const Vec3& s) {
 }
 
 void cGraphicsEntity::SetScale(float x, float y, float z) {
-	worldTransform.SetScale(x, y, z);
+	worldTransform.scale.x = x;
+	worldTransform.scale.y = y;
+	worldTransform.scale.z = z;
 }
 
 
 const Vec3& cGraphicsEntity::GetPos() {
-	return worldTransform.GetPos();
+	return worldTransform.pos;
 }
 
 const Quat& cGraphicsEntity::GetRot() {
-	return worldTransform.GetRot();
+	return worldTransform.rot;
 }
 
 const Vec3& cGraphicsEntity::GetScale() {
-	return worldTransform.GetScale();
+	return worldTransform.scale;
 }
 
 const ITexture2D* cGraphicsEntity::GetTextureDiffuse(size_t subMtlIdx)	const {

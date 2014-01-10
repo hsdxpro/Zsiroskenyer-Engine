@@ -127,10 +127,6 @@ bool cWindow::IsOpened() const {
 	return opened;
 }
 
-bool cWindow::IsFullscreen() const {
-	return false;
-}
-
 zsString cWindow::GetCaptionText() const {
 	return L"asd";
 }

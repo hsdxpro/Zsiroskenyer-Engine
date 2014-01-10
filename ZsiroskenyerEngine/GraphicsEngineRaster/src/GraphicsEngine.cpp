@@ -50,7 +50,7 @@ const tDepthStencilDesc cGraphicsEngine::depthStencilDefault = [](){
 	depthStencilDefault.stencilEnable = false;
 	return depthStencilDefault;
 }();
-// in short: no blanding, just overwrite
+// in short: no blending, just overwrite
 const tBlendDesc cGraphicsEngine::blendDefault = [](){
 	tBlendDesc blendDefault;
 	blendDefault.alphaToCoverageEnable = false;
@@ -194,7 +194,7 @@ eGraphicsResult cGraphicsEngine::Update(float elapsed) {
 	if (elapsed < 1e-8) {
 		elapsed = 1e-8;
 	}
-	gApi->Clear(true, true);
+	//gApi->Clear(true, true);
 
 	for (auto& scene : graphicsSceneOrder) {
 		RenderScene(*scene, elapsed);

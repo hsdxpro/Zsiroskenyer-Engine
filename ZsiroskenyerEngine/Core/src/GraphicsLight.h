@@ -22,6 +22,5 @@ public:
 	float atten0, atten1, atten2; // attenuation factors
 	float range;
 	float smallAngle, bigAngle; // spot light cone angle
-	float radius; // maybe for directional lights
 private:
 };

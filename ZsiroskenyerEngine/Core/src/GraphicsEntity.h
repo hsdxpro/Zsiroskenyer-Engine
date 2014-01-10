@@ -13,6 +13,7 @@
 class cInstanceGroup;
 class ITexture2D;
 
+#pragma message(": public cTransform3D")
 class cGraphicsEntity : public ITransformable3D {
 	friend class cSceneManager;
 public:

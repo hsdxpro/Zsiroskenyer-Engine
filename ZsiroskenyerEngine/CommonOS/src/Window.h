@@ -18,7 +18,6 @@ public:
 
 	void SetCaptionText(const zsString& str) override;
 
-	bool IsFullscreen() const override;
 	bool IsOpened()		const override;
 
 	float			GetClientAspectRatio()	const override;

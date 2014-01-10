@@ -1,8 +1,10 @@
 // GraphicsD3D11.h By Zsíroskenyér team 2013.10.10 1:32 last modified Németh Richárd
 // IGraphicsApi interface implementation based on the 3D graphics SDK DirectX11
 #pragma once
+#ifdef _MSC_VER
 #pragma warning(disable: 4244)
 #pragma warning(disable: 4005)
+#endif
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
@@ -53,6 +55,7 @@ public:
 	};
 
 	// Configuration to construct with
+#pragma message("!!DELETE: tDxConfig")
 	struct tDxConfig {
 		tDxConfig();
 
@@ -116,7 +119,7 @@ public:
 	void SetPSConstantBuffer(const void* data, size_t size, size_t slotIdx) override;
 	void SetShaderProgram(IShaderProgram* shProg) override;
 	void SetPrimitiveTopology(ePrimitiveTopology t) override;
-	void SetWindow(IWindow *renderWindow) override;
+	eGapiResult SetWindow(IWindow *renderWindow) override;
 
 	eGapiResult SetBlendState(tBlendDesc desc) override;
 	eGapiResult SetDepthStencilState(tDepthStencilDesc desc, uint8_t stencilRef) override;
@@ -155,6 +158,7 @@ protected:
 	ID3D11Buffer* psConstBuffer;
 
 	// you better remove these muhaha -> gányolt fos
+#pragma message("!!REPAIR: gapi render states work, but ugly and slow")
 	ID3D11DepthStencilState* depthStencilState;
 	ID3D11BlendState* blendState;
 };

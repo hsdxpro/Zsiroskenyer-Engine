@@ -27,7 +27,7 @@
 #define ZS_MAX(x) std::numeric_limits<x>::max()
 #define ZS_MIN(x) std::numeric_limits<x>::min()
 
-#define ZS_PI			3.14159265358979
+#define ZS_PI			3.141592653589793238462643383279
 #define ZS_PI2			6.28318530717958
 #define ZS_PIDIV2		1.57079632679489
 #define ZS_PIDIV4		0.78539816339744

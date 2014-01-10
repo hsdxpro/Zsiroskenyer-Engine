@@ -62,7 +62,6 @@ protected:
 	// Entities from modules
 	std::list<cGraphicsEntity*> graphicsEntities;
 	std::list<IPhysicsEntity*> physicsEntities;
-	// ELIMINATE FUCKING SLOW TREE TRAVERSAL
 
 	std::vector<cCore::tLinkNode> entityLinks;
 };

@@ -160,6 +160,7 @@ int ricsiMain() {
 	while(window->IsOpened()) {
 		while (window->HandleMessage(&msg)) {
 			if (msg == IWindow::eMessage::SIZE_CHANGED) {
+#pragma message("Noob solution (float)GetSystemMetrics(SM_CXSCREEN), good solution is to get maximum resolution based on gpu output (monitor)")
 				gEngine->Resize((float)GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
 				s->GetCamera().SetAspectRatio((float)GetSystemMetrics(SM_CXSCREEN) / GetSystemMetrics(SM_CYSCREEN));
 			}

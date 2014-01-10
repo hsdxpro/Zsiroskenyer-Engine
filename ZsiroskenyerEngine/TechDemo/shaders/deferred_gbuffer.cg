@@ -60,7 +60,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 
 	// Normals from NORMAL MAP
 	float3 n = mul(normalize(tex2D(normalTex, In.tex0).xyz * 2.0f - 1.0f), In.TBN);
-
+	//Out.gBuffer0.xyz = n;
 	// Normals FROM GEOMETRY
 	//float3 n = In.normalW;
 
@@ -72,7 +72,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 //---------------gBuffer2: DEBUG PURPOSES------------------//
 //--------------------------------------------------------//	
 	// Buffer2 reserved for future use
-	Out.gBuffer2 = float4(In.tangentW.xyz*0.5+float3(0.5,0.5,0.5),1.0f); // NOT USED YET | FOR DEBUG
+	Out.gBuffer2 = tex2D(diffuseTex, In.tex0);//float4(In.tangentW.xyz*0.5+float3(0.5,0.5,0.5),1.0f); // NOT USED YET | FOR DEBUG
 	
 	return Out;
 };

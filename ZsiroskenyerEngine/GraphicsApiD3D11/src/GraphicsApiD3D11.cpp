@@ -27,7 +27,6 @@ IGraphicsApi* CreateGraphicsApiD3D11(IWindow* targetWindow, unsigned backBufferW
 		return gApi;
 	}
 	catch (std::exception& e) {
-		delete gApi;
 		return NULL;
 	}
 }
@@ -69,7 +68,10 @@ cGraphicsApiD3D11::tDxConfig::tDxConfig()
 cGraphicsApiD3D11::cGraphicsApiD3D11()
 : d3ddev(NULL), d3dcon(NULL), d3dsc(NULL), defaultRenderTarget(NULL), activeShaderProg(NULL) {
 	// Create d3ddevice, d3dcontext
-	CreateDevice();
+	auto r = CreateDevice();
+	if (r != eGapiResult::OK) {
+		throw std::runtime_error("failed to create direct3d device");
+	}
 
 	// Const buffer handling init
 	vsConstBuffer = psConstBuffer = NULL;
@@ -77,15 +79,14 @@ cGraphicsApiD3D11::cGraphicsApiD3D11()
 	vsConstBufferSize = psConstBufferSize = 0;
 
 	// Create default states
-	CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_BACK, D3D11_FILL_MODE::D3D11_FILL_SOLID);
+	r = CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_BACK, D3D11_FILL_MODE::D3D11_FILL_SOLID);
+	if (r != eGapiResult::OK) {
+		throw std::runtime_error("failed to create default states");
+	}
 
 	// render states
 	blendState = NULL;
 	depthStencilState = NULL;
-
-	// no-no senior, you are not gonna set wireframe mode here
-	// If you want WIREFRAME MODE
-	//CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_NONE,D3D11_FILL_MODE::D3D11_FILL_WIREFRAME);
 }
 
 void cGraphicsApiD3D11::Release() {
@@ -106,6 +107,7 @@ cGraphicsApiD3D11::~cGraphicsApiD3D11() {
 	if (d3dcon)d3dcon->ClearState();
 	if (d3dcon)d3dcon->Flush();
 
+#pragma message("DELETE: free sucks, realloc sucks, malloc sucks")
 	free(vsConstBufferData);
 	free(psConstBufferData);
 	SAFE_RELEASE(vsConstBuffer);
@@ -115,6 +117,7 @@ cGraphicsApiD3D11::~cGraphicsApiD3D11() {
 	SAFE_RELEASE(d3dcon);
 	SAFE_RELEASE(d3dsc);
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Direct3D helper functions
@@ -499,6 +502,7 @@ eGapiResult cGraphicsApiD3D11::CompileCgToHLSL(const zsString& cgFilePath, const
 	return eGapiResult::OK;
 }
 
+#pragma message("ADD: add a drity flag, when there's no constans buffer change")
 void cGraphicsApiD3D11::ApplyConstantBuffers() {
 	D3D11_MAPPED_SUBRESOURCE mapped;
 	// Update vertex shader constants
@@ -728,6 +732,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 	*resource = new cTexture2DD3D11(desc.width, desc.height, tex, srv, rtv, dsv);
 	return eGapiResult::OK;
 }
+
 
 // Create shader program
 eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, const zsString& shaderPath) {
@@ -1111,6 +1116,7 @@ eGapiResult cGraphicsApiD3D11::CopyResource(ITexture2D* src, ITexture2D* dst) {
 //	Draw and rendering
 
 // Clear render-target
+#pragma message("NOTE: why is there no color?")
 void cGraphicsApiD3D11::Clear(bool target /*= true*/, bool depth /*= false*/, bool stencil /*= false*/) {
 	static const FLOAT defaultClearColor[4] = { 0.3f, 0.3f, 0.3f, 0.0f };
 
@@ -1189,6 +1195,7 @@ void cGraphicsApiD3D11::SetInstanceData() {
 }
 
 // Set shader texture resource
+#pragma message("ADD: these function can fail, no void")
 void cGraphicsApiD3D11::SetTexture(const ITexture2D* t, size_t slotIdx) {
 	const ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)t)->GetSRV();
 	ASSERT(srv != NULL);
@@ -1288,8 +1295,8 @@ void cGraphicsApiD3D11::SetPSConstantBuffer(const void* data, size_t size, size_
 // Set (multiple) render targets
 eGapiResult cGraphicsApiD3D11::SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget /* = NULL */) {
 	// RTVS
+#pragma message("Hate static :@")
 	static D3D11_VIEWPORT viewPorts[16];
-	static D3D11_TEXTURE2D_DESC desc;
 	static ID3D11RenderTargetView* rtvS[16];
 	for (unsigned i = 0; i < nTargets; i++)
 	{
@@ -1305,8 +1312,7 @@ eGapiResult cGraphicsApiD3D11::SetRenderTargets(unsigned nTargets, const ITextur
 	}
 
 	// DSV
-	ID3D11DepthStencilView* dsv = NULL;
-	if (depthStencilTarget) dsv = ((cTexture2DD3D11*)depthStencilTarget)->GetDSV();
+	ID3D11DepthStencilView* dsv = (depthStencilTarget) ? ((cTexture2DD3D11*)depthStencilTarget)->GetDSV() : NULL;
 
 	// Set Viewports
 	d3dcon->RSSetViewports(nTargets, viewPorts);
@@ -1383,19 +1389,23 @@ eGapiResult cGraphicsApiD3D11::SetDepthStencilState(tDepthStencilDesc desc, uint
 }
 
 // Set Target Window
-void cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
+eGapiResult cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
 	size_t clientWidth = renderWindow->GetClientWidth();
 	size_t clientHeight = renderWindow->GetClientHeight();
 	// Same window size : don't need new swap chain
 	if (defaultRenderTarget != NULL)
 	if (clientWidth == defaultRenderTarget->GetWidth() && clientHeight == defaultRenderTarget->GetHeight())
-		return;
+		return eGapiResult::OK;
 
 	// Create swap chain for device
-	CreateMostAcceptableSwapChain(clientWidth, clientHeight, (HWND)(renderWindow->GetHandle()), cGraphicsApiD3D11::swapChainConfig);
+	eGapiResult r = CreateMostAcceptableSwapChain(clientWidth, clientHeight, (HWND)(renderWindow->GetHandle()), cGraphicsApiD3D11::swapChainConfig);
+	ASSERT(r == OK);
+	if (r != eGapiResult::OK) return r;
 
 	// Create main render target (BackBuffer)
-	CreateViewsForBB(swapChainConfig);
+	r = CreateViewsForBB(swapChainConfig);
+	ASSERT(r == OK);
+	if (r != eGapiResult::OK) return r;
 
 	// Create default viewport for swapChain rendering
 	defaultVP.TopLeftX = 0,
@@ -1406,7 +1416,9 @@ void cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
 	defaultVP.MinDepth = 0.0f;
 
 	// BackBuffer will be the render target in default
-	SetRenderTargetDefault();
+	r = SetRenderTargetDefault();
+	ASSERT(r == OK);
+	return r;
 }
 
 

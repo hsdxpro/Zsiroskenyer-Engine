@@ -6,6 +6,7 @@
 
 class btRigidBody;
 
+#pragma message(": private cTransform3D")
 class cRigidEntityBullet : public IPhysicsEntity {
 public:
 	cRigidEntityBullet(btRigidBody* body);
@@ -23,6 +24,7 @@ public:
 	const Vec3& GetPos() override;
 	const Quat& GetRot() override;
 	const Vec3& GetScale() override;
+
 protected:
 	btRigidBody* body;
 
