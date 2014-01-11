@@ -15,7 +15,7 @@ public:
 
 	static void DeleteFirstLines(size_t nLines);
 
-	static bool Contains(const zsString& str);
+	static bool Contains(std::wfstream& file, const zsString& str);
 	static bool ReplaceAll(const zsString& repThat, const zsString& withThat);
 	static bool RemoveDuplicatedLines();
 	static bool isFileExits(const zsString& str);
