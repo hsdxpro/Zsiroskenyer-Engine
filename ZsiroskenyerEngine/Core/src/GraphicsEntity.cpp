@@ -42,18 +42,19 @@ void cGraphicsEntity::SetScale(float x, float y, float z) {
 	scale.z = z;
 }
 
-const Vec3& cGraphicsEntity::GetPos() {
+const Vec3& cGraphicsEntity::GetPos() const {
 	return pos;
 }
 
-const Quat& cGraphicsEntity::GetRot() {
+const Quat& cGraphicsEntity::GetRot() const {
 	return rot;
 }
 
-const Vec3& cGraphicsEntity::GetScale() {
+const Vec3& cGraphicsEntity::GetScale() const {
 	return scale;
 }
 
+/*
 const ITexture2D* cGraphicsEntity::GetTextureDiffuse(size_t subMtlIdx)	const {
 	ASSERT(subMtlIdx >= 0 && subMtlIdx < (*instanceGroup->mtl.get()).GetNSubMaterials());
 	return (*instanceGroup->mtl.get())[subMtlIdx].textureDiffuse.get();
@@ -73,3 +74,4 @@ const ITexture2D* cGraphicsEntity::GetTextureDisplace(size_t subMtlIdx)	const {
 	ASSERT(subMtlIdx >= 0 && subMtlIdx < (*instanceGroup->mtl.get()).GetNSubMaterials());
 	return (*instanceGroup->mtl.get())[subMtlIdx].textureDisplace.get();
 }
+*/

@@ -158,7 +158,7 @@
     <ClInclude Include="src\StrUtil.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="src\FileUtil.h">
+    <ClInclude Include="src\StrUtil.h">
       <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>

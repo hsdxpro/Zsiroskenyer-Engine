@@ -67,6 +67,7 @@
     <ClInclude Include="src\Timer.h" />
     <ClInclude Include="src\tipsify.h" />
     <ClInclude Include="src\Transform3D.h" />
+    <ClInclude Include="src\Transformable.h" />
     <ClInclude Include="src\VertexFormat.h" />
     <ClInclude Include="src\zsString.h" />
   </ItemGroup>

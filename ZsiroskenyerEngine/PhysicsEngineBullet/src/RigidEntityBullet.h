@@ -20,9 +20,9 @@ public:
 	void SetScale(const Vec3& s) override;
 	void SetScale(float x, float y, float z) override;
 
-	const Vec3& GetPos() override;
-	const Quat& GetRot() override;
-	const Vec3& GetScale() override;
+	const Vec3& GetPos() const override;
+	const Quat& GetRot() const override;
+	const Vec3& GetScale() const override;
 
 protected:
 	btRigidBody* body;

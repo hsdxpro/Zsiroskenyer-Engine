@@ -31,14 +31,14 @@ void cSoftEntityBullet::SetScale(float x, float y, float z) {
 	// TODO
 }
 
-const Vec3& cSoftEntityBullet::GetPos() {
+const Vec3& cSoftEntityBullet::GetPos() const {
 	return Vec3(); // TODO
 }
 
-const Quat& cSoftEntityBullet::GetRot()  {
+const Quat& cSoftEntityBullet::GetRot() const {
 	return Quat(); // TODO
 }
 
-const Vec3& cSoftEntityBullet::GetScale()  {
+const Vec3& cSoftEntityBullet::GetScale() const {
 	return Vec3(); // TODO
 }
