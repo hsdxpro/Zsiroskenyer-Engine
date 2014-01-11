@@ -493,7 +493,6 @@ eGapiResult cGraphicsApiD3D11::CompileCgToHLSL(const zsString& cgFilePath, const
 	return eGapiResult::OK;
 }
 
-#pragma message("ADD: add a drity flag, when there's no constans buffer change")
 void cGraphicsApiD3D11::ApplyConstantBuffers() {
 	D3D11_MAPPED_SUBRESOURCE mapped;
 	// Update vertex shader constants
@@ -1109,9 +1108,7 @@ eGapiResult cGraphicsApiD3D11::CopyResource(ITexture2D* src, ITexture2D* dst) {
 //	Draw and rendering
 
 // Clear render-target
-#pragma message("NOTE: why is there no color?")
-void cGraphicsApiD3D11::Clear(bool target /*= true*/, bool depth /*= false*/, bool stencil /*= false*/) {
-	static const FLOAT defaultClearColor[4] = { 0.3f, 0.3f, 0.3f, 0.0f };
+void cGraphicsApiD3D11::Clear(bool target /*= true*/, bool depth /*= false*/, bool stencil /*= false*/, const Vec4& clearColor /*= Vec4(0.3f, 0.3f, 0.3f, 1.0f)*/) {
 
 	// Setup clear flags
 	UINT clearFlags = 0;
@@ -1126,7 +1123,7 @@ void cGraphicsApiD3D11::Clear(bool target /*= true*/, bool depth /*= false*/, bo
 
 	// Clear BackBuffer
 	if (target)
-		d3dcon->ClearRenderTargetView((ID3D11RenderTargetView*)defaultRenderTarget->GetRTV(), defaultClearColor);
+		d3dcon->ClearRenderTargetView((ID3D11RenderTargetView*)defaultRenderTarget->GetRTV(), (FLOAT*)&clearColor);
 }
 
 // Clear texture

@@ -50,7 +50,7 @@ public:
 	virtual eGapiResult CopyResource(ITexture2D* src, ITexture2D* dst) = 0;
 
 	// --- rendering --- //
-	virtual void Clear(bool target = true, bool depth = false, bool stencil = false) = 0;
+	virtual void Clear(bool target = true, bool depth = false, bool stencil = false, const Vec4& clearColor = Vec4(0.3f, 0.3f, 0.3f, 1.0f)) = 0;
 	virtual void ClearTexture(ITexture2D* t, unsigned clearFlag = 0, const Vec4& clearColor = Vec4(), float depthVal = 1.0f, size_t stencilVal = 0) = 0;
 
 	virtual void Draw(size_t nVertices, size_t idxStartVertex = 0) = 0;
