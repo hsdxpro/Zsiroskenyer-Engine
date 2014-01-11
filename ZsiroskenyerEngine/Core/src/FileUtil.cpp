@@ -5,14 +5,6 @@
 #include <windows.h>
 #include "common.h"
 
-std::list<zsString> cFileUtil::GetFileLines(std::wfstream& file) {
-	std::list<zsString> lines;
-	zsString str;
-	while (getline(file, str))
-		lines.push_back(str);
-	return lines;
-}
-
 bool cFileUtil::Clear(const zsString& path) {
 	std::ofstream os(path.c_str(), std::ios::trunc);
 	ASSERT(os.is_open() == true);
@@ -48,6 +40,7 @@ bool cFileUtil::WriteBinary(std::wfstream& file, void* data, size_t dataSize) {
 }
 
 void cFileUtil::DeleteFirstLines(std::wfstream& file, size_t nLines) {
+	auto lines = cFileUtil::GetLines(file);
 	// Move iteraton behind nLines
 	auto iter = lines.begin();
 	int idx = 0;
@@ -65,7 +58,8 @@ void cFileUtil::DeleteFirstLines(std::wfstream& file, size_t nLines) {
 	Close();
 }
 
-bool cFileUtil::Contains(const zsString& str) {
+bool cFileUtil::Contains(std::wfstream& file, const zsString& str) {
+	auto lines = cFileUtil::GetLines(file);
 	auto iter = lines.begin();
 	while (iter != lines.end()) {
 		if (iter->find(str.c_str()) != std::wstring::npos)
@@ -123,30 +117,14 @@ size_t cFileUtil::GetSize() const {
 	}
 }
 
-size_t cFileUtil::GetSize(const zsString& path) {
-	char ansiPath[256];
-	cStrUtil::ConvertUniToAnsi(path, ansiPath, 256);
-
-	//path.tozsString::
-	struct stat results;
-	if (stat(ansiPath, &results) == 0)
-		return results.st_size;
-	else
-	{
-		ASSERT(0);
-		return 0;
-	}
-}
-
-bool cFileUtil::RemoveDuplicatedLines() {
-	// Reopen stream
-	stream.close();
-	stream.open(filePath.c_str(), std::ios::trunc | std::ios::out);
+bool cFileUtil::RemoveDuplicatedLines(std::wfstream& file) {
+	auto lines = cFileUtil::GetLines(file);
 
 	// Lines that are duplicated
 	std::list<zsString> duplicatedLines;
-	std::list<zsString> uniqLines;
 
+	// Uniq lines
+	std::list<zsString> uniqLines;
 	bool foundDuplicates = false;
 	auto iterI = lines.begin();
 	while (iterI != lines.end()) {
@@ -180,6 +158,29 @@ bool cFileUtil::RemoveDuplicatedLines() {
 
 	Close();
 	return foundDuplicates;
+}
+
+size_t cFileUtil::GetSize(const zsString& path) {
+	char ansiPath[256];
+	cStrUtil::ConvertUniToAnsi(path, ansiPath, 256);
+
+	//path.tozsString::
+	struct stat results;
+	if (stat(ansiPath, &results) == 0)
+		return results.st_size;
+	else
+	{
+		ASSERT(0);
+		return 0;
+	}
+}
+
+std::list<zsString> cFileUtil::GetLines(std::wfstream& file) {
+	std::list<zsString> lines;
+	zsString str;
+	while (getline(file, str))
+		lines.push_back(str);
+	return lines;
 }
 
 zsString cFileUtil::GetStringBefore(const zsString& str) {

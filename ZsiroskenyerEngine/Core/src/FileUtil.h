@@ -7,8 +7,6 @@
 
 class cFileUtil {
 public:
-	static std::list<zsString> GetFileLines(std::wfstream& file);
-
 	static bool Clear(const zsString& path);
 
 	static bool ReadBinary(const zsString& path, void* data, size_t dataSize);
@@ -29,7 +27,7 @@ public:
 	static std::list<zsString> GetLinesBeginsWith(const zsString& str);
 	static std::list<zsString> GetLinesBeginsWithBetween(const zsString& str, const zsString& left, const zsString& right);
 
-	static const std::list<zsString>& GetLines();
+	static std::list<zsString> GetLines(std::wfstream& file);
 	static size_t GetNLines();
 	static size_t GetSize();
 	static size_t GetSize(const zsString& path);

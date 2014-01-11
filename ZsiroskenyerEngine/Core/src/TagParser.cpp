@@ -23,7 +23,7 @@ cTagParser::cTagParser(const zsString& filePath)
 	//    |-----rootNode5
 	//
 
-	auto lines = cFileUtil::GetFileLines(file);
+	auto lines = cFileUtil::GetLines(file);
 	for (auto row = lines.begin(); row != lines.end(); row++) 
 	{
 		currNestedLevel = GetNestedLevel(*row);

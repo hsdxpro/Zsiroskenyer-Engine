@@ -92,41 +92,41 @@ cMaterialRef cResourceManager::GetMaterial(const zsString& filePath) {
 		// Texture path's relative to materials ;)
 		zsString mtlBasePath = cStrUtil::GetDirectory(filePath);
 
-		auto lines = cFileUtil::GetLines(filePath);
+		auto lines = cFileUtil::GetLines(*stringIt++);
 		auto stringIt = lines.begin();
 
 		for(size_t i = 0; i < nSubMaterials; i++) {
 			// subMaterial ID, not used yet
-			const zsString& idLine = cFileUtil::GetLine(file);
+			const zsString& idLine = *stringIt++;
 
 			std::vector<float> floats;
 			// Diffuse
-			cStrUtil::GetFloats(cFileUtil::GetLine(file), floats);
+			cStrUtil::GetFloats(*stringIt++, floats);
 			(*mtl)[i].diffuse = Vec4(floats[0], floats[1], floats[2], floats[3]);
 
 			// Specular
-			cStrUtil::GetFloats(cFileUtil::GetLine(file), floats);
+			cStrUtil::GetFloats(*stringIt++, floats);
 			(*mtl)[i].specular = Vec4(floats[0], floats[1], floats[2], floats[3]);
 
 			// Emissive
-			cStrUtil::GetFloats(cFileUtil::GetLine(file), floats);
+			cStrUtil::GetFloats(*stringIt++, floats);
 			(*mtl)[i].emissive = Vec4(floats[0], floats[1], floats[2], floats[3]);
 
 			// Glossiness
-			cStrUtil::GetFloats(cFileUtil::GetLine(file), floats);
+			cStrUtil::GetFloats(*stringIt++, floats);
 			(*mtl)[i].glossiness = floats[0];
 			
 			// Texture Diffuse
-			(*mtl)[i].textureDiffuse = GetTexture(mtlBasePath + (cFileUtil::GetLine(file).c_str() + 9));
+			(*mtl)[i].textureDiffuse = GetTexture(mtlBasePath + ((*stringIt++).c_str() + 9));
 
 			// Texture Normal
-			(*mtl)[i].textureNormal = GetTexture(mtlBasePath + (cFileUtil::GetLine(file).c_str() + 8));
+			(*mtl)[i].textureNormal = GetTexture(mtlBasePath + ((*stringIt++).c_str() + 8));
 
 			// Texture Specular
-			(*mtl)[i].textureSpecular = GetTexture(mtlBasePath + (cFileUtil::GetLine(file).c_str() + 10));
+			(*mtl)[i].textureSpecular = GetTexture(mtlBasePath + ((*stringIt++).c_str() + 10));
 
 			// Texture Displace
-			(*mtl)[i].textureDisplace = GetTexture(mtlBasePath + (file->GetLine().c_str() + 10));		
+			(*mtl)[i].textureDisplace = GetTexture(mtlBasePath + ((*stringIt++).c_str() + 10));
 		}
 
 		// insert into database
