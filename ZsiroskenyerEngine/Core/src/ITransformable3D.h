@@ -20,8 +20,6 @@ public:
 
 	virtual void SetWorldTransform(ITransformable3D* t);
 
-	virtual Matrix44 GetWorldMatrix();
-
 	virtual const Vec3& GetPos() = 0;
 	virtual const Quat& GetRot() = 0;
 	virtual const Vec3& GetScale() = 0;

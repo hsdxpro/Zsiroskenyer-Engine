@@ -249,6 +249,9 @@
     <ClCompile Include="src\Serializable.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="src\common.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Game">

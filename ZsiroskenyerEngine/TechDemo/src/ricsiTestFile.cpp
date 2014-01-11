@@ -188,7 +188,7 @@ int ricsiMain() {
 		core.Update(deltaT);
 
 		// Debug rendering
-		//core.DebugRender((unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
+		//core.DebugRender(s, (unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
 
 		// Present SwapChain
 		gApi->Present();

@@ -72,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\common.cpp" />
     <ClCompile Include="src\Core.cpp" />
     <ClCompile Include="src\CreateGAPI.cpp" />
     <ClCompile Include="src\CreateGraphicsEngine.cpp" />

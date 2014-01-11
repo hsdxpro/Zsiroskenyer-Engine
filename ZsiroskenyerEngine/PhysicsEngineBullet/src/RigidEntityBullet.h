@@ -6,8 +6,7 @@
 
 class btRigidBody;
 
-#pragma message(": private cTransform3D")
-class cRigidEntityBullet : public IPhysicsEntity {
+class cRigidEntityBullet : public IPhysicsEntity, private cTransform3D {
 public:
 	cRigidEntityBullet(btRigidBody* body);
 	void Release() override;
@@ -28,5 +27,5 @@ public:
 protected:
 	btRigidBody* body;
 
-	cTransform3D worldTransform;
+	//cTransform3D worldTransform;
 };

@@ -90,10 +90,6 @@ public:
 
 	// rendering pipeline
 	eGraphicsResult Update(float elapsed = 0.0f) override;
-		// scene state loaded there
-	cSceneManager* sceneManager;
-	cCamera* camera;
-	float elapsed;
 		
 	// sub-component accessors
 	cSceneManager*		GetSceneManager();
@@ -112,6 +108,11 @@ private:
 	// state
 	unsigned screenWidth, screenHeight;
 	tGraphicsConfig config;
+
+	// scene state loaded there
+	cSceneManager* sceneManager;
+	cCamera* camera;
+	float elapsed;
 
 	// sub-compnents: rendering & graphical
 	IGraphicsApi* gApi;

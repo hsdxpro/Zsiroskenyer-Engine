@@ -13,8 +13,8 @@
 class cInstanceGroup;
 class ITexture2D;
 
-#pragma message(": public cTransform3D")
-class cGraphicsEntity : public ITransformable3D {
+
+class cGraphicsEntity : public ITransformable3D, public cTransform3D {
 	friend class cSceneManager;
 public:
 	cGraphicsEntity();
@@ -39,8 +39,6 @@ public:
 
 protected:
 	cInstanceGroup* instanceGroup;
-
-	cTransform3D worldTransform;
 
 	bool isVisible;
 };

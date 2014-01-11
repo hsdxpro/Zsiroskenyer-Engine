@@ -238,9 +238,6 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, float elapsed) {
 		gApi->SetTexture(composedBuffer, 0);
 		gApi->Draw(3);
 	}
-
-
-	gApi->GetDefaultRenderTarget();
 }
 
 //	Get sub-components where allowed

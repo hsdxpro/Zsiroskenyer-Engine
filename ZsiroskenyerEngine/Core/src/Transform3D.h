@@ -6,7 +6,6 @@
 #include "math/quat.h"
 #include "math/Matrix44.h"
 
-#pragma message("PUBLIC SHIT")
 class cTransform3D {
 public:
 	cTransform3D();

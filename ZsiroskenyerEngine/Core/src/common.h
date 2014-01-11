@@ -3,7 +3,7 @@
 
 #include <cassert>
 #include "ILog.h"
-
+#include <memory.h>
 #define NULL 0
 
 #if (defined(_DEBUG) || defined(DEBUG))
@@ -31,4 +31,6 @@
 #define ZS_PI2			6.28318530717958
 #define ZS_PIDIV2		1.57079632679489
 #define ZS_PIDIV4		0.78539816339744
+
+void Realloc(void* mem, size_t oldSize, size_t newSize);
 

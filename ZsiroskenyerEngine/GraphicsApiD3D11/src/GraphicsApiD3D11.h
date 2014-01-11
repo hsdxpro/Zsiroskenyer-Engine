@@ -54,26 +54,6 @@ public:
 		PS_2_0,
 	};
 
-	// Configuration to construct with
-#pragma message("!!DELETE: tDxConfig")
-	struct tDxConfig {
-		tDxConfig();
-
-		static tDxConfig DEFAULT;
-		static tDxConfig MEDIUM;
-		static tDxConfig HIGH;
-
-		int multiSampleQuality;
-		int multiSampleCount;
-
-		// Create backbuffer at max screen resolution
-		bool createDeviceAtMaxResolution;
-
-		// FullScreen Dx App?
-		bool createDeviceFullScreen;
-
-	};
-
 	cGraphicsApiD3D11();
 	~cGraphicsApiD3D11();
 	void Release() override;
@@ -129,8 +109,8 @@ public:
 
 private:
 	eGapiResult CreateDevice();
-	eGapiResult CreateMostAcceptableSwapChain(size_t width, size_t height, HWND windowHandle, const tDxConfig& config);
-	eGapiResult CreateViewsForBB(const tDxConfig& config);
+	eGapiResult CreateMostAcceptableSwapChain(size_t width, size_t height, HWND windowHandle);
+	eGapiResult CreateViewsForBB();
 	eGapiResult CreateDefaultStates(const D3D11_CULL_MODE& cullMode, const D3D11_FILL_MODE& fillMode);
 	HRESULT CompileShaderFromFile(const zsString& fileName, const zsString& entry, const zsString& profile, ID3DBlob** ppBlobOut);
 	eGapiResult CompileCgToHLSL(const zsString& cgFileName, const zsString& hlslFileName, eProfileCG compileProfile);
@@ -144,7 +124,6 @@ protected:
 	ID3D11DeviceContext *d3dcon;
 	ID3D11Device *d3ddev;
 	IDXGISwapChain *d3dsc;
-	static tDxConfig swapChainConfig;
 
 	// Active shader program
 	cShaderProgramD3D11* activeShaderProg;
@@ -156,7 +135,7 @@ protected:
 	size_t psConstBufferSize;
 	ID3D11Buffer* vsConstBuffer; // Then these gets updates when Draw called
 	ID3D11Buffer* psConstBuffer;
-
+	bool vsConstBufferStateChangedLastFrame
 	// you better remove these muhaha -> gányolt fos
 #pragma message("!!REPAIR: gapi render states work, but ugly and slow")
 	ID3D11DepthStencilState* depthStencilState;

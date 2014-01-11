@@ -7,6 +7,7 @@
 #include "ShaderProgramD3D11.h"
 #include "Texture2DD3D11.h"
 
+#include "../../Core/src/common.h"
 #include "../../Core/src/IFile.h"
 #include "../../Core/src/Serializable.h"
 #include <map>
@@ -48,18 +49,6 @@ D3D11_BLEND_DESC ConvertToNativeBlend(tBlendDesc blend);
 D3D11_COMPARISON_FUNC ConvertToNativeCompFunc(eComparisonFunc compFunc);
 D3D11_STENCIL_OP ConvertToNativeStencilOp(eStencilOp stencilOp);
 D3D11_DEPTH_STENCIL_DESC ConvertToNativeDepthStencil(tDepthStencilDesc depthStencil);
-
-
-////////////////////////////////////////////////////////////////////////////////
-// Config
-cGraphicsApiD3D11::tDxConfig cGraphicsApiD3D11::tDxConfig::DEFAULT = cGraphicsApiD3D11::tDxConfig();
-cGraphicsApiD3D11::tDxConfig cGraphicsApiD3D11::tDxConfig::MEDIUM = cGraphicsApiD3D11::tDxConfig();
-cGraphicsApiD3D11::tDxConfig cGraphicsApiD3D11::tDxConfig::HIGH = cGraphicsApiD3D11::tDxConfig();
-cGraphicsApiD3D11::tDxConfig cGraphicsApiD3D11::swapChainConfig = cGraphicsApiD3D11::tDxConfig::DEFAULT;
-
-cGraphicsApiD3D11::tDxConfig::tDxConfig()
-:multiSampleQuality(0), multiSampleCount(1), createDeviceAtMaxResolution(false), createDeviceFullScreen(false) {
-}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -107,9 +96,8 @@ cGraphicsApiD3D11::~cGraphicsApiD3D11() {
 	if (d3dcon)d3dcon->ClearState();
 	if (d3dcon)d3dcon->Flush();
 
-#pragma message("DELETE: free sucks, realloc sucks, malloc sucks")
-	free(vsConstBufferData);
-	free(psConstBufferData);
+	SAFE_DELETE_ARRAY(vsConstBufferData);
+	SAFE_DELETE_ARRAY(psConstBufferData);
 	SAFE_RELEASE(vsConstBuffer);
 	SAFE_RELEASE(psConstBuffer);
 	SAFE_RELEASE(defaultRenderTarget);
@@ -171,7 +159,7 @@ eGapiResult cGraphicsApiD3D11::CreateDevice() {
 	return eGapiResult::OK;
 }
 
-eGapiResult cGraphicsApiD3D11::CreateMostAcceptableSwapChain(size_t width, size_t height, HWND windowHandle, const tDxConfig& config) {
+eGapiResult cGraphicsApiD3D11::CreateMostAcceptableSwapChain(size_t width, size_t height, HWND windowHandle) {
 	if (d3dsc != NULL)
 		SAFE_RELEASE(d3dsc);
 
@@ -207,6 +195,7 @@ eGapiResult cGraphicsApiD3D11::CreateMostAcceptableSwapChain(size_t width, size_
 	UINT displayModeIndex = 0;
 	for (size_t i = 0; i < numModes; i++) {
 		DXGI_MODE_DESC* currMode = &modeDesc[i];
+		/*
 		// Collect The best resolution that the video card handle
 		if (config.createDeviceAtMaxResolution) {
 			// add to matched videoModes if that VideoMode have full screen resolution
@@ -215,8 +204,9 @@ eGapiResult cGraphicsApiD3D11::CreateMostAcceptableSwapChain(size_t width, size_
 				displayModeIndex++;
 			}
 			// Collect videoModes which resoltuion is equal with the window passed to ManagerDx
-		}
-		else if (currMode->Width == width && currMode->Height == height) {
+
+		}*/
+		if (currMode->Width == width && currMode->Height == height) {
 			filteredVideoModes[displayModeIndex] = currMode;
 			displayModeIndex++;
 		}
@@ -251,11 +241,11 @@ eGapiResult cGraphicsApiD3D11::CreateMostAcceptableSwapChain(size_t width, size_
 	}
 	sdesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
 	sdesc.OutputWindow = windowHandle;
-	sdesc.SampleDesc.Count = config.multiSampleCount;
-	sdesc.SampleDesc.Quality = config.multiSampleQuality;
+	sdesc.SampleDesc.Count = 1;// config.multiSampleCount;
+	sdesc.SampleDesc.Quality = 0;// config.multiSampleQuality;
 	sdesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	sdesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-	if (!config.createDeviceFullScreen)
+	//if (!config.createDeviceFullScreen)
 		sdesc.Windowed = true;
 
 	HRESULT hr = fact->CreateSwapChain(d3ddev, &sdesc, &d3dsc);
@@ -278,7 +268,7 @@ eGapiResult cGraphicsApiD3D11::CreateMostAcceptableSwapChain(size_t width, size_
 	}
 }
 
-eGapiResult cGraphicsApiD3D11::CreateViewsForBB(const tDxConfig& config) {
+eGapiResult cGraphicsApiD3D11::CreateViewsForBB() {
 	SAFE_RELEASE(defaultRenderTarget);
 
 	ID3D11RenderTargetView* rtv;
@@ -323,8 +313,8 @@ eGapiResult cGraphicsApiD3D11::CreateViewsForBB(const tDxConfig& config) {
 	tD.Height = bbDesc.Height;
 	tD.MipLevels = 1;
 	tD.MiscFlags = 0;
-	tD.SampleDesc.Count = config.multiSampleCount;
-	tD.SampleDesc.Quality = config.multiSampleQuality;
+	tD.SampleDesc.Count = 1;// config.multiSampleCount;
+	tD.SampleDesc.Quality = 0;// config.multiSampleQuality;
 	tD.Usage = D3D11_USAGE_DEFAULT;
 	hr = d3ddev->CreateTexture2D(&tD, 0, &depthTexture);
 	if (FAILED(hr)) {
@@ -1238,6 +1228,9 @@ void cGraphicsApiD3D11::SetVSConstantBuffer(const void* data, size_t size, size_
 	// Need resize for constant buffer
 	if (vsConstBufferSize < dstByteOffset + size)
 	{
+		// Save old size
+		size_t oldSize = vsConstBufferSize;
+
 		// Determine new size
 		// Not multiple of 16, for ex. 24, then size + 16 - (size % 16) = 32
 		vsConstBufferSize = dstByteOffset + size;
@@ -1245,7 +1238,7 @@ void cGraphicsApiD3D11::SetVSConstantBuffer(const void* data, size_t size, size_
 			vsConstBufferSize = vsConstBufferSize + 16 - (vsConstBufferSize % 16);
 
 		// Resize our void*
-		vsConstBufferData = realloc(vsConstBufferData, vsConstBufferSize);
+		Realloc(vsConstBufferData, oldSize, vsConstBufferSize);
 
 		// Recreate constant buffer
 		SAFE_RELEASE(vsConstBuffer);
@@ -1269,12 +1262,16 @@ void cGraphicsApiD3D11::SetPSConstantBuffer(const void* data, size_t size, size_
 	// Need resize for constant buffer
 	if (psConstBufferSize < dstByteOffset + size)
 	{
+		// Save old size
+		size_t oldSize = psConstBufferSize;
+
+		// Determine new size
 		psConstBufferSize = dstByteOffset + size;
 		if (((dstByteOffset + size) % 16) != 0)
 			psConstBufferSize = psConstBufferSize + 16 - (psConstBufferSize % 16);
 			
 		// Resize our void*
-		psConstBufferData = realloc(psConstBufferData, psConstBufferSize);
+		Realloc(psConstBufferData, oldSize, psConstBufferSize);
 
 		// Recreate constant buffer
 		SAFE_RELEASE( psConstBuffer );
@@ -1331,7 +1328,7 @@ eGapiResult cGraphicsApiD3D11::SetBackBufferSize(unsigned width, unsigned height
 	if (!FAILED(hr)) {
 		defaultVP.Width = width;
 		defaultVP.Height = height;
-		return CreateViewsForBB(swapChainConfig);
+		return CreateViewsForBB();
 	}
 	switch (hr) {
 	case S_OK: return eGapiResult::OK;   break;
@@ -1398,12 +1395,12 @@ eGapiResult cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
 		return eGapiResult::OK;
 
 	// Create swap chain for device
-	eGapiResult r = CreateMostAcceptableSwapChain(clientWidth, clientHeight, (HWND)(renderWindow->GetHandle()), cGraphicsApiD3D11::swapChainConfig);
+	eGapiResult r = CreateMostAcceptableSwapChain(clientWidth, clientHeight, (HWND)(renderWindow->GetHandle()));
 	ASSERT(r == OK);
 	if (r != eGapiResult::OK) return r;
 
 	// Create main render target (BackBuffer)
-	r = CreateViewsForBB(swapChainConfig);
+	r = CreateViewsForBB();
 	ASSERT(r == OK);
 	if (r != eGapiResult::OK) return r;
 
