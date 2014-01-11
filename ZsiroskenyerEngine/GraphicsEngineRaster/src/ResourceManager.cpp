@@ -12,6 +12,7 @@
 // Graphics api
 #include "..\..\Core\src\IGraphicsApi.h"
 #include "..\..\Core\src\IFile.h"
+#include "..\..\Core\src\StrUtil.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //	ResourceManager
@@ -89,7 +90,7 @@ cMaterialRef cResourceManager::GetMaterial(const zsString& filePath) {
 		mtl = new cMaterial(nSubMaterials);
 		
 		// Texture path's relative to materials ;)
-		zsString mtlBasePath = filePath.GetDirectory();
+		zsString mtlBasePath = cStrUtil::GetDirectory(filePath);
 
 		for(size_t i = 0; i < nSubMaterials; i++) {
 			// subMaterial ID, not used yet
@@ -97,19 +98,19 @@ cMaterialRef cResourceManager::GetMaterial(const zsString& filePath) {
 
 			std::vector<float> floats;
 			// Diffuse
-			file->GetLine().GetFloats(floats);
+			cStrUtil::GetFloats(file->GetLine(), floats);
 			(*mtl)[i].diffuse = Vec4(floats[0], floats[1], floats[2], floats[3]);
 
 			// Specular
-			file->GetLine().GetFloats(floats);
+			cStrUtil::GetFloats(file->GetLine(), floats);
 			(*mtl)[i].specular = Vec4(floats[0], floats[1], floats[2], floats[3]);
 
 			// Emissive
-			file->GetLine().GetFloats(floats);
+			cStrUtil::GetFloats(file->GetLine(), floats);
 			(*mtl)[i].emissive = Vec4(floats[0], floats[1], floats[2], floats[3]);
 
 			// Glossiness
-			file->GetLine().GetFloats(floats);
+			cStrUtil::GetFloats(file->GetLine(), floats);
 			(*mtl)[i].glossiness = floats[0];
 			
 			// Texture Diffuse

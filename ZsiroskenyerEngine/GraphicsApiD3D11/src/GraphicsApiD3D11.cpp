@@ -8,6 +8,7 @@
 #include "Texture2DD3D11.h"
 
 #include "../../Core/src/common.h"
+#include "../../Core/src/StrUtil.h"
 #include "../../Core/src/IFile.h"
 #include "../../Core/src/Serializable.h"
 #include <map>
@@ -821,18 +822,18 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 					const zsString& row = hlslFile->GetLine();
 
 					// Collect <texture names, slot numbers>
-					if ( ! reachSampling && row.Begins(L"Texture")) {
-						textureSlotsParsed[zsString::Between(row, L' ', L';')] = texIdx++;
+					if ( ! reachSampling && cStrUtil::Begins(row, L"Texture")) {
+						textureSlotsParsed[cStrUtil::Between(row, L' ', L';')] = texIdx++;
 						reachTextures = true;
 					}
 
 					// match textures, samplers
-					if (reachTextures && row.Contains(L".Sample")) {
+					if (reachTextures && cStrUtil::Contains(row, L".Sample")) {
 						reachSampling = true;
 						// Example : _pout._color = _TMP23.Sample(_diffuseTex, _In._tex01);
-						size_t chPos = row.Find(L".Sample");
-						zsString textureName = row.SubStrLeft(chPos - 1, '_');
-						zsString samplerName = row.SubStrRight(chPos + 9, ',', -1); // -- need solution fuck...
+						size_t chPos = cStrUtil::Find(row, L".Sample");
+						zsString textureName = cStrUtil::SubStrLeft(row, chPos - 1, '_');
+						zsString samplerName = cStrUtil::SubStrRight(row, chPos + 9, ',', -1); // -- need solution fuck...
 
 						textureSlots[samplerName] = textureSlotsParsed[textureName];
 					}
@@ -926,9 +927,9 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			char semanticNames[10][32]; // Max 10 semantic, each 32 word length
 			char semanticIndex[3]; // 999 max
 
-			iter->GetWordBetween(':', ';', semanticNames[attribIdx]);
-			iter->GetNumberFromEnd(semanticNames[attribIdx], semanticIndex);
-			iter->CutNumberFromEnd(semanticNames[attribIdx]);
+			cStrUtil::GetWordBetween(*iter, ':', ';', semanticNames[attribIdx]);
+			cStrUtil::GetNumberFromEnd(semanticNames[attribIdx], semanticIndex);
+			cStrUtil::CutNumberFromEnd(semanticNames[attribIdx]);
 
 			// Gather format and size
 			DXGI_FORMAT format;

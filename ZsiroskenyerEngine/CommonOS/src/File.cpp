@@ -1,5 +1,6 @@
 #include "File.h"
 #include "../../Core/src/common.h"
+#include "../../Core/src/StrUtil.h"
 #include "../../Core/src/Exception.h"
 #include "../../Core/src/ILog.h"
 
@@ -71,8 +72,8 @@ bool cFile::ReadBinary(const zsString& path, void* data_out, size_t dataSize) {
 	if (! is.is_open())
 		return false;
 
-	static char ansiPath[256];
-	zsString::ConvertUniToAnsi(path, ansiPath, 256);
+	char ansiPath[256];
+	cStrUtil::ConvertUniToAnsi(path, ansiPath, 256);
 
 	
 	is.read((char*)data_out, dataSize);
@@ -88,8 +89,8 @@ bool cFile::ReadBinary(void* data_out, size_t dataSize) {
 	if (!is.is_open())
 		return false;
 
-	static char ansiPath[256];
-	zsString::ConvertUniToAnsi(filePath, ansiPath, 256);
+	char ansiPath[256];
+	cStrUtil::ConvertUniToAnsi(filePath, ansiPath, 256);
 
 
 	is.read((char*)data_out, dataSize);
@@ -207,8 +208,8 @@ size_t cFile::GetNLines() const {
 }
 
 size_t cFile::GetSize() const {
-	static char ansiPath[256];
-	zsString::ConvertUniToAnsi(filePath, ansiPath, 256);
+	char ansiPath[256];
+	cStrUtil::ConvertUniToAnsi(filePath, ansiPath, 256);
 
 	//path.tozsString::
 	struct stat results;
@@ -222,8 +223,8 @@ size_t cFile::GetSize() const {
 }
 
 size_t cFile::GetSize(const zsString& path) {
-	static char ansiPath[256];
-	zsString::ConvertUniToAnsi(path, ansiPath, 256);
+	char ansiPath[256];
+	cStrUtil::ConvertUniToAnsi(path, ansiPath, 256);
 
 	//path.tozsString::
 	struct stat results;
@@ -387,7 +388,7 @@ std::list<zsString> cFile::GetLinesBeginsWith(const zsString& str) {
 std::list<zsString> cFile::GetLinesBeginsWithBetween(const zsString& str, const zsString& left, const zsString& right) {
 	std::list<zsString> res = GetLinesBeginsWith(str);
 	for (auto i = res.begin(); i != res.end(); i++)
-		i->Between(left.c_str(), right.c_str());
+		cStrUtil::Between(*i, left.c_str(), right.c_str());
 	return res;
 }
 
