@@ -164,6 +164,9 @@
     <ClInclude Include="src\Transformable.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="src\StrUtil.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\math\color.cpp">
@@ -253,6 +256,9 @@
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="src\common.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\StrUtil.cpp">
       <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>

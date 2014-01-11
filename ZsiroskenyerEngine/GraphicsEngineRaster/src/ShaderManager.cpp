@@ -5,6 +5,7 @@
 #include "ShaderManager.h"
 #include "../../Core/src/IGraphicsApi.h"
 #include "../../Core/src/IShaderProgram.h"
+#include "../../Core/src/StrUtil.h"
 
 cShaderManager::cShaderManager(IGraphicsApi* gApi) 
 	:gApi(gApi) {
@@ -18,7 +19,7 @@ IShaderProgram* cShaderManager::LoadShader(const zsString& shaderPath) {
 	IShaderProgram* shProg = NULL;
 
 	zsString shaderName = shaderPath;
-	shaderName.CutDirectory();
+	cStrUtil::CutDirectory(shaderName);
 
 	auto it = loadedShaders.right.find(shaderName);
 	if (it != loadedShaders.right.end()) {
@@ -54,7 +55,7 @@ void cShaderManager::UnloadShader(const zsString& shaderName) {
 // reload a shader: it WILL load previously unloaded shaders as well
 IShaderProgram* cShaderManager::ReloadShader(const zsString& shaderPath) {
 	zsString shaderName = shaderPath;
-	shaderName.CutDirectory();
+	cStrUtil::CutDirectory(shaderName);
 
 	UnloadShader(shaderName);
 	return LoadShader(shaderPath);

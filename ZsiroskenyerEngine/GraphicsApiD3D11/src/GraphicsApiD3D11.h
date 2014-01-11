@@ -95,8 +95,8 @@ public:
 	void SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) override;
 	void SetIndexBuffer(const IIndexBuffer* indexBuffer) override;
 	void SetInstanceData(/*whatever*/) override;
-	void SetTexture(const ITexture2D* t, size_t slotIdx) override;
-	void SetTexture(const zsString& varName, const ITexture2D* t) override;
+	eGapiResult SetTexture(const ITexture2D* t, size_t slotIdx) override;
+	eGapiResult SetTexture(const zsString& varName, const ITexture2D* t) override;
 	void SetVSConstantBuffer(const void* data, size_t size, size_t slotIdx) override;
 	void SetPSConstantBuffer(const void* data, size_t size, size_t slotIdx) override;
 	void SetShaderProgram(IShaderProgram* shProg) override;
@@ -127,8 +127,11 @@ protected:
 	ID3D11Device *d3ddev;
 	IDXGISwapChain *d3dsc;
 
+// inner TMP
 	// Active shader program
 	cShaderProgramD3D11* activeShaderProg;
+	D3D11_VIEWPORT activeViewports[16];
+	ID3D11RenderTargetView* activeRTVs[16];
 
 	// Constant buffers handling
 	void* vsConstBufferData; // These updated every ex. SetPSConstantBuffer(.....) call
@@ -137,7 +140,7 @@ protected:
 	size_t psConstBufferSize;
 	ID3D11Buffer* vsConstBuffer; // Then these gets updates when Draw called
 	ID3D11Buffer* psConstBuffer;
-	bool vsConstBufferStateChanged; // Don't want to apply consatnt buffers when it's not changed
+	bool vsConstBufferStateChanged; // Don't want to apply constant buffers when it's not changed
 	bool psConstBufferStateChanged;
 
 	// States <D3D11_____DESC, ID3D11____*>

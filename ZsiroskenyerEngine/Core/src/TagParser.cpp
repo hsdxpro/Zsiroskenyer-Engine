@@ -1,6 +1,7 @@
 #include "TagParser.h"
 #include "IFile.h"
 #include "common.h"
+#include "StrUtil.h"
 
 cTagParser::cTagParser(const zsString& filePath)
 :fileNode(NULL) {
@@ -85,7 +86,7 @@ tProperty *cTagParser::GatherNodeProperties(const zsString& row, size_t nodeNest
 
 	// TODO O FUCK REMOVE IT
 	char data[1024];
-	row.ConvertUniToAnsi(data, 1024);
+	cStrUtil::ConvertUniToAnsi(row, data, 1024);
 
 	nProperties = 0;
 	size_t idx = nodeNestedLevel + 1; // safely can start from here inside '<' char

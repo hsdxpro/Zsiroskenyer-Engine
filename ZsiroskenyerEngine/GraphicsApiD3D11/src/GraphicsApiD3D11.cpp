@@ -8,6 +8,7 @@
 #include "Texture2DD3D11.h"
 
 #include "../../Core/src/common.h"
+#include "../../Core/src/StrUtil.h"
 #include "../../Core/src/IFile.h"
 #include "../../Core/src/Serializable.h"
 #include <map>
@@ -73,6 +74,9 @@ cGraphicsApiD3D11::cGraphicsApiD3D11()
 	if (r != eGapiResult::OK) {
 		throw std::runtime_error("failed to create default states");
 	}
+
+	memset(activeViewports, 0, 16 * sizeof(D3D11_VIEWPORT));
+	memset(activeRTVs, 0, 16 * sizeof(ID3D11RenderTargetView*));
 }
 
 void cGraphicsApiD3D11::Release() {
@@ -89,6 +93,9 @@ cGraphicsApiD3D11::~cGraphicsApiD3D11() {
 
 	ID3D11RenderTargetView *nulltargets[4] = { 0 };
 	d3dcon->OMSetRenderTargets(4, nulltargets, 0);
+
+	for (size_t i = 0; i < 16; i++)
+		SAFE_RELEASE(activeRTVs[i]);
 
 	if (d3dcon)d3dcon->ClearState();
 	if (d3dcon)d3dcon->Flush();
@@ -815,18 +822,18 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 					const zsString& row = hlslFile->GetLine();
 
 					// Collect <texture names, slot numbers>
-					if ( ! reachSampling && row.Begins(L"Texture")) {
-						textureSlotsParsed[zsString::Between(row, L' ', L';')] = texIdx++;
+					if ( ! reachSampling && cStrUtil::Begins(row, L"Texture")) {
+						textureSlotsParsed[cStrUtil::Between(row, L' ', L';')] = texIdx++;
 						reachTextures = true;
 					}
 
 					// match textures, samplers
-					if (reachTextures && row.Contains(L".Sample")) {
+					if (reachTextures && cStrUtil::Contains(row, L".Sample")) {
 						reachSampling = true;
 						// Example : _pout._color = _TMP23.Sample(_diffuseTex, _In._tex01);
-						size_t chPos = row.Find(L".Sample");
-						zsString textureName = row.SubStrLeft(chPos - 1, '_');
-						zsString samplerName = row.SubStrRight(chPos + 9, ',', -1); // -- need solution fuck...
+						size_t chPos = cStrUtil::Find(row, L".Sample");
+						zsString textureName = cStrUtil::SubStrLeft(row, chPos - 1, '_');
+						zsString samplerName = cStrUtil::SubStrRight(row, chPos + 9, ',', -1); // -- need solution fuck...
 
 						textureSlots[samplerName] = textureSlotsParsed[textureName];
 					}
@@ -920,9 +927,9 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			char semanticNames[10][32]; // Max 10 semantic, each 32 word length
 			char semanticIndex[3]; // 999 max
 
-			iter->GetWordBetween(':', ';', semanticNames[attribIdx]);
-			iter->GetNumberFromEnd(semanticNames[attribIdx], semanticIndex);
-			iter->CutNumberFromEnd(semanticNames[attribIdx]);
+			cStrUtil::GetWordBetween(*iter, ':', ';', semanticNames[attribIdx]);
+			cStrUtil::GetNumberFromEnd(semanticNames[attribIdx], semanticIndex);
+			cStrUtil::CutNumberFromEnd(semanticNames[attribIdx]);
 
 			// Gather format and size
 			DXGI_FORMAT format;
@@ -1181,19 +1188,28 @@ void cGraphicsApiD3D11::SetInstanceData() {
 }
 
 // Set shader texture resource
-#pragma message("ADD: these function can fail, no void")
-void cGraphicsApiD3D11::SetTexture(const ITexture2D* t, size_t slotIdx) {
+eGapiResult cGraphicsApiD3D11::SetTexture(const ITexture2D* t, size_t slotIdx) {
 	const ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)t)->GetSRV();
 	ASSERT(srv != NULL);
-	d3dcon->PSSetShaderResources(slotIdx, 1, (ID3D11ShaderResourceView**)&srv);
+	if (srv != NULL) {
+		d3dcon->PSSetShaderResources(slotIdx, 1, (ID3D11ShaderResourceView**)&srv);
+		return eGapiResult::OK;
+	} else {
+		return eGapiResult::ERROR_UNKNOWN;
+	}
 }
 
 // Set shader texture resource
-void cGraphicsApiD3D11::SetTexture(const zsString& varName, const ITexture2D* t) {
+eGapiResult cGraphicsApiD3D11::SetTexture(const zsString& varName, const ITexture2D* t) {
 	const ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)t)->GetSRV();
 	ASSERT(srv != NULL);
-	size_t slot = ((cShaderProgramD3D11*)activeShaderProg)->GetTextureSlot(varName);
-	d3dcon->PSSetShaderResources(slot, 1, (ID3D11ShaderResourceView**)&srv);
+	if (srv != NULL) {
+		size_t slot = ((cShaderProgramD3D11*)activeShaderProg)->GetTextureSlot(varName);
+		d3dcon->PSSetShaderResources(slot, 1, (ID3D11ShaderResourceView**)&srv);
+		return eGapiResult::OK;
+	} else {
+		return eGapiResult::ERROR_UNKNOWN;
+	}
 }
 
 // Set compiled-linked shader program
@@ -1291,20 +1307,15 @@ void cGraphicsApiD3D11::SetPSConstantBuffer(const void* data, size_t size, size_
 
 // Set (multiple) render targets
 eGapiResult cGraphicsApiD3D11::SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget /* = NULL */) {
-	// RTVS
-#pragma message("Hate static :@")
-	static D3D11_VIEWPORT viewPorts[16];
-	static ID3D11RenderTargetView* rtvS[16];
-	for (unsigned i = 0; i < nTargets; i++)
-	{
-		rtvS[i] = ((const cTexture2DD3D11*)(renderTargets[i]))->GetRTV();
-		if (rtvS[i]) {
-			viewPorts[i].Width = ((const cTexture2DD3D11*)(renderTargets[i]))->GetWidth();
-			viewPorts[i].Height = ((const cTexture2DD3D11*)(renderTargets[i]))->GetHeight();
-			viewPorts[i].TopLeftX = 0;
-			viewPorts[i].TopLeftY = 0;
-			viewPorts[i].MinDepth = 0.0f;
-			viewPorts[i].MaxDepth = 1.0f;
+	for (unsigned i = 0; i < nTargets; i++) {
+		activeRTVs[i] = ((const cTexture2DD3D11*)(renderTargets[i]))->GetRTV();
+		if (activeRTVs[i]) {
+			activeViewports[i].Width = ((const cTexture2DD3D11*)(renderTargets[i]))->GetWidth();
+			activeViewports[i].Height = ((const cTexture2DD3D11*)(renderTargets[i]))->GetHeight();
+			activeViewports[i].TopLeftX = 0;
+			activeViewports[i].TopLeftY = 0;
+			activeViewports[i].MinDepth = 0.0f;
+			activeViewports[i].MaxDepth = 1.0f;
 		}
 	}
 
@@ -1312,10 +1323,10 @@ eGapiResult cGraphicsApiD3D11::SetRenderTargets(unsigned nTargets, const ITextur
 	ID3D11DepthStencilView* dsv = (depthStencilTarget) ? ((cTexture2DD3D11*)depthStencilTarget)->GetDSV() : NULL;
 
 	// Set Viewports
-	d3dcon->RSSetViewports(nTargets, viewPorts);
+	d3dcon->RSSetViewports(nTargets, activeViewports);
 
 	// Set RTVS
-	d3dcon->OMSetRenderTargets(nTargets, rtvS, dsv);
+	d3dcon->OMSetRenderTargets(nTargets, activeRTVs, dsv);
 	return eGapiResult::OK;
 }
 
