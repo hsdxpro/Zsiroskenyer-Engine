@@ -161,6 +161,9 @@
     <ClInclude Include="src\Serializable.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="src\Transformable.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\math\color.cpp">

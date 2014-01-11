@@ -22,9 +22,9 @@ public:
 	void SetScale(const Vec3& s);
 	void SetScale(float x, float y, float z);
 
-	const Vec3& GetPos();
-	const Quat& GetRot();
-	const Vec3& GetScale();
+	const Vec3& GetPos() const;
+	const Quat& GetRot() const;
+	const Vec3& GetScale() const;
 protected:
 	btSoftBody* body;
 

@@ -62,7 +62,7 @@ void cRigidEntityBullet::SetScale(float x, float y, float z) {
 		body->getMotionState()->setWorldTransform(trans);
 }
 
-const Vec3& cRigidEntityBullet::GetPos() {
+const Vec3& cRigidEntityBullet::GetPos() const {
 	return pos;
 
 	/*
@@ -75,17 +75,20 @@ const Vec3& cRigidEntityBullet::GetPos() {
 	*/
 }
 
-const Quat& cRigidEntityBullet::GetRot()  { 
+const Quat& cRigidEntityBullet::GetRot() const { 
 	btTransform trans;
-		body->getMotionState()->getWorldTransform(trans);
-		const btQuaternion& btRot = trans.getRotation();
-			rot.x = btRot.x();
-			rot.y = btRot.y();
-			rot.z = btRot.z();
-			rot.w = btRot.w();
+	body->getMotionState()->getWorldTransform(trans);
+	const btQuaternion& btRot = trans.getRotation();
+
+	auto ptr = const_cast<cRigidEntityBullet*>(this);
+	ptr->rot.x = btRot.x();
+	ptr->rot.y = btRot.y();
+	ptr->rot.z = btRot.z();
+	ptr->rot.w = btRot.w();
+
 	return rot;
 }
 
-const Vec3& cRigidEntityBullet::GetScale()  { 
+const Vec3& cRigidEntityBullet::GetScale() const { 
 	return scale;
 }

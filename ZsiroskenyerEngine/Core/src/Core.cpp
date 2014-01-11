@@ -61,7 +61,7 @@ void cCore::Update(float deltaT) {
 
 void cCore::UpdateChildLinksRecursively(cCore::tLinkNode& n) {
 	for (size_t i = 0; i < n.childs.size(); i++) {
-		n.childs[i].entity->SetWorldTransform(n.entity);
+		n.childs[i].entity->Copy(n.entity);
 		UpdateChildLinksRecursively(n.childs[i]);
 	}
 }

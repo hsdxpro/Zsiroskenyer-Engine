@@ -9,6 +9,7 @@
 #include "LogicEngine.h"
 
 #include "ITransformable3D.h"
+#include "Transformable.h"
 
 // For debug rendering
 #include "Renderer.h"
@@ -27,11 +28,11 @@ public:
 
 	// Link between modules
 	struct tLinkNode {
-		tLinkNode(ITransformable3D* entity)
+		tLinkNode(cTransformable entity)
 		:entity(entity) {}
 
 		// Transformable entity
-		ITransformable3D* entity;
+		cTransformable entity;
 
 		std::vector<tLinkNode> childs;
 	};
