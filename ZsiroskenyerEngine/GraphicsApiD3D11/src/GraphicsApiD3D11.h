@@ -135,8 +135,10 @@ protected:
 	size_t psConstBufferSize;
 	ID3D11Buffer* vsConstBuffer; // Then these gets updates when Draw called
 	ID3D11Buffer* psConstBuffer;
-	bool vsConstBufferStateChangedLastFrame
-	// you better remove these muhaha -> gányolt fos
+	bool vsConstBufferStateChanged;
+	bool psConstBufferStateChanged;
+
+	// you better remove these muhaha -> ;gányolt fos
 #pragma message("!!REPAIR: gapi render states work, but ugly and slow")
 	ID3D11DepthStencilState* depthStencilState;
 	ID3D11BlendState* blendState;

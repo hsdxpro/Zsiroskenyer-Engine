@@ -32,5 +32,4 @@
 #define ZS_PIDIV2		1.57079632679489
 #define ZS_PIDIV4		0.78539816339744
 
-void Realloc(void* mem, size_t oldSize, size_t newSize);
-
+void Realloc(void*& mem, size_t oldSize, size_t newSize);

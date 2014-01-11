@@ -66,7 +66,8 @@ cGraphicsApiD3D11::cGraphicsApiD3D11()
 	vsConstBuffer = psConstBuffer = NULL;
 	vsConstBufferData = psConstBufferData = NULL;
 	vsConstBufferSize = psConstBufferSize = 0;
-
+	vsConstBufferStateChanged = psConstBufferStateChanged = false;
+	
 	// Create default states
 	r = CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_BACK, D3D11_FILL_MODE::D3D11_FILL_SOLID);
 	if (r != eGapiResult::OK) {
@@ -496,18 +497,20 @@ eGapiResult cGraphicsApiD3D11::CompileCgToHLSL(const zsString& cgFilePath, const
 void cGraphicsApiD3D11::ApplyConstantBuffers() {
 	D3D11_MAPPED_SUBRESOURCE mapped;
 	// Update vertex shader constants
-	if (vsConstBuffer) {
+	if (vsConstBufferStateChanged && vsConstBuffer) {
 		d3dcon->Map(vsConstBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
 			memcpy(mapped.pData, vsConstBufferData, vsConstBufferSize);
 		d3dcon->Unmap(vsConstBuffer, 0);
 	}
 	
-	if (psConstBuffer) {
+	if (psConstBufferStateChanged && psConstBuffer) {
 		// Update pixel shader constants
 		d3dcon->Map(psConstBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
 			memcpy(mapped.pData, psConstBufferData, psConstBufferSize);
 		d3dcon->Unmap(psConstBuffer, 0);
 	}
+
+	vsConstBufferStateChanged = psConstBufferStateChanged = false;
 }
 
 
@@ -1223,6 +1226,8 @@ void cGraphicsApiD3D11::SetPrimitiveTopology(ePrimitiveTopology t) {
 }
 
 void cGraphicsApiD3D11::SetVSConstantBuffer(const void* data, size_t size, size_t slotIdx) {
+	vsConstBufferStateChanged = true;
+
 	// 16 means one register byte size... (vec4)
 	size_t dstByteOffset = slotIdx * 16;  // slotIdx * sizeof(float) * 4
 	// Need resize for constant buffer
@@ -1257,6 +1262,8 @@ void cGraphicsApiD3D11::SetVSConstantBuffer(const void* data, size_t size, size_
 }
 
 void cGraphicsApiD3D11::SetPSConstantBuffer(const void* data, size_t size, size_t slotIdx) {
+	psConstBufferStateChanged = true;
+
 	// 16 means one register byte size... (vec4)
 	size_t dstByteOffset = slotIdx * 16;  // slotIdx * sizeof(float) * 4
 	// Need resize for constant buffer
@@ -1396,12 +1403,12 @@ eGapiResult cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
 
 	// Create swap chain for device
 	eGapiResult r = CreateMostAcceptableSwapChain(clientWidth, clientHeight, (HWND)(renderWindow->GetHandle()));
-	ASSERT(r == OK);
+	ASSERT(r == eGapiResult::OK);
 	if (r != eGapiResult::OK) return r;
 
 	// Create main render target (BackBuffer)
 	r = CreateViewsForBB();
-	ASSERT(r == OK);
+	ASSERT(r == eGapiResult::OK);
 	if (r != eGapiResult::OK) return r;
 
 	// Create default viewport for swapChain rendering
@@ -1414,7 +1421,7 @@ eGapiResult cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
 
 	// BackBuffer will be the render target in default
 	r = SetRenderTargetDefault();
-	ASSERT(r == OK);
+	ASSERT(r == eGapiResult::OK);
 	return r;
 }
 
