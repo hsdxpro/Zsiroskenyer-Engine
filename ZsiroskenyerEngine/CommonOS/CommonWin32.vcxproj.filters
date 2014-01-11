@@ -4,9 +4,6 @@
     <ClCompile Include="src\DLLLoader.cpp">
       <Filter>DLLLoader</Filter>
     </ClCompile>
-    <ClCompile Include="src\File.cpp">
-      <Filter>File</Filter>
-    </ClCompile>
     <ClCompile Include="src\Log.cpp">
       <Filter>Log</Filter>
     </ClCompile>
@@ -21,9 +18,6 @@
     <ClInclude Include="src\DLLLoader.h">
       <Filter>DLLLoader</Filter>
     </ClInclude>
-    <ClInclude Include="src\File.h">
-      <Filter>File</Filter>
-    </ClInclude>
     <ClInclude Include="src\Log.h">
       <Filter>Log</Filter>
     </ClInclude>
@@ -34,9 +28,6 @@
   <ItemGroup>
     <Filter Include="DLLLoader">
       <UniqueIdentifier>{673d65d8-76e9-4bec-818d-d94251a25760}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="File">
-      <UniqueIdentifier>{2df90317-7023-49f4-afe3-98b88d71df79}</UniqueIdentifier>
     </Filter>
     <Filter Include="Log">
       <UniqueIdentifier>{ee9657fc-4ba8-484a-9ed6-874e1250384d}</UniqueIdentifier>

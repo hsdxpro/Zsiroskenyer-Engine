@@ -4,7 +4,6 @@
 #include "../../Core/src/memory/tlsf.h"
 #include <random>
 #include <deque>
-#include "../../Core/src/Serializable.h"
 #include "../../Core/src/zsString.h"
 
 using namespace std;
@@ -102,6 +101,7 @@ void TestTLSF() {
 #define NUM_STRINGS 10000
 #define NUM_INTEGERS 10000
 void TestSerializer() {
+	/*
 	cSerializable s;
 	mt19937 randomEngine;
 	uniform_int_distribution<unsigned> randomNumber(1, 1000000);
@@ -205,6 +205,7 @@ void TestSerializer() {
 		cout << "all string & numbers succesfully read back!" << endl;
 	else
 		cout << "all string & numbers read back, but there were errors" << endl;
+	*/
 }
 
 

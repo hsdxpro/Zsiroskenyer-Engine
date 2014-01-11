@@ -13,13 +13,11 @@
   <ItemGroup>
     <ClCompile Include="src\DLLLoader.cpp" />
     <ClCompile Include="src\DynamicLibrary.cpp" />
-    <ClCompile Include="src\File.cpp" />
     <ClCompile Include="src\Log.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\DLLLoader.h" />
-    <ClInclude Include="src\File.h" />
     <ClInclude Include="src\Log.h" />
     <ClInclude Include="src\Window.h" />
   </ItemGroup>

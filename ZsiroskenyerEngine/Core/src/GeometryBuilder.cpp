@@ -12,9 +12,6 @@
 #include "math/vec3.h"
 #include "math/vec2.h"
 
-// File IO
-#include "IFile.h"
-
 // Exception
 #include "Exception.h"
 

@@ -9,10 +9,10 @@
 
 #include "../../Core/src/common.h"
 #include "../../Core/src/StrUtil.h"
-#include "../../Core/src/IFile.h"
-#include "../../Core/src/Serializable.h"
-#include <map>
+#include "../../Core/src/FileUtil.h"
 
+#include <map>
+#include <fstream>
 // Ugly create shader last_write_time..
 //#include <boost/filesystem.hpp>
 
@@ -773,30 +773,31 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	static char byteCodeHolder[nShaders][64000];
 
 	// Cg file for parsing
-	IFile* cgFile = NULL;
+	//IFile* cgFile = NULL;
+	std::wfstream* cgFile = NULL;
 
 	// samplersate, etc parsed data from Cg file
-	cSerializable shaderProgInfo;
+	std::wfstream shaderProgInfo;
 	zsString shaderProgInfoPath = pathNoExt + L".inf";
 	
-
 	for (size_t i = 0; i < nShaders; i++) {
 		byteCodeSizes[i] = 0;
 		blobs[i] = NULL;
 
 		// Found binary ... Read it
 		if (binExistences[i]) {
-			byteCodeSizes[i] = IFile::GetSize(binPaths[i]);
-			IFile::ReadBinary(binPaths[i], byteCodeHolder[i], byteCodeSizes[i]);
+			byteCodeSizes[i] = cFileUtil::GetSize(binPaths[i]);
+			cFileUtil::ReadBinary(binPaths[i], byteCodeHolder[i], byteCodeSizes[i]);
 			byteCodes[i] = byteCodeHolder[i];
 		}
 		else { // There is no binary
 			// If cg File not opened open it
-			if (cgFile == NULL) 
-				cgFile = IFile::Create(shaderPath, eFileOpenMode::READ);
+			if (cgFile == NULL)
+				cgFile = new std::wfstream(shaderPath, std::ios_base::in);
+				//cgFile = IFile::Create(shaderPath, eFileOpenMode::READ);
 
 			// Found entry in cg
-			if (cgFile->Contains(entryNames[i])) {
+			if (cStrUtil::Contains(cgFile, entryNames[i])) {
 				// Compile Cg to hlsl
 				CompileCgToHLSL(shaderPath, binPaths[i], (eProfileCG)((int)eProfileCG::SM_5_0_BEGIN + i));
 
@@ -809,7 +810,8 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 				
 				// Parse hlsl code for samplers, textures
-				IFile* hlslFile = IFile::Create(binPaths[i], eFileOpenMode::READ);
+				//IFile* hlslFile = IFile::Create(binPaths[i], eFileOpenMode::READ);
+				std::wfstream hlslFile(binPaths[i], std::ios_base::in);
 
 				std::map<zsString, size_t> textureSlotsParsed;
 				std::list<zsString> samplerNames;
@@ -817,9 +819,10 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 				size_t texIdx = 0;
 				bool reachTextures = false;
 				bool reachSampling = false;
-				// For each line
-				while (!hlslFile->IsEOF()) {
-					const zsString& row = hlslFile->GetLine();
+
+				auto lines = cFileUtil::GetLines(hlslFile);
+				for (auto it = lines.begin(); it != lines.end(); it++) {
+					const zsString& row = *it;
 
 					// Collect <texture names, slot numbers>
 					if ( ! reachSampling && cStrUtil::Begins(row, L"Texture")) {
@@ -839,14 +842,14 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 					}
 				}
 
-				hlslFile->Close();
+				hlslFile.close();
 
 				byteCodes[i] = blobs[i]->GetBufferPointer();
 				byteCodeSizes[i] = blobs[i]->GetBufferSize();
 
 				// Write byteCode as binary file
-				IFile::Clear(binPaths[i]);
-				IFile::WriteBinary(binPaths[i], byteCodes[i], byteCodeSizes[i]);
+				cFileUtil::Clear(binPaths[i]);
+				cFileUtil::WriteBinary(binPaths[i], byteCodes[i], byteCodeSizes[i]);
 			}
 		}
 	}
@@ -900,8 +903,8 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	// 2. search for VS_OUT, get lines under that, while line != "};"
 	// 3. extract VERTEX DECLARATION from those lines
 
-	zsString vsInStructName = cgFile->GetWordAfter(L" VS_MAIN(");
-	std::list<zsString> vsInStructLines = cgFile->GetLinesBetween(vsInStructName, L"};");
+	zsString vsInStructName = cFileUtil::GetWordAfter(cgFile, L" VS_MAIN(");
+	std::list<zsString> vsInStructLines = cFileUtil::GetLinesBetween(cgFile, vsInStructName, L"};");
 
 	int nVertexAttributes = 0;
 
@@ -975,7 +978,6 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	// FREE UP
 	for (size_t i = 0; i < nShaders; i++)
 		SAFE_RELEASE(blobs[i]);
-	SAFE_RELEASE(cgFile);
 
 	// Create shader program
 	cShaderProgramD3D11* shProg = new cShaderProgramD3D11(alignedByteOffset, inputLayout, vs, hs, ds, gs, ps);

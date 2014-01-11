@@ -112,9 +112,6 @@
     <ClInclude Include="src\IDLLLoader.h">
       <Filter>Common\Interface</Filter>
     </ClInclude>
-    <ClInclude Include="src\IFile.h">
-      <Filter>Common\Interface</Filter>
-    </ClInclude>
     <ClInclude Include="src\ILog.h">
       <Filter>Common\Interface</Filter>
     </ClInclude>
@@ -158,10 +155,10 @@
     <ClInclude Include="src\PipelineState.h">
       <Filter>M_GraphicsApi</Filter>
     </ClInclude>
-    <ClInclude Include="src\Serializable.h">
+    <ClInclude Include="src\StrUtil.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="src\StrUtil.h">
+    <ClInclude Include="src\FileUtil.h">
       <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
@@ -215,9 +212,6 @@
     <ClCompile Include="src\IDLLLoader.cpp">
       <Filter>Common\Interface</Filter>
     </ClCompile>
-    <ClCompile Include="src\IFile.cpp">
-      <Filter>Common\Interface</Filter>
-    </ClCompile>
     <ClCompile Include="src\ILog.cpp">
       <Filter>Common\Interface</Filter>
     </ClCompile>
@@ -249,13 +243,13 @@
     <ClCompile Include="src\GraphicsLight.cpp">
       <Filter>M_GraphicsEngine\Classes</Filter>
     </ClCompile>
-    <ClCompile Include="src\Serializable.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
     <ClCompile Include="src\common.cpp">
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="src\StrUtil.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FileUtil.cpp">
       <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>

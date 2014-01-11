@@ -7,12 +7,12 @@
 #include "ResourceManager.h"
 
 // Geometry building
-#include "..\..\Core\src\GeometryBuilder.h"
+#include "../../Core/src/GeometryBuilder.h"
 
 // Graphics api
-#include "..\..\Core\src\IGraphicsApi.h"
-#include "..\..\Core\src\IFile.h"
-#include "..\..\Core\src\StrUtil.h"
+#include "../../Core/src/IGraphicsApi.h"
+#include "../../Core/src/StrUtil.h"
+#include "../../Core/src/FileUtil.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //	ResourceManager
@@ -81,10 +81,10 @@ cMaterialRef cResourceManager::GetMaterial(const zsString& filePath) {
 	auto it = materials.left.find(filePath);
 	if (it == materials.left.end()) {
 		// Open material file
-		IFile* file = IFile::Create(filePath, eFileOpenMode::READ);
+		std::wfstream file(filePath.c_str(), std::ios_base::in);
 
 		// Number of subMaterials
-		size_t nSubMaterials = file->GetNLines() / 9;
+		size_t nSubMaterials = cFileUtil::GetNLines(file) / 9;
 
 		// create material with nSubMaterials subMaterials
 		mtl = new cMaterial(nSubMaterials);
@@ -92,35 +92,38 @@ cMaterialRef cResourceManager::GetMaterial(const zsString& filePath) {
 		// Texture path's relative to materials ;)
 		zsString mtlBasePath = cStrUtil::GetDirectory(filePath);
 
+		auto lines = cFileUtil::GetLines(filePath);
+		auto stringIt = lines.begin();
+
 		for(size_t i = 0; i < nSubMaterials; i++) {
 			// subMaterial ID, not used yet
-			const zsString& idLine = file->GetLine();
+			const zsString& idLine = cFileUtil::GetLine(file);
 
 			std::vector<float> floats;
 			// Diffuse
-			cStrUtil::GetFloats(file->GetLine(), floats);
+			cStrUtil::GetFloats(cFileUtil::GetLine(file), floats);
 			(*mtl)[i].diffuse = Vec4(floats[0], floats[1], floats[2], floats[3]);
 
 			// Specular
-			cStrUtil::GetFloats(file->GetLine(), floats);
+			cStrUtil::GetFloats(cFileUtil::GetLine(file), floats);
 			(*mtl)[i].specular = Vec4(floats[0], floats[1], floats[2], floats[3]);
 
 			// Emissive
-			cStrUtil::GetFloats(file->GetLine(), floats);
+			cStrUtil::GetFloats(cFileUtil::GetLine(file), floats);
 			(*mtl)[i].emissive = Vec4(floats[0], floats[1], floats[2], floats[3]);
 
 			// Glossiness
-			cStrUtil::GetFloats(file->GetLine(), floats);
+			cStrUtil::GetFloats(cFileUtil::GetLine(file), floats);
 			(*mtl)[i].glossiness = floats[0];
 			
 			// Texture Diffuse
-			(*mtl)[i].textureDiffuse = GetTexture(mtlBasePath + (file->GetLine().c_str() + 9));
+			(*mtl)[i].textureDiffuse = GetTexture(mtlBasePath + (cFileUtil::GetLine(file).c_str() + 9));
 
 			// Texture Normal
-			(*mtl)[i].textureNormal = GetTexture(mtlBasePath + (file->GetLine().c_str() + 8));
+			(*mtl)[i].textureNormal = GetTexture(mtlBasePath + (cFileUtil::GetLine(file).c_str() + 8));
 
 			// Texture Specular
-			(*mtl)[i].textureSpecular = GetTexture(mtlBasePath + (file->GetLine().c_str() + 10));
+			(*mtl)[i].textureSpecular = GetTexture(mtlBasePath + (cFileUtil::GetLine(file).c_str() + 10));
 
 			// Texture Displace
 			(*mtl)[i].textureDisplace = GetTexture(mtlBasePath + (file->GetLine().c_str() + 10));		

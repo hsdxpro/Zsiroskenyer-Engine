@@ -1,8 +1,10 @@
 //StrUtil.h By Zsíroskenyér Team 2014.01.11 20:19
+#pragma once
 
 #include "zsString.h"
-
 #include <vector>
+#include <list>
+#include <fstream>
 
 class cStrUtil {
 public:
