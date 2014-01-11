@@ -15,6 +15,8 @@
 #include "../../Core/src/IWindow.h"
 #include "../../Core/src/common.h"
 
+#include <map>
+
 class IVertexBuffer;
 class IIndexBuffer;
 class IConstantBuffer;
@@ -111,7 +113,7 @@ private:
 	eGapiResult CreateDevice();
 	eGapiResult CreateMostAcceptableSwapChain(size_t width, size_t height, HWND windowHandle);
 	eGapiResult CreateViewsForBB();
-	eGapiResult CreateDefaultStates(const D3D11_CULL_MODE& cullMode, const D3D11_FILL_MODE& fillMode);
+	eGapiResult CreateDefaultStates();
 	HRESULT CompileShaderFromFile(const zsString& fileName, const zsString& entry, const zsString& profile, ID3DBlob** ppBlobOut);
 	eGapiResult CompileCgToHLSL(const zsString& cgFileName, const zsString& hlslFileName, eProfileCG compileProfile);
 	void ApplyConstantBuffers();
@@ -135,11 +137,10 @@ protected:
 	size_t psConstBufferSize;
 	ID3D11Buffer* vsConstBuffer; // Then these gets updates when Draw called
 	ID3D11Buffer* psConstBuffer;
-	bool vsConstBufferStateChanged;
+	bool vsConstBufferStateChanged; // Don't want to apply consatnt buffers when it's not changed
 	bool psConstBufferStateChanged;
 
-	// you better remove these muhaha -> ;gányolt fos
-#pragma message("!!REPAIR: gapi render states work, but ugly and slow")
-	ID3D11DepthStencilState* depthStencilState;
-	ID3D11BlendState* blendState;
+	// States <D3D11_____DESC, ID3D11____*>
+	std::map<size_t, ID3D11DepthStencilState*> depthStencilStates;
+	std::map<size_t, ID3D11BlendState*> blendStates;
 };

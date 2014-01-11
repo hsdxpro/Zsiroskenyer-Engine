@@ -69,14 +69,10 @@ cGraphicsApiD3D11::cGraphicsApiD3D11()
 	vsConstBufferStateChanged = psConstBufferStateChanged = false;
 	
 	// Create default states
-	r = CreateDefaultStates(D3D11_CULL_MODE::D3D11_CULL_BACK, D3D11_FILL_MODE::D3D11_FILL_SOLID);
+	r = CreateDefaultStates();
 	if (r != eGapiResult::OK) {
 		throw std::runtime_error("failed to create default states");
 	}
-
-	// render states
-	blendState = NULL;
-	depthStencilState = NULL;
 }
 
 void cGraphicsApiD3D11::Release() {
@@ -351,7 +347,7 @@ eGapiResult cGraphicsApiD3D11::CreateViewsForBB() {
 }
 
 
-eGapiResult cGraphicsApiD3D11::CreateDefaultStates(const D3D11_CULL_MODE& cullMode, const D3D11_FILL_MODE& fillMode) {
+eGapiResult cGraphicsApiD3D11::CreateDefaultStates() {
 
 	// Default geometry topology
 	d3dcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -1357,35 +1353,70 @@ eGapiResult cGraphicsApiD3D11::SetRenderTargetDefault() {
 
 // Set blend state
 eGapiResult cGraphicsApiD3D11::SetBlendState(tBlendDesc desc) {
-	D3D11_BLEND_DESC d3ddesc = ConvertToNativeBlend(desc);
-	ID3D11BlendState* newState = NULL;
-	HRESULT hr = d3ddev->CreateBlendState(&d3ddesc, &newState);
-	if (FAILED(hr)) {
-		switch (hr) {
-		case E_OUTOFMEMORY: return eGapiResult::ERROR_OUT_OF_MEMORY;
-		default: return eGapiResult::ERROR_UNKNOWN;
+	D3D11_BLEND_DESC bsDesc = ConvertToNativeBlend(desc);
+
+	// D3D11_BLEND_DESC hasher
+	struct _hasher {
+		std::size_t operator()(const D3D11_BLEND_DESC& k) const {
+			size_t hash = 0;
+			for (size_t i = 0; i < sizeof(D3D11_BLEND_DESC); i++)
+				hash += *((char*)&k + i);
+			return hash;
 		}
+	} hasher;
+	size_t hash = hasher(bsDesc);
+
+	ID3D11BlendState* state = NULL;
+	auto it = blendStates.find(hash);
+	if (it == blendStates.end()) {
+		HRESULT hr = d3ddev->CreateBlendState(&bsDesc, &state);
+		if (FAILED(hr)) {
+			switch (hr) {
+			case E_OUTOFMEMORY: return eGapiResult::ERROR_OUT_OF_MEMORY;
+			default: return eGapiResult::ERROR_UNKNOWN;
+			}
+		}
+		blendStates[hash] = state;
+	} else {
+		state = it->second;
 	}
-	SAFE_RELEASE(blendState);
-	blendState = newState;
-	d3dcon->OMSetBlendState(newState, NULL, 0xFFFFFFFF);
+
+	d3dcon->OMSetBlendState(state, NULL, 0xFFFFFFFF);
 	return eGapiResult::OK;
 }
 
 // Set depth-stencil state
 eGapiResult cGraphicsApiD3D11::SetDepthStencilState(tDepthStencilDesc desc, uint8_t stencilRef) {
-	D3D11_DEPTH_STENCIL_DESC d3ddesc = ConvertToNativeDepthStencil(desc);
-	ID3D11DepthStencilState* newState = NULL;
-	HRESULT hr = d3ddev->CreateDepthStencilState(&d3ddesc, &newState);
-	if (FAILED(hr)) {
-		switch (hr) {
-		case E_OUTOFMEMORY: return eGapiResult::ERROR_OUT_OF_MEMORY;
-		default: return eGapiResult::ERROR_UNKNOWN;
+	D3D11_DEPTH_STENCIL_DESC dsDesc = ConvertToNativeDepthStencil(desc);
+
+	// D3D11_DEPTH_STENCIL_DESC hasher
+	struct _hasher {
+		std::size_t operator()(const D3D11_DEPTH_STENCIL_DESC& k) const {
+			size_t hash = 0;
+			for (size_t i = 0; i < sizeof(D3D11_DEPTH_STENCIL_DESC); i++)
+				hash += *((char*)&k + i);
+			return hash;
 		}
+	} hasher;
+	size_t hash = hasher(dsDesc);
+
+	// Not existing description
+	ID3D11DepthStencilState* state = NULL;
+	auto it = depthStencilStates.find(hash);
+	if ( it == depthStencilStates.end()) {
+		HRESULT hr = d3ddev->CreateDepthStencilState(&dsDesc, &state);
+		if (FAILED(hr)) {
+			switch (hr) {
+			case E_OUTOFMEMORY: return eGapiResult::ERROR_OUT_OF_MEMORY;
+			default: return eGapiResult::ERROR_UNKNOWN;
+			}
+		}
+		depthStencilStates[hash] = state;
+	} else {
+		state = it->second;
 	}
-	SAFE_RELEASE(depthStencilState);
-	depthStencilState = newState;
-	d3dcon->OMSetDepthStencilState(newState, stencilRef);
+	
+	d3dcon->OMSetDepthStencilState(state, stencilRef);
 	return eGapiResult::OK;
 }
 
