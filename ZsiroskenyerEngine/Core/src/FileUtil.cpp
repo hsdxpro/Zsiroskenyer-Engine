@@ -1,4 +1,5 @@
 #include "FileUtil.h"
+#include "StrUtil.h"
 
 // For determining size of a file
 #include <sys/stat.h>
@@ -15,7 +16,7 @@ bool cFileUtil::Clear(const zsString& path) {
 	return true;
 }
 
-bool cFileUtil::ReadBinary(std::wfstream& file, void* dataOut, size_t dataSize) {
+bool cFileUtil::ReadBinary(std::fstream& file, void* dataOut, size_t dataSize) {
 	ASSERT(file.is_open() == true);
 
 	if (!file.is_open())
@@ -26,7 +27,7 @@ bool cFileUtil::ReadBinary(std::wfstream& file, void* dataOut, size_t dataSize) 
 	return true;
 }
 
-bool cFileUtil::WriteBinary(std::wfstream& file, void* data, size_t dataSize) {
+bool cFileUtil::WriteBinary(std::fstream& file, void* data, size_t dataSize) {
 	ASSERT(file.is_open() == true);
 
 	// Fail to open
@@ -40,7 +41,9 @@ bool cFileUtil::WriteBinary(std::wfstream& file, void* data, size_t dataSize) {
 }
 
 void cFileUtil::DeleteFirstLines(std::wfstream& file, size_t nLines) {
+	// Lines of file
 	auto lines = cFileUtil::GetLines(file);
+
 	// Move iteraton behind nLines
 	auto iter = lines.begin();
 	int idx = 0;
@@ -51,11 +54,9 @@ void cFileUtil::DeleteFirstLines(std::wfstream& file, size_t nLines) {
 
 	// Write lines after nLines
 	while (iter != lines.end()) {
-		stream << *iter << L"\n";
+		file << *iter << L"\n";
 		iter++;
 	}
-
-	Close();
 }
 
 bool cFileUtil::Contains(std::wfstream& file, const zsString& str) {
@@ -69,10 +70,8 @@ bool cFileUtil::Contains(std::wfstream& file, const zsString& str) {
 	return false;
 }
 
-bool cFileUtil::ReplaceAll(const zsString& repThat, const zsString& withThat) {
-	// Reopen stream
-	stream.close();
-	stream.open(filePath.c_str(), std::ios::trunc | std::ios::out);
+bool cFileUtil::ReplaceAll(std::wfstream& file, const zsString& repThat, const zsString& withThat) {
+	auto lines = cFileUtil::GetLines(file);
 
 	// Replace strings
 	auto iter = lines.begin();
@@ -90,19 +89,18 @@ bool cFileUtil::ReplaceAll(const zsString& repThat, const zsString& withThat) {
 	// Write lines
 	iter = lines.begin();
 	while (iter != lines.end()) {
-		stream << *iter << L"\n";
+		file << *iter << L"\n";
 		iter++;
 	}
 
-	Close();
 	return foundReplace;
 }
 
-size_t cFileUtil::GetNLines() const {
-	return lines.size();
+size_t cFileUtil::GetNLines(std::wfstream& file) {
+	return cFileUtil::GetLines(file).size();
 }
 
-size_t cFileUtil::GetSize() const {
+size_t cFileUtil::GetSize(const zsString& filePath) {
 	char ansiPath[256];
 	cStrUtil::ConvertUniToAnsi(filePath, ansiPath, 256);
 
@@ -152,27 +150,11 @@ bool cFileUtil::RemoveDuplicatedLines(std::wfstream& file) {
 	lines.clear();
 	while (iterI != uniqLines.end()) {
 		lines.push_back(*iterI);
-		stream << *iterI << L"\n";
+		file << *iterI << L"\n";
 		iterI++;
 	}
 
-	Close();
 	return foundDuplicates;
-}
-
-size_t cFileUtil::GetSize(const zsString& path) {
-	char ansiPath[256];
-	cStrUtil::ConvertUniToAnsi(path, ansiPath, 256);
-
-	//path.tozsString::
-	struct stat results;
-	if (stat(ansiPath, &results) == 0)
-		return results.st_size;
-	else
-	{
-		ASSERT(0);
-		return 0;
-	}
 }
 
 std::list<zsString> cFileUtil::GetLines(std::wfstream& file) {
@@ -183,7 +165,15 @@ std::list<zsString> cFileUtil::GetLines(std::wfstream& file) {
 	return lines;
 }
 
-zsString cFileUtil::GetStringBefore(const zsString& str) {
+bool cFileUtil::isFileExits(const zsString& str) {
+	std::wfstream is(str.c_str(), std::ios_base::in);
+	bool isOpen = is.is_open();
+	is.close();
+	return isOpen;
+}
+
+zsString cFileUtil::GetStringBefore(std::wfstream& file, const zsString& str) {
+	auto lines = cFileUtil::GetLines(file);
 	auto iter = lines.begin();
 	while (iter != lines.end()) {
 		size_t start_pos = iter->find(str);
@@ -195,7 +185,8 @@ zsString cFileUtil::GetStringBefore(const zsString& str) {
 	return zsString();
 }
 
-zsString cFileUtil::GetWordAfter(const zsString& str) {
+zsString cFileUtil::GetWordAfter(std::wfstream& file, const zsString& str) {
+	auto lines = cFileUtil::GetLines(file);
 	size_t idx = 0;
 	auto iter = lines.begin();
 	while (iter != lines.end()) {
@@ -213,8 +204,10 @@ zsString cFileUtil::GetWordAfter(const zsString& str) {
 	return zsString();
 }
 
-std::list<zsString> cFileUtil::GetLinesBetween(const zsString& str, const zsString& endLine) {
+std::list<zsString> cFileUtil::GetLinesBetween(std::wfstream& file, const zsString& str, const zsString& endLine) {
+	auto lines = cFileUtil::GetLines(file);
 	std::list<zsString> result;
+
 	auto iter = lines.begin();
 	while (iter != lines.end()) {
 		size_t start_pos = iter->find(str);
@@ -231,8 +224,10 @@ std::list<zsString> cFileUtil::GetLinesBetween(const zsString& str, const zsStri
 	return result;
 }
 
-std::list<zsString> cFileUtil::GetLinesBeginsWith(const zsString& str) {
+std::list<zsString> cFileUtil::GetLinesBeginsWith(std::wfstream& file, const zsString& str) {
+	auto lines = cFileUtil::GetLines(file);
 	std::list<zsString> result;
+
 	auto iter = lines.begin();
 	bool match = true;
 	while (iter != lines.end()) {
@@ -263,8 +258,8 @@ std::list<zsString> cFileUtil::GetLinesBeginsWith(const zsString& str) {
 	return result;
 }
 
-std::list<zsString> cFileUtil::GetLinesBeginsWithBetween(const zsString& str, const zsString& left, const zsString& right) {
-	std::list<zsString> res = GetLinesBeginsWith(str);
+std::list<zsString> cFileUtil::GetLinesBeginsWithBetween(std::wfstream& file, const zsString& str, const zsString& left, const zsString& right) {
+	std::list<zsString> res = GetLinesBeginsWith(file, str);
 	for (auto i = res.begin(); i != res.end(); i++)
 		cStrUtil::Between(*i, left.c_str(), right.c_str());
 	return res;

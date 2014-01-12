@@ -1,6 +1,7 @@
 #include "TagParser.h"
 #include "common.h"
 #include "FileUtil.h"
+#include "StrUtil.h"
 
 cTagParser::cTagParser(const zsString& filePath)
 :fileNode(NULL) {

@@ -1,6 +1,7 @@
 #include "SoundEngineFMOD.h"
 
 #include "../../Core/src/common.h"
+#include "../../Core/src/StrUtil.h"
 #include "../../Core/src/ILog.h"
 
 #include "../../Core/src/Timer.h"

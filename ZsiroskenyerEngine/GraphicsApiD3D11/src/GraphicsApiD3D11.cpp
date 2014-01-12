@@ -787,7 +787,9 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		// Found binary ... Read it
 		if (binExistences[i]) {
 			byteCodeSizes[i] = cFileUtil::GetSize(binPaths[i]);
-			cFileUtil::ReadBinary(binPaths[i], byteCodeHolder[i], byteCodeSizes[i]);
+			std::fstream binFile(binPaths[i].c_str(), std::ios_base::in, std::ios_base::binary);
+			cFileUtil::ReadBinary(binFile, byteCodeHolder[i], byteCodeSizes[i]);
+			binFile.close();
 			byteCodes[i] = byteCodeHolder[i];
 		}
 		else { // There is no binary
@@ -849,7 +851,9 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 				// Write byteCode as binary file
 				cFileUtil::Clear(binPaths[i]);
-				cFileUtil::WriteBinary(binPaths[i], byteCodes[i], byteCodeSizes[i]);
+				std::fstream binFile(binPaths[i], std::ios_base::out, std::ios_base::binary);
+				cFileUtil::WriteBinary(binFile, byteCodes[i], byteCodeSizes[i]);
+				binFile.close();
 			}
 		}
 	}
@@ -903,8 +907,8 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	// 2. search for VS_OUT, get lines under that, while line != "};"
 	// 3. extract VERTEX DECLARATION from those lines
 
-	zsString vsInStructName = cFileUtil::GetWordAfter(cgFile, L" VS_MAIN(");
-	std::list<zsString> vsInStructLines = cFileUtil::GetLinesBetween(cgFile, vsInStructName, L"};");
+	zsString vsInStructName = cFileUtil::GetWordAfter(*cgFile, L" VS_MAIN(");
+	std::list<zsString> vsInStructLines = cFileUtil::GetLinesBetween(*cgFile, vsInStructName, L"};");
 
 	int nVertexAttributes = 0;
 

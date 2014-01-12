@@ -92,7 +92,7 @@ cMaterialRef cResourceManager::GetMaterial(const zsString& filePath) {
 		// Texture path's relative to materials ;)
 		zsString mtlBasePath = cStrUtil::GetDirectory(filePath);
 
-		auto lines = cFileUtil::GetLines(*stringIt++);
+		auto lines = cFileUtil::GetLines(file);
 		auto stringIt = lines.begin();
 
 		for(size_t i = 0; i < nSubMaterials; i++) {

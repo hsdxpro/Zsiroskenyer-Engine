@@ -14,6 +14,7 @@
 
 // Exception
 #include "Exception.h"
+#include "FileUtil.h"
 
 cGeometryBuilder::cGeometryBuilder() {
 }
@@ -21,7 +22,7 @@ cGeometryBuilder::cGeometryBuilder() {
 cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& filePath) {
 	Assimp::Importer importer;
 
-	if(!IFile::isFileExits(filePath)) {
+	if(!cFileUtil::isFileExits(filePath)) {
 		ILog::GetInstance()->MsgBox(L"Can't open file: " + filePath);
 		throw FileNotFoundException();
 	}
