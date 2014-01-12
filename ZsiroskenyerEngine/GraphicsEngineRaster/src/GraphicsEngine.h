@@ -92,7 +92,6 @@ public:
 	eGraphicsResult Update(float elapsed = 0.0f) override;
 		
 	// sub-component accessors
-	cSceneManager*		GetSceneManager();
 	cResourceManager*	GetResourceManager();
 	IGraphicsApi*		GetGraphicsApi() override;
 	IShaderManager*		GetShaderManager() override;

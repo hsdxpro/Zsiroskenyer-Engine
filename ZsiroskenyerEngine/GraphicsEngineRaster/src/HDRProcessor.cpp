@@ -124,7 +124,7 @@ void cGraphicsEngine::cHDRProcessor::SetDestination(ITexture2D* dest) {
 float elapsedTotal = 0.0f; // debug print state changes
 
 void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
-	float elapsed = 1e-8;
+	float elapsed = 1e-8f;
 	if (elapsedSec >= 1e-8f) {
 		elapsed = elapsedSec;
 	}
@@ -150,8 +150,8 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	// calculate adaptation
 	avgLuminance = std::max(1e-15f, avgLuminance);
 	float logAvgLum = log10(avgLuminance);
-	float rodSensitivity = 0.04 / (0.04 + logAvgLum);
-	float speed = rodSensitivity*0.4f + (1 - rodSensitivity)*0.4;
+	float rodSensitivity = 0.04f / (0.04f + logAvgLum);
+	float speed = rodSensitivity*0.4f + (1.0f - rodSensitivity)*0.4f;
 	float a = adaptedLuminance;
 	adaptedLuminance = adaptedLuminance + (logAvgLum - adaptedLuminance)*(1 - exp(-elapsed / speed));
 

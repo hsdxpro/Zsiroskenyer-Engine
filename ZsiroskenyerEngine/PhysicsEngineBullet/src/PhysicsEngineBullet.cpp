@@ -184,7 +184,7 @@ IPhysicsEntity* cPhysicsEngineBullet::CreateSoftEntity(const zsString& physicsGe
 	// Assign material to soft body
 	btSoftBody::Material* pm = body->appendMaterial();
 	// Stiffness
-	pm->m_kLST = 0.3;
+	pm->m_kLST = 0.3f;
 	body->m_materials[0]->m_kLST = pm->m_kLST;
 
 	//constraint
@@ -199,7 +199,7 @@ IPhysicsEntity* cPhysicsEngineBullet::CreateSoftEntity(const zsString& physicsGe
 	// CLustering ( more rigid like behav, stability )
 	body->generateClusters(16); // Cluster specific
 	body->m_cfg.kSR_SPLT_CL = 0; // Cluster specific
-	body->m_cfg.kSRHR_CL = 0.3; //Cluster specific
+	body->m_cfg.kSRHR_CL = 0.3f; //Cluster specific
 	
 	cSoftEntityBullet* r = new cSoftEntityBullet(body);
 	return r;
@@ -227,7 +227,7 @@ void cPhysicsEngineBullet::ShootBox(float size, const Vec3& pos, const Vec3& dir
 	btVector3 linVel(dir.x, dir.y, dir.z);
 	body->setLinearVelocity(linVel * power);
 
-	body->setContactProcessingThreshold(1e30);
+	body->setContactProcessingThreshold(1e30f);
 
 	///when using m_ccdMode, disable regular CCD
 	body->setCcdMotionThreshold(2.5f);

@@ -13,7 +13,7 @@
 // OS		
 #include "../../Core/src/IWindow.h"
 
-// Math and utils
+// Meth and utils
 #include "../../Core/src/Factory.h"
 #include "../../Core/src/math/Quat.h"
 #include <vector>
@@ -24,6 +24,10 @@
 
 // TODO REMOVE THAT OR I KILL MYSELF
 #include <windows.h>
+
+// TODO: hide yo' wife, hide yo' kids, hide yo' warnings
+#pragma warning(disable: 4244)
+#pragma warning(disable: 4305)
 
 cEntity* player;
 IPhysicsEngine* pEngine;

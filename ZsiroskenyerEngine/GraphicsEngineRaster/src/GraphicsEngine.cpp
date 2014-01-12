@@ -191,8 +191,8 @@ void cGraphicsEngine::DeleteScene(const IGraphicsScene* scene) {
 ////////////////////////////////////////////////////////////////////////////////
 //	Update scene
 eGraphicsResult cGraphicsEngine::Update(float elapsed) {
-	if (elapsed < 1e-8) {
-		elapsed = 1e-8;
+	if (elapsed < 1e-8f) {
+		elapsed = 1e-8f;
 	}
 	//gApi->Clear(true, true);
 
@@ -241,10 +241,6 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, float elapsed) {
 }
 
 //	Get sub-components where allowed
-cSceneManager* cGraphicsEngine::GetSceneManager()  {
-	return sceneManager;
-}
-
 cResourceManager* cGraphicsEngine::GetResourceManager() {
 	return resourceManager;
 }

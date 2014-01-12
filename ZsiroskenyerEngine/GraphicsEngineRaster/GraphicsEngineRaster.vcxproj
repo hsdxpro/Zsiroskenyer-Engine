@@ -37,6 +37,26 @@
     <ClInclude Include="src\Material.h" />
     <ClInclude Include="src\_GeometryBuilder.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\TechDemo\shaders\deferred_compose.cg" />
+    <None Include="..\TechDemo\shaders\deferred_gbuffer.cg" />
+    <None Include="..\TechDemo\shaders\deferred_lightpass_cmn.cginc" />
+    <None Include="..\TechDemo\shaders\deferred_light_ambient.cg" />
+    <None Include="..\TechDemo\shaders\deferred_light_dir.cg" />
+    <None Include="..\TechDemo\shaders\deferred_light_point.cg" />
+    <None Include="..\TechDemo\shaders\deferred_light_spot.cg" />
+    <None Include="..\TechDemo\shaders\depth_of_field.cg" />
+    <None Include="..\TechDemo\shaders\hdr_blur_horiz.cg" />
+    <None Include="..\TechDemo\shaders\hdr_blur_vert.cg" />
+    <None Include="..\TechDemo\shaders\hdr_compose.cg" />
+    <None Include="..\TechDemo\shaders\hdr_luminance_avg.cg" />
+    <None Include="..\TechDemo\shaders\hdr_luminance_sample.cg" />
+    <None Include="..\TechDemo\shaders\hdr_overbright_downsample.cg" />
+    <None Include="..\TechDemo\shaders\LINE_RENDERER.cg" />
+    <None Include="..\TechDemo\shaders\motion_blur.cg" />
+    <None Include="..\TechDemo\shaders\screen_copy.cg" />
+    <None Include="..\TechDemo\shaders\test.cg" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{593438BA-D952-4A17-AD30-7C261AB425EC}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
