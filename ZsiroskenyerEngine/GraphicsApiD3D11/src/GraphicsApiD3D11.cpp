@@ -324,7 +324,7 @@ eGapiResult cGraphicsApiD3D11::CreateViewsForBB() {
 	if (FAILED(hr)) {
 		SAFE_RELEASE(backBuffer);
 
-		ASSERT_MSG(false, "Failed to create depth buffer for swapChain");
+		ASSERT_MSG(false, L"Failed to create depth buffer for swapChain");
 
 		if (hr == E_OUTOFMEMORY)
 			return eGapiResult::ERROR_OUT_OF_MEMORY;
@@ -336,7 +336,7 @@ eGapiResult cGraphicsApiD3D11::CreateViewsForBB() {
 	hr = d3ddev->CreateDepthStencilView(depthTexture, NULL, &dsv);
 
 	if (FAILED(hr)) {
-		ASSERT_MSG(false, "Failed to create depth buffer VIEW for swapChain");
+		ASSERT_MSG(false, L"Failed to create depth buffer VIEW for swapChain");
 		SAFE_RELEASE(depthTexture);
 		SAFE_RELEASE(backBuffer);
 		if (hr == E_OUTOFMEMORY)
@@ -378,7 +378,7 @@ eGapiResult cGraphicsApiD3D11::CreateDefaultStates() {
 		HRESULT hr = d3ddev->CreateSamplerState(&d, &defaultSamplers[i]);
 
 		if (FAILED(hr)) {
-			ASSERT_MSG(false, "Failed to create default sampler state");
+			ASSERT_MSG(false, L"Failed to create default sampler state");
 			if (hr == E_OUTOFMEMORY)
 				return eGapiResult::ERROR_OUT_OF_MEMORY;
 			else
@@ -752,8 +752,8 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		binExistences[i] = false; // FORCING ALWAYS GENERATE SHADERS FROM CG's TODO TMP STATE
 	}
 
-	zsString entryNames[nShaders] = { "VS_MAIN", "HS_MAIN", "DS_MAIN", "GS_MAIN", "PS_MAIN" };
-	zsString profileNames[nShaders] = { "vs_4_0", "hs_4_0", "ds_4_0", "gs_4_0", "ps_4_0" };
+	zsString entryNames[nShaders] = { L"VS_MAIN", L"HS_MAIN", L"DS_MAIN", L"GS_MAIN", L"PS_MAIN" };
+	zsString profileNames[nShaders] = { L"vs_4_0", L"hs_4_0", L"ds_4_0", L"gs_4_0", L"ps_4_0" };
 
 	// Shader Output data
 	ID3D11InputLayout*		inputLayout = NULL;
@@ -787,7 +787,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		// Found binary ... Read it
 		if (binExistences[i]) {
 			byteCodeSizes[i] = cFileUtil::GetSize(binPaths[i]);
-			std::fstream binFile(binPaths[i].c_str(), std::ios_base::in, std::ios_base::binary);
+			std::fstream binFile(binPaths[i].c_str(), std::ios::in, std::ios::binary);
 			cFileUtil::ReadBinary(binFile, byteCodeHolder[i], byteCodeSizes[i]);
 			binFile.close();
 			byteCodes[i] = byteCodeHolder[i];
@@ -795,11 +795,10 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		else { // There is no binary
 			// If cg File not opened open it
 			if (cgFile == NULL)
-				cgFile = new std::wfstream(shaderPath, std::ios_base::in);
-				//cgFile = IFile::Create(shaderPath, eFileOpenMode::READ);
+				cgFile = new std::wfstream(shaderPath, std::ios::in);
 
 			// Found entry in cg
-			if (cStrUtil::Contains(cgFile, entryNames[i])) {
+			if (cFileUtil::Contains(*cgFile, entryNames[i])) {
 				// Compile Cg to hlsl
 				CompileCgToHLSL(shaderPath, binPaths[i], (eProfileCG)((int)eProfileCG::SM_5_0_BEGIN + i));
 
@@ -812,8 +811,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 				
 				// Parse hlsl code for samplers, textures
-				//IFile* hlslFile = IFile::Create(binPaths[i], eFileOpenMode::READ);
-				std::wfstream hlslFile(binPaths[i], std::ios_base::in);
+				std::wfstream hlslFile(binPaths[i], std::ios::in);
 
 				std::map<zsString, size_t> textureSlotsParsed;
 				std::list<zsString> samplerNames;
@@ -851,7 +849,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 				// Write byteCode as binary file
 				cFileUtil::Clear(binPaths[i]);
-				std::fstream binFile(binPaths[i], std::ios_base::out, std::ios_base::binary);
+				std::fstream binFile(binPaths[i], std::ios::out, std::ios::binary);
 				cFileUtil::WriteBinary(binFile, byteCodes[i], byteCodeSizes[i]);
 				binFile.close();
 			}

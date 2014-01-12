@@ -81,7 +81,7 @@ cMaterialRef cResourceManager::GetMaterial(const zsString& filePath) {
 	auto it = materials.left.find(filePath);
 	if (it == materials.left.end()) {
 		// Open material file
-		std::wfstream file(filePath.c_str(), std::ios_base::in);
+		std::wfstream file(filePath.c_str(), std::ios::in);
 
 		// Number of subMaterials
 		size_t nSubMaterials = cFileUtil::GetNLines(file) / 9;

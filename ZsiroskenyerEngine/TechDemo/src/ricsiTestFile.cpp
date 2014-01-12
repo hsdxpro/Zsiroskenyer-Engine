@@ -115,26 +115,26 @@ int ricsiMain() {
 	pointLight->type = cGraphicsLight::POINT;
 
 	// Static terrain
-	zsString staticBaseNames[9] = {		"coyote",
-										"crate",
-										"demo_cliff_fence",
-										"demo_ground",
-										"demo_house",
-										"demo_road",
-										"demo_tunnel",
-										"fake_tunnel",
-										"tower",
+	zsString staticBaseNames[9] = {		L"coyote",
+										L"crate",
+										L"demo_cliff_fence",
+										L"demo_ground",
+										L"demo_house",
+										L"demo_road",
+										L"demo_tunnel",
+										L"fake_tunnel",
+										L"tower",
 									};
 
-	zsString staticExtension[9] = {		".dae",
-										".dae",
-										".dae",
-										".dae",
-										".dae",
-										".dae",
-										".dae",
-										".dae",
-										".dae",
+	zsString staticExtension[9] = {		L".dae",
+										L".dae",
+										L".dae",
+										L".dae",
+										L".dae",
+										L".dae",
+										L".dae",
+										L".dae",
+										L".dae",
 									};
 
 	const float mass = 0.0;

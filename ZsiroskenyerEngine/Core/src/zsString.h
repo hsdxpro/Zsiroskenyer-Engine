@@ -11,7 +11,7 @@
 
 #undef max
 
-// allocator class
+// allocator class for zsString
 template <class T>
 class TLSFAllocator {
 public:
@@ -39,8 +39,8 @@ public:
 	};
 	// other
 	size_t max_size();
-	inline void construct(pointer p, const T& t) { new(p) T(t); }
-    inline void destroy(pointer p) { p->~T(); }
+	inline void construct(pointer p, const T& t) { new(p)T(t); }
+	inline void destroy(pointer p) { p->~T(); }
 
 private:
 	// internal pool
@@ -50,17 +50,17 @@ private:
 // equality
 template <class T>
 bool TLSFAllocator<T>::operator==(const TLSFAllocator& other) {
-		return &memPool == &other.memPool;
+	return &memPool == &other.memPool;
 }
 template <class T>
 bool TLSFAllocator<T>::operator!=(const TLSFAllocator& other) {
-	return !(*this==other);
+	return !(*this == other);
 }
 // alloc
 template <class T>
 typename TLSFAllocator<T>::pointer TLSFAllocator<T>::allocate(size_t n) {
 	pointer p = (pointer)memPool.allocate(sizeof(value_type)*n);
-	if (p==nullptr)
+	if (p == nullptr)
 		throw std::runtime_error("TLSF failure");
 	return p;
 }
@@ -85,8 +85,8 @@ class zsString : public zsBasicString {
 public:
 	// constructors
 	zsString() : zsBasicString() {};
-	zsString(size_type s, value_type c) : zsBasicString(s,c) {};
-	zsString(const zsBasicString& other, size_type pos, size_type count=npos) : zsBasicString(other, pos, count) {}
+	zsString(size_type s, value_type c) : zsBasicString(s, c) {};
+	zsString(const zsBasicString& other, size_type pos, size_type count = npos) : zsBasicString(other, pos, count) {}
 	zsString(const value_type* s, size_type count) : zsBasicString(s, count) {}
 	zsString(const value_type* s) : zsBasicString(s) {}
 
@@ -95,7 +95,6 @@ public:
 
 	zsString(const zsBasicString& other) : zsBasicString(other) {}
 	zsString(zsBasicString&& other) : zsBasicString(other) {}
-		// zsString(std::initializer_list<valut_type> init) : zsBasicString(init) {}
 
 	// Construct from numbers
 	template<class ValType>
@@ -109,13 +108,13 @@ public:
 
 	// operators
 	zsString& operator = (const zsBasicString& str) { zsBasicString::operator=(str); return *this; }
-	zsString& operator = (zsBasicString&& str)		{ zsBasicString::operator=(str); return *this; }
-	zsString& operator = (const value_type* s)		{ zsBasicString::operator=(s);	 return *this; }
-	zsString& operator = (value_type ch)			{ zsBasicString::operator=(ch);  return *this; }
+	zsString& operator = (zsBasicString&& str)                { zsBasicString::operator=(str); return *this; }
+	zsString& operator = (const value_type* s)                { zsBasicString::operator=(s);         return *this; }
+	zsString& operator = (value_type ch)                        { zsBasicString::operator=(ch);  return *this; }
 
-	zsString& operator += (const zsBasicString& str)	{ zsBasicString::operator+=(str); return *this; }
-	zsString& operator += (value_type ch)				{ zsBasicString::operator+=(ch);  return *this; }
-	zsString& operator += (value_type* s)				{ zsBasicString::operator+=(s);	  return *this; }
+	zsString& operator += (const zsBasicString& str)        { zsBasicString::operator+=(str); return *this; }
+	zsString& operator += (value_type ch)                                { zsBasicString::operator+=(ch);  return *this; }
+	zsString& operator += (value_type* s)                                { zsBasicString::operator+=(s);          return *this; }
 
 	//template <class ValType>
 	zsString operator + (size_t val) { zsString str; str += zsString(val); return str; }

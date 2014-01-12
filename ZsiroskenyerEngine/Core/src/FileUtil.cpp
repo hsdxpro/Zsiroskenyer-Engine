@@ -158,6 +158,9 @@ bool cFileUtil::RemoveDuplicatedLines(std::wfstream& file) {
 }
 
 std::list<zsString> cFileUtil::GetLines(std::wfstream& file) {
+	file.clear();
+	file.seekg(0, std::ios::beg);
+
 	std::list<zsString> lines;
 	zsString str;
 	while (getline(file, str))

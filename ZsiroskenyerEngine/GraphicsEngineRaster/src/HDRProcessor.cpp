@@ -25,12 +25,12 @@ cGraphicsEngine::cHDRProcessor::cHDRProcessor(cGraphicsEngine& parent) : parent(
 		t = NULL;
 
 	// create shaders
-	shaderLumSample = parent.shaderManager->LoadShader("shaders/hdr_luminance_sample.cg");
-	shaderLumAvg = parent.shaderManager->LoadShader("shaders/hdr_luminance_avg.cg");
-	shaderCompose = parent.shaderManager->LoadShader("shaders/hdr_compose.cg");
-	shaderBlurHoriz = parent.shaderManager->LoadShader("shaders/hdr_blur_horiz.cg");
-	shaderBlurVert = parent.shaderManager->LoadShader("shaders/hdr_blur_vert.cg");
-	shaderOverbright = parent.shaderManager->LoadShader("shaders/hdr_overbright_downsample.cg");
+	shaderLumSample = parent.shaderManager->LoadShader(L"shaders/hdr_luminance_sample.cg");
+	shaderLumAvg = parent.shaderManager->LoadShader(L"shaders/hdr_luminance_avg.cg");
+	shaderCompose = parent.shaderManager->LoadShader(L"shaders/hdr_compose.cg");
+	shaderBlurHoriz = parent.shaderManager->LoadShader(L"shaders/hdr_blur_horiz.cg");
+	shaderBlurVert = parent.shaderManager->LoadShader(L"shaders/hdr_blur_vert.cg");
+	shaderOverbright = parent.shaderManager->LoadShader(L"shaders/hdr_overbright_downsample.cg");
 	if (!shaderLumSample || !shaderLumAvg || !shaderBlurHoriz || !shaderBlurVert || !shaderOverbright || !shaderCompose) {
 		Cleanup();
 		throw std::runtime_error("failed to create shaders");
