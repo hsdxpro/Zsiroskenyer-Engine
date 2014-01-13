@@ -168,12 +168,13 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	eGapiResult r = gApi->SetDepthStencilState(depthStencilState, 0x01);
 
 
-	// Just lerping view, then combine how you want
-	Matrix44 currView = cam->GetViewMatrix();
-	static Matrix44 prevView = currView;
-	Matrix44 currLerpedView = lerp( prevView, currView, 0.35f);
+	// Just lerping view, then combine how you want	
+	//Matrix44 currView = cam->GetViewMatrix();	
+	//Matrix44 currView = lerp(prevView, currView, 0.01f);
 	Matrix44 projMat = cam->GetProjMatrix();
-	Matrix44 viewProjMat = currLerpedView * projMat;
+	Matrix44 viewMat = cam->GetViewMatrix();
+	Matrix44 viewProjMat = viewMat * projMat;
+	static Matrix44 prevView = viewMat;
 
 	// Render each instanceGroup
 	for (auto& group : parent.sceneManager->GetInstanceGroups()) {
@@ -296,8 +297,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	float2 lightAngle : register(c14);
 	*/
 	struct {
-		Matrix44 invViewProj;
 		Matrix44 viewProj;
+		Matrix44 invViewProj;		
 		Vec3 camPos;		float _pad0;
 		Vec3 lightColor;	float _pad1;
 		Vec3 lightPos;		float _pad3;
@@ -307,9 +308,10 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		float lightAngleInner, lightAngleOuter;	float _pad7[2];
 	} shaderConstants;
 
-	Matrix44 viewProj = cam->GetViewMatrix() * cam->GetProjMatrix();
-	shaderConstants.invViewProj = Matrix44::Inverse(viewProj);
+	Matrix44 viewProj = viewProjMat;
 	shaderConstants.viewProj = viewProj;
+	shaderConstants.invViewProj = viewProj;
+	shaderConstants.invViewProj.Inverse();
 
 	// Render each light group
 	// Directional lights
@@ -317,14 +319,13 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetTexture(L"gBuffer0", gBuffer[0]);
 	gApi->SetTexture(L"gBuffer1", gBuffer[1]);
 	//gApi->SetTexture(L"gBuffer2", gBuffer[2]);
-	//gApi->SetTexture(L"depthBuffer", depthBufferCopy);
+	gApi->SetTexture(L"depthBuffer", depthBufferCopy);
 
 	for (auto light : directionalLights) {
-
 		// load shader constants
 		shaderConstants.lightColor = light->color;
 		shaderConstants.lightDir = light->direction;
-			gApi->SetPSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
+		gApi->SetPSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
 
 		// draw an FSQ
 		gApi->Draw(3);
@@ -354,45 +355,18 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		gApi->SetPSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
 
 		// draw that bullshit
-		gApi->DrawIndexed(sizeof(ibDataLightPoint) / 3 / sizeof(unsigned));
+		size_t nIndices = ibPoint->GetSize() / sizeof(unsigned);
+		gApi->DrawIndexed(nIndices);
 	}
-
-	// OLD LIGHTING PASS
-	/* 
-	// Set render target
-	gApi->SetRenderTargets(1, &compositionBuffer, depthBuffer);
-	// Set ShaderProgram
-	gApi->SetShaderProgram(shaderComposition);
-
-	// Campos for toying with camera attached lights
-	struct compBuffConstantBuff {
-		Matrix44 invViewProj;
-		Matrix44 proj;
-		Vec3 camPos;
-	} buffer;
-	buffer.invViewProj = Matrix44::Inverse(viewProjMat);
-	buffer.camPos = cam->GetPos();
-	buffer.proj = projMat;
-
-	gApi->SetConstantBufferData(compConstantBuffer, &buffer);
-	gApi->SetPSConstantBuffer(compConstantBuffer, 0);
-
-	// Load up gBuffers to composition shader
-	for (unsigned i = 0; i < 3; i++)
-		gApi->SetTexture(gBuffer[i], i);
-
-	// Load up depth buffer
-	gApi->SetTexture(depthBufferCopy, 3);
-
-	// Draw triangle, hardware will quadify them automatically :)
-	gApi->Draw(3);
-	*/
 
 	// Set back render state to default
 	gApi->SetDepthStencilState(depthStencilDefault, 0x00);
 	gApi->SetBlendState(blendDefault);
 
-	// MOTION BLUR______________________________________________________________________________________________________________________________________
+
+	//-------------------------------------------------------------------------//
+	// --- --- --- --- --- --- --- MOTION BLUR --- --- --- --- --- --- --- --- //
+	//-------------------------------------------------------------------------//
 	gApi->SetRenderTargets(1, &DOFInput, NULL);
 
 	IShaderProgram* motionBlurShader = parent.GetShaderManager()->GetShaderByName(L"motion_blur.cg");
@@ -413,13 +387,14 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetTexture(L"depthTexture", depthBufferCopy);
 
 	// asd new
-	prevView = currLerpedView;
+	prevView = viewMat;
 
 	// Draw triangle, hardware will quadify them automatically :)
 	gApi->Draw(3);
 
-
-	// DEPTH OF FIELD______________________________________________________________________________________________________________________________________
+	//----------------------------------------------------------------------------//
+	// --- --- --- --- --- --- --- DEPTH OF FIELD --- --- --- --- --- --- --- --- //
+	//----------------------------------------------------------------------------//
 	gApi->SetRenderTargets(1, &compositionBuffer, NULL);
 
 	IShaderProgram* DOFShader = parent.GetShaderManager()->GetShaderByName(L"depth_of_field.cg");
@@ -431,6 +406,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// Draw triangle, hardware will quadify them automatically :)
 	gApi->Draw(3);
 }
+
+
 
 void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {
 	shaderGBuffer = parent.shaderManager->ReloadShader(L"shaders/deferred_gbuffer.cg");
@@ -445,6 +422,7 @@ void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {
 	parent.shaderManager->ReloadShader(L"shaders/motion_blur.cg");
 	parent.shaderManager->ReloadShader(L"shaders/depth_of_field.cg");
 }
+
 
 // Access to composition buffer for further processing like post-process & whatever
 ITexture2D* cGraphicsEngine::cDeferredRenderer::GetCompositionBuffer() {

@@ -83,7 +83,7 @@ int ricsiMain() {
 	IGraphicsScene* s = gEngine->CreateScene();
 	s->GetCamera() = cCamera(cCamera::tProjPersp(/*0.5*3.141592653589*/1.15f, 1.75f), 0.01f, 5000.0f);
 
-	s->GetState().hdr.enabled = true;
+	s->GetState().hdr.enabled = false;
 
 
 	// Add some fucking lights :)

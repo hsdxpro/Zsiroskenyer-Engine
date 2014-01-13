@@ -20,26 +20,26 @@ struct VS_OUT {
 };
 
 VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
-/*
-	VS_OUT Output;
+	VS_OUT vout;
+
 	// scale vertices up to range
-	//Output.posH = In.posL*lightRange*2.f; // sphere radius is like 0.54m, scale by 2.0
-		
-	Output.posH.w = 1;
+	vout.posH = In.posL/**lightRange*/*2.0f; // sphere radius is like 0.54m, scale by 2.0
+	vout.posH.w = 1.0f;
+
 	// add light position to verts
-	//Output.posH += float4(lightPos, 0.f);
+	//vout.posH.xyz += lightPos;
 	// add view and proj transformation
-	Output.posH = mul(Output.posH, viewProj);
+	vout.posH = mul(vout.posH, viewProj);
 	
-	Output.tex0 = Output.posH.xy * 0.5f + float2(0.5f, 0.5f);
-*/
-	VS_OUT vout;	
-	vout.tex0 = float2( (VertexID << 1) & 2, VertexID & 2 );
-	vout.posH = In.posL;
+	//vout.tex0 = vout.posH.xy * 0.5f + float2(0.5f, 0.5f);
+
+	/*
+	vout.posH = In.posL*(1/0.54);
+	vout.posH.w = 1.0f;
+	vout.posH.z+=1.0f;
+	*/
+
 	return vout;
-	
-	// return
-	//return Output;
 }
 
 //------------------------------------------------------------------------------
@@ -57,6 +57,7 @@ float LightAttenuation() {
 //------------------------------------------------------------------------------
 float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	float4 color;
+	/*
 	float3 normal;
 	float3 worldPos;
 	float3 diffuseColor;
@@ -69,9 +70,10 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 
 	color.rgb += diffuseTerm*diffuseColor + specTerm; // note: no light attenuation
 	color.rgb *= LightAttenuation();
+	*/
 
-	color.a = 1.f;
+	//color.a = 1.f;
 	
-	color.rgb = (0.5f, 0.5f, 0.5f);
+	color.rgb = float3(1.0f, 1.0f, 0.0f);
 	return color;
 }

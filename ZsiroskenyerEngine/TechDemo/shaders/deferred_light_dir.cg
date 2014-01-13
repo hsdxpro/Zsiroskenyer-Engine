@@ -44,7 +44,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 
 	color.rgb += diffuseTerm*diffuseColor + specTerm; // note: no light attenuation
 
-	color.a = 1.f;
+	color.a = 1.f-0.000001*depth;
 	
 	return color;
 }

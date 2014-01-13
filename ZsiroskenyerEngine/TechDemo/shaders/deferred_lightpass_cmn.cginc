@@ -7,8 +7,8 @@
 //------------------------------------------------------------------------------
 //	Common shader constants
 //------------------------------------------------------------------------------
-float4x4 invViewProj : register(c0);
-float4x4 viewProj : register(c4);
+float4x4 viewProj : register(c0);
+float4x4 invViewProj : register(c4);
 float4 camPos : register(c8);
 float3 lightColor : register(c9);
 float3 lightPos : register(c10);
