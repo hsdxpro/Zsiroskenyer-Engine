@@ -4,39 +4,101 @@
 
 #include "../common.h"
 
-#define VEC3_NORM_TOLERANCE 0.00003f
+// Convserion to Vec4
+Vec3::operator Vec4() {
+	return Vec4(*this, 1.0f);
+}
 
+
+////////////////////////////////////////////////////////////////////////////////
+// Vector stuff
+Vec3& Vec3::Normalize() {
+	float scale = 1.0f / (this->Lenght());
+	(*this) *= scale;
+
+	return *this;
+}
+
+float Vec3::Lenght() const {
+	return sqrt(x*x + y*y + z*z);
+}
+
+Vec3& Vec3::Cross(const Vec3& v) {
+	*this = ::Cross(*this, v);
+	return *this;
+}
+
+float Vec3::Dot(const Vec3& v) const {
+	return x*v.x + y*v.y + z*v.z;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Global vector stuff
+Vec3 Normalize(const Vec3& v) {
+	Vec3 n = v;
+	n.Normalize();
+	return n;
+}
+
+float Dot(const Vec3& v1, const Vec3& v2) {
+	return v1.Dot(v2);
+}
+
+Vec3 Cross(const Vec3& v1, const Vec3& v2) {
+	return Vec3(v1.y * v2.z - v1.z * v2.y,
+		v1.z * v2.x - v1.x * v2.z,
+		v1.x * v2.y - v1.y * v2.x);
+}
+
+float Lenght(const Vec3& v) {
+	return v.Lenght();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Accessors
+float Vec3::operator[](size_t idx) const {
+	ASSERT(idx >= 0 && idx <= 4);
+	return *((float*)this + idx);
+}
+
+float& Vec3::operator[](size_t idx) {
+	ASSERT(idx >= 0 && idx <= 4);
+	return *((float*)this + idx);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Operators
 Vec3& Vec3::operator*=(const Vec3& v2) {
-	x*=v2.x;
-	y*=v2.y;
-	z*=v2.z;
+	x *= v2.x;
+	y *= v2.y;
+	z *= v2.z;
 	return *this;
 }
 
 Vec3& Vec3::operator/=(const Vec3& v2) {
-	x/=v2.x;
-	y/=v2.y;
-	z/=v2.z;
+	x /= v2.x;
+	y /= v2.y;
+	z /= v2.z;
 	return *this;
 }
 
 Vec3& Vec3::operator += (const Vec3& v2) {
-	x+=v2.x;
-	y+=v2.y;
-	z+=v2.z;
+	x += v2.x;
+	y += v2.y;
+	z += v2.z;
 	return *this;
 }
 
 Vec3& Vec3::operator -= (const Vec3& v2) {
-	x-=v2.x;
-	y-=v2.y;
-	z-=v2.z;
+	x -= v2.x;
+	y -= v2.y;
+	z -= v2.z;
 	return *this;
 }
 
 Vec3 Vec3::operator * (const Vec3& v2) const {
-	Vec3 vr=*this;
-	vr*=v2;
+	Vec3 vr = *this;
+	vr *= v2;
 	return vr;
 }
 
@@ -63,10 +125,30 @@ Vec3 Vec3::operator - () const {
 	return vr;
 }
 
-Vec3& Vec3::operator *= (const float& s) {
-	x*=s; y*=s; z*=s;
+Vec3& Vec3::operator *= (float s) {
+	x *= s; y *= s; z *= s;
 	return *this;
 }
+
+Vec3 Vec3::operator * (float s) const {
+	Vec3 vr = *this;
+	vr *= s;
+	return vr;
+}
+
+Vec3& Vec3::operator /= (float s) {
+	(*this) *= (1.0f / s);
+	return *this;
+}
+
+Vec3 Vec3::operator / (float s) const {
+	Vec3 vr = *this;
+	vr /= s;
+	return vr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Matrix transformation
 
 Vec3& Vec3::operator *= (const Matrix44& m) {
 	float tmpX = x;
@@ -77,23 +159,19 @@ Vec3& Vec3::operator *= (const Matrix44& m) {
 	return *this;
 }
 
-Vec3 Vec3::operator * (const float&s) const {
-	Vec3 vr=*this;
-	vr*=s;
-	return vr;
+Vec3 Vec3::operator * (const Matrix44& m) const {
+	Vec3 v2 = *this;
+	v2 *= m;
+	return v2;
 }
 
-Vec3& Vec3::operator /= (const float& s) {
-	(*this) *= (1.0f / s);
-	return *this;
+Vec3 operator*(Matrix44 m, const Vec3& v) {
+	m.Transpose();
+	return v*m;
 }
 
-Vec3 Vec3::operator / (const float&s) const {
-	Vec3 vr=*this;
-	vr /= s;
-	return vr;
-}
-
+////////////////////////////////////////////////////////////////////////////////
+// Compare
 bool Vec3::operator == (const Vec3& w) const {
 	if (x == w.x && y == w.y && z == w.z)
 		return true;
@@ -102,61 +180,11 @@ bool Vec3::operator == (const Vec3& w) const {
 }
 
 bool Vec3::operator != (const Vec3& w) const {
-	return !(*this==w);
+	return !(*this == w);
 }
 
-Vec3& Vec3::Normalize() {
-	float d = fabs(1.f-(x*x + y*y + z*z));
-	if (d > VEC3_NORM_TOLERANCE) {
-		float scale = 1.0f / (this->Lenght());
-		(*this) *= scale;
-	}
-	return *this;
-}
-
-float Vec3::Lenght() const {
-	return sqrt(x*x + y*y + z*z);
-}
-
-float Vec3::operator [](size_t idx) const {
-	ASSERT(idx >= 0 && idx <= 4);
-	return *((float*)this + idx);
-}
-
-Vec3 Vec3::Normalize(const Vec3& v) {
-	Vec3 n = v;
-	n.Normalize();
-	return n;
-}
-
-float Vec3::Dot(const Vec3& v1, const Vec3& v2) {
-	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
-}
-
-Vec3 Vec3::Cross(const Vec3& v1, const Vec3& v2) {
-	return Vec3 (	v1.y * v2.z - v1.z * v2.y,
-					v1.z * v2.x - v1.x * v2.z,
-					v1.x * v2.y - v1.y * v2.x );
-}
-
-Vec3 Vec3::Cross(const Vec3& v) const {
-	return Vec3 (	y * v.z - z * v.y,
-					z * v.x - x * v.z,
-					x * v.y - y * v.x	);
-
-}
-
-float Vec3::Lenght(const Vec3& v) {
-	return v.Lenght();
-}
-
-
-Vec3 Vec3::operator * (const Matrix44& m) const {
-	Vec3 v2 = *this;
-	v2 *= m;
-	return v2;
-}
-
+////////////////////////////////////////////////////////////////////////////////
+// Cout vectors
 std::ostream& operator << (std::ostream& os, Vec3 v) {
 	os << v.x << ',' << v.y << ',' << v.z;
 	return os;

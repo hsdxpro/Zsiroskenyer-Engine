@@ -307,6 +307,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		Vec3 lightAtten;	float _pad6;
 		float lightAngleInner, lightAngleOuter;	float _pad7[2];
 	} shaderConstants;
+	float f = 2.0f;
+	memset(&shaderConstants, *((int*)&f), sizeof(shaderConstants));
 
 	Matrix44 viewProj = viewProjMat;
 	shaderConstants.viewProj = viewProj;
@@ -352,6 +354,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		shaderConstants.lightColor = light->color;
 		shaderConstants.lightPos = light->position;
 		shaderConstants.lightRange = light->range;
+		gApi->SetVSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
 		gApi->SetPSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
 
 		// draw that bullshit

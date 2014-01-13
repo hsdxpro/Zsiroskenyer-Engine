@@ -1,8 +1,13 @@
 #include "Vec4.h"
 #include "Matrix44.h"
 
-#define VEC4_NORM_TOLERANCE 0.00003f
+// Convert to vec3
+Vec4::operator Vec3() {
+	return Vec3(x, y, z);
+}
 
+////////////////////////////////////////////////////////////////////////////////
+// Ctors
 Vec4::Vec4()
 :x(0), y(0), z(0), w(0) {
 }
@@ -19,6 +24,18 @@ Vec4::Vec4(float v[4])
 :x(v[0]), y(v[1]), z(v[2]), w(v[3]) {
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// Accessors
+float Vec4::operator [](size_t idx) const {
+	return *(((float*)this) + idx);
+}
+
+float& Vec4::operator [](size_t idx) {
+	return *(((float*)this) + idx);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Math operators
 Vec4& Vec4::operator*=(const Vec4& v2) {
 	x *= v2.x;
 	y *= v2.y;
@@ -80,97 +97,95 @@ Vec4 Vec4::operator - () const {
 	return vr;
 }
 
-Vec4& Vec4::operator *= (const float& s) {
+Vec4& Vec4::operator *= (float s) {
 	x*=s; y*=s; z*=s; w*=s;
 	return *this;
 }
 
-Vec4& Vec4::operator *= (const Matrix44& m) {
-	x = m._11 * x + m._21 * y + m._31 * z + m._41;
-	y = m._12 * x + m._22 * y + m._32 * z + m._42;
-	z = m._13 * x + m._23 * y + m._33 * z + m._43;
-	z = m._14 * x + m._24 * y + m._34 * z + m._44;
-	return *this;
-}
-
-Vec4 Vec4::operator * (const float&s) const {
+Vec4 Vec4::operator * (float s) const {
 	Vec4 vr = *this;
 	vr *= s;
 	return vr;
 }
 
-Vec4& Vec4::operator /= (const float& s) {
+Vec4& Vec4::operator /= (float s) {
 	(*this) *= (1.0f / s);
 	return *this;
 }
 
-Vec4 Vec4::operator / (const float&s) const {
+Vec4 Vec4::operator / (float s) const {
 	Vec4 vr=*this;
 	vr /= s;
 	return vr;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// Compare
 bool Vec4::operator == (const Vec4& v) const {
-	if (x == v.x && y == v.y && z == v.z && w == v.z)
-		return true;
-	else
-		return false;
+	return (x == v.x && y == v.y && z == v.z && w == v.w);
 }
 
 bool Vec4::operator != (const Vec4& v) const {
 	return !(*this == v);
 }
 
-float Vec4::operator [](size_t idx) const {
-	return *(((float*)this) + idx);
+
+////////////////////////////////////////////////////////////////////////////////
+// Vector stuff
+float Vec4::Lenght() const {
+	return sqrt(x*x + y*y + z*z + w*w);
 }
 
 Vec4& Vec4::Normalize() {
-	float d = fabs(1.f-(x*x + y*y + z*z));
-	if (d > VEC4_NORM_TOLERANCE) {
-		float scale = 1.0f / (this->Lenght());
-		(*this) *= scale;
-	}
+	float scale = 1.0f / (Lenght());
+	(*this) *= scale;
+
 	return *this;
 }
 
-float Vec4::Lenght() const {
-	return sqrt(x*x + y*y + z*z);
+float Vec4::Dot(const Vec4& v2) const {
+	return x*v2.x + y*v2.y + z*v2.z + w*v2.w;
 }
 
-Vec4 Vec4::Normalize(const Vec4& v) {
+////////////////////////////////////////////////////////////////////////////////
+// Global vector stuff
+Vec4 Normalize(const Vec4& v) {
 	Vec4 n=v;
 	n.Normalize();
 	return n;
 }
 
-float Vec4::Dot(const Vec4& v1, const Vec4& v2) {
-	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+float Dot(const Vec4& v1, const Vec4& v2) {
+	return v1.Dot(v2);
 }
 
-Vec4 Vec4::Cross(const Vec4& v1, const Vec4& v2) {
-	Vec4 ret(	v1.y*v2.z - v1.z*v2.y,
-				v1.z*v2.x - v1.x*v2.z,
-				v1.x*v2.y - v1.y*v2.x , 1.0f);
-	return ret;
-}
-
-float Vec4::Lenght(const Vec4& v) {
+float Lenght(const Vec4& v) {
 	return v.Lenght();
 }
 
-Vec4 operator * (const Vec4& v, const Matrix44& m) {
-	Vec4 v2 = v;
-	v2 *= m;
-	return v2;
-}
-
-Vec4 operator * (const Matrix44& m, const Vec4& v) {
-	Vec4 v2 = v;
+////////////////////////////////////////////////////////////////////////////////
+// Matrix transformations
+Vec4 Vec4::operator * (const Matrix44& m) const {
+	Vec4 v2 = *this;
 	v2 *= m;
 	return v2;
 };
 
+Vec4& Vec4::operator *= (const Matrix44& m) {
+	x = m._11*x + m._21*y + m._31*z + m._41*w;
+	y = m._12*x + m._22*y + m._32*z + m._42*w;
+	z = m._13*x + m._23*y + m._33*z + m._43*w;
+	z = m._14*x + m._24*y + m._34*z + m._44*w;
+	return *this;
+}
+
+Vec4 operator*(Matrix44 m, const Vec4& v) {
+	m.Transpose();
+	return v*m;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Print to streams
 std::ostream& operator<<(std::ostream& os, Vec4 v) {
 	os << v.x << ',' << v.y << ',' << v.z;
 	return os;

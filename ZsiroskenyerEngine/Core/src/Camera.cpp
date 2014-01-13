@@ -61,17 +61,17 @@ float cCamera::GetFarPlane() const {
 
 Matrix44 cCamera::GetViewMatrix() const {
 	const Vec3 up(0.0f, 0.0f, 1.0f);
-	return Matrix44::MatrixViewRH(pos, target, up);
+	return Matrix44().ViewRH(pos, target, up);
 }
 
 void cCamera::CalcProjMatrix() {
 	switch (projType)
 	{
 	case ORTHO:
-		proj = Matrix44::MatrixProjOrtographic(nearPlane, farPlane, projOrtho.left, projOrtho.right, projOrtho.bottom, projOrtho.top);
+		proj.ProjOrtographic(nearPlane, farPlane, projOrtho.left, projOrtho.right, projOrtho.bottom, projOrtho.top);
 		break;
 	case PERSP:
-		proj = Matrix44::MatrixProjPerspective(nearPlane, farPlane, projPersp.fovRad, projPersp.aspectRatio);
+		proj.ProjPerspective(nearPlane, farPlane, projPersp.fovRad, projPersp.aspectRatio);
 		break;
 	default:
 		ASSERT_MSG(false, L"OMG wtf camera not ORTHO and not PERSP");
@@ -92,19 +92,19 @@ Vec3 cCamera::GetDirBack() const {
 }
 
 Vec3 cCamera::GetDirUp() const {
-	return Vec3::Cross(GetDirRight(), GetDirFront());
+	return Cross(GetDirRight(), GetDirFront());
 }
 
 Vec3 cCamera::GetDirDown() const {
-	return Vec3::Cross(GetDirFront(), GetDirRight());
+	return Cross(GetDirFront(), GetDirRight());
 }
 
 Vec3 cCamera::GetDirRight() const {
-	return Vec3::Cross(GetDirFront(), Vec3(0.0f, 0.0f, 1.0f));
+	return Cross(GetDirFront(), Vec3(0.0f, 0.0f, 1.0f));
 }
 
 Vec3 cCamera::GetDirLeft() const {
-	return Vec3::Cross(Vec3(0.0f, 0.0f, 1.0f), GetDirFront());
+	return Cross(Vec3(0.0f, 0.0f, 1.0f), GetDirFront());
 }
 
 const Vec3& cCamera::GetPos() const {

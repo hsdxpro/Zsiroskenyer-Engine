@@ -207,7 +207,7 @@ eGraphicsResult cGraphicsEngine::Update(float elapsed) {
 void cGraphicsEngine::RenderScene(cGraphicsScene& scene, float elapsed) {
 	// load settings from scene
 	camera = &scene.camera;
-	camera->SetAspectRatio((double)screenWidth / (double)screenHeight);
+	camera->SetAspectRatio(float((double)screenWidth / (double)screenHeight));
 	sceneManager = &scene.sceneManager;
 	this->elapsed = elapsed;
 

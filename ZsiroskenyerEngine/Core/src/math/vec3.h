@@ -5,56 +5,66 @@
 #include <iostream>
 
 class Matrix44;
+class Vec4;
+
 class Vec3 {
-	public:
-		~Vec3(){}
-		float x,y,z;
+public:
+	// Coordinates
+	float x,y,z;
 
-		Vec3() {x=y=z=0.0f;}
-		Vec3(float x, float y, float z) {this->x=x; this->y=y; this->z=z;}
-		Vec3(float v[3]) {x = v[0]; y=v[1]; z=v[2];}
+	// Ctors
+	Vec3() {x=y=z=0.0f;}
+	Vec3(float x, float y, float z) {this->x=x; this->y=y; this->z=z;}
+	Vec3(float v[3]) {x = v[0]; y=v[1]; z=v[2];}
 
+	// Vector stuff
+	Vec3& Normalize();
+	float Lenght() const;
+	Vec3& Cross(const Vec3& v);
+	float Dot(const Vec3& v) const;
 
-		Vec3& Normalize();
+	// Accessors
+	float& operator[](size_t idx);
+	float operator[](size_t idx) const;
 
-		static Vec3 Normalize(const Vec3& v);
-		static float Dot(const Vec3& v1, const Vec3& v2);
-		static Vec3 Cross(const Vec3& v1, const Vec3& v2);
-		Vec3 Cross(const Vec3& v) const;
+	// Math operators
+	Vec3& operator *= (const Vec3& v2);
+	Vec3& operator /= (const Vec3& v2);
+	Vec3& operator += (const Vec3& v2);
+	Vec3& operator -= (const Vec3& v2);
 
-		static float Lenght(const Vec3& v);
+	Vec3& operator *= (float s);
+	Vec3& operator /= (float s); 
 
-		float Lenght() const;
+	Vec3 operator * (const Vec3& v2) const;
+	Vec3 operator / (const Vec3& v2) const;
+	Vec3 operator + (const Vec3& v2) const;
+	Vec3 operator - (const Vec3& v2) const;
 
-		float operator [](size_t idx) const;
+	Vec3 operator * (float s) const;
+	Vec3 operator / (float s) const;
+	friend Vec3 operator*(float s, Vec3 v);
 
-		Vec3& operator *= (const Vec3& v2);
-		Vec3& operator /= (const Vec3& v2);
-		Vec3& operator += (const Vec3& v2);
-		Vec3& operator -= (const Vec3& v2);
+	Vec3 operator - () const;
 
-		Vec3& operator *= (const float& s);
-		Vec3& operator /= (const float& s); 
+	// Compare
+	bool operator == (const Vec3& w) const;
+	bool operator != (const Vec3& w) const;
 
-		Vec3 operator * (const Vec3& v2) const;
-		Vec3 operator / (const Vec3& v2) const;
-		Vec3 operator + (const Vec3& v2) const;
-		Vec3 operator - (const Vec3& v2) const;
+	// Matrix trans
+	Vec3 operator * (const Matrix44& m) const;
+	Vec3& operator *= (const Matrix44& m);
+	friend Vec3 operator*(Matrix44 m, const Vec3& v);
 
-		// Matrix trans
-		Vec3 operator * (const Matrix44& m) const;
-		Vec3& operator *= (const Matrix44& m);
-
-		Vec3 operator * (const float&s ) const;
-		Vec3 operator / (const float&s ) const;
-		friend const Vec3 operator*(float s, Vec3 v);
-
-		Vec3 operator - () const;
-
-		// boolean operators
-		bool operator == (const Vec3& w) const;
-		bool operator != (const Vec3& w) const;
+	// Conversion
+	operator Vec4();
 };
+
+
+Vec3 Normalize(const Vec3& v);
+float Lenght(const Vec3& v);
+float Dot(const Vec3& v1, const Vec3& v2);
+Vec3 Cross(const Vec3& v1, const Vec3& v2);
 
 // utility functions ///////////////////////////////
 std::ostream& operator<<(std::ostream& os, Vec3 v);

@@ -23,11 +23,11 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 	VS_OUT vout;
 
 	// scale vertices up to range
-	vout.posH = In.posL/**lightRange*/*2.0f; // sphere radius is like 0.54m, scale by 2.0
+	vout.posH = In.posL*lightRange*2.0f; // sphere radius is like 0.54m, scale by 2.0
 	vout.posH.w = 1.0f;
 
 	// add light position to verts
-	//vout.posH.xyz += lightPos;
+	vout.posH.xyz += lightPos;
 	// add view and proj transformation
 	vout.posH = mul(vout.posH, viewProj);
 	

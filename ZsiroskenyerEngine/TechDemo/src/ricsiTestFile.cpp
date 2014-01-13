@@ -37,6 +37,10 @@ IPhysicsEngine* pEngine;
 
 void updateDemo(cCamera& cam, float tDelta);
 
+// a lovely light circle
+static const int sizeLightCircle = 10;
+cGraphicsLight* lightCircle[sizeLightCircle];
+
 int ricsiMain() {
 	/*
 	cSerializable ser;
@@ -92,8 +96,10 @@ int ricsiMain() {
 	cGraphicsLight* secondSunLight = s->CreateLight();
 	cGraphicsLight* thirdSunLight = s->CreateLight();	
 	cGraphicsLight* pointLight = s->CreateLight();
-	
 
+	for (auto& light : lightCircle) {
+		light = s->CreateLight();
+	}
 	
 	sunLight->type = cGraphicsLight::DIRECTIONAL;
 	sunLight->color = Vec3(1, 1, 1);
@@ -115,8 +121,37 @@ int ricsiMain() {
 	pointLight->atten0 = pointLight->atten1 = pointLight->atten2 = 0.0f;
 	pointLight->color = Vec3(0.2, 0.2, 0.9);
 	pointLight->position = Vec3(8, 8, 2);
-	pointLight->range = 20.f;
+	pointLight->range = 10.f;
 	pointLight->type = cGraphicsLight::POINT;
+
+	for (auto light : lightCircle) {
+		light->type = cGraphicsLight::POINT;
+		light->atten0 = light->atten1 = light->atten2 = 0.0f;
+		light->position = Vec3(0, 0, 0);
+		light->range = 2.5f;
+		float H=(float)(&light-lightCircle)/(float)sizeLightCircle,
+			S=1.0f,
+			L=1.0f;
+		float C = (1 - abs(2 * L - 1))*S;
+		float H_ = H * 6.0f;
+		float X = C*(1 - abs(fmod(H_, 2.0f) - 1.0f));
+		Vec3 colorRGB;
+		if (0.0f <= H_ && H_ < 1.0f)
+			colorRGB.x = C, colorRGB.y = X, colorRGB.z = 0;
+		if (0.1f <= H_ && H_ < 2.0f)
+			colorRGB.x = X, colorRGB.y = C, colorRGB.z = 0;
+		if (0.2f <= H_ && H_ < 3.0f)
+			colorRGB.x = 0, colorRGB.y = C, colorRGB.z = X;
+		if (0.3f <= H_ && H_ < 4.0f)
+			colorRGB.x = 0, colorRGB.y = X, colorRGB.z = C;
+		if (0.4f <= H_ && H_ < 5.0f)
+			colorRGB.x = X, colorRGB.y = 0, colorRGB.z = C;
+		if (0.5f <= H_ && H_ <= 6.0f)
+			colorRGB.x = C, colorRGB.y = 0, colorRGB.z = X;
+		float m = L - 0.5*C;
+		colorRGB += Vec3(m, m, m);
+		light->color = colorRGB;
+	}
 
 	// Static terrain
 	zsString staticBaseNames[9] = {		L"coyote",
@@ -225,13 +260,28 @@ void updateDemo(cCamera& cam, float tDelta) {
 	cam.SetPos(playerPos + Vec3(0, -0.75, 2));
 */
 
-// Shooting boxes
+	// update light circle
+	static double elapsedTotal = 0.0f;
+	elapsedTotal += tDelta;
+	if (elapsedTotal >= 100.0)
+		elapsedTotal -= 100.0;	
+	for (int i = 0; i < sizeLightCircle; i++) {
+		double __dummy;
+		float angle = modf(elapsedTotal+double(i)/double(sizeLightCircle), &__dummy);
+		Vec3 v(10.0, 0.0, 0.0);
+		Quat q(Vec3(0,0,1).Normalize(), ZS_PI2*angle);
+		v = Quat::RotateVec3_2(v, q);
+		lightCircle[i]->position = v;
+	}
+	
+
+	// Shooting boxes
 	//if (((short)GetAsyncKeyState(VK_LBUTTON)) & 0x80) // Press detect doesn't work :(
 	if (GetAsyncKeyState(VK_LBUTTON))
 		pEngine->ShootBox(0.3f, cam.GetPos(), cam.GetDirFront(), 60); // This function in the interface is just for test purposes
 
 
-// CAMERA MOVING
+	// CAMERA MOVING
 	Vec3 deltaMove(0, 0, 0);
 	if (GetAsyncKeyState('W'))
 		deltaMove += cam.GetDirFront() * (CAM_MOVE_SPEED * tDelta);
@@ -287,7 +337,8 @@ void updateDemo(cCamera& cam, float tDelta) {
 		mouseDeltaY = -maxLimit;
 	if (mouseDeltaY > maxLimit)
 		mouseDeltaY = maxLimit;
-	Matrix44 camRotMat = Matrix44::RotationEuler(mouseDeltaY, 0, mouseDeltaX);
+	Matrix44 camRotMat;
+	camRotMat.RotationEuler(mouseDeltaY, 0, mouseDeltaX);
 
 	// Rot front vec with that. apply target
 	Vec3 frontVec(0, 1, 0);

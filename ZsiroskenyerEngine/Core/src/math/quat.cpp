@@ -5,6 +5,7 @@
 #include "Quat.h"
 #include "Matrix44.h"
 
+// ctors
 Quat::Quat() 
 :x(0.0f), y(0.0f), z(0.0f), w(1.0f) {
 }
@@ -24,6 +25,7 @@ Quat::Quat(const Vec3& v, float angle) {
 	w = cos(angle*0.5f);
 }
 
+// operators
 Quat& Quat::operator *= (const Quat& q2) {
 	float w1=w, x1=x, y1=y, z1=z;
     x =  x1 * q2.w + y1 * q2.z - z1 * q2.y + w1 * q2.x;
@@ -62,33 +64,43 @@ bool Quat::operator != (const Quat& r) const {
 	return !(*this==r);
 }
 
-float Quat::lenght() const {
+// quat stuff
+float Quat::Lenght() const {
 	return sqrt(w*w + x*x + y*y + z*z);
 }
 
-Quat& Quat::normalize() {
-	float d = fabs(1.f-(w*w + x*x + y*y + z*z));
-	if (d>QUAT_NORM_TOLERANCE) {
-		float scale = 1.f/(this->lenght());
-		w*=scale;
-		x*=scale;
-		y*=scale;
-		z*=scale;
-	}
+Quat& Quat::Normalize() {
+	float scale = 1.f/(this->Lenght());
+	w*=scale;
+	x*=scale;
+	y*=scale;
+	z*=scale;
+
 	return *this;
 }
 
-Quat normalize(const Quat& q) {
+Quat& Quat::Conjugate() {
+	this->operator~();
+	return *this;
+}
+
+// globals
+Quat Normalize(const Quat& q) {
 	Quat n=q;
-	n.normalize();
+	n.Normalize();
 	return n;
 }
 
-float lenght(const Quat& q) {
-	return q.lenght();
+float Lenght(const Quat& q) {
+	return q.Lenght();
 }
 
-Vec3 QuatRotateVec3(Vec3 v, Quat q) {
+float Dot(const Quat& q1, const Quat& q2) {
+	return q1.x*q2.x + q1.y*q2.y + q1.z*q2.z + q1.w*q2.w;
+}
+
+// interaction with vec3
+Vec3 Quat::RotateVec3(Vec3 v, Quat q) {
 	Quat qv(0.f,v.x,v.y,v.z);
 
 	Quat qvr = q*qv*(~q);
@@ -101,7 +113,7 @@ Vec3 QuatRotateVec3(Vec3 v, Quat q) {
 	return vr;
 }
 
-Vec3 QuatRotateVec3_2(Vec3 v, Quat q) {
+Vec3 Quat::RotateVec3_2(Vec3 v, Quat q) {
 	Vec3 vr;
 	float w=q.w, x=-q.x, y=q.y, z=q.z;
 	vr.x = w*w*v.x + 2*y*w*v.z - 2*z*w*v.y + x*x*v.x + 2*y*x*v.y + 2*z*x*v.z - z*z*v.x - y*y*v.x;
@@ -110,33 +122,7 @@ Vec3 QuatRotateVec3_2(Vec3 v, Quat q) {
 	return vr;
 }
 
-Quat& QuatConjugate(Quat& out, const Quat& q) {
-	out = ~q; return out;
-}
-
-float QuatDot(const Quat& q1, const Quat& q2) {
-	return q1.x*q2.x + q1.y*q2.y + q1.z*q2.z + q1.w*q2.w;
-}
-
-Quat& QuatRotation(Quat& out, Vec3 axis, float angle) {
-	float sin_angle = sin(angle*0.5f);
-	out.w = cos(angle*0.5f);
-	out.x = axis.x*sin_angle;
-	out.y = axis.y*sin_angle;
-	out.z = axis.z*sin_angle;
-	return out;
-}
-
-Quat::operator Matrix44() {
-	Matrix44 m (
-		1.f*-2.f*(y*y + z*z),		2.f*(x*y - z*w),		2.f*(x*z + y*w),		0.f,
-		2.f*(x*y + z*w),			1.f-2.f*(x*x + y*y),	2.f*(y*z - x*w),		0.f,
-		2.f*(x*z - y*w),			2.f*(y*z + x*w),		1.f-2.f*(x*x + y*y),	0.f,
-		0.f,						0.f,					0.f,					1.f
-	);
-	return m;
-};
-
+// rotation properties
 Quat Quat::EulerAnglesToQuat(const Vec3& eulerAngles) {
 	return EulerAnglesToQuat(eulerAngles.x, eulerAngles.y, eulerAngles.z);
 }
@@ -168,8 +154,8 @@ Vec3 Quat::QuatToEulerAngles(const Quat& q) {
 
 Quat Quat::DirToRot(const Vec3&dir, const Vec3& up) {
 	// Create basis for the matrix
-	Vec3 right = up.Cross(dir);
-	Vec3 realUp = dir.Cross(right);
+	Vec3 right = Cross(up, dir);
+	Vec3 realUp = Cross(dir, right);
 
 	Matrix44 bMat(	right.x	, right.y	, right.z	, 0,
 					realUp.x, realUp.y	, realUp.z	, 0,
@@ -186,6 +172,18 @@ Quat Quat::DirToRot(const Vec3&dir, const Vec3& up) {
 	return rot;
 }
 
+// convert to matrix
+Quat::operator Matrix44() {
+	Matrix44 m(
+		1.f*-2.f*(y*y + z*z), 2.f*(x*y - z*w), 2.f*(x*z + y*w), 0.f,
+		2.f*(x*y + z*w), 1.f - 2.f*(x*x + y*y), 2.f*(y*z - x*w), 0.f,
+		2.f*(x*z - y*w), 2.f*(y*z + x*w), 1.f - 2.f*(x*x + y*y), 0.f,
+		0.f, 0.f, 0.f, 1.f
+		);
+	return m;
+};
+
+// cout quaternions
 std::ostream& operator<<(std::ostream& os, Quat q) {
 	os << q.w << ':' << q.x << ',' << q.y << ',' << q.z;
 	return os;
