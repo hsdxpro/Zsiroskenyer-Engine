@@ -19,11 +19,15 @@
 #include <vector>
 #include <cstdlib>
 #include <iostream>
+#include <thread>
+#include <chrono>
 
 #include "../../Core/src/Timer.h"
 
 // TODO REMOVE THAT OR I KILL MYSELF
 #include <windows.h>
+
+using namespace std;
 
 // TODO: hide yo' wife, hide yo' kids, hide yo' warnings
 #pragma warning(disable: 4244)
@@ -38,7 +42,7 @@ IPhysicsEngine* pEngine;
 void updateDemo(cCamera& cam, float tDelta);
 
 // a lovely light circle
-static const int sizeLightCircle = 10;
+static const int sizeLightCircle = 20;
 cGraphicsLight* lightCircle[sizeLightCircle];
 
 int ricsiMain() {
@@ -87,7 +91,7 @@ int ricsiMain() {
 	IGraphicsScene* s = gEngine->CreateScene();
 	s->GetCamera() = cCamera(cCamera::tProjPersp(/*0.5*3.141592653589*/1.15f, 1.75f), 0.01f, 5000.0f);
 
-	s->GetState().hdr.enabled = false;
+	s->GetState().hdr.enabled = true;
 
 
 	// Add some fucking lights :)
@@ -96,19 +100,23 @@ int ricsiMain() {
 	cGraphicsLight* secondSunLight = s->CreateLight();
 	cGraphicsLight* thirdSunLight = s->CreateLight();	
 	cGraphicsLight* pointLight = s->CreateLight();
+	cGraphicsLight* spotLight = s->CreateLight();
+
 
 	for (auto& light : lightCircle) {
 		light = s->CreateLight();
 	}
-	
+
+	// sunlight
 	sunLight->type = cGraphicsLight::DIRECTIONAL;
 	sunLight->color = Vec3(1, 1, 1);
 	sunLight->direction = Vec3(0.5f, 0.5f, -0.5f).Normalize();
 	
+	// skylight
 	skyLight->type = cGraphicsLight::AMBIENT;
 	skyLight->color = Vec3(1, 1, 1);
-
 	
+	// other suns... well yeah
 	secondSunLight->type = cGraphicsLight::DIRECTIONAL;
 	secondSunLight->color = Vec3(1.2, 0.03, 0.95);
 	secondSunLight->direction = Vec3(-0.8f, 0.0f, -0.2f).Normalize();
@@ -117,40 +125,65 @@ int ricsiMain() {
 	thirdSunLight->color = Vec3(0.2, 0.8f, 0.77f);
 	thirdSunLight->direction = Vec3(0.8, -0.1f, -0.3f).Normalize();
 
+	sunLight->enabled = true;
+	secondSunLight->enabled = thirdSunLight->enabled = false;
 
-	pointLight->atten0 = pointLight->atten1 = pointLight->atten2 = 0.0f;
-	pointLight->color = Vec3(0.2, 0.2, 0.9);
+	// a big point light
+	pointLight->atten0 = 0.0f;
+	pointLight->atten1 = 0.2f;
+	pointLight->atten2 = 0.2f;
+	pointLight->color = Vec3(0.2, 0.2, 0.9)*10;
 	pointLight->position = Vec3(8, 8, 2);
 	pointLight->range = 10.f;
 	pointLight->type = cGraphicsLight::POINT;
 
-	for (auto light : lightCircle) {
+	// searchlight :D
+	spotLight->atten0 = 0.0f;
+	spotLight->atten1 = 0.2f;
+	spotLight->atten2 = 0.1f;
+	spotLight->smallAngle = 24.0f / 180.0f*3.1415926f;
+	spotLight->bigAngle = 30.0f / 180.0f*3.1415926f;
+	spotLight->color = Vec3(1.0f, 0.95f, 0.88f)*10.f;
+	spotLight->direction = Vec3(0.5, 0.5, -0.5).Normalize();
+	spotLight->position = Vec3(0, 0, 10);
+	spotLight->range = 80;
+	spotLight->type = cGraphicsLight::SPOT;
+
+
+	// circle of light muhaha
+	for (auto& light : lightCircle) {
 		light->type = cGraphicsLight::POINT;
-		light->atten0 = light->atten1 = light->atten2 = 0.0f;
+
+		light->atten0 = 0.0f;
+		light->atten1 = 0.5f;
+		light->atten2 = 0.8f;
+
 		light->position = Vec3(0, 0, 0);
 		light->range = 2.5f;
 		float H=(float)(&light-lightCircle)/(float)sizeLightCircle,
 			S=1.0f,
-			L=1.0f;
+			L=0.5f;
 		float C = (1 - abs(2 * L - 1))*S;
 		float H_ = H * 6.0f;
 		float X = C*(1 - abs(fmod(H_, 2.0f) - 1.0f));
 		Vec3 colorRGB;
 		if (0.0f <= H_ && H_ < 1.0f)
 			colorRGB.x = C, colorRGB.y = X, colorRGB.z = 0;
-		if (0.1f <= H_ && H_ < 2.0f)
+		else if (0.1f <= H_ && H_ < 2.0f)
 			colorRGB.x = X, colorRGB.y = C, colorRGB.z = 0;
-		if (0.2f <= H_ && H_ < 3.0f)
+		else if (0.2f <= H_ && H_ < 3.0f)
 			colorRGB.x = 0, colorRGB.y = C, colorRGB.z = X;
-		if (0.3f <= H_ && H_ < 4.0f)
+		else if (0.3f <= H_ && H_ < 4.0f)
 			colorRGB.x = 0, colorRGB.y = X, colorRGB.z = C;
-		if (0.4f <= H_ && H_ < 5.0f)
+		else if (0.4f <= H_ && H_ < 5.0f)
 			colorRGB.x = X, colorRGB.y = 0, colorRGB.z = C;
-		if (0.5f <= H_ && H_ <= 6.0f)
+		else if (0.5f <= H_ && H_ <= 6.0f)
 			colorRGB.x = C, colorRGB.y = 0, colorRGB.z = X;
+		else
+			colorRGB = Vec3(0, 0, 0);
 		float m = L - 0.5*C;
 		colorRGB += Vec3(m, m, m);
-		light->color = colorRGB;
+		light->color = colorRGB * 2.0f;
 	}
 
 	// Static terrain
@@ -262,9 +295,9 @@ void updateDemo(cCamera& cam, float tDelta) {
 
 	// update light circle
 	static double elapsedTotal = 0.0f;
-	elapsedTotal += tDelta;
+	elapsedTotal += tDelta/4.f;
 	if (elapsedTotal >= 100.0)
-		elapsedTotal -= 100.0;	
+		elapsedTotal -= 100.0;
 	for (int i = 0; i < sizeLightCircle; i++) {
 		double __dummy;
 		float angle = modf(elapsedTotal+double(i)/double(sizeLightCircle), &__dummy);

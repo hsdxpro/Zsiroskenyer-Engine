@@ -16,10 +16,10 @@ struct VS_IN {
 };
 struct VS_OUT {
 	float4 posH 	: POSITION;
-	float2 tex0 	: TEXCOORD2;
+	float2 tex0 	: TEXCOORD0;
 };
 
-VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
+VS_OUT VS_MAIN(VS_IN In) {
 	VS_OUT vout;
 
 	// scale vertices up to range
@@ -31,13 +31,8 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 	// add view and proj transformation
 	vout.posH = mul(vout.posH, viewProj);
 	
-	//vout.tex0 = vout.posH.xy * 0.5f + float2(0.5f, 0.5f);
-
-	/*
-	vout.posH = In.posL*(1/0.54);
-	vout.posH.w = 1.0f;
-	vout.posH.z+=1.0f;
-	*/
+	vout.tex0.x = vout.posH.x / vout.posH.w * 0.5f + 0.5;
+	vout.tex0.y = vout.posH.y / vout.posH.w * -0.5f + 0.5;
 
 	return vout;
 }
@@ -47,8 +42,8 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 //------------------------------------------------------------------------------
 
 
-float LightAttenuation() {
-	return 1.f;
+float LightAttenuation(float dist, float atten0, float atten1, float atten2) {
+	return 1.0f / (atten0 + atten1*dist + atten2*dist*dist);
 }
 
 
@@ -57,7 +52,7 @@ float LightAttenuation() {
 //------------------------------------------------------------------------------
 float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	float4 color;
-	/*
+	
 	float3 normal;
 	float3 worldPos;
 	float3 diffuseColor;
@@ -68,12 +63,20 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	float3 diffuseTerm = DiffuseLight(lightDir, lightColor, normal);
 	float3 specTerm = SpecularLight(lightDir, lightColor, normal, normalize(worldPos-camPos), 0.2f);
 
-	color.rgb += diffuseTerm*diffuseColor + specTerm; // note: no light attenuation
-	color.rgb *= LightAttenuation();
-	*/
+	color.rgb += diffuseTerm*diffuseColor + specTerm;
 
-	//color.a = 1.f;
+	// calculate light attenuation
+	float dist = length(worldPos-lightPos);
+	float atten = LightAttenuation(dist, lightAtten.x, lightAtten.y, lightAtten.z);
+	// calculate distance fade
+	float fade = Fade((1.0f-dist/lightRange)*3.0f);
+
+	color.rgb *= atten;
+	color.rgb *= fade;
+
 	
-	color.rgb = float3(1.0f, 1.0f, 0.0f);
+	color.rgb = max(color.rgb, float3(0,0,0));
+	color.a = 1.f;
+	
 	return color;
 }

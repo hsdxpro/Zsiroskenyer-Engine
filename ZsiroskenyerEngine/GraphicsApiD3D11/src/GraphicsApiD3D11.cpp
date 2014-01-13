@@ -905,7 +905,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	// 2. search for VS_OUT, get lines under that, while line != "};"
 	// 3. extract VERTEX DECLARATION from those lines
 
-	zsString vsInStructName = cFileUtil::GetWordAfter(*cgFile, L" VS_MAIN(");
+	zsString vsInStructName = cFileUtil::GetWordAfter(*cgFile, L"VS_MAIN(");
 	std::list<zsString> vsInStructLines = cFileUtil::GetLinesBetween(*cgFile, vsInStructName, L"};");
 
 	int nVertexAttributes = 0;
@@ -1209,10 +1209,12 @@ eGapiResult cGraphicsApiD3D11::SetTexture(const zsString& varName, const ITextur
 	ASSERT(srv != NULL);
 	if (srv != NULL) {
 		size_t slot = ((cShaderProgramD3D11*)activeShaderProg)->GetTextureSlot(varName);
+		if (slot == std::numeric_limits<size_t>::max())
+			return eGapiResult::ERROR_INVALID_ARG;
 		d3dcon->PSSetShaderResources(slot, 1, (ID3D11ShaderResourceView**)&srv);
 		return eGapiResult::OK;
 	} else {
-		return eGapiResult::ERROR_UNKNOWN;
+		return eGapiResult::ERROR_INVALID_ARG;
 	}
 }
 

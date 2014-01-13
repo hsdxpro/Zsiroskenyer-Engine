@@ -7,7 +7,7 @@
 #include "ShaderProgramD3D11.h"
 #include <d3d11.h>
 
-
+#undef max;
 
 cShaderProgramD3D11::cShaderProgramD3D11(size_t vertexFormatSize, ID3D11InputLayout* inputLayout /*= NULL*/, ID3D11VertexShader* vs /*= NULL*/, ID3D11HullShader* hs /*= NULL*/, ID3D11DomainShader* ds /*= NULL*/, ID3D11GeometryShader* gs /*= NULL*/, ID3D11PixelShader* ps /*= NULL*/)
 :vertexFormatSize(vertexFormatSize), vs(vs), hs(hs), ds(ds), gs(gs), ps(ps), inputLayout(inputLayout) {
@@ -31,8 +31,8 @@ void cShaderProgramD3D11::SetSlotLookups(std::map<zsString, size_t> textureSlots
 
 size_t cShaderProgramD3D11::GetTextureSlot(const zsString& varName) {
 	auto i = textureSlots.find(varName);
-	ASSERT_MSG(i != textureSlots.end(), L"Texture name: " + varName + L" doesn't exists in that shader");
-	return i->second;
+	//ASSERT_MSG(i != textureSlots.end(), L"Texture name: " + varName + L" doesn't exists in that shader");
+	return (i != textureSlots.end() ? i->second : std::numeric_limits<size_t>::max());
 }
 
 ID3D11VertexShader* cShaderProgramD3D11::GetVertexShader() const {

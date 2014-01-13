@@ -47,7 +47,9 @@ sampler2D depthBuffer = {
 
 // Convert from clip space to world space
 float3 GetWorldPosition(float2 screenCoords, float depth) {
-	float4 posH = float4(screenCoords.x * 2.0f - 1.0f, (1.0f - screenCoords.y) * 2.0f - 1.0f, depth, 1.0f); // NDC space
+	screenCoords.x = 2.0f * (screenCoords.x - 0.5f);
+	screenCoords.y = -2.0f * (screenCoords.y - 0.5f);
+	float4 posH = float4(screenCoords, depth, 1.0f); // NDC space
 	float4 posW = mul(posH, invViewProj);
 	posW /= posW.w;
 	return posW.xyz;
@@ -88,6 +90,16 @@ float3 DiffuseLight(float3 lightDir, float3 lightColor, float3 normal) {
 float3 SpecularLight(float3 lightDir, float3 lightColor, float3 normal, float3 viewDir, float glossiness) {
 	float specFactor = 0.0f;
 	return lightColor * specFactor;;
+}
+
+//------------------------------------------------------------------------------
+//	Helper functions
+//------------------------------------------------------------------------------
+
+// light fading near edges
+float Fade(float t) {
+	t = saturate(t);
+	return 3*t*t - 2*t*t*t;
 }
 
 

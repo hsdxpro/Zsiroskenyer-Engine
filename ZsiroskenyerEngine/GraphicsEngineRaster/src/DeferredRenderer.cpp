@@ -50,7 +50,12 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 	// "Creating" shaders
 	ReloadShaders();
 
-	if (!shaderGBuffer || !shaderComposition || !shaderDirectional || !shaderAmbient || !shaderPoint) {
+	if (!shaderGBuffer || 
+		!shaderComposition || 
+		!shaderDirectional || 
+		!shaderAmbient || 
+		!shaderPoint ||
+		!shaderSpot) {
 		std::string msg = std::string("Failed to create shaders:") + (shaderGBuffer ? "" : " g-buffer") + (shaderComposition ? "" : " composition");
 		throw std::runtime_error(msg);
 	}
@@ -258,7 +263,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// Set render target
 	gApi->SetRenderTargets(1, &compositionBuffer, depthBuffer);
 
-	// Sort scene lights by type
+	// Sort scene lights by type, apply validation of light params
 	std::vector<cGraphicsLight*> directionalLights;
 	std::vector<cGraphicsLight*> spotLights;
 	std::vector<cGraphicsLight*> pointLights;
@@ -266,6 +271,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 	auto& lightList = parent.sceneManager->GetLights();
 	for (auto light : lightList) {
+		if (!light->enabled)
+			continue;
 		switch (light->type) {
 			case cGraphicsLight::AMBIENT:
 				ambientLight += light->color;
@@ -314,13 +321,17 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	shaderConstants.viewProj = viewProj;
 	shaderConstants.invViewProj = viewProj;
 	shaderConstants.invViewProj.Inverse();
+	//shaderConstants.invViewProj.Identity();
+
+	Matrix44 test = shaderConstants.invViewProj * shaderConstants.viewProj;
 
 	// Render each light group
 	// Directional lights
 	gApi->SetShaderProgram(shaderDirectional);
+
 	gApi->SetTexture(L"gBuffer0", gBuffer[0]);
 	gApi->SetTexture(L"gBuffer1", gBuffer[1]);
-	//gApi->SetTexture(L"gBuffer2", gBuffer[2]);
+	gApi->SetTexture(L"gBuffer2", gBuffer[2]);
 	gApi->SetTexture(L"depthBuffer", depthBufferCopy);
 
 	for (auto light : directionalLights) {
@@ -337,6 +348,11 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// Ambient lights
 	gApi->SetShaderProgram(shaderAmbient);
 
+	gApi->SetTexture(L"gBuffer0", gBuffer[0]);
+	gApi->SetTexture(L"gBuffer1", gBuffer[1]);
+	gApi->SetTexture(L"gBuffer2", gBuffer[2]);
+	gApi->SetTexture(L"depthBuffer", depthBufferCopy);
+
 	// load shader constants
 	shaderConstants.lightColor = ambientLight;
 	gApi->SetPSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
@@ -345,8 +361,15 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 	// Point lights
 	gApi->SetShaderProgram(shaderPoint);
+
+	gApi->SetTexture(L"gBuffer0", gBuffer[0]);
+	gApi->SetTexture(L"gBuffer1", gBuffer[1]);
+	gApi->SetTexture(L"gBuffer2", gBuffer[2]);
+	gApi->SetTexture(L"depthBuffer", depthBufferCopy);
+
 	gApi->SetVertexBuffer(vbPoint, 4*2*sizeof(float));
 	gApi->SetIndexBuffer(ibPoint);
+
 	for (auto light : pointLights) {
 
 		// set shader constants
@@ -361,6 +384,37 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		size_t nIndices = ibPoint->GetSize() / sizeof(unsigned);
 		gApi->DrawIndexed(nIndices);
 	}
+
+	// Spot lights
+	gApi->SetShaderProgram(shaderSpot);
+
+	gApi->SetTexture(L"gBuffer0", gBuffer[0]);
+	gApi->SetTexture(L"gBuffer1", gBuffer[1]);
+	gApi->SetTexture(L"gBuffer2", gBuffer[2]);
+	gApi->SetTexture(L"depthBuffer", depthBufferCopy);
+
+	gApi->SetVertexBuffer(vbSpot, 4 * 2 * sizeof(float));
+	gApi->SetIndexBuffer(ibSpot);
+
+	for (auto light : spotLights) {
+
+		// set shader constants
+		shaderConstants.lightAtten = Vec3(light->atten0, light->atten1, light->atten2);
+		shaderConstants.lightColor = light->color;
+		shaderConstants.lightPos = light->position;
+		shaderConstants.lightRange = light->range;
+		shaderConstants.lightAngleInner = light->smallAngle;
+		shaderConstants.lightAngleOuter = light->bigAngle;
+		shaderConstants.lightDir = light->direction;
+
+		gApi->SetVSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
+		gApi->SetPSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
+
+		// draw that bullshit
+		size_t nIndices = ibSpot->GetSize() / sizeof(unsigned);
+		gApi->DrawIndexed(nIndices);
+	}
+
 
 	// Set back render state to default
 	gApi->SetDepthStencilState(depthStencilDefault, 0x00);
@@ -419,7 +473,7 @@ void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {
 	shaderAmbient = parent.shaderManager->ReloadShader(L"shaders/deferred_light_ambient.cg");;
 	shaderDirectional = parent.shaderManager->ReloadShader(L"shaders/deferred_light_dir.cg");
 	shaderPoint = parent.shaderManager->ReloadShader(L"shaders/deferred_light_point.cg");
-	shaderSpot = NULL;
+	shaderSpot = parent.shaderManager->ReloadShader(L"shader/deferred_light_spot.cg");
 
 	parent.screenCopyShader = parent.shaderManager->ReloadShader(L"shaders/screen_copy.cg");
 	parent.shaderManager->ReloadShader(L"shaders/motion_blur.cg");
