@@ -15,10 +15,17 @@ struct ID3D11HullShader;
 struct ID3D11DomainShader;
 struct ID3D11GeometryShader;
 struct ID3D11PixelShader;
+class cGraphicsApiD3D11;
 
 class cShaderProgramD3D11 : public IShaderProgram {
+	friend class cGraphicsApiD3D11;
 public:
-	cShaderProgramD3D11(size_t vertexFormatSize, ID3D11InputLayout* inputLayout = NULL, ID3D11VertexShader* vs = NULL, ID3D11HullShader* hs = NULL, ID3D11DomainShader* ds = NULL, ID3D11GeometryShader* gs = NULL, ID3D11PixelShader* ps = NULL);
+	cShaderProgramD3D11(cGraphicsApiD3D11* parent,
+		size_t vertexFormatSize, 
+		ID3D11InputLayout* inputLayout = NULL,
+		ID3D11VertexShader* vs = NULL, ID3D11HullShader* hs = NULL,
+		ID3D11DomainShader* ds = NULL, ID3D11GeometryShader* gs = NULL, 
+		ID3D11PixelShader* ps = NULL);
 	~cShaderProgramD3D11();
 	void Release() override;
 
@@ -35,6 +42,10 @@ public:
 	size_t GetVertexFormatSize() const override;
 	
 private:
+	// parent
+	cGraphicsApiD3D11* parent;
+
+	// input layout
 	ID3D11InputLayout* inputLayout;
 	size_t vertexFormatSize;
 

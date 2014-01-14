@@ -736,6 +736,18 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	//boost::filesystem::last_write_time(boost::filesystem::path(shaderPath.c_str()));
 	//LINK : fatal error LNK1104: cannot open file 'libboost_filesystem-vc120-mt-sgd-1_55.lib'
 
+
+	// check if we already have that shader program
+	auto it = shaderPrograms.left.find(shaderPath);
+	if (it != shaderPrograms.left.end()) {
+		// got it!
+		it->second.refCount++;
+		*resource = it->second.shader;
+		return eGapiResult::OK;
+	}
+	// otherwise just continue
+
+
 	// asd/asd/myShader cut extension
 	zsString pathNoExt = shaderPath.substr(0, shaderPath.size() - 3);
 
@@ -989,14 +1001,60 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		SAFE_RELEASE(blobs[i]);
 
 	// Create shader program
-	cShaderProgramD3D11* shProg = new cShaderProgramD3D11(alignedByteOffset, inputLayout, vs, hs, ds, gs, ps);
+	cShaderProgramD3D11* shProg = new cShaderProgramD3D11(this, alignedByteOffset, inputLayout, vs, hs, ds, gs, ps);
 	
 	// Set look up maps
 	shProg->SetSlotLookups(textureSlots);
 
+	// yay shader program successfully created, register it!
+	tShaderProgramRef ref;
+	ref.shader = shProg;
+	ref.refCount = 1;
+	shaderPrograms.insert(ShaderMapT::value_type(shaderPath, ref));
+
+	// return and tell everyone dat success
 	*resource = shProg;
 	return eGapiResult::OK;
 }
+
+// reload an already loaded shader program
+eGapiResult cGraphicsApiD3D11::ReloadShaderProgram(IShaderProgram* shader) {
+	/* What this function should do?
+	1. Load shader again, name in shaderPrograms
+	2. If load failed, indicate failure, but do NOT change 'shader'
+	3. If load succeeded, replace the shader's inside w/ new stuff
+	4. Indicate success	
+	*/
+	return eGapiResult::ERROR_UNKNOWN;
+}
+
+// safely unload unused shader programs
+void cGraphicsApiD3D11::UnloadShaderProgram(cShaderProgramD3D11* shader) {
+	// lookup shader in DB
+	tShaderProgramRef ref;
+	ref.shader = shader;
+	auto it = shaderPrograms.right.find(ref);
+	// check for existence
+	if (it == shaderPrograms.right.end()) {
+		ASSERT_MSG(false, L"bazmeg ennek nem szabadna elõfordulnia, el lett basztatva vmi");
+		return;
+	}
+	// check refcount
+	if (it->first.refCount <= 1) {
+		// release all resources
+		if (shader->vs) shader->vs->Release();
+		if (shader->hs) shader->hs->Release();
+		if (shader->ds) shader->ds->Release();
+		if (shader->gs) shader->gs->Release();
+		if (shader->ps) shader->ps->Release();
+		delete shader;
+		shaderPrograms.right.erase(it);
+	}
+	else {
+		it->first.refCount--;
+	}
+}
+
 
 //	Write to various resources
 eGapiResult cGraphicsApiD3D11::WriteResource(IIndexBuffer* buffer, void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {

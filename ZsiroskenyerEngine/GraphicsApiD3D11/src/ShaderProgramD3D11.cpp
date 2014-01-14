@@ -6,23 +6,27 @@
 
 #include "ShaderProgramD3D11.h"
 #include <d3d11.h>
+#include "GraphicsApiD3D11.h"
 
 #undef max;
 
-cShaderProgramD3D11::cShaderProgramD3D11(size_t vertexFormatSize, ID3D11InputLayout* inputLayout /*= NULL*/, ID3D11VertexShader* vs /*= NULL*/, ID3D11HullShader* hs /*= NULL*/, ID3D11DomainShader* ds /*= NULL*/, ID3D11GeometryShader* gs /*= NULL*/, ID3D11PixelShader* ps /*= NULL*/)
-:vertexFormatSize(vertexFormatSize), vs(vs), hs(hs), ds(ds), gs(gs), ps(ps), inputLayout(inputLayout) {
+cShaderProgramD3D11::cShaderProgramD3D11(cGraphicsApiD3D11* parent,
+	size_t vertexFormatSize,
+	ID3D11InputLayout* inputLayout /*= NULL*/,
+	ID3D11VertexShader* vs /*= NULL*/,
+	ID3D11HullShader* hs /*= NULL*/, ID3D11DomainShader* ds /*= NULL*/,
+	ID3D11GeometryShader* gs /*= NULL*/,
+	ID3D11PixelShader* ps /*= NULL*/)
+	: parent(parent), vertexFormatSize(vertexFormatSize), vs(vs), hs(hs), ds(ds), gs(gs), ps(ps), inputLayout(inputLayout) 
+{
 }
 
 cShaderProgramD3D11::~cShaderProgramD3D11() {
-	if (vs) vs->Release();
-	if (hs) hs->Release();
-	if (ds) ds->Release();
-	if (gs) gs->Release();
-	if (ps) ps->Release();
+	return;
 }
 
 void cShaderProgramD3D11::Release() {
-	delete this;
+	parent->UnloadShaderProgram(this);
 }
 
 void cShaderProgramD3D11::SetSlotLookups(std::map<zsString, size_t> textureSlots) {
