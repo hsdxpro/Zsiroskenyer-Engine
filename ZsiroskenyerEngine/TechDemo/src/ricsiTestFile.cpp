@@ -239,7 +239,7 @@ int ricsiMain() {
 	
 		// Update everything
 		static cTimer t;
-		float deltaT = t.getDeltaSeconds();
+		float deltaT = t.GetDeltaSeconds();
 
 		// Don't hog with set caption text... Fucking slow operation
 		static float timer1 = 0.0;

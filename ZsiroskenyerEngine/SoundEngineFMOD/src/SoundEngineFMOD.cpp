@@ -97,7 +97,7 @@ bool cSoundEngineFMOD::GenWavFromMicrophone(const zsString& filePath, float stop
 	static float timer = 0.0f;
 	do {
 		soundSystem->update();
-		timer += t.getDeltaSeconds();
+		timer += t.GetDeltaSeconds();
 
 	} while (timer < stopAfterSeconds);
 

@@ -47,7 +47,7 @@ int main() {
 	while (window->IsOpened()) {
 		while (window->HandleMessage(&msg));
 
-		float deltaT = t.getDeltaSeconds();
+		float deltaT = t.GetDeltaSeconds();
 		updateDemo(editor.GetCamera(), deltaT);
 		editor.Update(deltaT);
 	}

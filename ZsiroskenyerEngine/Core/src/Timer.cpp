@@ -4,7 +4,7 @@ cTimer::cTimer() {
 	curr = std::chrono::system_clock::now();
 }
 
-float cTimer::getDeltaSeconds() {
+float cTimer::GetDeltaSeconds() {
 	std::chrono::system_clock::time_point tmp = std::chrono::system_clock::now();
 	float deltaT = std::chrono::duration_cast<std::chrono::duration<float>>(tmp - curr).count();
 	curr = tmp;
@@ -12,7 +12,7 @@ float cTimer::getDeltaSeconds() {
 	return deltaT;
 }
 
-double cTimer::getDeltaSecondsPrecise() {
+double cTimer::GetDeltaSecondsPrecise() {
 	std::chrono::system_clock::time_point tmp = std::chrono::system_clock::now();
 	double deltaT = std::chrono::duration_cast<std::chrono::duration<double>>(tmp - curr).count();
 	curr = tmp;

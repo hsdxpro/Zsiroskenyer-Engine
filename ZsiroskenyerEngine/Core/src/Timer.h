@@ -8,10 +8,10 @@ public:
 	cTimer();
 
 	// Get delta seconds since last call
-	float getDeltaSeconds();
+	float GetDeltaSeconds();
 
 	// Get delta seconds since last call (precise)
-	double getDeltaSecondsPrecise();
+	double GetDeltaSecondsPrecise();
 
 	// Get Frames per second
 	static size_t GetFps(float deltaSeconds);
