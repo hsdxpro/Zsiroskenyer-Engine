@@ -28,7 +28,7 @@ IGraphicsApi* CreateGraphicsApiD3D11(IWindow* targetWindow, unsigned backBufferW
 		gApi->SetBackBufferSize(backBufferWidth, backBufferHeight);
 		return gApi;
 	}
-	catch (std::exception& e) {
+	catch (std::exception&) {
 		return NULL;
 	}
 }

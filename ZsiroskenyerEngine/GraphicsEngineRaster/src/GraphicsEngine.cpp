@@ -6,7 +6,6 @@
 
 #include "SceneManager.h"
 #include "ResourceManager.h"
-#include "ShaderManager.h"
 
 #include "Geometry.h"
 #include "..\..\Core\src\GraphicsEntity.h"
@@ -82,17 +81,12 @@ cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, un
 	}
 	if (!gApi)
 		throw std::runtime_error("failed to create graphics api");
-	shaderManager = new cShaderManager(gApi);
+
+	// Create resource manager
 	resourceManager = new cResourceManager(gApi);
-	sceneManager = new cSceneManager();
 
-
-	// Create shader
-		// Basic 3D geom rendering
-	shaderManager->LoadShader(L"shaders/test.cg");
-		// For debugging
-	shaderManager->LoadShader(L"shaders/LINE_RENDERER.cg");
-
+	// Create shaders
+	eGapiResult r = gApi->CreateShaderProgram(&shaderScreenCopy, L"shaders/screen_copy.cg");
 
 	// Create deferred renderer
 	try {
@@ -101,7 +95,6 @@ cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, un
 	catch (std::exception& e) {
 		throw std::runtime_error(std::string("failed to create deferred renderer: ") + e.what());
 	}
-
 
 	// Create hdr post-processor
 	try {
@@ -115,7 +108,6 @@ cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, un
 cGraphicsEngine::~cGraphicsEngine() {
 	SAFE_DELETE(sceneManager);
 	SAFE_DELETE(resourceManager)
-	SAFE_DELETE(shaderManager);
 	SAFE_RELEASE(gApi);
 	SAFE_DELETE(deferredRenderer);
 }
@@ -130,14 +122,6 @@ void cGraphicsEngine::Release() {
 
 // reload all resourcess. TODO: not only shaders
 eGraphicsResult cGraphicsEngine::ReloadResources() {
-	if(!shaderManager->ReloadShader(L"shaders/test.cg"))
-		return eGraphicsResult::ERROR_UNKNOWN;
-
-	if (!shaderManager->ReloadShader(L"shaders/LINE_RENDERER.cg"))
-		return eGraphicsResult::ERROR_UNKNOWN;
-
-	deferredRenderer->ReloadShaders();
-
 	return eGraphicsResult::OK;
 }
 
@@ -233,7 +217,7 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, float elapsed) {
 	}
 	else {
 		gApi->SetRenderTargetDefault();
-		gApi->SetShaderProgram(screenCopyShader);
+		gApi->SetShaderProgram(shaderScreenCopy);
 		//gApi->SetTexture(L"texture0", composedBuffer);
 		gApi->SetTexture(composedBuffer, 0);
 		gApi->Draw(3);
@@ -247,8 +231,4 @@ cResourceManager* cGraphicsEngine::GetResourceManager() {
 
 IGraphicsApi* cGraphicsEngine::GetGraphicsApi() {
 	return gApi;
-}
-
-IShaderManager* cGraphicsEngine::GetShaderManager() {
-	return shaderManager;
 }

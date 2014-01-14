@@ -1,14 +1,17 @@
 #include "Renderer.h"
 
 #include "IGraphicsApi.h"
-#include "IShaderManager.h"
 #include "IVertexBuffer.h"
+
 
 cRenderer::cRenderer(IGraphicsApi* gApi, IShaderManager* shaderManager)
 :gApi(gApi), shaderManager(shaderManager) {
 }
 
 void cRenderer::RenderLines(const Matrix44& viewProj, const Vec3* lines, size_t nLines, const Vec3& color /*= Vec3(1.0f, 1.0f, 1.0f)*/) {
+	// no shaders
+	return;
+	
 	// Create, set VertexBuffer for lines
 	IVertexBuffer* linesBuffer;
 	gApi->CreateVertexBuffer(&linesBuffer, nLines * 2 * sizeof(Vec3), eUsage::IMMUTABLE, (void*)lines);
@@ -22,7 +25,8 @@ void cRenderer::RenderLines(const Matrix44& viewProj, const Vec3* lines, size_t 
 	gApi->SetRenderTargetDefault();
 
 	// Set Shader
-	IShaderProgram* sh = shaderManager->GetShaderByName(L"LINE_RENDERER.cg");
+#pragma message("WARNING: IShaderManager wiped completely!")
+	IShaderProgram* sh = nullptr;// shaderManager->GetShaderByName(L"LINE_RENDERER.cg");
 	gApi->SetShaderProgram(sh);
 
 	// Set Line primitives for pipeline

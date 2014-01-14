@@ -3,7 +3,6 @@
 
 
 #include "GraphicsEngine.h"
-#include "ShaderManager.h"
 #include <cassert>
 #include <stdexcept>
 #include <algorithm>
@@ -25,15 +24,12 @@ cGraphicsEngine::cHDRProcessor::cHDRProcessor(cGraphicsEngine& parent) : parent(
 		t = NULL;
 
 	// create shaders
-	shaderLumSample = parent.shaderManager->LoadShader(L"shaders/hdr_luminance_sample.cg");
-	shaderLumAvg = parent.shaderManager->LoadShader(L"shaders/hdr_luminance_avg.cg");
-	shaderCompose = parent.shaderManager->LoadShader(L"shaders/hdr_compose.cg");
-	shaderBlurHoriz = parent.shaderManager->LoadShader(L"shaders/hdr_blur_horiz.cg");
-	shaderBlurVert = parent.shaderManager->LoadShader(L"shaders/hdr_blur_vert.cg");
-	shaderOverbright = parent.shaderManager->LoadShader(L"shaders/hdr_overbright_downsample.cg");
-	if (!shaderLumSample || !shaderLumAvg || !shaderBlurHoriz || !shaderBlurVert || !shaderOverbright || !shaderCompose) {
+	try {
+		LoadShaders();
+	}
+	catch (std::exception& e) {
 		Cleanup();
-		throw std::runtime_error("failed to create shaders");
+		throw std::runtime_error(std::string("failed to create shaders: ") + e.what());
 	}
 
 	// create luminance textures
@@ -69,6 +65,8 @@ cGraphicsEngine::cHDRProcessor::~cHDRProcessor() {
 }
 
 void cGraphicsEngine::cHDRProcessor::Cleanup() {
+	// release shaders
+	UnloadShaders();
 	// release all textures
 	for (auto& t : luminanceBuffer)
 		SAFE_RELEASE(t);
@@ -77,6 +75,32 @@ void cGraphicsEngine::cHDRProcessor::Cleanup() {
 	SAFE_RELEASE(luminanceStaging);
 }
 
+// load shaders
+void cGraphicsEngine::cHDRProcessor::LoadShaders() {
+	auto Check = [](eGapiResult r, const char* errMsg)->void {
+		switch (r) {
+			case eGapiResult::OK:
+				return;
+			default:
+				throw std::runtime_error(errMsg);
+		}
+	};
+	Check(gApi->CreateShaderProgram(&shaderLumSample, L"shaders/hdr_luminance_sample.cg"), "lum_sample");
+	Check(gApi->CreateShaderProgram(&shaderLumAvg, L"shaders/hdr_luminance_avg.cg"), "lum_avg");
+	Check(gApi->CreateShaderProgram(&shaderCompose, L"shaders/hdr_compose.cg"), "compose");
+	Check(gApi->CreateShaderProgram(&shaderBlurHoriz, L"shaders/hdr_blur_horiz.cg"), "blur_horiz");
+	Check(gApi->CreateShaderProgram(&shaderBlurVert, L"shaders/hdr_blur_vert.cg"), "blur_vert");
+	Check(gApi->CreateShaderProgram(&shaderOverbright, L"shaders/hdr_overbright_downsample.cg"), "overbright");
+}
+
+void cGraphicsEngine::cHDRProcessor::UnloadShaders() {
+	SAFE_RELEASE(shaderLumSample);
+	SAFE_RELEASE(shaderLumAvg);
+	SAFE_RELEASE(shaderCompose);
+	SAFE_RELEASE(shaderBlurHoriz);
+	SAFE_RELEASE(shaderBlurVert);
+	SAFE_RELEASE(shaderOverbright);
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////

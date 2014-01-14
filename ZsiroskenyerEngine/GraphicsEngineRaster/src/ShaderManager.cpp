@@ -2,6 +2,13 @@
 //	GraphicsEngine/src/ShaderManager.h
 //	2013.oct.14, Zsiroskenyer Team, Péter Kardos
 ////////////////////////////////////////////////////////////////////////////////
+//
+// THIS FILE IS NO LONGER IN USE, BUT IS KEPT FOR A SHORT TIME
+//
+////////////////////////////////////////////////////////////////////////////////
+
+/*
+
 #include "ShaderManager.h"
 #include "../../Core/src/IGraphicsApi.h"
 #include "../../Core/src/IShaderProgram.h"
@@ -92,3 +99,5 @@ IShaderProgram* cShaderManager::GetShaderByName(const zsString& name) {
 	else
 		return it->second;
 }
+
+*/

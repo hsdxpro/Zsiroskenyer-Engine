@@ -111,7 +111,6 @@ public:
 	virtual eGraphicsResult ReloadResources() = 0;
 	virtual eGraphicsResult Resize(unsigned width, unsigned height) = 0;
 	virtual IGraphicsApi*	GetGraphicsApi() = 0;
-	virtual IShaderManager*	GetShaderManager() = 0;
 
 	virtual eGraphicsResult Update(float elapsed = 0.0f) = 0;
 

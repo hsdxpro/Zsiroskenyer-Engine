@@ -11,7 +11,6 @@
 #include "DeferredLightVolume.h"
 
 #include "../../Core/src/IGraphicsApi.h"
-#include "../../Core/src/IShaderManager.h"
 #include "../../Core/src/IShaderProgram.h"
 #include "../../Core/src/ITexture2D.h"
 #include "../../Core/src/IIndexBuffer.h"
@@ -31,34 +30,31 @@
 ////////////////////////////////////////////////////////////////////////////////
 //	Constructor & Destructor
 cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
-: shaderGBuffer(NULL), shaderComposition(NULL), parent(parent), gApi(parent.gApi)
+: shaderGBuffer(NULL), parent(parent), gApi(parent.gApi)
 {
-	// buffers to null
+	// Buffers to null
 	compositionBuffer = NULL;
 	depthBuffer = NULL;
 	DOFInput = NULL;
 	shaderAmbient = shaderDirectional = shaderPoint = shaderSpot = NULL;
+	shaderDof = shaderMotionBlur = NULL;
 	ibSpot = ibPoint = NULL;
 	vbSpot = vbPoint = NULL;
 	for (auto& v : gBuffer)
 		v = NULL;
 
-	// set size
+	// Set size
 	bufferWidth = parent.screenWidth;
 	bufferHeight = parent.screenHeight;
 
-	// "Creating" shaders
-	ReloadShaders();
-
-	if (!shaderGBuffer || 
-		!shaderComposition || 
-		!shaderDirectional || 
-		!shaderAmbient || 
-		!shaderPoint ||
-		!shaderSpot) {
-		std::string msg = std::string("Failed to create shaders:") + (shaderGBuffer ? "" : " g-buffer") + (shaderComposition ? "" : " composition");
-		throw std::runtime_error(msg);
+	// Loading shaders
+	try {
+		LoadShaders();
 	}
+	catch (std::exception& e) {
+		throw std::runtime_error(std::string("failed to create shaders: \n") + e.what());
+	}
+
 	// Create buffers
 	if (ReallocBuffers() != eGapiResult::OK) {
 		throw std::runtime_error("failed to create texture buffers");
@@ -79,12 +75,15 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 
 
 void cGraphicsEngine::cDeferredRenderer::Cleanup() {
+	// shaders
+	UnloadShaders();
+	// texture objects
 	for (auto& v : gBuffer)
 		SAFE_RELEASE(v);
 	SAFE_RELEASE(compositionBuffer);
 	SAFE_RELEASE(depthBuffer);
 	SAFE_RELEASE(depthBufferCopy);
-
+	// mesh objects
 	SAFE_RELEASE(ibPoint);
 	SAFE_RELEASE(vbPoint);
 	SAFE_RELEASE(ibSpot);
@@ -139,18 +138,37 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	return eGapiResult::OK;
 }
 
-void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {
-	shaderGBuffer = parent.shaderManager->ReloadShader(L"shaders/deferred_gbuffer.cg");
-	shaderComposition = parent.shaderManager->ReloadShader(L"shaders/deferred_compose.cg");
+// load shaders
+void cGraphicsEngine::cDeferredRenderer::LoadShaders() {
+	auto Check = [](eGapiResult r, const char* errMsg)->void {
+		switch (r) {
+			case eGapiResult::OK:
+				return;
+			default:
+				throw std::runtime_error(errMsg);
+		}
+	};
+	Check(gApi->CreateShaderProgram(&shaderGBuffer, L"shaders/deferred_gbuffer.cg"), "deferred_gbuffer");
 
-	shaderAmbient = parent.shaderManager->ReloadShader(L"shaders/deferred_light_ambient.cg");;
-	shaderDirectional = parent.shaderManager->ReloadShader(L"shaders/deferred_light_dir.cg");
-	shaderPoint = parent.shaderManager->ReloadShader(L"shaders/deferred_light_point.cg");
-	shaderSpot = parent.shaderManager->ReloadShader(L"shader/deferred_light_spot.cg");
+	Check(gApi->CreateShaderProgram(&shaderAmbient, L"shaders/deferred_light_ambient.cg"), "light_ambient");
+	Check(gApi->CreateShaderProgram(&shaderDirectional, L"shaders/deferred_light_dir.cg"), "light_directional");
+	Check(gApi->CreateShaderProgram(&shaderPoint, L"shaders/deferred_light_point.cg"), "light_point");
+	Check(gApi->CreateShaderProgram(&shaderSpot, L"shader/deferred_light_spot.cg"), "light_spot");
 
-	parent.screenCopyShader = parent.shaderManager->ReloadShader(L"shaders/screen_copy.cg");
-	parent.shaderManager->ReloadShader(L"shaders/motion_blur.cg");
-	parent.shaderManager->ReloadShader(L"shaders/depth_of_field.cg");
+	Check(gApi->CreateShaderProgram(&shaderMotionBlur, L"shaders/motion_blur.cg"), "motion_blur");
+	Check(gApi->CreateShaderProgram(&shaderDof, L"shaders/depth_of_field.cg"), "depth_of_field");
+}
+// unload shaders
+void cGraphicsEngine::cDeferredRenderer::UnloadShaders() {
+	SAFE_RELEASE(shaderGBuffer);
+
+	SAFE_RELEASE(shaderAmbient);
+	SAFE_RELEASE(shaderDirectional);
+	SAFE_RELEASE(shaderPoint);
+	SAFE_RELEASE(shaderSpot);
+
+	SAFE_RELEASE(shaderMotionBlur);
+	SAFE_RELEASE(shaderDof);
 }
 
 // Render the scene to composition buffer
@@ -440,8 +458,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	//-------------------------------------------------------------------------//
 	gApi->SetRenderTargets(1, &DOFInput, NULL);
 
-	IShaderProgram* motionBlurShader = parent.GetShaderManager()->GetShaderByName(L"motion_blur.cg");
-	gApi->SetShaderProgram(motionBlurShader);
+	gApi->SetShaderProgram(shaderMotionBlur);
 
 	struct buffStruct
 	{
@@ -468,8 +485,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	//----------------------------------------------------------------------------//
 	gApi->SetRenderTargets(1, &compositionBuffer, NULL);
 
-	IShaderProgram* DOFShader = parent.GetShaderManager()->GetShaderByName(L"depth_of_field.cg");
-	gApi->SetShaderProgram(DOFShader);
+	gApi->SetShaderProgram(shaderDof);
 
 	gApi->SetTexture(L"inputTexture",DOFInput);
 	gApi->SetTexture(L"depthTexture", depthBufferCopy);

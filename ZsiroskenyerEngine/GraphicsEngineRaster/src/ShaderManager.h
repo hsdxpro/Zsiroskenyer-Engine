@@ -4,6 +4,15 @@
 ////////////////////////////////////////////////////////////////////////////////
 //	This class loads, stores, retrieves shaders requested by the graphics engine.
 ////////////////////////////////////////////////////////////////////////////////
+//
+// THIS FILE IS NO LONGER IN USE, BUT IS KEPT FOR A SHORT TIME
+//
+////////////////////////////////////////////////////////////////////////////////
+
+
+#pragma message("NOTE: shadermanager.h: IShaderManager deleted!")
+
+/*
 #include "..\..\Core\src\IShaderManager.h"
 
 #include <boost/bimap.hpp>
@@ -35,3 +44,5 @@ private:
 	ShaderMapT loadedShaders;
 	IGraphicsApi* gApi;
 };
+
+*/

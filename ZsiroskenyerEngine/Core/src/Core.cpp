@@ -14,7 +14,8 @@ cCore::cCore(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight,
 	logicEngine = new cLogicEngine();
 
 	// For debug purposes
-	debugRenderer = new cRenderer(graphicsEngine->GetGraphicsApi(), graphicsEngine->GetShaderManager());
+#pragma message("WARNING: IShaderManager wiped completely!")
+	debugRenderer = new cRenderer(graphicsEngine->GetGraphicsApi(), nullptr);
 }
 
 cCore::~cCore() {

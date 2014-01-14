@@ -94,7 +94,6 @@ public:
 	// sub-component accessors
 	cResourceManager*	GetResourceManager();
 	IGraphicsApi*		GetGraphicsApi() override;
-	IShaderManager*		GetShaderManager() override;
 private:
 	// rendering functions
 	void RenderScene(cGraphicsScene& scene, float elapsed);
@@ -115,7 +114,6 @@ private:
 
 	// sub-compnents: rendering & graphical
 	IGraphicsApi* gApi;
-	IShaderManager* shaderManager;
 	cResourceManager* resourceManager;
 	std::set<cGraphicsScene*> graphicsScenes;
 	std::deque<cGraphicsScene*> graphicsSceneOrder;
@@ -123,11 +121,12 @@ private:
 	cHDRProcessor* hdrProcessor;
 	
 	// some member var for fast access in deferred functions
-	IShaderProgram* screenCopyShader;
+	IShaderProgram* shaderScreenCopy;
 
 
 	// --- --- SUBCLASSES --- --- //
 
+	///////////////////////////////////////
 	// Deferred renderer helper subclass
 	class cDeferredRenderer {
 		friend class cGraphicsEngine;
@@ -140,12 +139,14 @@ private:
 
 		void RenderComposition();
 
-		void ReloadShaders();
-
 		eGraphicsResult Resize(unsigned width, unsigned height);
-
 		ITexture2D* GetCompositionBuffer();
 	private:
+		void LoadShaders();
+		void UnloadShaders();
+		void Cleanup();
+		eGapiResult ReallocBuffers();
+
 		ITexture2D* gBuffer[3];
 		ITexture2D* compositionBuffer;
 		ITexture2D* DOFInput;
@@ -154,15 +155,12 @@ private:
 
 		IGraphicsApi* gApi;
 		IShaderProgram* shaderGBuffer;
-		IShaderProgram* shaderComposition;
 		IShaderProgram *shaderDirectional, *shaderPoint, *shaderSpot, *shaderAmbient;
+		IShaderProgram *shaderDof, *shaderMotionBlur;
 		cGraphicsEngine& parent;
 
 		IVertexBuffer *vbSpot, *vbPoint;
 		IIndexBuffer *ibSpot, *ibPoint;
-
-		eGapiResult ReallocBuffers();
-		void Cleanup();
 
 		// Remove that also..
 		ITexture2D* motionBlurredBuffer;
@@ -170,6 +168,7 @@ private:
 		unsigned bufferWidth, bufferHeight;
 	};
 
+	///////////////////////////////////////
 	// HDR post-processor helper class
 	class cHDRProcessor {
 		friend class cGraphicsEngine;
@@ -180,6 +179,10 @@ private:
 		void SetDestination(ITexture2D* dest);
 		void Update(float elapsedSec = -1.0f);
 	private:
+		void LoadShaders();
+		void UnloadShaders();
+		void Cleanup();
+
 		cGraphicsEngine& parent;
 		IGraphicsApi* gApi;
 		ITexture2D* source;
@@ -192,7 +195,5 @@ private:
 		float adaptedLuminance;
 		IShaderProgram *shaderLumSample, *shaderLumAvg, *shaderOverbright, *shaderBlurVert, *shaderBlurHoriz, *shaderCompose;
 		unsigned sourceWidth, sourceHeight;
-
-		void Cleanup();
 	};
 };

@@ -8,7 +8,7 @@
 #include <d3d11.h>
 #include "GraphicsApiD3D11.h"
 
-#undef max;
+#undef max
 
 cShaderProgramD3D11::cShaderProgramD3D11(cGraphicsApiD3D11* parent,
 	size_t vertexFormatSize,
