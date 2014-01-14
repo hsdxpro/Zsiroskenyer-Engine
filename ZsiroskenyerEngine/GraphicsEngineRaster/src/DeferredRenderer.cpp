@@ -139,6 +139,20 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	return eGapiResult::OK;
 }
 
+void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {
+	shaderGBuffer = parent.shaderManager->ReloadShader(L"shaders/deferred_gbuffer.cg");
+	shaderComposition = parent.shaderManager->ReloadShader(L"shaders/deferred_compose.cg");
+
+	shaderAmbient = parent.shaderManager->ReloadShader(L"shaders/deferred_light_ambient.cg");;
+	shaderDirectional = parent.shaderManager->ReloadShader(L"shaders/deferred_light_dir.cg");
+	shaderPoint = parent.shaderManager->ReloadShader(L"shaders/deferred_light_point.cg");
+	shaderSpot = parent.shaderManager->ReloadShader(L"shader/deferred_light_spot.cg");
+
+	parent.screenCopyShader = parent.shaderManager->ReloadShader(L"shaders/screen_copy.cg");
+	parent.shaderManager->ReloadShader(L"shaders/motion_blur.cg");
+	parent.shaderManager->ReloadShader(L"shaders/depth_of_field.cg");
+}
+
 // Render the scene to composition buffer
 void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// Declared here, will be used throughout whole function
@@ -463,23 +477,6 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// Draw triangle, hardware will quadify them automatically :)
 	gApi->Draw(3);
 }
-
-
-
-void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {
-	shaderGBuffer = parent.shaderManager->ReloadShader(L"shaders/deferred_gbuffer.cg");
-	shaderComposition = parent.shaderManager->ReloadShader(L"shaders/deferred_compose.cg");
-
-	shaderAmbient = parent.shaderManager->ReloadShader(L"shaders/deferred_light_ambient.cg");;
-	shaderDirectional = parent.shaderManager->ReloadShader(L"shaders/deferred_light_dir.cg");
-	shaderPoint = parent.shaderManager->ReloadShader(L"shaders/deferred_light_point.cg");
-	shaderSpot = parent.shaderManager->ReloadShader(L"shader/deferred_light_spot.cg");
-
-	parent.screenCopyShader = parent.shaderManager->ReloadShader(L"shaders/screen_copy.cg");
-	parent.shaderManager->ReloadShader(L"shaders/motion_blur.cg");
-	parent.shaderManager->ReloadShader(L"shaders/depth_of_field.cg");
-}
-
 
 // Access to composition buffer for further processing like post-process & whatever
 ITexture2D* cGraphicsEngine::cDeferredRenderer::GetCompositionBuffer() {

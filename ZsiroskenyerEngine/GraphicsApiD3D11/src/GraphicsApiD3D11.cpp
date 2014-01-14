@@ -907,6 +907,8 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 	zsString vsInStructName = cFileUtil::GetWordAfter(*cgFile, L"VS_MAIN(");
 	std::list<zsString> vsInStructLines = cFileUtil::GetLinesBetween(*cgFile, vsInStructName, L"};");
+	cgFile->close();
+	SAFE_DELETE(cgFile);
 
 	int nVertexAttributes = 0;
 
@@ -975,6 +977,11 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 	// Create input layout
 	hr = d3ddev->CreateInputLayout(vertexDecl, nVertexAttributes, byteCodes[0], byteCodeSizes[0], &inputLayout);
+	if (FAILED(hr))
+	{
+		int asd = 5;
+		asd++;
+	}
 	ASSERT_MSG(hr == S_OK, L"cGraphicsApiD3D11::CreateShaderProgram -> Can't create input layout for vertexShader: " + binPaths[0]);
 
 	// FREE UP
