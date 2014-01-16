@@ -742,7 +742,6 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	//boost::filesystem::last_write_time(boost::filesystem::path(shaderPath.c_str()));
 	//LINK : fatal error LNK1104: cannot open file 'libboost_filesystem-vc120-mt-sgd-1_55.lib'
 
-	// TMP enum for convience
 	enum eDomainIdx {
 		VS = 0,
 		DS = 1,
