@@ -36,7 +36,6 @@ public:
 	virtual eGapiResult CreateTexture(ITexture2D** resource, const zsString& filePath) = 0;
 	virtual eGapiResult CreateTexture(ITexture2D** resource, ITexture2D::tDesc desc, void* data = NULL) = 0;
 	virtual eGapiResult CreateShaderProgram(IShaderProgram** resource, const zsString& shaderPath) = 0;
-	virtual eGapiResult ReloadShaderProgram(IShaderProgram* shader) = 0;
 
 	virtual eGapiResult WriteResource(IIndexBuffer* buffer , void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) = 0;
 	virtual eGapiResult WriteResource(IVertexBuffer* buffer, void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) = 0;

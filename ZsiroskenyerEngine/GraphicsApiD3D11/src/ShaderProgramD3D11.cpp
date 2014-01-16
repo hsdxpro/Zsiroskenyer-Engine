@@ -22,11 +22,15 @@ cShaderProgramD3D11::cShaderProgramD3D11(cGraphicsApiD3D11* parent,
 }
 
 cShaderProgramD3D11::~cShaderProgramD3D11() {
-	return;
+	if (vs) vs->Release();
+	if (hs) hs->Release();
+	if (ds) ds->Release();
+	if (gs) gs->Release();
+	if (ps) ps->Release();
 }
 
 void cShaderProgramD3D11::Release() {
-	parent->UnloadShaderProgram(this);
+	delete this;
 }
 
 void cShaderProgramD3D11::SetSlotLookups(std::map<zsString, size_t> textureSlots) {
