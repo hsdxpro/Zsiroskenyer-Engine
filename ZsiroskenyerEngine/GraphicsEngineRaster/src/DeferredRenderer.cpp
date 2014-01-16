@@ -153,7 +153,7 @@ void cGraphicsEngine::cDeferredRenderer::LoadShaders() {
 	Check(gApi->CreateShaderProgram(&shaderAmbient, L"shaders/deferred_light_ambient.cg"), "light_ambient");
 	Check(gApi->CreateShaderProgram(&shaderDirectional, L"shaders/deferred_light_dir.cg"), "light_directional");
 	Check(gApi->CreateShaderProgram(&shaderPoint, L"shaders/deferred_light_point.cg"), "light_point");
-	Check(gApi->CreateShaderProgram(&shaderSpot, L"shader/deferred_light_spot.cg"), "light_spot");
+	Check(gApi->CreateShaderProgram(&shaderSpot, L"shaders/deferred_light_spot.cg"), "light_spot");
 
 	Check(gApi->CreateShaderProgram(&shaderMotionBlur, L"shaders/motion_blur.cg"), "motion_blur");
 	Check(gApi->CreateShaderProgram(&shaderDof, L"shaders/depth_of_field.cg"), "depth_of_field");
