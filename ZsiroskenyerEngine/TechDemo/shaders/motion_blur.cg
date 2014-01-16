@@ -47,3 +47,12 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	Out.color = color / (nSamples + 1);
 	return Out;
 }
+
+technique t
+{
+	pass p
+	{
+		VertexProgram = compile vs_4_0 VS_MAIN();
+		FragmentProgram = compile ps_4_0 PS_MAIN();
+	}
+}

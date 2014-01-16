@@ -50,3 +50,12 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 
 	return sum;
 }
+
+technique t
+{
+	pass p
+	{
+		VertexProgram = compile vs_4_0 VS_MAIN();
+		FragmentProgram = compile ps_4_0 PS_MAIN();
+	}
+}

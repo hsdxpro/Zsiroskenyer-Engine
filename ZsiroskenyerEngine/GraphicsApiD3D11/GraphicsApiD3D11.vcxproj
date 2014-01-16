@@ -71,7 +71,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;d3dx11.lib;dxgi.lib;dxerr.lib;$(OutDir)/Core.lib;$(SolutionDir)../Externals/Cg/lib/x32/cg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3dx11.lib;dxgi.lib;dxerr.lib;$(OutDir)/Core.lib;$(SolutionDir)../Externals/Cg/lib/x32/cg.lib;$(SolutionDir)../Externals/Cg/lib/x32/cgD3D11.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <Profile>true</Profile>
     </Link>

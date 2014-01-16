@@ -31,3 +31,12 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	Out.color = tex2D(texture0, In.tex0);
 	return Out;
 };
+
+technique t
+{
+	pass p
+	{
+		VertexProgram = compile vs_4_0 VS_MAIN();
+		FragmentProgram = compile ps_4_0 PS_MAIN();
+	}
+}
