@@ -64,9 +64,9 @@ public:
 	// --- resources --- //
 	eGapiResult	CreateVertexBuffer(IVertexBuffer** resource, size_t size, eUsage usage, void* data = NULL) override;
 	eGapiResult	CreateIndexBuffer(IIndexBuffer** resource, size_t size, eUsage usage, void* data = NULL) override;
-	eGapiResult CreateTexture(ITexture2D** resource, const zsString& filePath) override;
+	eGapiResult CreateTexture(ITexture2D** resource, const wchar_t* filePath) override;
 	eGapiResult CreateTexture(ITexture2D** resource, ITexture2D::tDesc desc, void* data = NULL) override;
-	eGapiResult CreateShaderProgram(IShaderProgram** resource, const zsString& shaderPath) override;
+	eGapiResult CreateShaderProgram(IShaderProgram** resource, const wchar_t* shaderPath) override;
 
 	eGapiResult WriteResource(IIndexBuffer* buffer, void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) override;
 	eGapiResult WriteResource(IVertexBuffer* buffer, void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) override;
@@ -97,7 +97,7 @@ public:
 	void SetIndexBuffer(const IIndexBuffer* indexBuffer) override;
 	void SetInstanceData(/*whatever*/) override;
 	eGapiResult SetTexture(const ITexture2D* t, size_t slotIdx) override;
-	eGapiResult SetTexture(const zsString& varName, const ITexture2D* t) override;
+	eGapiResult SetTexture(const wchar_t* varName, const ITexture2D* t) override;
 	eGapiResult SetVSConstantBuffer(const void* data, size_t size, size_t slotIdx) override;
 	eGapiResult SetPSConstantBuffer(const void* data, size_t size, size_t slotIdx) override;
 	void SetShaderProgram(IShaderProgram* shProg) override;
@@ -109,7 +109,7 @@ public:
 
 	// --- misc --- //
 	ITexture2D* GetDefaultRenderTarget() const override;
-	std::string GetLastErrorMessage() const override;
+	const wchar_t* GetLastErrorMessage() const override;
 
 private:
 	eGapiResult CreateDevice();

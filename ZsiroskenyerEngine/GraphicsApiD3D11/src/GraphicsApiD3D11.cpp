@@ -485,13 +485,13 @@ eGapiResult	cGraphicsApiD3D11::CreateIndexBuffer(IIndexBuffer** resource, size_t
 }
 
 // Create texture from file
-eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const zsString& filePath) {
+eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const wchar_t* filePath) {
 	// Shader Resource View of texture
 	ID3D11ShaderResourceView* srv;
 	D3DX11_IMAGE_LOAD_INFO info;
 	info.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 
-	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(d3ddev, filePath.c_str(), &info, 0, &srv, 0);
+	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(d3ddev, filePath, &info, 0, &srv, 0);
 
 	switch (hr) {
 		case S_OK: {
@@ -733,7 +733,8 @@ eGapiResult cGraphicsApiD3D11::CompileCgToHLSL(const zsString& cgFilePath, const
 	return eGapiResult::OK;
 }
 
-eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, const zsString& shaderPath) {
+eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, const wchar_t* shaderPath_) {
+	const zsString shaderPath(shaderPath_);
 	// TODO read last write of that shader if last_write < curr_last_write (elavult)
 	//last_write_time()
 	//boost::filesystem::last_write_time(boost::filesystem::path(shaderPath.c_str()));
@@ -1249,7 +1250,7 @@ eGapiResult cGraphicsApiD3D11::SetTexture(const ITexture2D* t, size_t slotIdx) {
 }
 
 // Set shader texture resource
-eGapiResult cGraphicsApiD3D11::SetTexture(const zsString& varName, const ITexture2D* t) {
+eGapiResult cGraphicsApiD3D11::SetTexture(const wchar_t* varName, const ITexture2D* t) {
 	ASSERT(t != NULL);
 
 	const ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)t)->GetSRV();
@@ -1522,8 +1523,8 @@ eGapiResult cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Misc
-std::string cGraphicsApiD3D11::GetLastErrorMessage() const {
-	return "buzi-e vagy";
+const wchar_t* cGraphicsApiD3D11::GetLastErrorMessage() const {
+	return L"buzi-e vagy";
 }
 
 

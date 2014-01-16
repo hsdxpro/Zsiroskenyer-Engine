@@ -144,22 +144,19 @@ void cGraphicsEngine::cDeferredRenderer::LoadShaders() {
 	auto Check = [this](const zsString& shader)->IShaderProgram* {
 		// create shader program
 		IShaderProgram* shaderProg;
-		auto r = gApi->CreateShaderProgram(&shaderProg, shader);
+		auto r = gApi->CreateShaderProgram(&shaderProg, shader.c_str());
 		// check results
 		switch (r) {
 			case eGapiResult::OK: {
 				return shaderProg;
 			}
 			default: {
-				auto errMsg = gApi->GetLastErrorMessage();
-				//char* s = new char[errMsg.size()+1];
-				//s[errMsg.size()] = '\0';
-				//wcstombs(s, errMsg.c_str(), errMsg.size());
-
-				std::runtime_error errThrow("");
-
-				//delete s;
-				
+				const zsString errMsg = gApi->GetLastErrorMessage();
+				char* s = new char[errMsg.size()+1];
+				s[errMsg.size()] = '\0';
+				wcstombs(s, errMsg.c_str(), errMsg.size());
+				std::runtime_error errThrow(s);
+				delete[] s;				
 				throw errThrow;
 			}
 		}
