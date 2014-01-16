@@ -69,7 +69,6 @@ public:
 	eGapiResult CreateTexture(ITexture2D** resource, const zsString& filePath) override;
 	eGapiResult CreateTexture(ITexture2D** resource, ITexture2D::tDesc desc, void* data = NULL) override;
 	eGapiResult CreateShaderProgram(IShaderProgram** resource, const zsString& shaderPath) override;
-	eGapiResult ReloadShaderProgram(IShaderProgram* shader) override;
 
 	eGapiResult WriteResource(IIndexBuffer* buffer, void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) override;
 	eGapiResult WriteResource(IVertexBuffer* buffer, void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) override;
@@ -113,8 +112,6 @@ public:
 	// --- misc --- //
 	ITexture2D* GetDefaultRenderTarget() const override;
 
-	// unload shader programs
-	void UnloadShaderProgram(cShaderProgramD3D11* shader);
 private:
 	eGapiResult CreateDevice();
 	eGapiResult CreateMostAcceptableSwapChain(size_t width, size_t height, HWND windowHandle);
@@ -137,23 +134,6 @@ protected:
 
 	// Shader program stuff
 	cShaderProgramD3D11* activeShaderProg;
-	struct tShaderProgramRef {
-		tShaderProgramRef() : shader(nullptr), refCount(0) {}
-		cShaderProgramD3D11* shader;
-		mutable size_t refCount;
-		struct hash {
-			size_t operator()(const tShaderProgramRef& o) const {
-				return std::hash<cShaderProgramD3D11*>()(o.shader);
-			}
-		};
-		bool operator==(const tShaderProgramRef& rhs) const {
-			return shader == rhs.shader;
-		}
-	};
-	typedef boost::bimap<
-		boost::bimaps::unordered_set_of<zsString, std::hash<zsString>>, 
-		boost::bimaps::unordered_set_of<tShaderProgramRef, tShaderProgramRef::hash >> ShaderMapT;
-	ShaderMapT shaderPrograms;
 
 	// Viewports and RTs
 	D3D11_VIEWPORT activeViewports[16];
