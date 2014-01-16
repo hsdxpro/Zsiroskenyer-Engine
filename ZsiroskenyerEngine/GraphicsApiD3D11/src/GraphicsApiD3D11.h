@@ -17,8 +17,6 @@
 #include "../../Core/src/common.h"
 
 #include <map>
-#include <boost/bimap.hpp>
-#include <boost/bimap/unordered_set_of.hpp>
 
 class IVertexBuffer;
 class IIndexBuffer;
