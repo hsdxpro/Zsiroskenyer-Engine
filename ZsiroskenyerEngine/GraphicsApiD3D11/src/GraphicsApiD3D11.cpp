@@ -12,7 +12,8 @@
 #include "../../Core/src/FileUtil.h"
 
 // Cg library
-#include "Cg/include/cg.h"
+#include "Cg/cg.h"
+#include "Cg/cgD3D11.h"
 
 #include <map>
 #include <fstream>
@@ -735,12 +736,25 @@ eGapiResult cGraphicsApiD3D11::CompileCgToHLSL(const zsString& cgFilePath, const
 
 eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, const wchar_t* shaderPath_) {
 	const zsString shaderPath(shaderPath_);
+	
 	// TODO read last write of that shader if last_write < curr_last_write (elavult)
 	//last_write_time()
 	//boost::filesystem::last_write_time(boost::filesystem::path(shaderPath.c_str()));
 	//LINK : fatal error LNK1104: cannot open file 'libboost_filesystem-vc120-mt-sgd-1_55.lib'
-	/*
+
+	// TMP enum for convience
+	enum eDomainIdx {
+		VS = 0,
+		DS = 1,
+		HS = 2,
+		GS = 3,
+		PS = 4,
+	};
+
 	CGcontext con = cgCreateContext();
+	cgD3D11RegisterStates(con);
+	cgD3D11SetManageTextureParameters(con, CG_TRUE);
+
 	char ansiShaderPath[256];
 	cStrUtil::ToAnsi(shaderPath, ansiShaderPath, 256);
 	CGeffect effect = cgCreateEffectFromFile(con, ansiShaderPath, NULL);
@@ -748,51 +762,65 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	CGtechnique tech = cgGetFirstTechnique(effect);
 	CGpass pass = cgGetFirstPass(tech);
 
-	CGprogram progVs = cgGetPassProgram(pass, CGdomain::CG_VERTEX_DOMAIN);
-	const char* entryVS = cgGetProgramString(progVs, CGenum::CG_PROGRAM_ENTRY);
+	const size_t nDomains = 5; // VS, HS, DS, GS, PS ...
 
-	CGprogram progPs = cgGetPassProgram(pass, CGdomain::CG_FRAGMENT_DOMAIN);
-	const char* entryPS = cgGetProgramString(progPs, CGenum::CG_PROGRAM_ENTRY);
-
-	CGprogram progGs = cgGetPassProgram(pass, CGdomain::CG_GEOMETRY_DOMAIN);
-	const char* entryGs = cgGetProgramString(progGs, CGenum::CG_PROGRAM_ENTRY);
-	*/
-
+	// Look which entries existing in the shader
 	// asd/asd/myShader cut extension
 	zsString pathNoExt = shaderPath.substr(0, shaderPath.size() - 3);
 
-	const size_t nShaders = 5;
-	zsString binPaths[nShaders] = { pathNoExt + L"_vs.bin",
-		pathNoExt + L"_hs.bin",
-		pathNoExt + L"_ds.bin",
-		pathNoExt + L"_gs.bin",
-		pathNoExt + L"_ps.bin" };
+	bool		existingEntries[nDomains]; memset(existingEntries, 0, nDomains * sizeof(bool));
+	zsString	entryNames[nDomains];
+	zsString	binPaths[nDomains];
+	zsString	profileNames[nDomains];
+	eProfileCG  cgProfiles[nDomains];
 
-	bool binExistences[nShaders];
-	for (size_t i = 0; i < nShaders; i++) {
-		//binExistences[i] = IFile::isFileExits(binPaths[i]);
-		binExistences[i] = false; // FORCING ALWAYS GENERATE SHADERS FROM CG's TODO TMP STATE
-	}
+	// VertexShader entry
+	CGprogram progVS = cgGetPassProgram(pass, CGdomain::CG_VERTEX_DOMAIN);
+	existingEntries[VS] = (progVS != NULL) ? true : false;
+	entryNames[VS] = cgGetProgramString(progVS, CGenum::CG_PROGRAM_ENTRY);
+	binPaths[VS] = pathNoExt + L"_vs.bin";
+	profileNames[VS] = L"vs_4_0";
+	cgProfiles[VS] = eProfileCG::VS_4_0;
 
-	zsString entryNames[nShaders] = { L"VS_MAIN", L"HS_MAIN", L"DS_MAIN", L"GS_MAIN", L"PS_MAIN" };
-	zsString profileNames[nShaders] = { L"vs_4_0", L"hs_4_0", L"ds_4_0", L"gs_4_0", L"ps_4_0" };
+	// GeometryShader entry
+	CGprogram progGS = cgGetPassProgram(pass, CGdomain::CG_GEOMETRY_DOMAIN);
+	existingEntries[GS] = (progGS != NULL) ? true : false;
+	entryNames[GS] = cgGetProgramString(progGS, CGenum::CG_PROGRAM_ENTRY);
+	binPaths[GS] = pathNoExt + L"_gs.bin";
+	profileNames[GS] = L"gs_4_0";
+	cgProfiles[GS] = eProfileCG::GS_4_0;
+
+	// PixelShader entry
+	CGprogram progPS = cgGetPassProgram(pass, CGdomain::CG_GEOMETRY_DOMAIN);
+	existingEntries[PS] = (progPS != NULL) ? true : false;
+	entryNames[PS] = cgGetProgramString(progPS, CGenum::CG_PROGRAM_ENTRY);
+	binPaths[PS] = pathNoExt + L"_ps.bin";
+	profileNames[PS] = L"ps_4_0";
+	cgProfiles[PS] = eProfileCG::PS_4_0;
+
+	// TODO Another entries
+
+
+	// TODO FORCING ALWAYS GENERATE SHADERS FROM CG's 
+	bool binExistences[nDomains]; memset(binExistences, 0, nDomains * sizeof(bool));
 
 	// Shader Output data
 	ID3D11InputLayout*		inputLayout = NULL;
 	ID3D11VertexShader*		vs = NULL;
-	ID3D11PixelShader*		ps = NULL;
-	ID3D11GeometryShader*	gs = NULL;
-	ID3D11DomainShader*		ds = NULL;
 	ID3D11HullShader*		hs = NULL;
+	ID3D11DomainShader*		ds = NULL;
+	ID3D11GeometryShader*	gs = NULL;
+	ID3D11PixelShader*		ps = NULL;
+
 	std::map<zsString, size_t> textureSlots;
 
 	// Shader ByteCodes
-	ID3DBlob* blobs[nShaders];
-	void* byteCodes[nShaders]; memset(byteCodes, 0, nShaders* sizeof(size_t));
-	size_t byteCodeSizes[nShaders];
+	ID3DBlob* blobs[nDomains]; memset(blobs, 0, nDomains * sizeof(ID3DBlob*));
+	void* byteCodes[nDomains]; memset(byteCodes, 0, nDomains* sizeof(size_t));
+	size_t byteCodeSizes[nDomains]; memset(byteCodeSizes, 0, nDomains * sizeof(size_t));
 
 	// tmp hold shaderByteCode
-	static char byteCodeHolder[nShaders][64000];
+	char byteCodeHolder[nDomains][64000];
 
 	// Cg file for parsing
 	//IFile* cgFile = NULL;
@@ -801,10 +829,11 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	// samplersate, etc parsed data from Cg file
 	std::wfstream shaderProgInfo;
 	zsString shaderProgInfoPath = pathNoExt + L".inf";
-	
-	for (size_t i = 0; i < nShaders; i++) {
-		byteCodeSizes[i] = 0;
-		blobs[i] = NULL;
+
+	for (size_t i = 0; i < nDomains; i++) {
+		// not existing entry point skip it
+		if (!existingEntries[i])
+			continue;
 
 		// Found binary ... Read it
 		if (binExistences[i]) {
@@ -819,111 +848,104 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			if (cgFile == NULL)
 				cgFile = new std::wfstream(shaderPath, std::ios::in);
 
-			// Found entry in cg
-			if (cFileUtil::Contains(*cgFile, entryNames[i])) {
-				// Compile Cg to hlsl
-				auto cgcErr = CompileCgToHLSL(shaderPath, binPaths[i], (eProfileCG)((int)eProfileCG::SM_5_0_BEGIN + i));
-				if (cgcErr != eGapiResult::OK) {
-					return cgcErr;
-				}
+			// Compile Cg to hlsl
+			CompileCgToHLSL(shaderPath, binPaths[i], cgProfiles[i]);
 
-				// Compile hlsl to bytecode
-				zsString compilerMessage;
-				HRESULT hr = CompileShaderFromFile(binPaths[i], L"main", profileNames[i], &compilerMessage, &blobs[i]);
-				if (FAILED(hr)) {
-					lastErrorMessage = shaderPath + L"hlsl compilation failed, compiler ouput:\n" + compilerMessage + L"\n---";
-					return eGapiResult::ERROR_UNKNOWN;
-				}
-
-				
-				// Parse hlsl code for samplers, textures
-				std::wfstream hlslFile(binPaths[i], std::ios::in);
-
-				std::map<zsString, size_t> textureSlotsParsed;
-				std::list<zsString> samplerNames;
-
-				size_t texIdx = 0;
-				bool reachTextures = false;
-				bool reachSampling = false;
-
-				auto lines = cFileUtil::GetLines(hlslFile);
-				for (auto it = lines.begin(); it != lines.end(); it++) {
-					const zsString& row = *it;
-
-					// Collect <texture names, slot numbers>
-					if ( ! reachSampling && cStrUtil::Begins(row, L"Texture")) {
-						textureSlotsParsed[cStrUtil::Between(row, L' ', L';')] = texIdx++;
-						reachTextures = true;
-					}
-
-					// match textures, samplers
-					if (reachTextures && cStrUtil::Contains(row, L".Sample")) {
-						reachSampling = true;
-						// Example : _pout._color = _TMP23.Sample(_diffuseTex, _In._tex01);
-						size_t chPos = cStrUtil::Find(row, L".Sample");
-						zsString textureName = cStrUtil::SubStrLeft(row, chPos - 1, '_');
-						zsString samplerName = cStrUtil::SubStrRight(row, chPos + 9, ',', -1); // -- need solution fuck...
-
-						textureSlots[samplerName] = textureSlotsParsed[textureName];
-					}
-				}
-
-				hlslFile.close();
-
-				byteCodes[i] = blobs[i]->GetBufferPointer();
-				byteCodeSizes[i] = blobs[i]->GetBufferSize();
-
-				// Write byteCode as binary file
-				cFileUtil::Clear(binPaths[i]);
-				std::fstream binFile(binPaths[i], std::ios::out, std::ios::binary);
-				cFileUtil::WriteBinary(binFile, byteCodes[i], byteCodeSizes[i]);
-				binFile.close();
+			// Compile hlsl to bytecode
+			zsString compMessage;
+			HRESULT hr = CompileShaderFromFile(binPaths[i], L"main", profileNames[i], &compMessage, &blobs[i]);
+			if (FAILED(hr)) {
+				ASSERT_MSG(false, L"Failed to compile hlsl file, something is wrong with the CG file: " + shaderPath);
+				return eGapiResult::ERROR_UNKNOWN;
 			}
+
+
+			// Parse hlsl code for samplers, textures
+			std::wfstream hlslFile(binPaths[i], std::ios::in);
+
+			std::map<zsString, size_t> textureSlotsParsed;
+			std::list<zsString> samplerNames;
+
+			size_t texIdx = 0;
+			bool reachTextures = false;
+			bool reachSampling = false;
+
+			auto lines = cFileUtil::GetLines(hlslFile);
+			for (auto it = lines.begin(); it != lines.end(); it++) {
+				const zsString& row = *it;
+
+				// Collect <texture names, slot numbers>
+				if (!reachSampling && cStrUtil::Begins(row, L"Texture")) {
+					textureSlotsParsed[cStrUtil::Between(row, L' ', L';')] = texIdx++;
+					reachTextures = true;
+				}
+
+				// match textures, samplers
+				if (reachTextures && cStrUtil::Contains(row, L".Sample")) {
+					reachSampling = true;
+					// Example : _pout._color = _TMP23.Sample(_diffuseTex, _In._tex01);
+					size_t chPos = cStrUtil::Find(row, L".Sample");
+					zsString textureName = cStrUtil::SubStrLeft(row, chPos - 1, '_');
+					zsString samplerName = cStrUtil::SubStrRight(row, chPos + 9, ',', -1); // -- need solution fuck...
+
+					textureSlots[samplerName] = textureSlotsParsed[textureName];
+				}
+			}
+
+			hlslFile.close();
+
+			byteCodes[i] = blobs[i]->GetBufferPointer();
+			byteCodeSizes[i] = blobs[i]->GetBufferSize();
+
+			// Write byteCode as binary file
+			cFileUtil::Clear(binPaths[i]);
+			std::fstream binFile(binPaths[i], std::ios::out, std::ios::binary);
+			cFileUtil::WriteBinary(binFile, byteCodes[i], byteCodeSizes[i]);
+			binFile.close();
 		}
 	}
 
 	HRESULT hr = S_OK;
-	if (byteCodeSizes[0] != 0) {
+	if (byteCodeSizes[VS] != 0) {
 		// Create VERTEX_SHADER from byteCode
-		hr = d3ddev->CreateVertexShader(byteCodes[0], byteCodeSizes[0], NULL, &vs);
+		hr = d3ddev->CreateVertexShader(byteCodes[VS], byteCodeSizes[VS], NULL, &vs);
 		if (FAILED(hr)) {
-			ASSERT_MSG(false, L"Failed to create vertex shader from bytecode: " + binPaths[0]);
+			ASSERT_MSG(false, L"Failed to create vertex shader from bytecode: " + binPaths[VS]);
 			return eGapiResult::ERROR_UNKNOWN;
 		}
 	}
-	if (byteCodeSizes[1] != 0) {
+	if (byteCodeSizes[HS] != 0) {
 		// Create HULL_SHADER from byteCode
-		hr = d3ddev->CreateHullShader(byteCodes[1], byteCodeSizes[1], NULL, &hs);
+		hr = d3ddev->CreateHullShader(byteCodes[HS], byteCodeSizes[HS], NULL, &hs);
 		if (FAILED(hr)) {
-			ASSERT_MSG(false, L"Failed to create hull shader shader from bytecode: " + binPaths[1]);
+			ASSERT_MSG(false, L"Failed to create hull shader shader from bytecode: " + binPaths[HS]);
 			return eGapiResult::ERROR_UNKNOWN;
 		}
 	}
-	if (byteCodeSizes[2] != 0) {
+	if (byteCodeSizes[DS] != 0) {
 		// Create DOMAIN_SHADER from byteCode
-		hr = d3ddev->CreateDomainShader(byteCodes[2], byteCodeSizes[2], NULL, &ds);
+		hr = d3ddev->CreateDomainShader(byteCodes[DS], byteCodeSizes[DS], NULL, &ds);
 		if (FAILED(hr)) {
-			ASSERT_MSG(false, L"Failed to create domain shader from bytecode: " + binPaths[2]);
+			ASSERT_MSG(false, L"Failed to create domain shader from bytecode: " + binPaths[DS]);
 			return eGapiResult::ERROR_UNKNOWN;
 		}
 	}
-	if (byteCodeSizes[3] != 0) {
+	if (byteCodeSizes[GS] != 0) {
 		// Create GEOMETRY_SHADER from byteCode
-		hr = d3ddev->CreateGeometryShader(byteCodes[3], byteCodeSizes[3], NULL, &gs);
+		hr = d3ddev->CreateGeometryShader(byteCodes[GS], byteCodeSizes[GS], NULL, &gs);
 		if (FAILED(hr)) {
-			ASSERT_MSG(false, L"Failed to create geometry shader from bytecode: " + binPaths[3]);
+			ASSERT_MSG(false, L"Failed to create geometry shader from bytecode: " + binPaths[GS]);
 			return eGapiResult::ERROR_UNKNOWN;
 		}
 	}
-	if (byteCodeSizes[4] != 0) {
+	if (byteCodeSizes[PS] != 0) {
 		// Create PIXEL_SHADER from byteCode
-		hr = d3ddev->CreatePixelShader(byteCodes[4], byteCodeSizes[4], NULL, &ps);
+		hr = d3ddev->CreatePixelShader(byteCodes[PS], byteCodeSizes[PS], NULL, &ps);
 		if (FAILED(hr)) {
-			ASSERT_MSG(false, L"Failed to create pixel shader from bytecode: " + binPaths[4]);
+			ASSERT_MSG(false, L"Failed to create pixel shader from bytecode: " + binPaths[PS]);
 			return eGapiResult::ERROR_UNKNOWN;
 		}
 	}
-
 
 	// Parsing cg
 	// Parse input Layout... from VERTEX_SHADER
@@ -983,9 +1005,8 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 				format = DXGI_FORMAT_R32_FLOAT;
 				byteSize = 4;
 			}
-			else {
+			else
 				ASSERT_MSG(false, L"Cg file parsing : " + shaderPath + L", can't match Input Vertex FORMAT");
-			}
 
 
 			vertexDecl[attribIdx].SemanticName = semanticNames[attribIdx];
@@ -1003,21 +1024,21 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	}
 
 	// Create input layout
-	hr = d3ddev->CreateInputLayout(vertexDecl, nVertexAttributes, byteCodes[0], byteCodeSizes[0], &inputLayout);
+	hr = d3ddev->CreateInputLayout(vertexDecl, nVertexAttributes, byteCodes[VS], byteCodeSizes[VS], &inputLayout);
 	if (FAILED(hr))
 	{
 		int asd = 5;
 		asd++;
 	}
-	ASSERT_MSG(hr == S_OK, L"cGraphicsApiD3D11::CreateShaderProgram -> Can't create input layout for vertexShader: " + binPaths[0]);
+	ASSERT_MSG(hr == S_OK, L"cGraphicsApiD3D11::CreateShaderProgram -> Can't create input layout for vertexShader: " + binPaths[VS]);
 
 	// FREE UP
-	for (size_t i = 0; i < nShaders; i++)
+	for (size_t i = 0; i < nDomains; i++)
 		SAFE_RELEASE(blobs[i]);
 
 	// Create shader program
 	cShaderProgramD3D11* shProg = new cShaderProgramD3D11(this, alignedByteOffset, inputLayout, vs, hs, ds, gs, ps);
-	
+
 	// Set look up maps
 	shProg->SetSlotLookups(textureSlots);
 
@@ -1324,6 +1345,7 @@ eGapiResult cGraphicsApiD3D11::SetVSConstantBuffer(const void* data, size_t size
 		d3dcon->VSSetConstantBuffers(0, 1, &vsConstBuffer); // Set Buffer
 	}
 	memcpy((unsigned char*)vsConstBufferData + dstByteOffset, data, size);
+	return eGapiResult::OK;
 }
 
 eGapiResult cGraphicsApiD3D11::SetPSConstantBuffer(const void* data, size_t size, size_t slotIdx) {
@@ -1361,6 +1383,7 @@ eGapiResult cGraphicsApiD3D11::SetPSConstantBuffer(const void* data, size_t size
 		d3dcon->PSSetConstantBuffers(0, 1, &psConstBuffer); // Set Buffer
 	}
 	memcpy((unsigned char*)psConstBufferData + dstByteOffset, data, size);
+	return eGapiResult::OK;
 }
 
 // Set (multiple) render targets
