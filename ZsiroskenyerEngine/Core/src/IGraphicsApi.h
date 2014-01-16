@@ -65,8 +65,8 @@ public:
 	virtual void SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) = 0;
 	virtual void SetIndexBuffer(const IIndexBuffer* indexBuffer) = 0;
 	virtual void SetInstanceData(/*whatever*/) = 0;
-	virtual void SetVSConstantBuffer(const void* data, size_t size, size_t slotIdx) = 0;
-	virtual void SetPSConstantBuffer(const void* data, size_t size, size_t slotIdx) = 0;
+	virtual eGapiResult SetVSConstantBuffer(const void* data, size_t size, size_t slotIdx) = 0;
+	virtual eGapiResult SetPSConstantBuffer(const void* data, size_t size, size_t slotIdx) = 0;
 	virtual eGapiResult SetTexture(const ITexture2D* t, size_t slotIdx) = 0;
 	virtual eGapiResult SetTexture(const zsString& varName, const ITexture2D* t) = 0;
 	virtual void SetShaderProgram(IShaderProgram* shProg) = 0;
@@ -78,6 +78,6 @@ public:
 
 	// --- misc --- //
 	virtual eGapiResult SetWindow(IWindow *renderWindow) = 0;
-
 	virtual ITexture2D* GetDefaultRenderTarget() const = 0;
+	virtual zsString GetLastErrorMessage() const = 0;
 };

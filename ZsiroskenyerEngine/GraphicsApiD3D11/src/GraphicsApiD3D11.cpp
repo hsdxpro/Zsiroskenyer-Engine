@@ -396,109 +396,6 @@ eGapiResult cGraphicsApiD3D11::CreateDefaultStates() {
 	return eGapiResult::OK;
 }
 
-HRESULT cGraphicsApiD3D11::CompileShaderFromFile(const zsString& fileName, const zsString& entry, const zsString& profile, ID3DBlob** ppBlobOut) {
-	HRESULT hr = S_OK;
-
-	DWORD dwShaderFlags = D3D10_SHADER_OPTIMIZATION_LEVEL3;
-
-	ID3DBlob* pErrorBlob;
-	char ansiEntry[256];
-	char ansiProfile[256];
-	wcstombs(ansiEntry, entry.c_str(), 256);
-	wcstombs(ansiProfile, profile.c_str(), 256);
-
-	hr = D3DX11CompileFromFileW(fileName.c_str(), NULL, NULL, ansiEntry, ansiProfile,
-		dwShaderFlags, 0, NULL, ppBlobOut, &pErrorBlob, NULL);
-	if (FAILED(hr)) {
-		if (pErrorBlob != NULL) {
-			char* errorStr = (char*)pErrorBlob->GetBufferPointer();
-			int size_needed = MultiByteToWideChar(CP_UTF8, 0, errorStr, strlen(errorStr), NULL, 0);
-			zsString errorStrW(size_needed, 0);
-			MultiByteToWideChar(CP_UTF8, 0, errorStr, strlen(errorStr), &errorStrW[0], size_needed);
-
-			ASSERT_MSG(false, L"Can't Compile: " + fileName + L"\n\n" + errorStrW);
-		}
-		if (pErrorBlob) pErrorBlob->Release();
-		return hr;
-	}
-	if (pErrorBlob) pErrorBlob->Release();
-
-	return S_OK;
-}
-
-eGapiResult cGraphicsApiD3D11::CompileCgToHLSL(const zsString& cgFilePath, const zsString& hlslFilePath, eProfileCG compileProfile) {
-	// Paths
-	zsString cgcExePath = L"bin\\cgc.exe";
-	zsString entryAndProfile;
-	switch (compileProfile)
-	{
-	case eProfileCG::VS_5_0:
-		entryAndProfile = L"-profile vs_5_0 -entry VS_MAIN";
-		break;
-	case eProfileCG::HS_5_0:
-		entryAndProfile = L"-profile hs_5_0 -entry HS_MAIN";
-		break;
-	case eProfileCG::DS_5_0:
-		entryAndProfile = L"-profile ds_5_0 -entry DS_MAIN";
-		break;
-	case eProfileCG::GS_5_0:
-		entryAndProfile = L"-profile gs_5_0 -entry GS_MAIN";
-		break;
-	case eProfileCG::PS_5_0:
-		entryAndProfile = L"-profile ps_5_0 -entry PS_MAIN";
-		break;
-	case eProfileCG::VS_4_0:
-		entryAndProfile = L"-profile vs_4_0 -entry VS_MAIN";
-		break;
-	case eProfileCG::HS_4_0:
-		entryAndProfile = L"-profile hs_4_0 -entry HS_MAIN";
-		break;
-	case eProfileCG::DS_4_0:
-		entryAndProfile = L"-profile ds_4_0 -entry DS_MAIN";
-		break;
-	case eProfileCG::GS_4_0:
-		entryAndProfile = L"-profile gs_4_0 -entry GS_MAIN";
-		break;
-	case eProfileCG::PS_4_0:
-		entryAndProfile = L"-profile ps_4_0 -entry PS_MAIN";
-		break;
-	case eProfileCG::VS_3_0:
-		entryAndProfile = L"-profile vs_3_0 -entry VS_MAIN";
-		break;
-	case eProfileCG::PS_3_0:
-		entryAndProfile = L"-profile ps_3_0 -entry PS_MAIN";
-		break;
-	case eProfileCG::VS_2_0:
-		entryAndProfile = L"-profile vs_2_0 -entry VS_MAIN";
-		break;
-	case eProfileCG::PS_2_0:
-		entryAndProfile = L"-profile ps_2_0 -entry PS_MAIN";
-		break;
-	}
-	//cgc.exe proba.fx -profile vs_5_0 -entry MAIN -o proba.vs
-	zsString shellParams = cgcExePath + L" " + cgFilePath + L" " + entryAndProfile + L" -o " + hlslFilePath;
-
-	// Process infos
-	STARTUPINFO StartupInfo;
-	memset(&StartupInfo, 0, sizeof(StartupInfo));
-	StartupInfo.cb = sizeof(StartupInfo);
-	PROCESS_INFORMATION ProcessInfo;
-
-	// LPWCSTR to LPWSTR
-	wchar_t params[512];
-	wcscpy(params, shellParams.c_str());
-
-	// Start cgc.exe and Generate .hlsl from .cg
-	BOOL appStarted = CreateProcessW(cgcExePath.c_str(), params, NULL, NULL, false, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
-	if (!appStarted) {
-		ASSERT_MSG(false, L"Cannot execute cg shader compiler : " + cgcExePath);
-		return eGapiResult::ERROR_UNKNOWN;
-	}
-
-	WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
-	return eGapiResult::OK;
-}
-
 void cGraphicsApiD3D11::ApplyConstantBuffers() {
 	D3D11_MAPPED_SUBRESOURCE mapped;
 	// Update vertex shader constants
@@ -597,25 +494,29 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const zsStri
 	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(d3ddev, filePath.c_str(), &info, 0, &srv, 0);
 
 	switch (hr) {
-	case S_OK: {
-				   // Get Width, Height
-				   size_t width;
-				   size_t height;
+		case S_OK: {
+			// Get Width, Height
+			size_t width;
+			size_t height;
 
-				   ID3D11Texture2D* tex2D;
-				   srv->GetResource((ID3D11Resource**)&tex2D);
+			ID3D11Texture2D* tex2D;
+			srv->GetResource((ID3D11Resource**)&tex2D);
 
-				   D3D11_TEXTURE2D_DESC texDesc; tex2D->GetDesc(&texDesc);
-				   width = texDesc.Width;
-				   height = texDesc.Height;
-				   tex2D->Release();
+			D3D11_TEXTURE2D_DESC texDesc; tex2D->GetDesc(&texDesc);
+			width = texDesc.Width;
+			height = texDesc.Height;
+			tex2D->Release();
 
-				   // return
-				   *resource = new cTexture2DD3D11(width, height, tex2D, srv);
-				   return eGapiResult::OK;
-	}
-	default:
-		return eGapiResult::ERROR_UNKNOWN;
+			// return
+			*resource = new cTexture2DD3D11(width, height, tex2D, srv);
+			return eGapiResult::OK;
+		}
+		case D3D11_ERROR_FILE_NOT_FOUND:
+			return eGapiResult::ERROR_FILE_NOT_FOUND;
+		case E_OUTOFMEMORY:
+			return eGapiResult::ERROR_OUT_OF_MEMORY;
+		default:
+			return eGapiResult::ERROR_UNKNOWN;
 	}
 }
 
@@ -665,7 +566,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 	// create texture resource
 	hr = d3ddev->CreateTexture2D(&texDesc, NULL, &tex);
 	if (FAILED(hr)) {
-		ASSERT_MSG(false, L"Can't create texture2D");
+		lastErrorMessage = L"failed to create resource";
 		if (hr == E_OUTOFMEMORY)
 			return eGapiResult::ERROR_OUT_OF_MEMORY;
 		else
@@ -696,7 +597,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 			SAFE_RELEASE(rtv);
 			SAFE_RELEASE(srv);
 			SAFE_RELEASE(tex);
-			ASSERT_MSG(false, L"Can't create texture2D");
+			lastErrorMessage = L"failed to create depth-stencil view";
 			if (hr == E_OUTOFMEMORY)
 				return eGapiResult::ERROR_OUT_OF_MEMORY;
 			else
@@ -707,7 +608,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 		hr = d3ddev->CreateRenderTargetView(tex, NULL, &rtv);
 		if (FAILED(hr)) {
 			SAFE_RELEASE(tex);
-			ASSERT_MSG(false, L"Can't create texture2D");
+			lastErrorMessage = L"failed to create render target view";
 			if (hr == E_OUTOFMEMORY)
 				return eGapiResult::ERROR_OUT_OF_MEMORY;
 			else
@@ -719,7 +620,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 		if (FAILED(hr)) {
 			SAFE_RELEASE(rtv);
 			SAFE_RELEASE(tex);
-			ASSERT_MSG(false, L"Can't create texture2D");
+			lastErrorMessage = L"failed to create shader resource view";
 			if (hr == E_OUTOFMEMORY)
 				return eGapiResult::ERROR_OUT_OF_MEMORY;
 			else
@@ -733,6 +634,105 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 
 
 // Create shader program
+HRESULT cGraphicsApiD3D11::CompileShaderFromFile(const zsString& fileName, const zsString& entry, const zsString& profile, zsString* compilerMessage, ID3DBlob** ppBlobOut) {
+	HRESULT hr = S_OK;
+
+	DWORD dwShaderFlags = D3D10_SHADER_OPTIMIZATION_LEVEL3;
+
+	ID3DBlob* pErrorBlob;
+	char ansiEntry[256];
+	char ansiProfile[256];
+	wcstombs(ansiEntry, entry.c_str(), 256);
+	wcstombs(ansiProfile, profile.c_str(), 256);
+
+	hr = D3DX11CompileFromFileW(fileName.c_str(), NULL, NULL, ansiEntry, ansiProfile,
+		dwShaderFlags, 0, NULL, ppBlobOut, &pErrorBlob, NULL);
+	if (FAILED(hr) || pErrorBlob) {
+		char* errorStr = (char*)pErrorBlob->GetBufferPointer();
+		int size_needed = MultiByteToWideChar(CP_UTF8, 0, errorStr, strlen(errorStr), NULL, 0);
+		zsString errorStrW(size_needed, 0);
+		MultiByteToWideChar(CP_UTF8, 0, errorStr, strlen(errorStr), &errorStrW[0], size_needed);
+
+		*compilerMessage = std::move(errorStrW);
+	}
+	if (pErrorBlob) pErrorBlob->Release();
+
+	return hr;
+}
+
+eGapiResult cGraphicsApiD3D11::CompileCgToHLSL(const zsString& cgFilePath, const zsString& hlslFilePath, eProfileCG compileProfile) {
+	// Paths
+	zsString cgcExePath = L"bin\\cgc.exe";
+	zsString entryAndProfile;
+	switch (compileProfile)
+	{
+		case eProfileCG::VS_5_0:
+			entryAndProfile = L"-profile vs_5_0 -entry VS_MAIN";
+			break;
+		case eProfileCG::HS_5_0:
+			entryAndProfile = L"-profile hs_5_0 -entry HS_MAIN";
+			break;
+		case eProfileCG::DS_5_0:
+			entryAndProfile = L"-profile ds_5_0 -entry DS_MAIN";
+			break;
+		case eProfileCG::GS_5_0:
+			entryAndProfile = L"-profile gs_5_0 -entry GS_MAIN";
+			break;
+		case eProfileCG::PS_5_0:
+			entryAndProfile = L"-profile ps_5_0 -entry PS_MAIN";
+			break;
+		case eProfileCG::VS_4_0:
+			entryAndProfile = L"-profile vs_4_0 -entry VS_MAIN";
+			break;
+		case eProfileCG::HS_4_0:
+			entryAndProfile = L"-profile hs_4_0 -entry HS_MAIN";
+			break;
+		case eProfileCG::DS_4_0:
+			entryAndProfile = L"-profile ds_4_0 -entry DS_MAIN";
+			break;
+		case eProfileCG::GS_4_0:
+			entryAndProfile = L"-profile gs_4_0 -entry GS_MAIN";
+			break;
+		case eProfileCG::PS_4_0:
+			entryAndProfile = L"-profile ps_4_0 -entry PS_MAIN";
+			break;
+		case eProfileCG::VS_3_0:
+			entryAndProfile = L"-profile vs_3_0 -entry VS_MAIN";
+			break;
+		case eProfileCG::PS_3_0:
+			entryAndProfile = L"-profile ps_3_0 -entry PS_MAIN";
+			break;
+		case eProfileCG::VS_2_0:
+			entryAndProfile = L"-profile vs_2_0 -entry VS_MAIN";
+			break;
+		case eProfileCG::PS_2_0:
+			entryAndProfile = L"-profile ps_2_0 -entry PS_MAIN";
+			break;
+	}
+	//cgc.exe proba.fx -profile vs_5_0 -entry MAIN -o proba.vs
+	zsString shellParams = cgcExePath + L" " + cgFilePath + L" " + entryAndProfile + L" -o " + hlslFilePath;
+
+	// Process infos
+	STARTUPINFO StartupInfo;
+	memset(&StartupInfo, 0, sizeof(StartupInfo));
+	StartupInfo.cb = sizeof(StartupInfo);
+	PROCESS_INFORMATION ProcessInfo;
+
+	// LPWCSTR to LPWSTR
+	wchar_t params[512];
+	wcscpy(params, shellParams.c_str());
+
+	// Start cgc.exe and Generate .hlsl from .cg
+	BOOL appStarted = CreateProcessW(cgcExePath.c_str(), params, NULL, NULL, false, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
+	if (!appStarted) {
+		lastErrorMessage = zsString(L"cannot find cg compiler @") + cgcExePath;
+		return eGapiResult::ERROR_FILE_NOT_FOUND;
+	}
+
+	WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
+	return eGapiResult::OK;
+}
+
 eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, const zsString& shaderPath) {
 	// TODO read last write of that shader if last_write < curr_last_write (elavult)
 	//last_write_time()
@@ -821,12 +821,16 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			// Found entry in cg
 			if (cFileUtil::Contains(*cgFile, entryNames[i])) {
 				// Compile Cg to hlsl
-				CompileCgToHLSL(shaderPath, binPaths[i], (eProfileCG)((int)eProfileCG::SM_5_0_BEGIN + i));
+				auto cgcErr = CompileCgToHLSL(shaderPath, binPaths[i], (eProfileCG)((int)eProfileCG::SM_5_0_BEGIN + i));
+				if (cgcErr != eGapiResult::OK) {
+					return cgcErr;
+				}
 
 				// Compile hlsl to bytecode
-				HRESULT hr = CompileShaderFromFile(binPaths[i], L"main", profileNames[i], &blobs[i]);
+				zsString compilerMessage;
+				HRESULT hr = CompileShaderFromFile(binPaths[i], L"main", profileNames[i], &compilerMessage, &blobs[i]);
 				if (FAILED(hr)) {
-					ASSERT_MSG(false, L"Failed to compile hlsl file, something is wrong with the CG file: " + shaderPath);
+					lastErrorMessage = shaderPath + L"hlsl compilation failed, compiler ouput:\n" + compilerMessage + L"\n---";
 					return eGapiResult::ERROR_UNKNOWN;
 				}
 
@@ -978,8 +982,9 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 				format = DXGI_FORMAT_R32_FLOAT;
 				byteSize = 4;
 			}
-			else
+			else {
 				ASSERT_MSG(false, L"Cg file parsing : " + shaderPath + L", can't match Input Vertex FORMAT");
+			}
 
 
 			vertexDecl[attribIdx].SemanticName = semanticNames[attribIdx];
@@ -1134,6 +1139,8 @@ eGapiResult cGraphicsApiD3D11::ReadResource(ITexture2D* texture, void* dest, siz
 
 // Copy among resources
 eGapiResult cGraphicsApiD3D11::CopyResource(ITexture2D* src, ITexture2D* dst) {
+	ASSERT(src != NULL && dst != NULL);
+
 	d3dcon->CopyResource((ID3D11Resource*)((cTexture2DD3D11*)dst)->Get(), (ID3D11Resource*)((cTexture2DD3D11*)src)->Get());
 	return eGapiResult::OK;
 }
@@ -1165,6 +1172,8 @@ void cGraphicsApiD3D11::Clear(bool target /*= true*/, bool depth /*= false*/, bo
 
 // Clear texture
 void cGraphicsApiD3D11::ClearTexture(ITexture2D* t, unsigned clearFlag /*= 0*/, const Vec4& clearColor /*= Vec4()*/, float depthVal /*= 1.0f*/, size_t stencilVal /*= 0*/) {
+	ASSERT(t != NULL);
+	
 	ID3D11DepthStencilView* dsv = ((cTexture2DD3D11*)t)->GetDSV();
 	if (dsv)
 		d3dcon->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, depthVal, (UINT8)stencilVal);
@@ -1176,8 +1185,9 @@ void cGraphicsApiD3D11::ClearTexture(ITexture2D* t, unsigned clearFlag /*= 0*/, 
 
 // Present
 void cGraphicsApiD3D11::Present() {
-	ASSERT_MSG(d3dsc != NULL, L"Need to set window for rendering");
-	d3dsc->Present(0, 0);
+	if (d3dsc){
+		d3dsc->Present(0, 0);
+	}
 }
 
 
@@ -1208,12 +1218,16 @@ void cGraphicsApiD3D11::DrawInstancedIndexed(size_t nIndicesPerInstance, size_t 
 
 // Set indexed poly-mesh buffers
 void cGraphicsApiD3D11::SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) {
+	ASSERT(vertexBuffer != NULL);
+
 	const UINT strides = vertexStride;
 	const UINT offset = 0;
 	ID3D11Buffer* vertices = ((cVertexBufferD3D11*)vertexBuffer)->GetBufferPointer();
 	d3dcon->IASetVertexBuffers(0, 1, &vertices, &strides, &offset);
 }
 void cGraphicsApiD3D11::SetIndexBuffer(const IIndexBuffer* indexBuffer) {
+	ASSERT(indexBuffer != NULL);
+
 	d3dcon->IASetIndexBuffer(((cIndexBufferD3D11*)indexBuffer)->GetBufferPointer(), DXGI_FORMAT_R32_UINT, 0);
 }
 
@@ -1223,20 +1237,22 @@ void cGraphicsApiD3D11::SetInstanceData() {
 
 // Set shader texture resource
 eGapiResult cGraphicsApiD3D11::SetTexture(const ITexture2D* t, size_t slotIdx) {
+	ASSERT(t != NULL);
+
 	const ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)t)->GetSRV();
-	ASSERT(srv != NULL);
 	if (srv != NULL) {
 		d3dcon->PSSetShaderResources(slotIdx, 1, (ID3D11ShaderResourceView**)&srv);
 		return eGapiResult::OK;
 	} else {
-		return eGapiResult::ERROR_UNKNOWN;
+		return eGapiResult::ERROR_INVALID_ARG;
 	}
 }
 
 // Set shader texture resource
 eGapiResult cGraphicsApiD3D11::SetTexture(const zsString& varName, const ITexture2D* t) {
+	ASSERT(t != NULL);
+
 	const ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)t)->GetSRV();
-	ASSERT(srv != NULL);
 	if (srv != NULL) {
 		size_t slot = ((cShaderProgramD3D11*)activeShaderProg)->GetTextureSlot(varName);
 		if (slot == std::numeric_limits<size_t>::max())
@@ -1251,6 +1267,7 @@ eGapiResult cGraphicsApiD3D11::SetTexture(const zsString& varName, const ITextur
 // Set compiled-linked shader program
 void cGraphicsApiD3D11::SetShaderProgram(IShaderProgram* shProg) {
 	ASSERT(shProg != NULL);
+
 	activeShaderProg = (cShaderProgramD3D11*)shProg;
 	const cShaderProgramD3D11* shProgD3D11 = (cShaderProgramD3D11*)shProg;
 	d3dcon->IASetInputLayout(shProgD3D11->GetInputLayout());
@@ -1270,7 +1287,7 @@ void cGraphicsApiD3D11::SetPrimitiveTopology(ePrimitiveTopology t) {
 	}
 }
 
-void cGraphicsApiD3D11::SetVSConstantBuffer(const void* data, size_t size, size_t slotIdx) {
+eGapiResult cGraphicsApiD3D11::SetVSConstantBuffer(const void* data, size_t size, size_t slotIdx) {
 	vsConstBufferStateChanged = true;
 
 	// 16 means one register byte size... (vec4)
@@ -1300,13 +1317,15 @@ void cGraphicsApiD3D11::SetVSConstantBuffer(const void* data, size_t size, size_
 			desc.Usage = D3D11_USAGE_DYNAMIC;
 			desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		HRESULT hr = d3ddev->CreateBuffer(&desc, NULL, &vsConstBuffer);
-		ASSERT(hr == S_OK);
+		if (FAILED(hr)) {
+			return eGapiResult::ERROR_OUT_OF_MEMORY;
+		}
 		d3dcon->VSSetConstantBuffers(0, 1, &vsConstBuffer); // Set Buffer
 	}
 	memcpy((unsigned char*)vsConstBufferData + dstByteOffset, data, size);
 }
 
-void cGraphicsApiD3D11::SetPSConstantBuffer(const void* data, size_t size, size_t slotIdx) {
+eGapiResult cGraphicsApiD3D11::SetPSConstantBuffer(const void* data, size_t size, size_t slotIdx) {
 	psConstBufferStateChanged = true;
 
 	// 16 means one register byte size... (vec4)
@@ -1335,7 +1354,9 @@ void cGraphicsApiD3D11::SetPSConstantBuffer(const void* data, size_t size, size_
 			desc.Usage = D3D11_USAGE_DYNAMIC;
 			desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		HRESULT hr = d3ddev->CreateBuffer(&desc, NULL, &psConstBuffer);
-		ASSERT(hr == S_OK);
+		if (FAILED(hr)) {
+			return eGapiResult::ERROR_OUT_OF_MEMORY;
+		}
 		d3dcon->PSSetConstantBuffers(0, 1, &psConstBuffer); // Set Buffer
 	}
 	memcpy((unsigned char*)psConstBufferData + dstByteOffset, data, size);
@@ -1469,6 +1490,8 @@ eGapiResult cGraphicsApiD3D11::SetDepthStencilState(tDepthStencilDesc desc, uint
 
 // Set Target Window
 eGapiResult cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
+	ASSERT(renderWindow != NULL);
+
 	size_t clientWidth = renderWindow->GetClientWidth();
 	size_t clientHeight = renderWindow->GetClientHeight();
 	// Same window size : don't need new swap chain
@@ -1478,12 +1501,10 @@ eGapiResult cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
 
 	// Create swap chain for device
 	eGapiResult r = CreateMostAcceptableSwapChain(clientWidth, clientHeight, (HWND)(renderWindow->GetHandle()));
-	ASSERT(r == eGapiResult::OK);
 	if (r != eGapiResult::OK) return r;
 
 	// Create main render target (BackBuffer)
 	r = CreateViewsForBB();
-	ASSERT(r == eGapiResult::OK);
 	if (r != eGapiResult::OK) return r;
 
 	// Create default viewport for swapChain rendering
@@ -1496,11 +1517,14 @@ eGapiResult cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
 
 	// BackBuffer will be the render target in default
 	r = SetRenderTargetDefault();
-	ASSERT(r == eGapiResult::OK);
 	return r;
 }
 
-
+////////////////////////////////////////////////////////////////////////////////
+// Misc
+zsString cGraphicsApiD3D11::GetLastErrorMessage() const {
+	return lastErrorMessage;
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
