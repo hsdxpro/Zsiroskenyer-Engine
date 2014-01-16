@@ -791,7 +791,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	cgProfiles[GS] = eProfileCG::GS_4_0;
 
 	// PixelShader entry
-	CGprogram progPS = cgGetPassProgram(pass, CGdomain::CG_GEOMETRY_DOMAIN);
+	CGprogram progPS = cgGetPassProgram(pass, CGdomain::CG_FRAGMENT_DOMAIN);
 	existingEntries[PS] = (progPS != NULL) ? true : false;
 	entryNames[PS] = cgGetProgramString(progPS, CGenum::CG_PROGRAM_ENTRY);
 	binPaths[PS] = pathNoExt + L"_ps.bin";
