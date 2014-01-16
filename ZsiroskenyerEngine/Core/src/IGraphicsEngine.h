@@ -8,7 +8,6 @@
 
 #pragma once
 
-#include "zsString.h"
 #include <cstdint>
 
 class IGraphicsApi;
@@ -81,7 +80,7 @@ enum class eGraphicsResult : signed int {
 class IGraphicsScene {
 public:
 	// entities & lights
-	virtual cGraphicsEntity* CreateEntity(const zsString& geomPath, const zsString& mtlPath) = 0;
+	virtual cGraphicsEntity* CreateEntity(const wchar_t* geomPath, const wchar_t* mtlPath) = 0;
 	virtual void DeleteEntity(const cGraphicsEntity* entity) = 0;
 	virtual cGraphicsLight* CreateLight() = 0;
 	virtual void DeleteLight(const cGraphicsLight* light) = 0;

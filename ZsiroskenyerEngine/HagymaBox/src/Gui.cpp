@@ -37,7 +37,7 @@ IGraphicsScene* cGui::GetScene() {
 
 ///-----------------------------------------------------INTERNAL FUNCTIONS------------------------------------------------------//
 cGraphicsEntity* cGui::CreateQuad(const zsString& mtlPath, size_t posX, size_t posY, size_t width, size_t height) {
-	cGraphicsEntity* e = scene->CreateEntity(L"objects/quad.obj", mtlPath);
+	cGraphicsEntity* e = scene->CreateEntity(L"objects/quad.obj", mtlPath.c_str());
 		e->SetPos(-(float)(this->width - width) / 2.0f + posX, 0, -(float)(this->height - height) / 2.0f + posY);
 		e->SetScale((float)width, 1.0f, (float)height);
 	return e;

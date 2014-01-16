@@ -38,7 +38,7 @@ public:
 	~cGraphicsScene();
 
 	// entities & lights
-	cGraphicsEntity* CreateEntity(const zsString& geomPath, const zsString& mtlPath) override;
+	cGraphicsEntity* CreateEntity(const wchar_t* geomPath, const wchar_t* mtlPath) override;
 	void DeleteEntity(const cGraphicsEntity* entity) override;
 	cGraphicsLight* CreateLight() override;
 	void DeleteLight(const cGraphicsLight* light) override;

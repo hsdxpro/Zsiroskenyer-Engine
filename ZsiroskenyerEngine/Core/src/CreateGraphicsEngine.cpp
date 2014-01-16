@@ -17,12 +17,12 @@ IGraphicsEngine* CreateGraphicsEngine(IWindow* targetWindow, unsigned screenWidt
 	else {
 		hDllRaster = LoadDynamicLibrary("GraphicsEngineRaster");
 		if (!hDllRaster) {
-			return NULL;
+			return nullptr;
 		}
 		CreateGraphicsEngineRaster = (IGraphicsEngine*(*)(IWindow*, unsigned, unsigned, tGraphicsConfig))GetFunctionAddress(hDllRaster, "CreateGraphicsEngineRaster");
 		if (!CreateGraphicsEngineRaster) {
 			assert(false);
-			return NULL;
+			return nullptr;
 		}
 		return CreateGraphicsEngineRaster(targetWindow, screenWidth, screenHeight, config);
 	}

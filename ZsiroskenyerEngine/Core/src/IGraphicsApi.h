@@ -4,7 +4,6 @@
 
 #include "../../Core/src/IWindow.h"
 #include "../../Core/src/common.h"
-#include "../../Core/src/zsString.h"
 #include "../../Core/src/math/Vec4.h"
 
 #include "ResourceProperty.h"
@@ -33,9 +32,9 @@ public:
 	// --- resources --- //
 	virtual eGapiResult	CreateVertexBuffer(IVertexBuffer** resource, size_t size, eUsage usage, void* data = NULL) = 0;
 	virtual eGapiResult	CreateIndexBuffer(IIndexBuffer** resource, size_t size, eUsage usage, void* data = NULL) = 0;
-	virtual eGapiResult CreateTexture(ITexture2D** resource, const zsString& filePath) = 0;
+	virtual eGapiResult CreateTexture(ITexture2D** resource, const wchar_t* filePath) = 0;
 	virtual eGapiResult CreateTexture(ITexture2D** resource, ITexture2D::tDesc desc, void* data = NULL) = 0;
-	virtual eGapiResult CreateShaderProgram(IShaderProgram** resource, const zsString& shaderPath) = 0;
+	virtual eGapiResult CreateShaderProgram(IShaderProgram** resource, const wchar_t* shaderPath) = 0;
 
 	virtual eGapiResult WriteResource(IIndexBuffer* buffer , void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) = 0;
 	virtual eGapiResult WriteResource(IVertexBuffer* buffer, void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) = 0;
@@ -65,10 +64,10 @@ public:
 	virtual void SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) = 0;
 	virtual void SetIndexBuffer(const IIndexBuffer* indexBuffer) = 0;
 	virtual void SetInstanceData(/*whatever*/) = 0;
-	virtual void SetVSConstantBuffer(const void* data, size_t size, size_t slotIdx) = 0;
-	virtual void SetPSConstantBuffer(const void* data, size_t size, size_t slotIdx) = 0;
+	virtual eGapiResult SetVSConstantBuffer(const void* data, size_t size, size_t slotIdx) = 0;
+	virtual eGapiResult SetPSConstantBuffer(const void* data, size_t size, size_t slotIdx) = 0;
 	virtual eGapiResult SetTexture(const ITexture2D* t, size_t slotIdx) = 0;
-	virtual eGapiResult SetTexture(const zsString& varName, const ITexture2D* t) = 0;
+	virtual eGapiResult SetTexture(const wchar_t* varName, const ITexture2D* t) = 0;
 	virtual void SetShaderProgram(IShaderProgram* shProg) = 0;
 	virtual void SetPrimitiveTopology(ePrimitiveTopology t) = 0;
 
@@ -78,6 +77,6 @@ public:
 
 	// --- misc --- //
 	virtual eGapiResult SetWindow(IWindow *renderWindow) = 0;
-
 	virtual ITexture2D* GetDefaultRenderTarget() const = 0;
+	virtual const wchar_t* GetLastErrorMessage() const = 0;
 };

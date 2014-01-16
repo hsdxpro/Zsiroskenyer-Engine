@@ -21,7 +21,7 @@ cGraphicsScene::~cGraphicsScene() {
 
 
 //	Add/Remove scene entities
-cGraphicsEntity* cGraphicsScene::CreateEntity(const zsString& geomPath, const zsString& mtlPath) {
+cGraphicsEntity* cGraphicsScene::CreateEntity(const wchar_t* geomPath, const wchar_t* mtlPath) {
 	cGeometryRef geom = parent.resourceManager->GetGeometry(geomPath);
 	cMaterialRef mtl = parent.resourceManager->GetMaterial(mtlPath);
 
