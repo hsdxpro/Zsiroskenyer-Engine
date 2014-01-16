@@ -87,6 +87,9 @@ cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, un
 
 	// Create shaders
 	eGapiResult r = gApi->CreateShaderProgram(&shaderScreenCopy, L"shaders/screen_copy.cg");
+	if (r != eGapiResult::OK) {
+		throw std::runtime_error(std::string("failed to create shaders"));
+	}
 
 	// Create deferred renderer
 	try {

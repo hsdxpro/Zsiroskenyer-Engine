@@ -109,7 +109,7 @@ public:
 
 	// --- misc --- //
 	ITexture2D* GetDefaultRenderTarget() const override;
-	zsString GetLastErrorMessage() const override;
+	std::string GetLastErrorMessage() const override;
 
 private:
 	eGapiResult CreateDevice();

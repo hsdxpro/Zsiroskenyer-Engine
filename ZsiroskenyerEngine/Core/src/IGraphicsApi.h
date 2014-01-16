@@ -79,5 +79,5 @@ public:
 	// --- misc --- //
 	virtual eGapiResult SetWindow(IWindow *renderWindow) = 0;
 	virtual ITexture2D* GetDefaultRenderTarget() const = 0;
-	virtual zsString GetLastErrorMessage() const = 0;
+	virtual std::string GetLastErrorMessage() const = 0;
 };

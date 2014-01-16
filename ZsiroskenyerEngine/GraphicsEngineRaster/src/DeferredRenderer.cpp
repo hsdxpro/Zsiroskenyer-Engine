@@ -25,6 +25,7 @@
 #include <string>
 #include <stdexcept>
 #include <vector>
+#include <memory>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -52,7 +53,7 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 		LoadShaders();
 	}
 	catch (std::exception& e) {
-		throw std::runtime_error(std::string("failed to create shaders: \n") + e.what());
+		throw std::runtime_error(std::string("failed to create shaders: ") + e.what());
 	}
 
 	// Create buffers
@@ -140,23 +141,44 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 
 // load shaders
 void cGraphicsEngine::cDeferredRenderer::LoadShaders() {
-	auto Check = [](eGapiResult r, const char* errMsg)->void {
+	auto Check = [this](const zsString& shader)->IShaderProgram* {
+		// create shader program
+		IShaderProgram* shaderProg;
+		auto r = gApi->CreateShaderProgram(&shaderProg, shader);
+		// check results
 		switch (r) {
-			case eGapiResult::OK:
-				return;
-			default:
-				throw std::runtime_error(errMsg);
+			case eGapiResult::OK: {
+				return shaderProg;
+			}
+			default: {
+				auto errMsg = gApi->GetLastErrorMessage();
+				//char* s = new char[errMsg.size()+1];
+				//s[errMsg.size()] = '\0';
+				//wcstombs(s, errMsg.c_str(), errMsg.size());
+
+				std::runtime_error errThrow("");
+
+				//delete s;
+				
+				throw errThrow;
+			}
 		}
 	};
-	Check(gApi->CreateShaderProgram(&shaderGBuffer, L"shaders/deferred_gbuffer.cg"), "deferred_gbuffer");
+	try {
+		shaderGBuffer = Check(L"shaders/deferred_gbuffer.cg");
 
-	Check(gApi->CreateShaderProgram(&shaderAmbient, L"shaders/deferred_light_ambient.cg"), "light_ambient");
-	Check(gApi->CreateShaderProgram(&shaderDirectional, L"shaders/deferred_light_dir.cg"), "light_directional");
-	Check(gApi->CreateShaderProgram(&shaderPoint, L"shaders/deferred_light_point.cg"), "light_point");
-	Check(gApi->CreateShaderProgram(&shaderSpot, L"shaders/deferred_light_spot.cg"), "light_spot");
+		shaderAmbient = Check(L"shaders/deferred_light_ambient.cg");
+		shaderDirectional = Check(L"shaders/deferred_light_dir.cg");
+		shaderPoint = Check(L"shaders/deferred_light_point.cg");
+		shaderSpot = Check(L"shaders/deferred_light_spot.cg");
 
-	Check(gApi->CreateShaderProgram(&shaderMotionBlur, L"shaders/motion_blur.cg"), "motion_blur");
-	Check(gApi->CreateShaderProgram(&shaderDof, L"shaders/depth_of_field.cg"), "depth_of_field");
+		shaderMotionBlur = Check(L"shaders/motion_blur.cg");
+		shaderDof = Check(L"shaders/depth_of_field.cg");
+	}
+	catch (...) {
+		UnloadShaders();
+		throw;
+	}
 }
 // unload shaders
 void cGraphicsEngine::cDeferredRenderer::UnloadShaders() {

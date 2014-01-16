@@ -647,13 +647,13 @@ HRESULT cGraphicsApiD3D11::CompileShaderFromFile(const zsString& fileName, const
 
 	hr = D3DX11CompileFromFileW(fileName.c_str(), NULL, NULL, ansiEntry, ansiProfile,
 		dwShaderFlags, 0, NULL, ppBlobOut, &pErrorBlob, NULL);
-	if (FAILED(hr) || pErrorBlob) {
+	if (FAILED(hr) && pErrorBlob) {
 		char* errorStr = (char*)pErrorBlob->GetBufferPointer();
 		int size_needed = MultiByteToWideChar(CP_UTF8, 0, errorStr, strlen(errorStr), NULL, 0);
 		zsString errorStrW(size_needed, 0);
 		MultiByteToWideChar(CP_UTF8, 0, errorStr, strlen(errorStr), &errorStrW[0], size_needed);
 
-		*compilerMessage = std::move(errorStrW);
+		*compilerMessage = errorStrW;
 	}
 	if (pErrorBlob) pErrorBlob->Release();
 
@@ -1522,8 +1522,8 @@ eGapiResult cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Misc
-zsString cGraphicsApiD3D11::GetLastErrorMessage() const {
-	return lastErrorMessage;
+std::string cGraphicsApiD3D11::GetLastErrorMessage() const {
+	return "buzi-e vagy";
 }
 
 
