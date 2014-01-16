@@ -1,6 +1,6 @@
 #include "StrUtil.h"
 
-void cStrUtil::ConvertUniToAnsi(const zsString& str, char* dst, size_t nChars) {
+void cStrUtil::ToAnsi(const zsString& str, char* dst, size_t nChars) {
 	wcstombs(dst, str.c_str(), nChars);
 }
 

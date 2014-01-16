@@ -8,7 +8,7 @@
 
 class cStrUtil {
 public:
-	static void ConvertUniToAnsi(const zsString& src, char* dst, size_t nChars);
+	static void ToAnsi(const zsString& src, char* dst, size_t nChars);
 	static size_t ToUnsigned(const zsString& str);
 	static bool Contains(const zsString& in, const zsString& that);
 

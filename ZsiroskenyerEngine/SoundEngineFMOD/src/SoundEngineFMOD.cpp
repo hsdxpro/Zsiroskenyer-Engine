@@ -160,7 +160,7 @@ void cSoundEngineFMOD::SaveToWav(FMOD::Sound *sound, const zsString& filePath) {
 #endif
 
 		char ansiPath[256];
-		cStrUtil::ConvertUniToAnsi(filePath, ansiPath, 256);
+		cStrUtil::ToAnsi(filePath, ansiPath, 256);
 
 		fp = fopen(ansiPath, "wb");
 

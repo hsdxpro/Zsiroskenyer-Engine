@@ -11,6 +11,9 @@
 #include "../../Core/src/StrUtil.h"
 #include "../../Core/src/FileUtil.h"
 
+// Cg library
+#include "Cg/include/cg.h"
+
 #include <map>
 #include <fstream>
 // Ugly create shader last_write_time..
@@ -735,7 +738,24 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	//last_write_time()
 	//boost::filesystem::last_write_time(boost::filesystem::path(shaderPath.c_str()));
 	//LINK : fatal error LNK1104: cannot open file 'libboost_filesystem-vc120-mt-sgd-1_55.lib'
+	/*
+	CGcontext con = cgCreateContext();
+	char ansiShaderPath[256];
+	cStrUtil::ToAnsi(shaderPath, ansiShaderPath, 256);
+	CGeffect effect = cgCreateEffectFromFile(con, ansiShaderPath, NULL);
 
+	CGtechnique tech = cgGetFirstTechnique(effect);
+	CGpass pass = cgGetFirstPass(tech);
+
+	CGprogram progVs = cgGetPassProgram(pass, CGdomain::CG_VERTEX_DOMAIN);
+	const char* entryVS = cgGetProgramString(progVs, CGenum::CG_PROGRAM_ENTRY);
+
+	CGprogram progPs = cgGetPassProgram(pass, CGdomain::CG_FRAGMENT_DOMAIN);
+	const char* entryPS = cgGetProgramString(progPs, CGenum::CG_PROGRAM_ENTRY);
+
+	CGprogram progGs = cgGetPassProgram(pass, CGdomain::CG_GEOMETRY_DOMAIN);
+	const char* entryGs = cgGetProgramString(progGs, CGenum::CG_PROGRAM_ENTRY);
+	*/
 
 	// check if we already have that shader program
 	auto it = shaderPrograms.left.find(shaderPath);

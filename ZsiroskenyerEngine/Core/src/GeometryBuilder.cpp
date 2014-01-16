@@ -29,7 +29,7 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 
 	// read up dae scene
 	char ansiFilePath[256];
-	cStrUtil::ConvertUniToAnsi(filePath, ansiFilePath, 256);
+	cStrUtil::ToAnsi(filePath, ansiFilePath, 256);
 	const aiScene* scene = importer.ReadFile(ansiFilePath, aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_Triangulate /*| aiProcess_ImproveCacheLocality | aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes*/ | aiProcess_FlipWindingOrder);
 	if (scene == NULL) {
 			ILog::GetInstance()->MsgBox(L"Can't found 3D model: " + filePath);

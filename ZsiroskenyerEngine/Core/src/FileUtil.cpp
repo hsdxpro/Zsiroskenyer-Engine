@@ -102,7 +102,7 @@ size_t cFileUtil::GetNLines(std::wfstream& file) {
 
 size_t cFileUtil::GetSize(const zsString& filePath) {
 	char ansiPath[256];
-	cStrUtil::ConvertUniToAnsi(filePath, ansiPath, 256);
+	cStrUtil::ToAnsi(filePath, ansiPath, 256);
 
 	//path.tozsString::
 	struct stat results;
