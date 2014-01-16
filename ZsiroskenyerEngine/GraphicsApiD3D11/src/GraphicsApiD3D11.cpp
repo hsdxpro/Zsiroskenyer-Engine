@@ -1524,7 +1524,7 @@ eGapiResult cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
 ////////////////////////////////////////////////////////////////////////////////
 // Misc
 const wchar_t* cGraphicsApiD3D11::GetLastErrorMessage() const {
-	return L"buzi-e vagy";
+	return lastErrorMessage.c_str();
 }
 
 

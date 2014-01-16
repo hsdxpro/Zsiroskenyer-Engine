@@ -25,13 +25,13 @@ VS_OUT VS_MAIN(VS_IN In) {
 	// --- --- build up cone shape from scratch --- --- //
 	// rotate vertex by outer angle on z, then rotate again on y
 	vout.posH.x = 0.f;
-	vout.posH.y*=g_LightRange; 
+	vout.posH.y*=lightRange; 
 	vout.posH.z = 0.f;
 			
-	float angle_z = lightOuter*0.5f * 1.1f; // 1.1 multiplier for 8 sided light cones, this way it covers the whole perfect-circle shaped volume
+	float angle_z = lightAngle.y*0.5f * 1.1f; // 1.1 multiplier for 8 sided light cones, this way it covers the whole perfect-circle shaped volume
 	angle_z = min(1.570796326, angle_z);
-	angle_z *= Misc.y;
-	float angle_y = radians(Misc.x);
+	angle_z *= In.misc.y;
+	float angle_y = radians(In.misc.x);
 			
 	float s, c;
 	// rotate on z
@@ -103,7 +103,7 @@ VS_OUT VS_MAIN(VS_IN In) {
 //------------------------------------------------------------------------------
 
 
-float LightAttenuation() {
+float LightAttenuation(float dist, float atten0, float atten1, float atten2) {
 	return 1.0f / (atten0 + atten1*dist + atten2*dist*dist);
 }
 
