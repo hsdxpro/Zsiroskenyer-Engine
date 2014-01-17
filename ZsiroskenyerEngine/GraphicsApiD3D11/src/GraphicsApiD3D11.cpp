@@ -742,6 +742,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	//boost::filesystem::last_write_time(boost::filesystem::path(shaderPath.c_str()));
 	//LINK : fatal error LNK1104: cannot open file 'libboost_filesystem-vc120-mt-sgd-1_55.lib'
 
+	// For array indexing convenience
 	enum eDomainIdx {
 		VS = 0,
 		DS = 1,
@@ -750,6 +751,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		PS = 4,
 	};
 
+	
 	CGcontext con = cgCreateContext();
 	cgD3D11RegisterStates(con);
 	cgD3D11SetManageTextureParameters(con, CG_TRUE);
@@ -760,6 +762,37 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 	CGtechnique tech = cgGetFirstTechnique(effect);
 	CGpass pass = cgGetFirstPass(tech);
+	/*
+	CGprogram prog = cgGetFirstProgram(con);
+	CGparameter param = cgGetFirstParameter(prog, CG_GLOBAL);
+
+	CGstate state = cgGetFirstSamplerState(con);
+
+	while (state)
+	{
+		// Address U
+		const char* stateName = cgGetStateName(state);
+
+		int val;
+		const char* enumerant = cgGetStateEnumerant(state, 0, &val);
+
+		// CG_INT
+		CGtype type = cgGetStateType(state);
+
+		state = cgGetNextState(state);
+	}
+
+	while (param) {
+		const char* paramName = cgGetParameterName(param);
+		int constIdx = cgGetParameterBufferOffset(param);
+		int bufIDx = cgGetParameterBufferIndex(param);
+		int resIdx = cgGetParameterResourceIndex(param);
+		int idx = cgGetParameterIndex(param);
+		
+		const char* resName = cgGetParameterResourceName(param);
+		param = cgGetNextParameter(param);
+	}
+	*/
 
 	const size_t nDomains = 5; // VS, HS, DS, GS, PS ...
 
@@ -948,11 +981,11 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 	// Parsing cg
 	// Parse input Layout... from VERTEX_SHADER
-	// 1. search for "VS_MAIN(", get return value, for example VS_OUT
+	// 1. search for vertexShader Entry name ex:"VS_MAIN(", get return value, for example VS_OUT
 	// 2. search for VS_OUT, get lines under that, while line != "};"
 	// 3. extract VERTEX DECLARATION from those lines
 
-	zsString vsInStructName = cFileUtil::GetWordAfter(*cgFile, L"VS_MAIN(");
+	zsString vsInStructName = cFileUtil::GetWordAfter(*cgFile, entryNames[VS] + L"(");
 	std::list<zsString> vsInStructLines = cFileUtil::GetLinesBetween(*cgFile, vsInStructName, L"};");
 	cgFile->close();
 	SAFE_DELETE(cgFile);
