@@ -759,9 +759,22 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	char ansiShaderPath[256];
 	cStrUtil::ToAnsi(shaderPath, ansiShaderPath, 256);
 	CGeffect effect = cgCreateEffectFromFile(con, ansiShaderPath, NULL);
+	if (effect == NULL) {
+		lastErrorMessage = cgGetLastListing(con);
+		return eGapiResult::ERROR_UNKNOWN;
+	}
 
 	CGtechnique tech = cgGetFirstTechnique(effect);
+	if (tech == NULL) {
+		lastErrorMessage = cgGetLastListing(con);
+		return eGapiResult::ERROR_UNKNOWN;
+	}
+
 	CGpass pass = cgGetFirstPass(tech);
+	if (pass == NULL) {
+		lastErrorMessage = cgGetLastListing(con);
+		return eGapiResult::ERROR_UNKNOWN;
+	}
 	/*
 	CGprogram prog = cgGetFirstProgram(con);
 	CGparameter param = cgGetFirstParameter(prog, CG_GLOBAL);
