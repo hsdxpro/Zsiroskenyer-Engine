@@ -91,7 +91,7 @@ int ricsiMain() {
 	IGraphicsScene* s = gEngine->CreateScene();
 	s->GetCamera() = cCamera(cCamera::tProjPersp(/*0.5*3.141592653589*/1.15f, 1.75f), 0.01f, 5000.0f);
 
-	s->GetState().hdr.enabled = true;
+	s->GetState().hdr.enabled = false;
 
 
 	// Add some fucking lights :)
@@ -110,7 +110,7 @@ int ricsiMain() {
 	// sunlight
 	sunLight->type = cGraphicsLight::DIRECTIONAL;
 	sunLight->color = Vec3(1, 1, 1);
-	sunLight->direction = Vec3(0.5f, 0.5f, -0.5f).Normalize();
+	sunLight->direction = Vec3(.5f, .5f, -0.1f).Normalize();
 	
 	// skylight
 	skyLight->type = cGraphicsLight::AMBIENT;

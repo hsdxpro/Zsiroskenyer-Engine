@@ -2,17 +2,13 @@
 //	Constant buffer
 //------------------------------------------------------------------------------
 
-struct tConstantBuffer {
-	float4x4 invViewProj;
-	float3 camPos;
-	float3 sunDir;
-	float3 sunColor;
-	float3 horizonColor;
-	float3 zenithColor;
-	float rayleighFactor;
-};
-
-tConstantBuffer c : register(c0);
+float4x4 invViewProj	: register(c0);
+float3 camPos			: register(c4);
+float3 sunDir			: register(c5);
+float3 sunColor			: register(c6);
+float3 horizonColor		: register(c7);
+float3 zenithColor		: register(c8);
+float rayleighFactor	: register(c9);
 
 
 
@@ -43,7 +39,7 @@ VS_OUT VS_MAIN(VS_IN In, uint vertexId : VERTEXID) {
 //	Functions
 //------------------------------------------------------------------------------
 
-float airMass[92] = {
+static const float airMassLookup[92] = {
 	35.34702265702, 25.03345901695, 18.82383912497, 14.841587689799, 12.135143856789, 
 	10.206460817283, 8.7774380923265, 7.683854750501, 6.8241957946941, 6.132986854173, 
 	5.5666123169945, 5.0948231937226, 4.6964061279255, 4.3558205102075, 4.0616019565882, 
@@ -72,8 +68,8 @@ float AirMass(float angle) {
 	int idx1 = (int)abs(angle);
 	int idx2 = idx1+1;
 	
-	float sample1 = airMass[idx1];
-	float sample2 = airMass[idx2];
+	float sample1 = airMassLookup[idx1];
+	float sample2 = airMassLookup[idx2];
 
 	return (angle-(float)idx1)*sample2 + ((float)idx2-angle)*sample1;
 };
@@ -87,39 +83,50 @@ float AirMass0() {
 //------------------------------------------------------------------------------
 float4 PS_MAIN(float4 posH : POSITION, float2 clipPos : TEXTURE0) : COLOR0 {
 	float3 color = float3(0.0f, 0.0f, 0.0f);
+	float t;
 
 	// compute look direction
 	float3 lookDir;
-	float4 viewTarget = mul(float4(clipPos, 0.0f, 1.0f), c.invViewProj);
+	float4 viewTarget = mul(float4(clipPos, 0.0f, 1.0f), invViewProj);
 	viewTarget /= viewTarget.w;
-	lookDir = normalize(viewTarget.xyz - c.camPos);
+	lookDir = normalize(viewTarget.xyz - camPos);
 
 	// compute latitude & longitude (relative to sun) of view
-	float viewLatitude = asin(normalize(float2(length(lookDir.xy), lookDir.z)).y);
+	float viewLatitude = asin(clamp(normalize(float2(length(lookDir.xy), lookDir.z)).y, -1, 1));
 	float viewLongitude = 
-		acos(saturate(dot(normalize(float3(lookDir.xy, 0.f)), normalize(float3(c.sunDir.xy, 0.f)))));
-
-
+		acos(clamp(dot(normalize(float3(lookDir.xy, 0.f)), normalize(float3(sunDir.xy, 0.f))), -1, 1));
+		
 	// get relative air mass
-	float airMass = AirMass(viewLongitude);
-	float normAirMass = airMass/AirMass0();
+	float airMass = AirMass(viewLatitude);
+	float normAirMass = airMass / AirMass0();
 
 	// blend horizon & zenith color	
-	float3 skyColor = normAirMass*c.horizonColor + (1-normAirMass)*c.zenithColor;
+	t = sqrt(normAirMass);
+	float3 skyColor = t*horizonColor + (1-t)*zenithColor;
+	
+	// calculate sun color
+	float3 rayleighed = float3(1.0f, 0.5f, 0.2f);
+	float3 base = float3(1.0f, 1.0f, 1.0f);
+	t = exp(-airMass/100.0f);
+	float3 sunPhysicalColor = t*rayleighed + (1-t)*base;
+
 
 	// add illumination variation
-	float illumFactor =	-dot(lookDir, c.sunDir) * pow(normAirMass, 0.1f) + 1.0f;
+	float sunNearIllum = 0.5*-dot(lookDir, sunDir)+0.5f;
+	skyColor += sunColor * 0.5f * pow(sunNearIllum, 3.0f);
+	float illumFactor = 1.0 * (0.5f * pow(sunNearIllum, 3.0f) + sqrt(normAirMass)*(sunNearIllum));
+	
+	// sum up colors
+	if (acos(saturate(-dot(lookDir, sunDir))) < radians(4.0f*31.0f/60.f)) {
+		color = skyColor + sunPhysicalColor;
+	}
+	else {
+		color = skyColor;
+	}
 
-	// accumulate sky color
-	color = skyColor * illumFactor;
-
-	// calculate sun disk
-	if (acos(saturate(dot(lookDir, c.sunDir))) <= radians(31.0f/60.0f)) {
-		float3 rayleighed = float3(1.0f, 0.5f, 0.2f);
-		float3 base = float3(1.0f, 1.0f, 1.0f);
-		float t = exp(-airMass/100.0f);
-		float3 sunColor = t*rayleighed + (1-t)*base;
-		color += sunColor;
+	// return
+	if (viewLatitude < 0.0f) {
+		color = float3(0.6f, 0.6f, 0.6);
 	}
 
 	return float4(color, 1.0f);

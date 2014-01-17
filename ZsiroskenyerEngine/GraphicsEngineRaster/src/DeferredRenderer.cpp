@@ -474,20 +474,21 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// Draw a sky
 	struct {
 		Matrix44 invViewProj;
-		Vec3 camPos;
-		Vec3 sunDir;
-		Vec3 sunColor;
-		Vec3 horizonColor;
-		Vec3 zenithColor;
-		float rayleighFactor;
+		Vec3 camPos; float _pad1;
+		Vec3 sunDir; float _pad2;
+		Vec3 sunColor; float _pad3;
+		Vec3 horizonColor; float _pad4;
+		Vec3 zenithColor; float _pad5;
+		float rayleighFactor; float _pad6[3];
 	} skyConstants;
 
 	skyConstants.invViewProj = shaderConstants.invViewProj;
 	skyConstants.camPos = cam->GetPos();
 	skyConstants.sunDir = directionalLights.size() > 0 ? directionalLights[0]->direction : Vec3(0, 0, -1);
 	skyConstants.sunColor = directionalLights.size() > 0 ? directionalLights[0]->color : Vec3(0.9, 0.9, 0.9);
-	skyConstants.horizonColor = Vec3(0.7, 0.7, 0.9);
-	skyConstants.zenithColor = Vec3(0.5, 0.5, 0.9);
+	skyConstants.horizonColor = Vec3(0.77, 0.84, 0.9); // daylight
+	skyConstants.horizonColor = Vec3(0.92, 0.5, 0.3); // sunset
+	skyConstants.zenithColor = Vec3(0.5, 0.68, 0.9);
 	skyConstants.rayleighFactor = 1.0f;
 
 	depthStencilState.stencilOpBackFace.stencilCompare = eComparisonFunc::EQUAL;
@@ -495,6 +496,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetDepthStencilState(depthStencilState, 0x00);
 
 	gApi->SetShaderProgram(shaderSky);
+	gApi->SetVSConstantBuffer(&skyConstants, sizeof(skyConstants), 0);
 	gApi->SetPSConstantBuffer(&skyConstants, sizeof(skyConstants), 0);
 	
 	gApi->Draw(3);
