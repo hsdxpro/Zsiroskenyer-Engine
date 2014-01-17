@@ -23,10 +23,19 @@ tConstantBuffer c : register(c0);
 struct VS_IN {
 	float4 posW : POSITION;
 };
+struct VS_OUT {
+	float4 posH : POSITION;
+	float2 clipPos : TEXTURE0;
+};
 
-float4 VS_MAIN(VS_IN In, uint vertexId : VERTEXID) : POSITION {
-	float2 tex0 = vout.tex0 = float2( (vertexId << 1) & 2, vertexId & 2 );
-	return float4(tex0 * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f), 0.0f, 1.0f );
+VS_OUT VS_MAIN(VS_IN In, uint vertexId : VERTEXID) {
+	VS_OUT vout;
+
+	float2 tex0 = float2( (vertexId << 1) & 2, vertexId & 2 );
+	vout.posH = float4(tex0 * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f), 0.0f, 1.0f );
+	vout.clipPos = vout.posH.xy;
+
+	return vout;
 }
 
 
@@ -60,7 +69,7 @@ float AirMass(float angle) {
 	// convert angle to index
 	angle /= 1.5707963267949;
 	angle = saturate(angle) * 90.0f;
-	int idx1 = max(0, (int)angle);
+	int idx1 = (int)abs(angle);
 	int idx2 = idx1+1;
 	
 	float sample1 = airMass[idx1];
@@ -76,19 +85,19 @@ float AirMass0() {
 //------------------------------------------------------------------------------
 //	Pixel shader
 //------------------------------------------------------------------------------
-float4 PS_MAIN(float4 posH : POSITION) {
-	float3 color(0.0f, 0.0f, 0.0f);
+float4 PS_MAIN(float4 posH : POSITION, float2 clipPos : TEXTURE0) : COLOR0 {
+	float3 color = float3(0.0f, 0.0f, 0.0f);
 
 	// compute look direction
 	float3 lookDir;
-	float4 viewTarget = mul(posH, c.invViewProj);
+	float4 viewTarget = mul(float4(clipPos, 0.0f, 1.0f), c.invViewProj);
 	viewTarget /= viewTarget.w;
 	lookDir = normalize(viewTarget.xyz - c.camPos);
 
 	// compute latitude & longitude (relative to sun) of view
 	float viewLatitude = asin(normalize(float2(length(lookDir.xy), lookDir.z)).y);
 	float viewLongitude = 
-		acos(saturate(dot(normalize(float3(lookDir.xy, 0.f), normalize(float3(c.sunDir.xy, 0.f))))));
+		acos(saturate(dot(normalize(float3(lookDir.xy, 0.f)), normalize(float3(c.sunDir.xy, 0.f)))));
 
 
 	// get relative air mass
@@ -105,11 +114,11 @@ float4 PS_MAIN(float4 posH : POSITION) {
 	color = skyColor * illumFactor;
 
 	// calculate sun disk
-	if (acos(saturate(dot(lookDir, c.sunDir))) <= radians(31/60)) {
-		float3 rayleighed(1.0f, 0.5f, 0.2f);
-		float3 default(1.0f, 1.0f, 1.0f);
+	if (acos(saturate(dot(lookDir, c.sunDir))) <= radians(31.0f/60.0f)) {
+		float3 rayleighed = float3(1.0f, 0.5f, 0.2f);
+		float3 base = float3(1.0f, 1.0f, 1.0f);
 		float t = exp(-airMass/100.0f);
-		sunColor = t*rayleighed + (1-t)*default;
+		float3 sunColor = t*rayleighed + (1-t)*base;
 		color += sunColor;
 	}
 
