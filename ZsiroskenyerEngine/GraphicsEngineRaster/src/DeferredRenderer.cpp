@@ -40,6 +40,7 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 	shaderAmbient = shaderDirectional = shaderPoint = shaderSpot = NULL;
 	shaderDof = shaderMotionBlur = NULL;
 	ibSpot = ibPoint = NULL;
+	shaderSky = NULL;
 	vbSpot = vbPoint = NULL;
 	for (auto& v : gBuffer)
 		v = NULL;
