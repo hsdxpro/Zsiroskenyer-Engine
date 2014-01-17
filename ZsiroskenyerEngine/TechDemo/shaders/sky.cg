@@ -17,7 +17,11 @@ struct {
 //	Vertex shader
 //------------------------------------------------------------------------------
 
-float4 VS_MAIN(float4 posW : POSITION, uint vertexId : VERTEXID) : POSITION {
+struct VS_IN {
+	float4 posW : POSITION;
+};
+
+float4 VS_MAIN(VS_IN In, uint vertexId : VERTEXID) : POSITION {
 	float2 tex0 = vout.tex0 = float2( (vertexId << 1) & 2, vertexId & 2 );
 	return float4(tex0 * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f), 0.0f, 1.0f );
 }
