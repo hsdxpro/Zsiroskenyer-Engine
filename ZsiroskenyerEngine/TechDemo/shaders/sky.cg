@@ -2,7 +2,7 @@
 //	Constant buffer
 //------------------------------------------------------------------------------
 
-struct {
+struct tConstantBuffer {
 	float4x4 invViewProj;
 	float3 camPos;
 	float3 sunDir;
@@ -10,7 +10,10 @@ struct {
 	float3 horizonColor;
 	float3 zenithColor;
 	float rayleighFactor;
-} c;
+};
+
+tConstantBuffer c : register(c0);
+
 
 
 //------------------------------------------------------------------------------
