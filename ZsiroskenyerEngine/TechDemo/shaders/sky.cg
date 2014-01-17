@@ -27,6 +27,43 @@ float4 VS_MAIN(float4 posW : POSITION, uint vertexId : VERTEXID) : POSITION {
 //	Functions
 //------------------------------------------------------------------------------
 
+float airMass[91] = {
+	35.34702265702, 25.03345901695, 18.82383912497, 14.841587689799, 12.135143856789, 
+	10.206460817283, 8.7774380923265, 7.683854750501, 6.8241957946941, 6.132986854173, 
+	5.5666123169945, 5.0948231937226, 4.6964061279255, 4.3558205102075, 4.0616019565882, 
+	3.8051054723326, 3.5796902068684, 3.3800910357009, 3.2022826862325, 3.0429022724957, 
+	2.8993342165155, 2.7693535785862, 2.6512279629063, 2.5434457692177, 2.4447161928055, 
+	2.3540201773158, 2.2704066034852, 2.1931791161385, 2.1215564387377, 2.0550969801963, 
+	1.9932402595197, 1.9355277013486, 1.8816366045042, 1.8311253779001, 1.7838581473555, 
+	1.7394103060566, 1.6976629640952, 1.6583273888379, 1.6212507218316, 1.5862631203506, 
+	1.5532117259418, 1.5219606644247, 1.4923740616189, 1.464350011889, 1.4377866095995, 
+	1.4126159176602, 1.3886850776181, 1.3659771052006, 1.3443900947722, 1.3238730935154, 
+	1.3043411800673, 1.2857943544278, 1.2681307109616, 1.2513162811237, 1.2353340806413, 
+	1.2200991881518, 1.2055946193825, 1.1917864057882, 1.1786235945514, 1.1661741227623, 
+	1.1542341791501, 1.1429736064404, 1.1322055776351, 1.1219980298244, 1.1123000101906, 
+	1.1030945344611, 1.0943646183634, 1.08612724617, 1.0783314650634, 1.0709602907707, 
+	1.0640137232922, 1.0574747783552, 1.0513434559598, 1.0455688032882, 1.0402017731581, 
+	1.0352083970244, 1.0305547063419, 1.0262237168382, 1.0222663813309, 1.01868269982, 
+	1.0153707666701, 1.0124494717891, 1.0097829409966, 1.0074900642006, 1.0055029043106, 
+	1.0038214613268, 1.0024457352492, 1.0013757260777, 1.0005944495397, 1.0001698427256, 
+	1, 1,
+};
+
+float AirMass(float angle) {
+	// convert angle to index
+	angle /= 1.5707963267949;
+	angle = saturate(angle) * 90.0f;
+	int idx1 = max(0, (int)angle);
+	int idx2 = idx1+1;
+	
+	float sample1 = airMass[idx1];
+	float sample2 = airMass[idx2];
+
+	return (angle-(float)idx1)*sample2 + ((float)idx2-angle)*sample1;
+};
+float AirMass0() {
+	return 35.34702265702;
+}
 
 
 //------------------------------------------------------------------------------
@@ -34,8 +71,6 @@ float4 VS_MAIN(float4 posW : POSITION, uint vertexId : VERTEXID) : POSITION {
 //------------------------------------------------------------------------------
 float4 PS_MAIN(float4 posH : POSITION) {
 	float3 color(0.0f, 0.0f, 0.0f);
-
-	/*
 
 	// compute look direction
 	float3 lookDir;
@@ -48,9 +83,28 @@ float4 PS_MAIN(float4 posH : POSITION) {
 	float viewLongitude = 
 		acos(saturate(dot(normalize(float3(lookDir.xy, 0.f), normalize(float3(c.sunDir.xy, 0.f))))));
 
-	*/
 
-	// blend horizon & zenith color
+	// get relative air mass
+	float airMass = AirMass(viewLongitude);
+	float normAirMass = airMass/AirMass0();
+
+	// blend horizon & zenith color	
+	float3 skyColor = normAirMass*c.horizonColor + (1-normAirMass)*c.zenithColor;
+
+	// add illumination variation
+	float illumFactor =	-dot(lookDir, c.sunDir) * pow(normAirMass, 0.1f) + 1.0f;
+
+	// accumulate sky color
+	color = skyColor * illumFactor;
+
+	// calculate sun disk
+	if (acos(saturate(dot(lookDir, c.sunDir))) <= radians(31/60)) {
+		float3 rayleighed(1.0f, 0.5f, 0.2f);
+		float3 default(1.0f, 1.0f, 1.0f);
+		float t = exp(-airMass/100.0f);
+		sunColor = t*rayleighed + (1-t)*default;
+		color += sunColor;
+	}
 
 	return float4(color, 1.0f);
 }
