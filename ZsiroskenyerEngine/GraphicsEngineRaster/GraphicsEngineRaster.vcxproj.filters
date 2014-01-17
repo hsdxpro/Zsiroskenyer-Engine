@@ -136,5 +136,8 @@
     <None Include="..\TechDemo\shaders\deferred_light_point.cg">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\TechDemo\shaders\sky.cg">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

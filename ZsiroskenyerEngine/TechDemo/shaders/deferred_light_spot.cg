@@ -139,7 +139,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	color.rgb = max(color.rgb, float3(0,0,0));
 	color.a = 1.f;
 	
-	return color;
+	return float4(0.5f, 0.5f, 0.5f, 1.0f);
 }
 
 technique t

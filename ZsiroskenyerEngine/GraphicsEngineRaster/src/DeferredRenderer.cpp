@@ -141,7 +141,7 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 
 // load shaders
 void cGraphicsEngine::cDeferredRenderer::LoadShaders() {
-	auto Check = [this](const zsString& shader)->IShaderProgram* {
+	auto Create = [this](const zsString& shader)->IShaderProgram* {
 		// create shader program
 		IShaderProgram* shaderProg;
 		auto r = gApi->CreateShaderProgram(&shaderProg, shader.c_str());
@@ -162,15 +162,17 @@ void cGraphicsEngine::cDeferredRenderer::LoadShaders() {
 		}
 	};
 	try {
-		shaderGBuffer = Check(L"shaders/deferred_gbuffer.cg");
+		shaderGBuffer = Create(L"shaders/deferred_gbuffer.cg");
 
-		shaderAmbient = Check(L"shaders/deferred_light_ambient.cg");
-		shaderDirectional = Check(L"shaders/deferred_light_dir.cg");
-		shaderPoint = Check(L"shaders/deferred_light_point.cg");
-		shaderSpot = Check(L"shaders/deferred_light_spot.cg");
+		shaderAmbient = Create(L"shaders/deferred_light_ambient.cg");
+		shaderDirectional = Create(L"shaders/deferred_light_dir.cg");
+		shaderPoint = Create(L"shaders/deferred_light_point.cg");
+		shaderSpot = Create(L"shaders/deferred_light_spot.cg");
 
-		shaderMotionBlur = Check(L"shaders/motion_blur.cg");
-		shaderDof = Check(L"shaders/depth_of_field.cg");
+		shaderMotionBlur = Create(L"shaders/motion_blur.cg");
+		shaderDof = Create(L"shaders/depth_of_field.cg");
+
+		shaderSky = Create(L"shaders/sky.cg");
 	}
 	catch (...) {
 		UnloadShaders();
@@ -188,6 +190,8 @@ void cGraphicsEngine::cDeferredRenderer::UnloadShaders() {
 
 	SAFE_RELEASE(shaderMotionBlur);
 	SAFE_RELEASE(shaderDof);
+
+	SAFE_RELEASE(shaderSky);
 }
 
 // Render the scene to composition buffer
@@ -466,6 +470,33 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		gApi->DrawIndexed(nIndices);
 	}
 
+	// Draw a sky
+	struct {
+		Matrix44 invViewProj;
+		Vec3 camPos;
+		Vec3 sunDir;
+		Vec3 sunColor;
+		Vec3 horizonColor;
+		Vec3 zenithColor;
+		float rayleighFactor;
+	} skyConstants;
+
+	skyConstants.invViewProj = shaderConstants.invViewProj;
+	skyConstants.camPos = cam->GetPos();
+	skyConstants.sunDir = directionalLights.size() > 0 ? directionalLights[0]->direction : Vec3(0, 0, -1);
+	skyConstants.sunColor = directionalLights.size() > 0 ? directionalLights[0]->color : Vec3(0.9, 0.9, 0.9);
+	skyConstants.horizonColor = Vec3(0.7, 0.7, 0.9);
+	skyConstants.zenithColor = Vec3(0.5, 0.5, 0.9);
+	skyConstants.rayleighFactor = 1.0f;
+
+	depthStencilState.stencilOpBackFace.stencilCompare = eComparisonFunc::EQUAL;
+	depthStencilState.stencilOpFrontFace = depthStencilState.stencilOpBackFace;
+	gApi->SetDepthStencilState(depthStencilState, 0x00);
+
+	gApi->SetShaderProgram(shaderSky);
+	gApi->SetPSConstantBuffer(&skyConstants, sizeof(skyConstants), 0);
+	
+	gApi->Draw(3);
 
 	// Set back render state to default
 	gApi->SetDepthStencilState(depthStencilDefault, 0x00);

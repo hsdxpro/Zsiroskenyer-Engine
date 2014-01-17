@@ -109,7 +109,7 @@ cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, un
 }
 
 cGraphicsEngine::~cGraphicsEngine() {
-	SAFE_DELETE(sceneManager);
+	SAFE_RELEASE(shaderScreenCopy);
 	SAFE_DELETE(resourceManager)
 	SAFE_RELEASE(gApi);
 	SAFE_DELETE(deferredRenderer);

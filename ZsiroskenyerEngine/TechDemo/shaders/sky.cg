@@ -1,0 +1,68 @@
+//------------------------------------------------------------------------------
+//	Constant buffer
+//------------------------------------------------------------------------------
+
+struct {
+	float4x4 invViewProj;
+	float3 camPos;
+	float3 sunDir;
+	float3 sunColor;
+	float3 horizonColor;
+	float3 zenithColor;
+	float rayleighFactor;
+} c;
+
+
+//------------------------------------------------------------------------------
+//	Vertex shader
+//------------------------------------------------------------------------------
+
+float4 VS_MAIN(float4 posW : POSITION, uint vertexId : VERTEXID) : POSITION {
+	float2 tex0 = vout.tex0 = float2( (vertexId << 1) & 2, vertexId & 2 );
+	return float4(tex0 * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f), 0.0f, 1.0f );
+}
+
+
+//------------------------------------------------------------------------------
+//	Functions
+//------------------------------------------------------------------------------
+
+
+
+//------------------------------------------------------------------------------
+//	Pixel shader
+//------------------------------------------------------------------------------
+float4 PS_MAIN(float4 posH : POSITION) {
+	float3 color(0.0f, 0.0f, 0.0f);
+
+	/*
+
+	// compute look direction
+	float3 lookDir;
+	float4 viewTarget = mul(posH, c.invViewProj);
+	viewTarget /= viewTarget.w;
+	lookDir = normalize(viewTarget.xyz - c.camPos);
+
+	// compute latitude & longitude (relative to sun) of view
+	float viewLatitude = asin(normalize(float2(length(lookDir.xy), lookDir.z)).y);
+	float viewLongitude = 
+		acos(saturate(dot(normalize(float3(lookDir.xy, 0.f), normalize(float3(c.sunDir.xy, 0.f))))));
+
+	*/
+
+	// blend horizon & zenith color
+
+	return float4(color, 1.0f);
+}
+
+
+// technique
+technique t
+{
+	pass p
+	{
+		VertexProgram = compile vs_4_0 VS_MAIN();
+		FragmentProgram = compile ps_4_0 PS_MAIN();
+	}
+}
+

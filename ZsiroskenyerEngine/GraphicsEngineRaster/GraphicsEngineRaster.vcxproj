@@ -59,6 +59,7 @@
     <None Include="..\TechDemo\shaders\LINE_RENDERER.cg" />
     <None Include="..\TechDemo\shaders\motion_blur.cg" />
     <None Include="..\TechDemo\shaders\screen_copy.cg" />
+    <None Include="..\TechDemo\shaders\sky.cg" />
     <None Include="..\TechDemo\shaders\test.cg" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
