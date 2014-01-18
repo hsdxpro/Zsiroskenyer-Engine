@@ -247,6 +247,11 @@ zsString cStrUtil::SubStrRight(const zsString& str, size_t pos, wchar_t rightBou
 	return str.substr(pos, (idxRight + 1) - pos + rightCutOffset);
 }
 
+#pragma message("asdasdasdasdsa _todo")
+zsString cStrUtil::TrimSpaceBounds(const zsString& str) {
+	return zsString();
+}
+
 zsString cStrUtil::Between(const zsString& s, wchar_t left, const wchar_t* rightDelims, size_t nRightDelims) {
 	wchar_t const* str = s.c_str();
 	size_t leftIdx = 0;
@@ -273,6 +278,11 @@ zsString cStrUtil::Between(const zsString& s, wchar_t left, const wchar_t* right
 	return s.substr(leftIdx + 1, (rightIdx - 1) - leftIdx);
 }
 
+#pragma message("asdasdasdasdsa _todo2")
+std::list<size_t> cStrUtil::GetLines(const std::list<zsString>& strs, size_t startLineIdx, const zsString& containStr) {
+	std::list<size_t> result;
+	return result;
+}
 
 // Gather string between left and right characters, for ex. zsString ex = _asdasd; ex.Between('-',';') returns asdasd   
 zsString cStrUtil::Between(const zsString& s, wchar_t left, wchar_t right) {
@@ -454,10 +464,10 @@ zsString cStrUtil::GetDirectory(const zsString& str) {
 	return directory;
 }
 
-zsString cStrUtil::GetWordAfter(const std::list<zsString>& fileLines, const zsString& str) {
+zsString cStrUtil::GetWordAfter(const std::list<zsString>& strs, const zsString& str) {
 	size_t idx = 0;
-	auto iter = fileLines.begin();
-	while (iter != fileLines.end()) {
+	auto iter = strs.begin();
+	while (iter != strs.end()) {
 		size_t start_pos = iter->find(str);
 		if (start_pos != std::wstring::npos) {
 			start_pos += str.size();
@@ -475,12 +485,21 @@ zsString cStrUtil::GetWordAfter(const std::list<zsString>& fileLines, const zsSt
 std::list<zsString> cStrUtil::GetLinesBetween(const std::list<zsString>& fileLines, const zsString& str, const zsString& endLine) {
 	std::list<zsString> result;
 
+	// For each line
 	auto iter = fileLines.begin();
 	while (iter != fileLines.end()) {
 		size_t start_pos = iter->find(str);
+
+		// Gound str
 		if (start_pos != std::wstring::npos) {
-			iter++;
-			while (*iter != endLine) {
+			iter++; // Step further
+			// Check for out of bound
+			if (iter == fileLines.end())
+				break;
+
+			while (iter != fileLines.end()) {
+				if (iter->find(endLine) != std::wstring::npos)
+					break;
 				result.push_back(*iter);
 				iter++;
 			}
@@ -519,5 +538,24 @@ std::list<zsString> cStrUtil::GetLinesBeginsWith(const std::list<zsString>& file
 
 		iter++;
 	}
+	return result;
+}
+
+std::list<size_t> cStrUtil::GetLinesContainingAllStr(const std::list<zsString>& in, const std::list<zsString>& those) {
+	std::list<size_t> result;
+
+	size_t idx = 0;
+	for (auto it = in.begin(); it != in.end(); it++, idx++) {
+		
+		// if that line contains all of the "those" words, then push the string
+		auto thos = in.begin();
+		for (; thos != in.end(); thos++)
+			if (!cStrUtil::Contains(*it, *thos))
+				break;
+
+			if (thos == in.end())
+				result.push_back(idx);
+	}
+
 	return result;
 }

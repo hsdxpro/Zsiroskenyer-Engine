@@ -981,12 +981,47 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	}
 
 	// Parsing cg
-	// Parse input Layout... from VERTEX_SHADER
-	// 1. search for vertexShader Entry name ex:"VS_MAIN(", get return value, for example VS_OUT
-	// 2. search for VS_OUT, get lines under that, while line != "};"
-	// 3. extract VERTEX DECLARATION from those lines
 	std::ifstream cgFile(shaderPath.c_str());
 	auto cgFileLines = cFileUtil::GetLines(cgFile);
+	
+	
+	// Lines that contains "sampler" and "=", contains sampler states under that
+	std::list<zsString> words;
+		words.push_back(L"sampler");
+		words.push_back(L"=");
+	auto samplerLineIndices = cStrUtil::GetLinesContainingAllStr(cgFileLines, words);
+
+	// For each sampler line that SamplerStates are 
+	
+	for (auto it = samplerLineIndices.begin(); it != samplerLineIndices.end(); it++) {
+		auto samplerStateLines = cStrUtil::GetLines(cgFileLines, *it + 1, L";");
+
+		// Noob mode : assume one state per line
+		// ex.
+		// MipFilter = POINT,
+		// MinFilter = POINT,
+		// MagFilter = POINT,
+		
+		for (auto state = samplerStateLines.begin(); state != samplerStateLines.end(); state++) {
+			const zsString& row = *std::next(cgFileLines.begin(), *state);
+
+			if (int idx = cStrUtil::Find(row, L"MipFilter")) {
+				// Get string after "=" then trim spaces
+				zsString right = cStrUtil::SubStrRight(row, (size_t)idx, L'\n');
+				zsString trimmed = cStrUtil::TrimSpaceBounds(right);
+			}
+		}
+	}
+
+	// - SamplerStates
+	std::list<zsString> samplerStateLines = cStrUtil::GetLinesBetween(cgFileLines, L"sampler", L";");
+
+	// Parse input Layout... from VERTEX_SHADER
+	// - 1. search for vertexShader Entry name ex:"VS_MAIN(", get return value, for example VS_OUT
+	// - 2. search for VS_OUT, get lines under that, while line != "};"
+	// - 3. extract VERTEX DECLARATION from those lines
+
+
 
 	zsString vsInStructName = cStrUtil::GetWordAfter(cgFileLines, entryNames[VS] + L"(");
 	std::list<zsString> vsInStructLines = cStrUtil::GetLinesBetween(cgFileLines, vsInStructName, L"};");

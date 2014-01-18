@@ -38,16 +38,20 @@ public:
 	static zsString SubStrLeft(const zsString& str, size_t pos, wchar_t leftBound, size_t leftCutOffset = 0);
 	static zsString SubStrRight(const zsString& str, size_t pos, wchar_t rightBound, size_t rightCutOffset = 0);
 
+	static zsString TrimSpaceBounds(const zsString& str);
+
 	// Gather string between left and right characters, for ex. zsString ex = _asdasd; ex.Between('-',';') returns asdasd   
 	static zsString Between(const zsString& s, wchar_t left, wchar_t right);  
 	static zsString Between(const zsString& s, const wchar_t* left, const wchar_t* right);
 	static zsString Between(const zsString& s, wchar_t left, const wchar_t* rightDelims, size_t nRightDelims);
 
+	static std::list<size_t> GetLines(const std::list<zsString>& strs, size_t startLineIdx, const zsString& containStr);
 	static void GetNumberFromEnd(char* src, char* buf_out);
 	static void GetWordBetween(zsString& str, char left, char right, char* buf_out);
 	static void GetFloats(const zsString& str, std::vector<float>& floats_out);
 	static zsString GetDirectory(const zsString& str);
-	static zsString GetWordAfter(const std::list<zsString>& strts, const zsString& str);
+	static zsString GetWordAfter(const std::list<zsString>& strs, const zsString& str);
 	static std::list<zsString> GetLinesBetween(const std::list<zsString>& strs, const zsString& str, const zsString& endLine);
 	static std::list<zsString> GetLinesBeginsWith(const std::list<zsString>& strs, const zsString& str);
+	static std::list<size_t> GetLinesContainingAllStr(const std::list<zsString>& in, const std::list<zsString>& those);
 };
