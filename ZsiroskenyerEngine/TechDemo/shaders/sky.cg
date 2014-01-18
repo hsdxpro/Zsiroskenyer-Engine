@@ -93,6 +93,7 @@ float4 PS_MAIN(float4 posH : POSITION, float2 clipPos : TEXTURE0) : COLOR0 {
 
 	// compute latitude & longitude (relative to sun) of view
 	float viewLatitude = asin(clamp(normalize(float2(length(lookDir.xy), lookDir.z)).y, -1, 1));
+	float sunLatitude = asin(clamp(normalize(float2(length(-sunDir.xy), -sunDir.z)).y, -1, 1));
 	float viewLongitude = 
 		acos(clamp(dot(normalize(float3(lookDir.xy, 0.f)), normalize(float3(sunDir.xy, 0.f))), -1, 1));
 		
@@ -102,23 +103,23 @@ float4 PS_MAIN(float4 posH : POSITION, float2 clipPos : TEXTURE0) : COLOR0 {
 
 	// blend horizon & zenith color	
 	t = sqrt(normAirMass);
-	float3 skyColor = t*horizonColor + (1-t)*zenithColor;
+	float3 skyColor = zenithColor;//t*horizonColor + (1-t)*zenithColor;
 	
 	// calculate sun color
 	float3 rayleighed = float3(1.0f, 0.5f, 0.2f);
 	float3 base = float3(1.0f, 1.0f, 1.0f);
-	t = exp(-airMass/100.0f);
-	float3 sunPhysicalColor = t*rayleighed + (1-t)*base;
+	t = 2.0f * (pow(2.0f, -AirMass(sunLatitude)/AirMass0()) - 0.5f);
+	float3 sunPhysicalColor = (1-t)*rayleighed + t*base;
 
-
+	
 	// add illumination variation
 	float sunNearIllum = 0.5*-dot(lookDir, sunDir)+0.5f;
-	skyColor += sunColor * 0.5f * pow(sunNearIllum, 3.0f);
-	float illumFactor = 1.0 * (0.5f * pow(sunNearIllum, 3.0f) + sqrt(normAirMass)*(sunNearIllum));
+	skyColor += 2.0f * sunPhysicalColor * 0.25f * pow(sunNearIllum, 3.0f);
+	skyColor += 2.0f * sunPhysicalColor * 0.75f * sqrt(normAirMass)*(0.25f*sunNearIllum+0.75f);
 	
 	// sum up colors
-	if (acos(saturate(-dot(lookDir, sunDir))) < radians(4.0f*31.0f/60.f)) {
-		color = skyColor + sunPhysicalColor;
+	if (acos(saturate(-dot(lookDir, sunDir))) < radians(1.0f*31.0f/60.f)) {
+		color = skyColor + 100.f*sunPhysicalColor;
 	}
 	else {
 		color = skyColor;

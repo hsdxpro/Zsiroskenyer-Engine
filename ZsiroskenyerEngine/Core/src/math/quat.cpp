@@ -122,6 +122,20 @@ Vec3 Quat::RotateVec3_2(Vec3 v, Quat q) {
 	return vr;
 }
 
+Vec3 operator*(const Vec3& v, const Quat& q) {
+	return Quat::RotateVec3_2(v, q);
+}
+
+Vec3 Quat::operator*(const Vec3& v) {
+	return Quat::RotateVec3_2(v, *this);
+}
+
+Vec3& operator*=(Vec3& v, const Quat& q) {
+	v = Quat::RotateVec3_2(v, q);
+	return v;
+}
+
+
 // rotation properties
 Quat Quat::EulerAnglesToQuat(const Vec3& eulerAngles) {
 	return EulerAnglesToQuat(eulerAngles.x, eulerAngles.y, eulerAngles.z);

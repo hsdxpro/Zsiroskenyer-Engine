@@ -27,6 +27,9 @@ public:
 	// interaction with Vec3's
 	static Vec3 RotateVec3(Vec3 v, Quat q);
 	static Vec3 RotateVec3_2(Vec3 v, Quat q);
+	friend Vec3 operator*(const Vec3& v, const Quat& q);
+	Vec3 operator*(const Vec3& v);
+	friend Vec3& operator*=(Vec3& v, const Quat& q);
 
 	// operators
 	Quat& operator*=(const Quat& q2);	// concat rotations

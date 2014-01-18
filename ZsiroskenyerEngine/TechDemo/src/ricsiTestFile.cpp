@@ -25,6 +25,8 @@
 #include "../../Core/src/Timer.h"
 
 // TODO REMOVE THAT OR I KILL MYSELF
+#define NOMINMAX
+#define _WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
 using namespace std;
@@ -44,6 +46,10 @@ void updateDemo(cCamera& cam, float tDelta);
 // a lovely light circle
 static const int sizeLightCircle = 20;
 cGraphicsLight* lightCircle[sizeLightCircle];
+// sun
+cGraphicsLight* sun;
+// scene
+IGraphicsScene* gScene;
 
 int ricsiMain() {
 	/*
@@ -89,6 +95,7 @@ int ricsiMain() {
 
 	// Create scene with camera
 	IGraphicsScene* s = gEngine->CreateScene();
+	gScene = s;
 	s->GetCamera() = cCamera(cCamera::tProjPersp(/*0.5*3.141592653589*/1.15f, 1.75f), 0.01f, 5000.0f);
 
 	s->GetState().hdr.enabled = false;
@@ -111,6 +118,7 @@ int ricsiMain() {
 	sunLight->type = cGraphicsLight::DIRECTIONAL;
 	sunLight->color = Vec3(1, 1, 1);
 	sunLight->direction = Vec3(.5f, .5f, -0.1f).Normalize();
+	sun = sunLight;
 	
 	// skylight
 	skyLight->type = cGraphicsLight::AMBIENT;
@@ -303,7 +311,7 @@ void updateDemo(cCamera& cam, float tDelta) {
 		float angle = modf(elapsedTotal+double(i)/double(sizeLightCircle), &__dummy);
 		Vec3 v(10.0, 0.0, 0.0);
 		Quat q(Vec3(0,0,1).Normalize(), ZS_PI2*angle);
-		v = Quat::RotateVec3_2(v, q);
+		v *= q;
 		lightCircle[i]->position = v;
 	}
 	
@@ -324,6 +332,31 @@ void updateDemo(cCamera& cam, float tDelta) {
 		deltaMove += cam.GetDirLeft()  * (CAM_MOVE_SPEED * tDelta);
 	if (GetAsyncKeyState('D'))
 		deltaMove += cam.GetDirRight() * (CAM_MOVE_SPEED * tDelta);
+
+	// SUN POSITION
+	static float sunAngle = 0.0f;
+	if (GetAsyncKeyState('U'))
+		sunAngle += 15*tDelta;
+	if (GetAsyncKeyState('J'))
+		sunAngle -= 15*tDelta;
+	sunAngle = max(0.f, min(90.f, sunAngle));
+	Vec3 sunDir = Vec3(0.0f, 1.0f, 0.0f).Normalize();
+	sunDir *= Quat(Vec3(1.0f, 0.0f, 0.0f), sunAngle / 180.f*ZS_PI);
+	sun->direction = sunDir.Normalize();
+
+	// Enable/DISABLE HDR
+	static bool wasHdrToggled = false;
+	static bool hdrEnabled = false;
+	if (GetAsyncKeyState('H')) {
+		if (!wasHdrToggled) {
+			hdrEnabled = !hdrEnabled;
+			gScene->GetState().hdr.enabled = hdrEnabled;
+		}
+		wasHdrToggled = true;
+	}
+	else {
+		wasHdrToggled = false;
+	}
 	
 	// Set new position
 	cam.SetPos(cam.GetPos() + deltaMove);
