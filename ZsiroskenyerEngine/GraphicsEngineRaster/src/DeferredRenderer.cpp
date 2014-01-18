@@ -314,7 +314,9 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetDepthStencilState(depthStencilState, 0x01);
 	gApi->SetBlendState(blendState);
 
-	// NEW LIGHTING PASS
+	//-------------------------------------------------------------------------//
+	// --- --- --- --- --LIGHTING PASS, in composition pass -- --- --- --- --- //
+	//-------------------------------------------------------------------------//
 
 	// Set render target
 	gApi->SetRenderTargets(1, &compositionBuffer, depthBuffer);
@@ -377,12 +379,14 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	shaderConstants.viewProj = viewProj;
 	shaderConstants.invViewProj = viewProj;
 	shaderConstants.invViewProj.Inverse();
-	//shaderConstants.invViewProj.Identity();
 
 	Matrix44 test = shaderConstants.invViewProj * shaderConstants.viewProj;
 
-	// Render each light group
-	// Directional lights
+////////////////////////////////////////////
+// --- --- RENDER EACH LIGHTGROUP --- --- // dir, spot, ambient, point
+	//-------------------------------------------------------------------------//
+	// --- --- --- --- --- --- --- DIRECTIONAL LIGHTS  --- --- --- --- --- --- //
+	//-------------------------------------------------------------------------//
 	gApi->SetShaderProgram(shaderDirectional);
 
 	gApi->SetTexture(L"gBuffer0", gBuffer[0]);
@@ -401,7 +405,9 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	}
 
 
-	// Ambient lights
+	//-------------------------------------------------------------------------//
+	// --- --- --- --- --- --- ---  AMBIENT LIGHTS --- --- --- --- --- --- --- //
+	//-------------------------------------------------------------------------//
 	gApi->SetShaderProgram(shaderAmbient);
 
 	gApi->SetTexture(L"gBuffer0", gBuffer[0]);
@@ -415,7 +421,9 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->Draw(3); //FSQ
 
 
-	// Point lights
+	//-------------------------------------------------------------------------//
+	// --- --- --- --- --- --- --- -- POINT LIGHTS --- --- --- --- --- --- --- //
+	//-------------------------------------------------------------------------//
 	gApi->SetShaderProgram(shaderPoint);
 
 	gApi->SetTexture(L"gBuffer0", gBuffer[0]);
@@ -441,7 +449,9 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		gApi->DrawIndexed(nIndices);
 	}
 
-	// Spot lights
+	//-------------------------------------------------------------------------//
+	// --- --- --- --- --- --- --- --- SPOT LIGHTS --- --- --- --- --- --- --- //
+	//-------------------------------------------------------------------------//
 	gApi->SetShaderProgram(shaderSpot);
 
 	gApi->SetTexture(L"gBuffer0", gBuffer[0]);
@@ -471,7 +481,9 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		gApi->DrawIndexed(nIndices);
 	}
 
-	// Draw a sky
+	//-------------------------------------------------------------------------//
+	// --- --- --- --- --- --- --- --- --- SKY --- --- --- --- --- --- --- --- //
+	//-------------------------------------------------------------------------//
 	struct {
 		Matrix44 invViewProj;
 		Vec3 camPos; float _pad1;
