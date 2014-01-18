@@ -9,7 +9,8 @@ cTagParser::cTagParser(const zsString& filePath)
 
 	// parse File
 	//IFile* file = IFile::Create(filePath, eFileOpenMode::READ);
-	std::wfstream file(filePath, std::ios_base::in);
+	std::ifstream file(filePath, std::ios_base::in);
+	auto lines = cFileUtil::GetLines(file);
 
 	size_t currNestedLevel = 1;
 	tTagData *entryNodes[TAGPARSER_MAX_NESTED_LEVEL];
@@ -24,7 +25,6 @@ cTagParser::cTagParser(const zsString& filePath)
 	//    |-----rootNode5
 	//
 
-	auto lines = cFileUtil::GetLines(file);
 	for (auto row = lines.begin(); row != lines.end(); row++) 
 	{
 		currNestedLevel = GetNestedLevel(*row);

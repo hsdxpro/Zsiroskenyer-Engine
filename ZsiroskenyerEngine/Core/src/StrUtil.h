@@ -10,7 +10,9 @@ class cStrUtil {
 public:
 	static void ToAnsi(const zsString& src, char* dst, size_t nChars);
 	static size_t ToUnsigned(const zsString& str);
+
 	static bool Contains(const zsString& in, const zsString& that);
+	static bool Contains(const std::list<zsString>& strs, const zsString& str);
 
 	// returns - 1 : string not found
 	// return >= 0 : index of the founded str in zsString
@@ -45,4 +47,7 @@ public:
 	static void GetWordBetween(zsString& str, char left, char right, char* buf_out);
 	static void GetFloats(const zsString& str, std::vector<float>& floats_out);
 	static zsString GetDirectory(const zsString& str);
+	static zsString GetWordAfter(const std::list<zsString>& strts, const zsString& str);
+	static std::list<zsString> GetLinesBetween(const std::list<zsString>& strs, const zsString& str, const zsString& endLine);
+	static std::list<zsString> GetLinesBeginsWith(const std::list<zsString>& strs, const zsString& str);
 };

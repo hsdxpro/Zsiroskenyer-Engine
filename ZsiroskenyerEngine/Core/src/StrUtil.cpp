@@ -13,36 +13,27 @@ size_t cStrUtil::ToUnsigned(const zsString& str) {
 }
 
 bool cStrUtil::Contains(const zsString& in, const zsString& that) {
-	size_t mainIndex = 0;
-	wchar_t const* self = in.c_str();
-	wchar_t ch = '\0';
-	while ((ch = self[mainIndex]) != '\0') {
-		if (that[0] == ch) {
-			bool equal = true;
-			size_t secIndex = 0;
-			size_t fIndex = mainIndex;
-			while (that[secIndex] != '\0') {
-				ch = self[fIndex];
-				if (that[secIndex] != ch) {
-					equal = false;
-					break;
-				}
-				fIndex++;
-				secIndex++;
-			}
-			if (equal) {
-				return true;
-			}
-		}
-		mainIndex++;
+	if (in.find(that.c_str()) != std::wstring::npos)
+		return true;
+	else
+		return false;
+}
+
+bool cStrUtil::Contains(const std::list<zsString>& fileLines, const zsString& that) {
+	auto iter = fileLines.begin();
+	while (iter != fileLines.end()) {
+		if (iter->find(that.c_str()) != std::wstring::npos)
+			return true;
+		iter++;
 	}
 	return false;
 }
 
-
 // returns - 1 : string not found
 // return >= 0 : index of the founded str in zsString
 int cStrUtil::Find(const zsString& in, const zsString& that) {
+	return in.find(that.c_str());
+	/*
 	size_t mainIndex = 0;
 	wchar_t const* self = in.c_str();
 	wchar_t ch = '\0';
@@ -67,6 +58,7 @@ int cStrUtil::Find(const zsString& in, const zsString& that) {
 		mainIndex++;
 	}
 	return -1;
+	*/
 }
 
 // returns - 1 : string not found
@@ -460,4 +452,72 @@ zsString cStrUtil::GetDirectory(const zsString& str) {
 	directory.resize(i + 1);
 
 	return directory;
+}
+
+zsString cStrUtil::GetWordAfter(const std::list<zsString>& fileLines, const zsString& str) {
+	size_t idx = 0;
+	auto iter = fileLines.begin();
+	while (iter != fileLines.end()) {
+		size_t start_pos = iter->find(str);
+		if (start_pos != std::wstring::npos) {
+			start_pos += str.size();
+			idx = start_pos;
+			while ((*iter)[idx] != ' ') {
+				idx++;
+			}
+			return zsString(iter->substr(start_pos, idx - start_pos));
+		}
+		iter++;
+	}
+	return zsString();
+}
+
+std::list<zsString> cStrUtil::GetLinesBetween(const std::list<zsString>& fileLines, const zsString& str, const zsString& endLine) {
+	std::list<zsString> result;
+
+	auto iter = fileLines.begin();
+	while (iter != fileLines.end()) {
+		size_t start_pos = iter->find(str);
+		if (start_pos != std::wstring::npos) {
+			iter++;
+			while (*iter != endLine) {
+				result.push_back(*iter);
+				iter++;
+			}
+			break;
+		}
+		iter++;
+	}
+	return result;
+}
+
+std::list<zsString> cStrUtil::GetLinesBeginsWith(const std::list<zsString>& fileLines, const zsString& str) {
+	std::list<zsString> result;
+
+	bool match = true;
+	auto iter = fileLines.begin();
+	while (iter != fileLines.end()) {
+		match = true;
+		wchar_t const* tmp1 = iter->c_str();
+		wchar_t const* tmp2 = str.c_str();
+
+		if (*tmp1 == '\0')
+			match = false;
+
+		while (*tmp2 != '\0') {
+			if (*tmp1 != *tmp2) {
+				match = false;
+				break;
+			}
+
+			tmp1++;
+			tmp2++;
+		}
+
+		if (match)
+			result.push_back(*iter);
+
+		iter++;
+	}
+	return result;
 }

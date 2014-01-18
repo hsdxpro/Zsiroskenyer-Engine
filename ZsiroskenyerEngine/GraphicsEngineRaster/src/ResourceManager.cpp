@@ -81,10 +81,12 @@ cMaterialRef cResourceManager::GetMaterial(const zsString& filePath) {
 	auto it = materials.left.find(filePath);
 	if (it == materials.left.end()) {
 		// Open material file
-		std::wfstream file(filePath.c_str(), std::ios::in);
+		std::ifstream file(filePath.c_str(), std::ios::in);
+
+		auto lines = cFileUtil::GetLines(file);
 
 		// Number of subMaterials
-		size_t nSubMaterials = cFileUtil::GetNLines(file) / 9;
+		size_t nSubMaterials = lines.size() / 9;
 
 		// create material with nSubMaterials subMaterials
 		mtl = new cMaterial(nSubMaterials);
@@ -92,7 +94,6 @@ cMaterialRef cResourceManager::GetMaterial(const zsString& filePath) {
 		// Texture path's relative to materials ;)
 		zsString mtlBasePath = cStrUtil::GetDirectory(filePath);
 
-		auto lines = cFileUtil::GetLines(file);
 		auto stringIt = lines.begin();
 
 		for(size_t i = 0; i < nSubMaterials; i++) {

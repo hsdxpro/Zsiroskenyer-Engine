@@ -867,14 +867,6 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	// tmp hold shaderByteCode
 	char byteCodeHolder[nDomains][64000];
 
-	// Cg file for parsing
-	//IFile* cgFile = NULL;
-	std::wfstream* cgFile = NULL;
-
-	// samplersate, etc parsed data from Cg file
-	std::wfstream shaderProgInfo;
-	zsString shaderProgInfoPath = pathNoExt + L".inf";
-
 	for (size_t i = 0; i < nDomains; i++) {
 		// not existing entry point skip it
 		if (!existingEntries[i])
@@ -883,16 +875,12 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		// Found binary ... Read it
 		if (binExistences[i]) {
 			byteCodeSizes[i] = cFileUtil::GetSize(binPaths[i]);
-			std::fstream binFile(binPaths[i].c_str(), std::ios::in, std::ios::binary);
+			std::ifstream binFile(binPaths[i].c_str(), std::ios::binary);
 			cFileUtil::ReadBinary(binFile, byteCodeHolder[i], byteCodeSizes[i]);
 			binFile.close();
 			byteCodes[i] = byteCodeHolder[i];
 		}
 		else { // There is no binary
-			// If cg File not opened open it
-			if (cgFile == NULL)
-				cgFile = new std::wfstream(shaderPath, std::ios::in);
-
 			// Compile Cg to hlsl
 			CompileCgToHLSL(shaderPath, binPaths[i], cgProfiles[i]);
 
@@ -906,7 +894,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 
 			// Parse hlsl code for samplers, textures
-			std::wfstream hlslFile(binPaths[i], std::ios::in);
+			std::ifstream hlslFile(binPaths[i]);
 
 			std::map<zsString, size_t> textureSlotsParsed;
 			std::list<zsString> samplerNames;
@@ -944,7 +932,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 			// Write byteCode as binary file
 			cFileUtil::Clear(binPaths[i]);
-			std::fstream binFile(binPaths[i], std::ios::out, std::ios::binary);
+			std::ofstream binFile(binPaths[i], std::ios::binary);
 			cFileUtil::WriteBinary(binFile, byteCodes[i], byteCodeSizes[i]);
 			binFile.close();
 		}
@@ -997,11 +985,12 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	// 1. search for vertexShader Entry name ex:"VS_MAIN(", get return value, for example VS_OUT
 	// 2. search for VS_OUT, get lines under that, while line != "};"
 	// 3. extract VERTEX DECLARATION from those lines
+	std::ifstream cgFile(shaderPath.c_str());
+	auto cgFileLines = cFileUtil::GetLines(cgFile);
 
-	zsString vsInStructName = cFileUtil::GetWordAfter(*cgFile, entryNames[VS] + L"(");
-	std::list<zsString> vsInStructLines = cFileUtil::GetLinesBetween(*cgFile, vsInStructName, L"};");
-	cgFile->close();
-	SAFE_DELETE(cgFile);
+	zsString vsInStructName = cStrUtil::GetWordAfter(cgFileLines, entryNames[VS] + L"(");
+	std::list<zsString> vsInStructLines = cStrUtil::GetLinesBetween(cgFileLines, vsInStructName, L"};");
+	cgFile.close();
 
 	int nVertexAttributes = 0;
 
