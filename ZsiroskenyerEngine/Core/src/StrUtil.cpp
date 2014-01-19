@@ -12,6 +12,17 @@ size_t cStrUtil::ToUnsigned(const zsString& str) {
 	return res;
 }
 
+void cStrUtil::ToUpper(std::list<zsString>& strs) {
+	size_t strIdx = 0;
+	for (auto it = strs.begin(); it != strs.end(); it++) {
+		strIdx = 0;
+		while ((*it)[strIdx] != '\0') {
+			(*it)[strIdx] = toupper((*it)[strIdx]);
+			strIdx++;
+		}
+	}
+}
+
 bool cStrUtil::Contains(const zsString& in, const zsString& that) {
 	if (in.find(that.c_str()) != std::wstring::npos)
 		return true;
@@ -107,6 +118,63 @@ void cStrUtil::CutNumberFromEnd(char* src) {
 		*src = '\0';
 }
 
+void cStrUtil::TrimBorder(std::list<zsString>& strs, const wchar_t* borderChars, size_t nChars) {
+	
+	// For each string
+	size_t leftIdx;
+	size_t rightIdx;
+	size_t i = 0;
+	for (auto it = strs.begin(); it != strs.end(); it++) {
+		const wchar_t* str = it->c_str();
+		leftIdx = 0;
+
+		// Trimming left, while found trimmable char
+		while (i != nChars) {
+			// match trimmable chars
+			i = 0;
+			for (; i < nChars; i++)
+				if (str[leftIdx] == borderChars[i])
+				{
+					leftIdx++; // Trimming occurs
+					break;
+				}
+		}
+
+		// End of string
+		rightIdx = wcslen(str) - 1;
+
+		// Trimming rght, while found trimmable char
+		i = 0;
+		while (i != nChars) {
+			// match trimmable chars
+			i = 0;
+			for (; i < nChars; i++)
+			if (str[rightIdx] == borderChars[i])
+			{
+				rightIdx--; // Trimming occurs
+				break;
+			}
+		}
+		*it = (*it).substr(leftIdx, rightIdx - leftIdx + 1);
+	}
+}
+
+void cStrUtil::TrimBorder(zsString& strOut, wchar_t borderChar) {
+	const wchar_t* str = strOut.c_str();
+
+	// Trim from left
+	size_t leftIdx = 0;
+	while (str[leftIdx] == borderChar && leftIdx++);
+
+	// Prepare for right trimming, (End of string)
+	size_t rightIdx = wcslen(str) - 1;
+
+	// Trim from right
+	while (str[rightIdx] == borderChar && rightIdx--);
+
+	strOut = strOut.substr(leftIdx, rightIdx - leftIdx + 1);
+}
+
 // Gather string between left and right characters, for ex. zsString ex = _asdasd; ex.Between('-',';') returns asdasd   
 void cStrUtil::Between(zsString& strOut, wchar_t left, wchar_t right) {
 	wchar_t const* str = strOut.c_str();
@@ -117,7 +185,7 @@ void cStrUtil::Between(zsString& strOut, wchar_t left, wchar_t right) {
 		leftIdx++;
 
 	// Reach right bound
-	size_t rightIdx = leftIdx;
+	size_t rightIdx = leftIdx + 1;
 	while (str[rightIdx] != right || str[rightIdx] == '\0')
 		rightIdx++;
 
@@ -206,7 +274,7 @@ void cStrUtil::Between(zsString& strOut, wchar_t left, const wchar_t* rightDelim
 		leftIdx++;
 
 	// Reach right bound
-	size_t rightIdx = leftIdx;
+	size_t rightIdx = leftIdx + 1;
 	size_t i = 0;
 	while (str[rightIdx] != '\0')
 	{
@@ -235,6 +303,10 @@ zsString cStrUtil::SubStrLeft(const zsString& str, size_t pos, wchar_t leftBound
 	return str.substr(idxLeft + leftCutOffset, (pos + 1) - idxLeft - leftCutOffset);
 }
 
+zsString cStrUtil::SubStrLeft(const zsString& str, size_t pos) {
+	return str.substr(0, pos);
+}
+
 zsString cStrUtil::SubStrRight(const zsString& str, size_t pos, wchar_t rightBound, size_t rightCutOffset /*= 0*/) {
 	wchar_t const* strP = str.c_str() + pos;
 	size_t idxRight = pos;
@@ -247,9 +319,21 @@ zsString cStrUtil::SubStrRight(const zsString& str, size_t pos, wchar_t rightBou
 	return str.substr(pos, (idxRight + 1) - pos + rightCutOffset);
 }
 
-#pragma message("asdasdasdasdsa _todo")
-zsString cStrUtil::TrimSpaceBounds(const zsString& str) {
-	return zsString();
+zsString cStrUtil::SubStrRight(const zsString& str, size_t pos) {
+	size_t rightLength = 1;
+	const wchar_t* s = str.c_str();
+	while (*s++ != '\0' && rightLength++);
+	return str.substr(pos, rightLength);
+}
+
+std::list<zsString> cStrUtil::SplitAt(const zsString& str, wchar_t ch) {
+	std::list<zsString> result;
+	int idx = cStrUtil::Find(str, ch);
+	if (idx >= 0) {
+		result.push_back(cStrUtil::SubStrLeft(str, idx - 1)); // left part
+		result.push_back(cStrUtil::SubStrRight(str, idx + 1));
+	}
+	return result;
 }
 
 zsString cStrUtil::Between(const zsString& s, wchar_t left, const wchar_t* rightDelims, size_t nRightDelims) {
@@ -261,7 +345,7 @@ zsString cStrUtil::Between(const zsString& s, wchar_t left, const wchar_t* right
 		leftIdx++;
 
 	// Reach right bound
-	size_t rightIdx = leftIdx;
+	size_t rightIdx = leftIdx + 1;
 	size_t i = 0;
 	while (str[rightIdx] != '\0')
 	{
@@ -278,9 +362,28 @@ zsString cStrUtil::Between(const zsString& s, wchar_t left, const wchar_t* right
 	return s.substr(leftIdx + 1, (rightIdx - 1) - leftIdx);
 }
 
-#pragma message("asdasdasdasdsa _todo2")
+
 std::list<size_t> cStrUtil::GetLines(const std::list<zsString>& strs, size_t startLineIdx, const zsString& containStr) {
+	// Start strs iterating from startLineIdx
+	size_t idx = 0;
+	auto it = strs.begin();
+	while (idx != startLineIdx) {
+		idx++;
+		it++;
+	}
+
+	// output
 	std::list<size_t> result;
+	while (it != strs.end()) {
+		if (!cStrUtil::Contains(*it, containStr))
+			result.push_back(idx);
+		else
+			break;
+
+		it++;
+		idx++;
+	}
+
 	return result;
 }
 
@@ -541,20 +644,19 @@ std::list<zsString> cStrUtil::GetLinesBeginsWith(const std::list<zsString>& file
 	return result;
 }
 
-std::list<size_t> cStrUtil::GetLinesContainingAllStr(const std::list<zsString>& in, const std::list<zsString>& those) {
+std::list<size_t> cStrUtil::GetLinesContainingAllStr(const std::list<zsString>& in, const zsString* those, size_t nThose) {
 	std::list<size_t> result;
 
 	size_t idx = 0;
+	size_t thoseIdx = 0;
 	for (auto it = in.begin(); it != in.end(); it++, idx++) {
-		
 		// if that line contains all of the "those" words, then push the string
-		auto thos = in.begin();
-		for (; thos != in.end(); thos++)
-			if (!cStrUtil::Contains(*it, *thos))
+		for (thoseIdx = 0; thoseIdx < nThose; thoseIdx++)
+		if (! cStrUtil::Contains(*it, those[thoseIdx]))
 				break;
 
-			if (thos == in.end())
-				result.push_back(idx);
+		if (thoseIdx == nThose)
+			result.push_back(idx);
 	}
 
 	return result;

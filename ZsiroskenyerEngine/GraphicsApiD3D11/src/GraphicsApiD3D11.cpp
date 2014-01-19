@@ -20,6 +20,9 @@
 // Ugly create shader last_write_time..
 //#include <boost/filesystem.hpp>
 
+// TODO ...
+#undef min
+
 ////////////////////////////////////////////////////////////////////////////////
 // GraphicsApi instance creation
 extern "C"
@@ -986,15 +989,44 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	
 	
 	// Lines that contains "sampler" and "=", contains sampler states under that
-	std::list<zsString> words;
-		words.push_back(L"sampler");
-		words.push_back(L"=");
-	auto samplerLineIndices = cStrUtil::GetLinesContainingAllStr(cgFileLines, words);
+	const zsString words[2] = { L"sampler", L"=" };
+	auto samplerLineIndices = cStrUtil::GetLinesContainingAllStr(cgFileLines, words, 2);
 
-	// For each sampler line that SamplerStates are 
-	
+	// TODO ALL OF THESE JUST BULLSHIT THINGS
+	enum eFilter {
+		POINT,
+		LINEAR,
+		ANISOTROPIC,
+	};
+
+	enum eAddress {
+		CLAMP,
+		WRAP,
+		MIRROR,
+	};
+
+	struct tSamplerDesc {
+		eFilter mip;
+		eFilter min;
+		eFilter mag;
+
+		eAddress addressU;
+		eAddress addressV;
+
+		tSamplerDesc() :mip(eFilter::POINT), min(eFilter::POINT), mag(eFilter::POINT), addressU(eAddress::WRAP), addressV(eAddress::WRAP){};
+	};
+
+	std::map<zsString, tSamplerDesc> samplerPairs;
+
+	// For each sampler line that uses SamplerStates 
 	for (auto it = samplerLineIndices.begin(); it != samplerLineIndices.end(); it++) {
-		auto samplerStateLines = cStrUtil::GetLines(cgFileLines, *it + 1, L";");
+		// Sampler Name
+		zsString& samplerName = *std::next(cgFileLines.begin(), *it);
+		cStrUtil::TrimBorder(samplerName, ' ');
+		cStrUtil::Between(samplerName, ' ', ' ');
+
+
+		const auto samplerStateLines = cStrUtil::GetLines(cgFileLines, *it + 1, L";");
 
 		// Noob mode : assume one state per line
 		// ex.
@@ -1002,26 +1034,83 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		// MinFilter = POINT,
 		// MagFilter = POINT,
 		
+		tSamplerDesc samplerDesc;
+
+		// For each of the above lines
 		for (auto state = samplerStateLines.begin(); state != samplerStateLines.end(); state++) {
 			const zsString& row = *std::next(cgFileLines.begin(), *state);
 
-			if (int idx = cStrUtil::Find(row, L"MipFilter")) {
-				// Get string after "=" then trim spaces
-				zsString right = cStrUtil::SubStrRight(row, (size_t)idx, L'\n');
-				zsString trimmed = cStrUtil::TrimSpaceBounds(right);
+			// ex. "MipFilter = POINT,", split, trim to "MipFilter", "POINT", then lower those
+			std::list<zsString> parts = cStrUtil::SplitAt(row, '=');
+			const wchar_t borders[2] = { ' ', ',' };
+			cStrUtil::TrimBorder(parts, borders, 2);
+			cStrUtil::ToUpper(parts);
+
+			auto it = parts.begin();
+			const zsString& left = *it++;
+			const zsString& right = *it;
+
+			if (left == L"MIPFILTER") {
+				if (right == L"POINT") {
+					samplerDesc.mip = eFilter::POINT;
+				} else if (right == L"LINEAR") {
+					samplerDesc.mip = eFilter::LINEAR;
+				}
+				else if (right == L"ANISOTROPIC") {
+					samplerDesc.mip = eFilter::ANISOTROPIC;
+				}
+
+			} else if (left == L"MINFILTER") {
+				if (right == L"POINT") {
+					samplerDesc.min = eFilter::POINT;
+				}
+				else if (right == L"LINEAR") {
+					samplerDesc.min = eFilter::LINEAR;
+				}
+				else if (right == L"ANISOTROPIC") {
+					samplerDesc.min = eFilter::ANISOTROPIC;
+				}
+
+			} else if (left == L"MAGFILTER") {
+				if (right == L"POINT") {
+					samplerDesc.mag = eFilter::POINT;
+				}
+				else if (right == L"LINEAR") {
+					samplerDesc.mag = eFilter::LINEAR;
+				}
+				else if (right == L"ANISOTROPIC") {
+					samplerDesc.mag = eFilter::ANISOTROPIC;
+				}
+			} else if (left == L"ADDRESSU") {
+				if (right == L"CLAMP") {
+					samplerDesc.addressU = eAddress::CLAMP;
+				}
+				else if (right == L"WRAP") {
+					samplerDesc.addressU = eAddress::WRAP;
+				}
+				else if (right == L"MIRROR") {
+					samplerDesc.addressU = eAddress::MIRROR;
+				}
+			} else if (left == L"ADDRESSV") {
+				if (right == L"CLAMP") {
+					samplerDesc.addressV = eAddress::CLAMP;
+				}
+				else if (right == L"WRAP") {
+					samplerDesc.addressV = eAddress::WRAP;
+				}
+				else if (right == L"MIRROR") {
+					samplerDesc.addressV = eAddress::MIRROR;
+				}
 			}
 		}
+		samplerPairs[samplerName] = samplerDesc;
 	}
 
-	// - SamplerStates
-	std::list<zsString> samplerStateLines = cStrUtil::GetLinesBetween(cgFileLines, L"sampler", L";");
 
 	// Parse input Layout... from VERTEX_SHADER
 	// - 1. search for vertexShader Entry name ex:"VS_MAIN(", get return value, for example VS_OUT
 	// - 2. search for VS_OUT, get lines under that, while line != "};"
 	// - 3. extract VERTEX DECLARATION from those lines
-
-
 
 	zsString vsInStructName = cStrUtil::GetWordAfter(cgFileLines, entryNames[VS] + L"(");
 	std::list<zsString> vsInStructLines = cStrUtil::GetLinesBetween(cgFileLines, vsInStructName, L"};");
