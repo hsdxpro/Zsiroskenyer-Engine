@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <cstdint>
-
+#include <cassert>
+typedef unsigned char uint8_t;
 ////////////////////////////////////////////////////////////////////////////////
 //	Depth-stencil state
 
@@ -141,4 +141,31 @@ struct tBlendDesc {
 		assert(idx < 8);
 		return renderTargets[idx];
 	}
+};
+
+////////////////////////////////////////////////////////////////////////////////
+//	SamplerStates
+
+enum class eFilter {
+	POINT,
+	LINEAR,
+	ANISOTROPIC,
+};
+
+enum class eAddress {
+	CLAMP,
+	WRAP,
+	MIRROR,
+};
+
+#undef min
+struct tSamplerDesc {
+	eFilter mip;
+	eFilter min;
+	eFilter mag;
+
+	eAddress addressU;
+	eAddress addressV;
+
+	tSamplerDesc() :mip(eFilter::POINT), min(eFilter::POINT), mag(eFilter::POINT), addressU(eAddress::WRAP), addressV(eAddress::WRAP){};
 };

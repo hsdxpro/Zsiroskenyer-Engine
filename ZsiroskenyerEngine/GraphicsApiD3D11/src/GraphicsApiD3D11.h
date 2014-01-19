@@ -154,4 +154,5 @@ protected:
 	// States <D3D11_____DESC, ID3D11____*>
 	std::map<size_t, ID3D11DepthStencilState*> depthStencilStates;
 	std::map<size_t, ID3D11BlendState*> blendStates;
+	std::map<size_t, ID3D11SamplerState*> samplerStates;
 };
