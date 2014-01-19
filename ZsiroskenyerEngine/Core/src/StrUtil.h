@@ -10,6 +10,7 @@ class cStrUtil {
 public:
 	static void ToAnsi(const zsString& src, char* dst, size_t nChars);
 	static size_t ToUnsigned(const zsString& str);
+	static void ToUpper(std::list<zsString>& strs);
 
 	static bool Contains(const zsString& in, const zsString& that);
 	static bool Contains(const std::list<zsString>& strs, const zsString& str);
@@ -28,6 +29,9 @@ public:
 	static void CutDirectory(zsString& strOut);
 	static void CutFrontFromDelim(zsString& strOut, wchar_t ch);
 
+	static void TrimBorder(std::list<zsString>& strs, const wchar_t* borderChars, size_t nChars);
+	static void TrimBorder(zsString& strOut, wchar_t borderChar);
+
 	// Gather string between left and right characters, for ex. zsString ex = _asdasd; ex.Between('-',';') returns asdasd   
 	static void Between(zsString& strOut, wchar_t left, wchar_t right);
 
@@ -35,10 +39,15 @@ public:
 	static void Between(zsString& strOut, const wchar_t* left, const wchar_t* right);
 
 	static void Between(zsString& strOut, wchar_t left, const wchar_t* rightDelims, size_t nRightDelims);
-	static zsString SubStrLeft(const zsString& str, size_t pos, wchar_t leftBound, size_t leftCutOffset = 0);
-	static zsString SubStrRight(const zsString& str, size_t pos, wchar_t rightBound, size_t rightCutOffset = 0);
 
-	static zsString TrimSpaceBounds(const zsString& str);
+	static zsString SubStrLeft(const zsString& str, size_t pos, wchar_t leftBound, size_t leftCutOffset = 0);
+	static zsString SubStrLeft(const zsString& str, size_t pos);
+
+	static zsString SubStrRight(const zsString& str, size_t pos, wchar_t rightBound, size_t rightCutOffset = 0);
+	static zsString SubStrRight(const zsString& str, size_t pos);
+
+	// Split string into two parts at (ch) character (chleaved)
+	static std::list<zsString> SplitAt(const zsString& str, wchar_t ch);
 
 	// Gather string between left and right characters, for ex. zsString ex = _asdasd; ex.Between('-',';') returns asdasd   
 	static zsString Between(const zsString& s, wchar_t left, wchar_t right);  
@@ -53,5 +62,5 @@ public:
 	static zsString GetWordAfter(const std::list<zsString>& strs, const zsString& str);
 	static std::list<zsString> GetLinesBetween(const std::list<zsString>& strs, const zsString& str, const zsString& endLine);
 	static std::list<zsString> GetLinesBeginsWith(const std::list<zsString>& strs, const zsString& str);
-	static std::list<size_t> GetLinesContainingAllStr(const std::list<zsString>& in, const std::list<zsString>& those);
+	static std::list<size_t> GetLinesContainingAllStr(const std::list<zsString>& in, const zsString* those, size_t nThose);
 };

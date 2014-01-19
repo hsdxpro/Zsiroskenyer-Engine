@@ -4,10 +4,6 @@ sampler2D texture0 = {
     MagFilter = POINT,
 };
 
-float asd;
-float3 lol;
-float3x3 xD;
-
 struct VS_IN {
 	float3 posL 	: POSITION;
 	float2 tex0 	: TEXCOORD0;

@@ -1,3 +1,5 @@
+#include "../../Core/src/PipelineState.h"
+
 #include "GraphicsApiD3D11.h"
 
 #include "Dx11_SDK/Include/d3dx11.h"
@@ -11,6 +13,7 @@
 #include "../../Core/src/StrUtil.h"
 #include "../../Core/src/FileUtil.h"
 
+
 // Cg library
 #include "Cg/cg.h"
 #include "Cg/cgD3D11.h"
@@ -19,6 +22,9 @@
 #include <fstream>
 // Ugly create shader last_write_time..
 //#include <boost/filesystem.hpp>
+
+// TODO ...
+#undef min
 
 ////////////////////////////////////////////////////////////////////////////////
 // GraphicsApi instance creation
@@ -54,7 +60,7 @@ D3D11_BLEND_DESC ConvertToNativeBlend(tBlendDesc blend);
 D3D11_COMPARISON_FUNC ConvertToNativeCompFunc(eComparisonFunc compFunc);
 D3D11_STENCIL_OP ConvertToNativeStencilOp(eStencilOp stencilOp);
 D3D11_DEPTH_STENCIL_DESC ConvertToNativeDepthStencil(tDepthStencilDesc depthStencil);
-
+D3D11_SAMPLER_DESC ConvertToNativeSampler(tSamplerDesc sDesc);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constructor, Destructor
@@ -87,6 +93,15 @@ void cGraphicsApiD3D11::Release() {
 	delete this;
 }
 cGraphicsApiD3D11::~cGraphicsApiD3D11() {
+	for (auto it = depthStencilStates.begin(); it != depthStencilStates.end(); it++)
+		SAFE_RELEASE(it->second);
+
+	for (auto it = blendStates.begin(); it != blendStates.end(); it++)
+		SAFE_RELEASE(it->second);
+
+	for (auto it = samplerStates.begin(); it != samplerStates.end(); it++)
+		SAFE_RELEASE(it->second);
+
 	ID3D11ShaderResourceView* nullSrvs[16] = { 0 };
 	d3dcon->PSSetShaderResources(0, 16, nullSrvs);
 	d3dcon->VSSetShaderResources(0, 16, nullSrvs);
@@ -775,10 +790,10 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		lastErrorMessage = cgGetLastListing(con);
 		return eGapiResult::ERROR_UNKNOWN;
 	}
-	/*
-	CGprogram prog = cgGetFirstProgram(con);
+	
+	/*CGprogram prog = cgGetFirstProgram(con);
 	CGparameter param = cgGetFirstParameter(prog, CG_GLOBAL);
-
+	
 	CGstate state = cgGetFirstSamplerState(con);
 
 	while (state)
@@ -794,7 +809,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 		state = cgGetNextState(state);
 	}
-
+	
 	while (param) {
 		const char* paramName = cgGetParameterName(param);
 		int constIdx = cgGetParameterBufferOffset(param);
@@ -807,10 +822,8 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	}
 	*/
 
-	const size_t nDomains = 5; // VS, HS, DS, GS, PS ...
+	const size_t nDomains = 5;
 
-	// Look which entries existing in the shader
-	// asd/asd/myShader cut extension
 	zsString pathNoExt = shaderPath.substr(0, shaderPath.size() - 3);
 
 	bool		existingEntries[nDomains]; memset(existingEntries, 0, nDomains * sizeof(bool));
@@ -842,8 +855,6 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	binPaths[PS] = pathNoExt + L"_ps.bin";
 	profileNames[PS] = L"ps_4_0";
 	cgProfiles[PS] = eProfileCG::PS_4_0;
-
-	// TODO Another entries
 
 
 	// TODO FORCING ALWAYS GENERATE SHADERS FROM CG's 
@@ -986,15 +997,20 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	
 	
 	// Lines that contains "sampler" and "=", contains sampler states under that
-	std::list<zsString> words;
-		words.push_back(L"sampler");
-		words.push_back(L"=");
-	auto samplerLineIndices = cStrUtil::GetLinesContainingAllStr(cgFileLines, words);
+	const zsString words[2] = { L"sampler", L"=" };
+	auto samplerLineIndices = cStrUtil::GetLinesContainingAllStr(cgFileLines, words, 2);
 
-	// For each sampler line that SamplerStates are 
-	
+	std::map<zsString, tSamplerDesc> samplerPairs;
+
+	// For each sampler line that uses SamplerStates 
 	for (auto it = samplerLineIndices.begin(); it != samplerLineIndices.end(); it++) {
-		auto samplerStateLines = cStrUtil::GetLines(cgFileLines, *it + 1, L";");
+		// Sampler Name
+		zsString& samplerName = *std::next(cgFileLines.begin(), *it);
+		cStrUtil::TrimBorder(samplerName, ' ');
+		cStrUtil::Between(samplerName, ' ', ' ');
+
+
+		const auto samplerStateLines = cStrUtil::GetLines(cgFileLines, *it + 1, L";");
 
 		// Noob mode : assume one state per line
 		// ex.
@@ -1002,26 +1018,109 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		// MinFilter = POINT,
 		// MagFilter = POINT,
 		
+		tSamplerDesc samplerDesc;
+
+		// For each of the above lines
 		for (auto state = samplerStateLines.begin(); state != samplerStateLines.end(); state++) {
 			const zsString& row = *std::next(cgFileLines.begin(), *state);
 
-			if (int idx = cStrUtil::Find(row, L"MipFilter")) {
-				// Get string after "=" then trim spaces
-				zsString right = cStrUtil::SubStrRight(row, (size_t)idx, L'\n');
-				zsString trimmed = cStrUtil::TrimSpaceBounds(right);
+			// ex. "MipFilter = POINT,", split, trim to "MipFilter", "POINT", then lower those
+			std::list<zsString> parts = cStrUtil::SplitAt(row, '=');
+			const wchar_t borders[2] = { ' ', ',' };
+			cStrUtil::TrimBorder(parts, borders, 2);
+			cStrUtil::ToUpper(parts);
+
+			auto it = parts.begin();
+			const zsString& left = *it++;
+			const zsString& right = *it;
+
+			if (left == L"MIPFILTER") {
+				if (right == L"POINT") {
+					samplerDesc.mip = eFilter::POINT;
+				} else if (right == L"LINEAR") {
+					samplerDesc.mip = eFilter::LINEAR;
+				}
+				else if (right == L"ANISOTROPIC") {
+					samplerDesc.mip = eFilter::ANISOTROPIC;
+				}
+
+			} else if (left == L"MINFILTER") {
+				if (right == L"POINT") {
+					samplerDesc.min = eFilter::POINT;
+				}
+				else if (right == L"LINEAR") {
+					samplerDesc.min = eFilter::LINEAR;
+				}
+				else if (right == L"ANISOTROPIC") {
+					samplerDesc.min = eFilter::ANISOTROPIC;
+				}
+
+			} else if (left == L"MAGFILTER") {
+				if (right == L"POINT") {
+					samplerDesc.mag = eFilter::POINT;
+				}
+				else if (right == L"LINEAR") {
+					samplerDesc.mag = eFilter::LINEAR;
+				}
+				else if (right == L"ANISOTROPIC") {
+					samplerDesc.mag = eFilter::ANISOTROPIC;
+				}
+			} else if (left == L"ADDRESSU") {
+				if (right == L"CLAMP") {
+					samplerDesc.addressU = eAddress::CLAMP;
+				}
+				else if (right == L"WRAP") {
+					samplerDesc.addressU = eAddress::WRAP;
+				}
+				else if (right == L"MIRROR") {
+					samplerDesc.addressU = eAddress::MIRROR;
+				}
+			} else if (left == L"ADDRESSV") {
+				if (right == L"CLAMP") {
+					samplerDesc.addressV = eAddress::CLAMP;
+				}
+				else if (right == L"WRAP") {
+					samplerDesc.addressV = eAddress::WRAP;
+				}
+				else if (right == L"MIRROR") {
+					samplerDesc.addressV = eAddress::MIRROR;
+				}
 			}
 		}
+		samplerPairs[samplerName] = samplerDesc;
+
+		D3D11_SAMPLER_DESC sDesc = ConvertToNativeSampler(samplerDesc);
+
+		// D3D11_SAMPLER_DESC hasher
+		struct _hasher {
+			std::size_t operator()(const D3D11_SAMPLER_DESC& k) const {
+				size_t hash = 0;
+				for (size_t i = 0; i < sizeof(D3D11_SAMPLER_DESC); i++)
+					hash += *((char*)&k + i);
+				return hash;
+			}
+		} hasher;
+
+		size_t hash = hasher(sDesc);
+
+		// Not found that sampler..
+		if (samplerStates.find(hash) == samplerStates.end()) {
+			ID3D11SamplerState* state = NULL;
+			d3ddev->CreateSamplerState(&sDesc, &state);
+			samplerStates[hash] = state;
+			SAFE_RELEASE(state);
+		}
+
+
+		// Match samplerState slots and texture names..
+		// Add <samplerHash, slotIdx> to shaders..
 	}
 
-	// - SamplerStates
-	std::list<zsString> samplerStateLines = cStrUtil::GetLinesBetween(cgFileLines, L"sampler", L";");
 
 	// Parse input Layout... from VERTEX_SHADER
 	// - 1. search for vertexShader Entry name ex:"VS_MAIN(", get return value, for example VS_OUT
 	// - 2. search for VS_OUT, get lines under that, while line != "};"
 	// - 3. extract VERTEX DECLARATION from those lines
-
-
 
 	zsString vsInStructName = cStrUtil::GetWordAfter(cgFileLines, entryNames[VS] + L"(");
 	std::list<zsString> vsInStructLines = cStrUtil::GetLinesBetween(cgFileLines, vsInStructName, L"};");
@@ -1889,4 +1988,45 @@ D3D11_DEPTH_STENCIL_DESC ConvertToNativeDepthStencil(tDepthStencilDesc depthSten
 	ret.FrontFace.StencilFunc = ConvertToNativeCompFunc(depthStencil.stencilOpFrontFace.stencilCompare);
 
 	return ret;
+}
+
+D3D11_SAMPLER_DESC ConvertToNativeSampler(tSamplerDesc sDesc) {
+	D3D11_SAMPLER_DESC r;
+
+	switch (sDesc.addressU) {
+		case eAddress::CLAMP:	r.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;	break;
+		case eAddress::WRAP:	r.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;	break;
+		case eAddress::MIRROR:	r.AddressU = D3D11_TEXTURE_ADDRESS_MIRROR;	break;
+	}
+
+	switch (sDesc.addressV) {
+		case eAddress::CLAMP:	r.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;	break;
+		case eAddress::WRAP:	r.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;	break;
+		case eAddress::MIRROR:	r.AddressV = D3D11_TEXTURE_ADDRESS_MIRROR;	break;
+	}
+
+	// TODO these 5 shits
+	r.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	r.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+	r.MinLOD = 0.0f;
+	r.MaxLOD = 1.0f;
+	r.MipLODBias = 1;
+
+	if (sDesc.mag == sDesc.min && sDesc.mag == sDesc.mip) {
+		switch (sDesc.mag) {
+			case eFilter::POINT:		r.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;	break;
+			case eFilter::LINEAR:		r.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR; break;
+			case eFilter::ANISOTROPIC:
+			{
+				r.Filter = D3D11_FILTER_ANISOTROPIC;
+				r.MaxAnisotropy = 16; // TODO
+				break;
+			}
+				
+		}
+	} else {
+		// TODOO
+	}
+	
+	return r;
 }
