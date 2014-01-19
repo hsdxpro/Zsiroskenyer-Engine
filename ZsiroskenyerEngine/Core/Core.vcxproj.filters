@@ -163,6 +163,9 @@
     </ClInclude>
     <ClInclude Include="src\FileUtil.h" />
     <ClInclude Include="src\Transformable.h" />
+    <ClInclude Include="src\lighting\lighting.h">
+      <Filter>Common\lighting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\math\color.cpp">
@@ -254,6 +257,9 @@
     <ClCompile Include="src\FileUtil.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="src\lighting\lighting.cpp">
+      <Filter>Common\lighting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Game">
@@ -303,6 +309,9 @@
     </Filter>
     <Filter Include="M_LogicEngine">
       <UniqueIdentifier>{a5ee9273-3cbe-4848-bff9-522cf4e5cd9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\lighting">
+      <UniqueIdentifier>{ce40561e-acdd-4f2b-958d-d5c5f273cb07}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

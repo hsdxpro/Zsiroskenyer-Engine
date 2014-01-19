@@ -47,6 +47,7 @@
     <ClInclude Include="src\IVertexBuffer.h" />
     <ClInclude Include="src\IWindow.h" />
     <ClInclude Include="src\Level.h" />
+    <ClInclude Include="src\lighting\lighting.h" />
     <ClInclude Include="src\LogicEngine.h" />
     <ClInclude Include="src\math\color.h" />
     <ClInclude Include="src\math\math_all.h" />
@@ -92,6 +93,7 @@
     <ClCompile Include="src\ITransformable3D.cpp" />
     <ClCompile Include="src\IWindow.cpp" />
     <ClCompile Include="src\Level.cpp" />
+    <ClCompile Include="src\lighting\lighting.cpp" />
     <ClCompile Include="src\LogicEngine.cpp" />
     <ClCompile Include="src\math\color.cpp" />
     <ClCompile Include="src\math\Matrix44.cpp" />
