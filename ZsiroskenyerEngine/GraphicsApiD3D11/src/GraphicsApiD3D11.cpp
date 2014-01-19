@@ -778,10 +778,10 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		lastErrorMessage = cgGetLastListing(con);
 		return eGapiResult::ERROR_UNKNOWN;
 	}
-	/*
-	CGprogram prog = cgGetFirstProgram(con);
+	
+	/*CGprogram prog = cgGetFirstProgram(con);
 	CGparameter param = cgGetFirstParameter(prog, CG_GLOBAL);
-
+	
 	CGstate state = cgGetFirstSamplerState(con);
 
 	while (state)
@@ -797,7 +797,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 		state = cgGetNextState(state);
 	}
-
+	
 	while (param) {
 		const char* paramName = cgGetParameterName(param);
 		int constIdx = cgGetParameterBufferOffset(param);
