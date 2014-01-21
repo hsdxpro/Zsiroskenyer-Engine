@@ -93,8 +93,8 @@ cGraphicsApiD3D11::~cGraphicsApiD3D11() {
 	for (auto it = blendStates.begin(); it != blendStates.end(); it++)
 		SAFE_RELEASE(it->second);
 
-	for (auto it = samplerStates.begin(); it != samplerStates.end(); it++)
-		SAFE_RELEASE(it->second);
+	for (size_t i = 0; i < samplerStates.size(); i++)
+		SAFE_RELEASE(samplerStates[i].sampler);
 
 	ID3D11ShaderResourceView* nullSrvs[16] = { 0 };
 	d3dcon->PSSetShaderResources(0, 16, nullSrvs);
@@ -429,13 +429,13 @@ void cGraphicsApiD3D11::ApplySamplerStates() {
 	// Set VertexShader samplers
 	auto vsSamplerStates = activeShaderProg->GetSamplerStatesVS();
 	for (size_t i = 0; i < vsSamplerStates.size(); i++) {
-		d3dcon->VSSetSamplers(vsSamplerStates[i].slotIdx, 1, &samplerStates[vsSamplerStates[i].hash]);
+		d3dcon->VSSetSamplers(vsSamplerStates[i].slotIdx, 1, &samplerStates[vsSamplerStates[i].gApiSamplerIdx].sampler);
 	}
 
 	// Set PixelShader samplers
-	const std::vector<cShaderProgramD3D11::tSamplerInfo>& psSamplerStates = activeShaderProg->GetSamplerStatesPS();
+	auto psSamplerStates = activeShaderProg->GetSamplerStatesPS();
 	for (size_t i = 0; i < psSamplerStates.size(); i++) {
-		d3dcon->PSSetSamplers(psSamplerStates[i].slotIdx, 1, &samplerStates[psSamplerStates[i].hash]);
+		d3dcon->PSSetSamplers(psSamplerStates[i].slotIdx, 1, &samplerStates[psSamplerStates[i].gApiSamplerIdx].sampler);
 	}
 }
 
@@ -846,32 +846,22 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	for (auto it = samplerPairs.begin(); it != samplerPairs.end(); it++) {
 		D3D11_SAMPLER_DESC sDesc = ConvertToNativeSampler(it->second);
 
-		// D3D11_SAMPLER_DESC hasher
-		struct _hasher {
-			std::size_t operator()(const D3D11_SAMPLER_DESC& k) const {
-				size_t hash = 0;
-				for (size_t i = 0; i < sizeof(D3D11_SAMPLER_DESC); i++)
-					hash += *((char*)&k + i);
-				return hash;
-			}
-		} hasher;
+		size_t i = 0;
+		for (; i < samplerStates.size(); i++) {
+			if (memcmp(&sDesc, &samplerStates[i].desc, sizeof(D3D11_SAMPLER_DESC) == 0))
+				break;
+		}
 
-		size_t hash = hasher(sDesc);
 		// Not found that sampler..
-		if (samplerStates.find(hash) == samplerStates.end()) {
+		if (i == samplerStates.size()) {
 			ID3D11SamplerState* state = NULL;
 			HRESULT hr = d3ddev->CreateSamplerState(&sDesc, &state);
 			if (FAILED(hr)) {
 				lastErrorMsg = L"Fuck can't create SamplerState";
+				return eGapiResult::ERROR_UNKNOWN;
 			}
-			samplerStates[hash] = state;
+			samplerStates.push_back(tSamplerInfo(sDesc, state));
 			SAFE_RELEASE(state);
-		} 
-		else
-		{
-
-			int asd = 5;
-			asd++;
 		}
 
 		// Iterate through all samplers and check whether sampler exists in that domain, if it, add to specfic sampler domain
@@ -881,7 +871,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			// sampler found in domain
 			auto texIt = textureSlotsPerDomain.find(it->first);
 			if (texIt != textureSlotsPerDomain.end()) {
-				shaderSamplerStates[i].push_back(cShaderProgramD3D11::tSamplerInfo(hash, texIt->second));
+				shaderSamplerStates[i].push_back(cShaderProgramD3D11::tSamplerInfo(i, texIt->second));
 			}
 		}
 	}

@@ -12,6 +12,7 @@
 
 #undef ERROR_FILE_NOT_FOUND // fucking dx collides with eGapiResult::ERROR_FILE_NOT_FOUND
 #undef max // fasz kivan már ezzel a buzi windowssal
+
 #include "../../Core/src/GAPI.h"
 #include "../../Core/src/IWindow.h"
 #include "../../Core/src/common.h"
@@ -133,5 +134,11 @@ protected:
 	// States <D3D11_____DESC, ID3D11____*>
 	std::unordered_map<size_t, ID3D11DepthStencilState*> depthStencilStates;
 	std::unordered_map<size_t, ID3D11BlendState*> blendStates;
-	std::unordered_map<size_t, ID3D11SamplerState*> samplerStates;
+	struct tSamplerInfo {
+		D3D11_SAMPLER_DESC desc;
+		ID3D11SamplerState* sampler;
+
+		tSamplerInfo(const D3D11_SAMPLER_DESC& desc, ID3D11SamplerState* sampler) :desc(desc), sampler(sampler){}
+	};
+	std::vector<tSamplerInfo> samplerStates;
 };

@@ -22,10 +22,10 @@ class cShaderProgramD3D11 : public IShaderProgram {
 public:
 
 	struct tSamplerInfo {
-		size_t hash;
+		size_t gApiSamplerIdx;
 		size_t slotIdx;
 
-		tSamplerInfo(size_t hash, size_t slotIdx) :hash(hash), slotIdx(slotIdx){}
+		tSamplerInfo(size_t gApiSamplerIdx, size_t slotIdx) :gApiSamplerIdx(gApiSamplerIdx), slotIdx(slotIdx){}
 	};
 
 	cShaderProgramD3D11(cGraphicsApiD3D11* parent,
