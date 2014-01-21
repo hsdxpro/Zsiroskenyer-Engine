@@ -131,14 +131,21 @@ protected:
 	bool vsConstBufferStateChanged; // Don't want to apply constant buffers when it's not changed
 	bool psConstBufferStateChanged;
 
-	// States <D3D11_____DESC, ID3D11____*>
-	std::unordered_map<size_t, ID3D11DepthStencilState*> depthStencilStates;
-	std::unordered_map<size_t, ID3D11BlendState*> blendStates;
+	// Inner state descriptor, for avoid hashing
+	struct tDepthStencilInfo {
+		D3D11_DEPTH_STENCIL_DESC desc;
+		ID3D11DepthStencilState* state;
+	};
+	struct tBlendInfo {
+		D3D11_BLEND_DESC desc;
+		ID3D11BlendState* state;
+	};
 	struct tSamplerInfo {
 		D3D11_SAMPLER_DESC desc;
-		ID3D11SamplerState* sampler;
-
-		tSamplerInfo(const D3D11_SAMPLER_DESC& desc, ID3D11SamplerState* sampler) :desc(desc), sampler(sampler){}
+		ID3D11SamplerState* state;
 	};
+
+	std::vector<tDepthStencilInfo> depthStencilStates;
+	std::vector<tBlendInfo> blendStates;
 	std::vector<tSamplerInfo> samplerStates;
 };

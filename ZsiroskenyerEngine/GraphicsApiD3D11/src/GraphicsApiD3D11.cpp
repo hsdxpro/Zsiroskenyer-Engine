@@ -87,14 +87,14 @@ void cGraphicsApiD3D11::Release() {
 	delete this;
 }
 cGraphicsApiD3D11::~cGraphicsApiD3D11() {
-	for (auto it = depthStencilStates.begin(); it != depthStencilStates.end(); it++)
-		SAFE_RELEASE(it->second);
+	for (size_t i = 0; i < depthStencilStates.size(); i++)
+		SAFE_RELEASE(depthStencilStates[i].state);
 
-	for (auto it = blendStates.begin(); it != blendStates.end(); it++)
-		SAFE_RELEASE(it->second);
+	for (size_t i = 0; i < blendStates.size(); i++)
+		SAFE_RELEASE(blendStates[i].state);
 
 	for (size_t i = 0; i < samplerStates.size(); i++)
-		SAFE_RELEASE(samplerStates[i].sampler);
+		SAFE_RELEASE(samplerStates[i].state);
 
 	ID3D11ShaderResourceView* nullSrvs[16] = { 0 };
 	d3dcon->PSSetShaderResources(0, 16, nullSrvs);
@@ -429,13 +429,13 @@ void cGraphicsApiD3D11::ApplySamplerStates() {
 	// Set VertexShader samplers
 	auto vsSamplerStates = activeShaderProg->GetSamplerStatesVS();
 	for (size_t i = 0; i < vsSamplerStates.size(); i++) {
-		d3dcon->VSSetSamplers(vsSamplerStates[i].slotIdx, 1, &samplerStates[vsSamplerStates[i].gApiSamplerIdx].sampler);
+		d3dcon->VSSetSamplers(vsSamplerStates[i].slotIdx, 1, &samplerStates[vsSamplerStates[i].gApiSamplerIdx].state);
 	}
 
 	// Set PixelShader samplers
 	auto psSamplerStates = activeShaderProg->GetSamplerStatesPS();
 	for (size_t i = 0; i < psSamplerStates.size(); i++) {
-		d3dcon->PSSetSamplers(psSamplerStates[i].slotIdx, 1, &samplerStates[psSamplerStates[i].gApiSamplerIdx].sampler);
+		d3dcon->PSSetSamplers(psSamplerStates[i].slotIdx, 1, &samplerStates[psSamplerStates[i].gApiSamplerIdx].state);
 	}
 }
 
@@ -857,21 +857,24 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			ID3D11SamplerState* state = NULL;
 			HRESULT hr = d3ddev->CreateSamplerState(&sDesc, &state);
 			if (FAILED(hr)) {
-				lastErrorMsg = L"Fuck can't create SamplerState";
+				lastErrorMsg = L"Can't create SamplerState";
 				return eGapiResult::ERROR_UNKNOWN;
 			}
-			samplerStates.push_back(tSamplerInfo(sDesc, state));
-			SAFE_RELEASE(state);
+
+			tSamplerInfo info;
+				info.desc = sDesc;
+				info.state = state;
+			samplerStates.push_back(info);
 		}
 
 		// Iterate through all samplers and check whether sampler exists in that domain, if it, add to specfic sampler domain
-		for (size_t i = 0; i < nDomains; i++) {
-			std::unordered_map<zsString, size_t> textureSlotsPerDomain = shaderTextureSlots[i];
+		for (size_t j = 0; j < nDomains; j++) {
+			std::unordered_map<zsString, size_t> textureSlotsPerDomain = shaderTextureSlots[j];
 
 			// sampler found in domain
 			auto texIt = textureSlotsPerDomain.find(it->first);
 			if (texIt != textureSlotsPerDomain.end()) {
-				shaderSamplerStates[i].push_back(cShaderProgramD3D11::tSamplerInfo(i, texIt->second));
+				shaderSamplerStates[j].push_back(cShaderProgramD3D11::tSamplerInfo(i, texIt->second));
 			}
 		}
 	}
@@ -1391,20 +1394,14 @@ eGapiResult cGraphicsApiD3D11::SetRenderTargetDefault() {
 eGapiResult cGraphicsApiD3D11::SetBlendState(tBlendDesc desc) {
 	D3D11_BLEND_DESC bsDesc = ConvertToNativeBlend(desc);
 
-	// D3D11_BLEND_DESC hasher
-	struct _hasher {
-		std::size_t operator()(const D3D11_BLEND_DESC& k) const {
-			size_t hash = 0;
-			for (size_t i = 0; i < sizeof(D3D11_BLEND_DESC); i++)
-				hash += *((char*)&k + i);
-			return hash;
-		}
-	} hasher;
-	size_t hash = hasher(bsDesc);
-
 	ID3D11BlendState* state = NULL;
-	auto it = blendStates.find(hash);
-	if (it == blendStates.end()) {
+
+	size_t i = 0;
+	for (; i < blendStates.size(); i++)
+		if (memcmp(&bsDesc, &blendStates[i].desc, sizeof(D3D11_BLEND_DESC)) == 0)
+			break;
+
+	if (i == blendStates.size()) {
 		HRESULT hr = d3ddev->CreateBlendState(&bsDesc, &state);
 		if (FAILED(hr)) {
 			switch (hr) {
@@ -1412,9 +1409,16 @@ eGapiResult cGraphicsApiD3D11::SetBlendState(tBlendDesc desc) {
 			default: return eGapiResult::ERROR_UNKNOWN;
 			}
 		}
-		blendStates[hash] = state;
+
+		tBlendInfo info;
+			info.desc = bsDesc;
+			info.state = state;
+		blendStates.push_back(info);
+
+		//SAFE_RELEASE(state);
+
 	} else {
-		state = it->second;
+		state = blendStates[i].state;
 	}
 
 	d3dcon->OMSetBlendState(state, NULL, 0xFFFFFFFF);
@@ -1425,21 +1429,15 @@ eGapiResult cGraphicsApiD3D11::SetBlendState(tBlendDesc desc) {
 eGapiResult cGraphicsApiD3D11::SetDepthStencilState(tDepthStencilDesc desc, uint8_t stencilRef) {
 	D3D11_DEPTH_STENCIL_DESC dsDesc = ConvertToNativeDepthStencil(desc);
 
-	// D3D11_DEPTH_STENCIL_DESC hasher
-	struct _hasher {
-		std::size_t operator()(const D3D11_DEPTH_STENCIL_DESC& k) const {
-			size_t hash = 0;
-			for (size_t i = 0; i < sizeof(D3D11_DEPTH_STENCIL_DESC); i++)
-				hash += *((char*)&k + i);
-			return hash;
-		}
-	} hasher;
-	size_t hash = hasher(dsDesc);
+	size_t i = 0;
+	for (; i < depthStencilStates.size(); i++)
+		if (memcmp(&dsDesc, &depthStencilStates[i].desc, sizeof(D3D11_DEPTH_STENCIL_DESC)) == 0)
+			break;
 
-	// Not existing description
 	ID3D11DepthStencilState* state = NULL;
-	auto it = depthStencilStates.find(hash);
-	if ( it == depthStencilStates.end()) {
+
+	// Not existing
+	if ( i == depthStencilStates.size()) {
 		HRESULT hr = d3ddev->CreateDepthStencilState(&dsDesc, &state);
 		if (FAILED(hr)) {
 			switch (hr) {
@@ -1447,9 +1445,14 @@ eGapiResult cGraphicsApiD3D11::SetDepthStencilState(tDepthStencilDesc desc, uint
 			default: return eGapiResult::ERROR_UNKNOWN;
 			}
 		}
-		depthStencilStates[hash] = state;
+		tDepthStencilInfo info;
+			info.desc = dsDesc;
+			info.state = state;
+		depthStencilStates.push_back(info);
+
+		//SAFE_RELEASE(state);
 	} else {
-		state = it->second;
+		state = depthStencilStates[i].state;
 	}
 	
 	d3dcon->OMSetDepthStencilState(state, stencilRef);
