@@ -1,5 +1,12 @@
-sampler2D inputTexture;
-sampler2D depthTexture;
+sampler2D inputTexture= {
+	AddressU = CLAMP,
+	AddressV = CLAMP,
+};
+
+sampler2D depthTexture= {
+	AddressU = CLAMP,
+	AddressV = CLAMP,
+};
 
 struct VS_IN {
 	float3 posL 	: POSITION;

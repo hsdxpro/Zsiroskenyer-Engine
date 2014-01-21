@@ -8,7 +8,7 @@
 #include "..\..\Core\src\math\vec3.h"
 #include "..\..\Core\src\IPhysicsEntity.h"
 
-#include <map>
+#include <unordered_map>
 #include <vector>
 
 
@@ -35,7 +35,7 @@ protected:
 	//Fizika (Be,Ki)
 	bool physicsEnabled;
 
-	std::map<zsString, btCollisionShape*> collisionShapes;
+	std::unordered_map<zsString, btCollisionShape*> collisionShapes;
 };
 
 // DLL accessor

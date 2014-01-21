@@ -15,7 +15,7 @@
 
 #include "../../Core/src/CgShaderHelper.h"
 
-#include <map>
+#include <unordered_map>
 #include <fstream>
 // Ugly create shader last_write_time..
 //#include <boost/filesystem.hpp>
@@ -426,16 +426,16 @@ void cGraphicsApiD3D11::ApplyConstantBuffers() {
 }
 
 void cGraphicsApiD3D11::ApplySamplerStates() {
-	// Set each VertexShader samplers
+	// Set VertexShader samplers
 	auto vsSamplerStates = activeShaderProg->GetSamplerStatesVS();
-	for (auto vsSamplersIt = vsSamplerStates.begin(); vsSamplersIt != vsSamplerStates.end(); vsSamplersIt++) {
-		d3dcon->VSSetSamplers(vsSamplersIt->second, 1, &samplerStates[vsSamplersIt->first]);
+	for (size_t i = 0; i < vsSamplerStates.size(); i++) {
+		d3dcon->VSSetSamplers(vsSamplerStates[i].slotIdx, 1, &samplerStates[vsSamplerStates[i].hash]);
 	}
 
-	// Set each PixelShader samplers
-	auto psSamplerStates = activeShaderProg->GetSamplerStatesPS();
-	for (auto psSamplersIt = psSamplerStates.begin(); psSamplersIt != psSamplerStates.end(); psSamplersIt++) {
-		d3dcon->PSSetSamplers(psSamplersIt->second, 1, &samplerStates[psSamplersIt->first]);
+	// Set PixelShader samplers
+	const std::vector<cShaderProgramD3D11::tSamplerInfo>& psSamplerStates = activeShaderProg->GetSamplerStatesPS();
+	for (size_t i = 0; i < psSamplerStates.size(); i++) {
+		d3dcon->PSSetSamplers(psSamplerStates[i].slotIdx, 1, &samplerStates[psSamplerStates[i].hash]);
 	}
 }
 
@@ -713,8 +713,10 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	cCgShaderHelper::eProfileCG cgProfiles		[nDomains];
 
 	// Texture slots per domain
-	std::map<zsString, size_t> shaderTextureSlots[nDomains];
-	std::map<size_t, size_t> shaderSamplerStates[nDomains];
+	std::unordered_map<zsString, size_t> shaderTextureSlots[nDomains];
+
+	// Samppler states per domain
+	std::vector<cShaderProgramD3D11::tSamplerInfo> shaderSamplerStates[nDomains];
 
 	// VertexShader entry
 	existingEntries[VS] = cgInfo.vsExists;
@@ -839,7 +841,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	std::ifstream cgFile(shaderPath.c_str());
 	auto cgFileLines = cFileUtil::GetLines(cgFile);
 
-	std::map<zsString, tSamplerDesc> samplerPairs = cgHelper.GetSamplerStates(cgFileLines);
+	std::unordered_map<zsString, tSamplerDesc> samplerPairs = cgHelper.GetSamplerStates(cgFileLines);
 
 	for (auto it = samplerPairs.begin(); it != samplerPairs.end(); it++) {
 		D3D11_SAMPLER_DESC sDesc = ConvertToNativeSampler(it->second);
@@ -864,18 +866,22 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			}
 			samplerStates[hash] = state;
 			SAFE_RELEASE(state);
+		} 
+		else
+		{
+
+			int asd = 5;
+			asd++;
 		}
 
 		// Iterate through all samplers and check whether sampler exists in that domain, if it, add to specfic sampler domain
 		for (size_t i = 0; i < nDomains; i++) {
-			std::map<zsString, size_t> textureSlotsPerDomain = shaderTextureSlots[i];
+			std::unordered_map<zsString, size_t> textureSlotsPerDomain = shaderTextureSlots[i];
 
-			for (auto it = samplerPairs.begin(); it != samplerPairs.end(); it++) {
-				// sampler found in domain
-				auto texIt = textureSlotsPerDomain.find(it->first);
-				if (texIt != textureSlotsPerDomain.end()) {
-					shaderSamplerStates[i][hash] = texIt->second;
-				}
+			// sampler found in domain
+			auto texIt = textureSlotsPerDomain.find(it->first);
+			if (texIt != textureSlotsPerDomain.end()) {
+				shaderSamplerStates[i].push_back(cShaderProgramD3D11::tSamplerInfo(hash, texIt->second));
 			}
 		}
 	}

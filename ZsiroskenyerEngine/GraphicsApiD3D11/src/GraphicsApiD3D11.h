@@ -16,7 +16,7 @@
 #include "../../Core/src/IWindow.h"
 #include "../../Core/src/common.h"
 
-#include <map>
+#include <unordered_map>
 
 class IVertexBuffer;
 class IIndexBuffer;
@@ -131,7 +131,7 @@ protected:
 	bool psConstBufferStateChanged;
 
 	// States <D3D11_____DESC, ID3D11____*>
-	std::map<size_t, ID3D11DepthStencilState*> depthStencilStates;
-	std::map<size_t, ID3D11BlendState*> blendStates;
-	std::map<size_t, ID3D11SamplerState*> samplerStates;
+	std::unordered_map<size_t, ID3D11DepthStencilState*> depthStencilStates;
+	std::unordered_map<size_t, ID3D11BlendState*> blendStates;
+	std::unordered_map<size_t, ID3D11SamplerState*> samplerStates;
 };

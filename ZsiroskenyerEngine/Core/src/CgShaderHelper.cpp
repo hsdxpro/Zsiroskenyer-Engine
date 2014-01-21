@@ -10,8 +10,6 @@
 
 
 cCgShaderHelper::tCgInfo cCgShaderHelper::LoadCgShader(const zsString& shaderPath) {
-	loadedFilePath = shaderPath;
-
 	// Setup context, for creation
 	con = cgCreateContext();
 	cgGLRegisterStates(con);
@@ -142,13 +140,13 @@ bool cCgShaderHelper::CompileCg(const zsString& cgFilePath, const zsString& shad
 	return true;
 }
 
-std::map<zsString, size_t> cCgShaderHelper::GetHLSLTextureSlots(const zsString& hlslFilePath) {
-	std::map<zsString, size_t> result;
+std::unordered_map<zsString, size_t> cCgShaderHelper::GetHLSLTextureSlots(const zsString& hlslFilePath) {
+	std::unordered_map<zsString, size_t> result;
 
 	// Parse hlsl code for samplers, textures
 	std::ifstream hlslFile(hlslFilePath);
 
-	std::map<zsString, size_t> textureSlotsParsed;
+	std::unordered_map<zsString, size_t> textureSlotsParsed;
 
 	size_t texIdx = 0;
 	bool reachTextures = false;
@@ -180,8 +178,8 @@ std::map<zsString, size_t> cCgShaderHelper::GetHLSLTextureSlots(const zsString& 
 	return result;
 }
 
-std::map<zsString, tSamplerDesc> cCgShaderHelper::GetSamplerStates(const std::list<zsString>& cgFileLines) {
-	std::map<zsString, tSamplerDesc> result;
+std::unordered_map<zsString, tSamplerDesc> cCgShaderHelper::GetSamplerStates(const std::list<zsString>& cgFileLines) {
+	std::unordered_map<zsString, tSamplerDesc> result;
 
 	// Lines that contains "sampler" and "=", contains sampler states under that
 	const zsString words[2] = { L"sampler", L"=" };
