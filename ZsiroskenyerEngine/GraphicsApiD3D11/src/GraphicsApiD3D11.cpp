@@ -20,9 +20,6 @@
 // Ugly create shader last_write_time..
 //#include <boost/filesystem.hpp>
 
-// TODO ...
-#undef min
-
 ////////////////////////////////////////////////////////////////////////////////
 // GraphicsApi instance creation
 extern "C"
@@ -56,8 +53,8 @@ D3D11_BLEND_DESC ConvertToNativeBlend(tBlendDesc blend);
 
 D3D11_COMPARISON_FUNC ConvertToNativeCompFunc(eComparisonFunc compFunc);
 D3D11_STENCIL_OP ConvertToNativeStencilOp(eStencilOp stencilOp);
-D3D11_DEPTH_STENCIL_DESC ConvertToNativeDepthStencil(tDepthStencilDesc depthStencil);
-D3D11_SAMPLER_DESC ConvertToNativeSampler(tSamplerDesc sDesc);
+D3D11_DEPTH_STENCIL_DESC ConvertToNativeDepthStencil(const tDepthStencilDesc& depthStencil);
+D3D11_SAMPLER_DESC ConvertToNativeSampler(const tSamplerDesc& sDesc);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constructor, Destructor
@@ -681,6 +678,8 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	//boost::filesystem::last_write_time(boost::filesystem::path(shaderPath.c_str()));
 	//LINK : fatal error LNK1104: cannot open file 'libboost_filesystem-vc120-mt-sgd-1_55.lib'
 
+	zsString pathNoExt = shaderPath.substr(0, shaderPath.size() - 3);
+
 	// For array indexing convenience
 	enum eDomainIdx {
 		VS = 0,
@@ -689,26 +688,21 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		GS = 3,
 		PS = 4,
 	};
-
+	const size_t nDomains = 5;
 	
 	cCgShaderHelper cgHelper;
 	cCgShaderHelper::tCgInfo cgInfo = cgHelper.LoadCgShader(shaderPath_);
 
-	const size_t nDomains = 5;
-
-	zsString pathNoExt = shaderPath.substr(0, shaderPath.size() - 3);
-
-	bool		existingEntries[nDomains]; memset(existingEntries, 0, nDomains * sizeof(bool));
-	zsString	entryNames[nDomains];
-	zsString	binPaths[nDomains];
-	zsString	profileNames[nDomains];
-	cCgShaderHelper::eProfileCG  cgProfiles[nDomains];
+	bool						existingEntries	[nDomains]; memset(existingEntries, 0, nDomains * sizeof(bool));
+	zsString					entryNames		[nDomains];
+	zsString					binPaths		[nDomains];
+	zsString					profileNames	[nDomains];
+	cCgShaderHelper::eProfileCG cgProfiles		[nDomains];
 
 	// Texture slots per domain
 	std::map<zsString, size_t> textureSlots[nDomains];
 
 	// VertexShader entry
-	//CGprogram progVS = cgGetPassProgram(pass, CGdomain::CG_VERTEX_DOMAIN);
 	existingEntries[VS] = cgInfo.vsExists;
 	entryNames[VS] = cgInfo.vsEntryName;
 	binPaths[VS] = pathNoExt + L"_vs.bin";
@@ -716,7 +710,6 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	cgProfiles[VS] = cCgShaderHelper::eProfileCG::VS_4_0;
 
 	// GeometryShader entry
-	//CGprogram progGS = cgGetPassProgram(pass, CGdomain::CG_GEOMETRY_DOMAIN);
 	existingEntries[GS] = cgInfo.gsExists;
 	entryNames[GS] = cgInfo.gsEntryName;
 	binPaths[GS] = pathNoExt + L"_gs.bin";
@@ -724,7 +717,6 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	cgProfiles[GS] = cCgShaderHelper::eProfileCG::GS_4_0;
 
 	// PixelShader entry
-	//CGprogram progPS = cgGetPassProgram(pass, CGdomain::CG_FRAGMENT_DOMAIN);
 	existingEntries[PS] = cgInfo.psExists;
 	entryNames[PS] = cgInfo.psEntryName;
 	binPaths[PS] = pathNoExt + L"_ps.bin";
@@ -873,34 +865,34 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 			if (left == L"MIPFILTER") {
 				if (right == L"POINT") {
-					samplerDesc.mip = eFilter::POINT;
+					samplerDesc.filterMip = eFilter::POINT;
 				} else if (right == L"LINEAR") {
-					samplerDesc.mip = eFilter::LINEAR;
+					samplerDesc.filterMip = eFilter::LINEAR;
 				}
 				else if (right == L"ANISOTROPIC") {
-					samplerDesc.mip = eFilter::ANISOTROPIC;
+					samplerDesc.filterMip = eFilter::ANISOTROPIC;
 				}
 
 			} else if (left == L"MINFILTER") {
 				if (right == L"POINT") {
-					samplerDesc.min = eFilter::POINT;
+					samplerDesc.filterMin = eFilter::POINT;
 				}
 				else if (right == L"LINEAR") {
-					samplerDesc.min = eFilter::LINEAR;
+					samplerDesc.filterMin = eFilter::LINEAR;
 				}
 				else if (right == L"ANISOTROPIC") {
-					samplerDesc.min = eFilter::ANISOTROPIC;
+					samplerDesc.filterMin = eFilter::ANISOTROPIC;
 				}
 
 			} else if (left == L"MAGFILTER") {
 				if (right == L"POINT") {
-					samplerDesc.mag = eFilter::POINT;
+					samplerDesc.filterMag = eFilter::POINT;
 				}
 				else if (right == L"LINEAR") {
-					samplerDesc.mag = eFilter::LINEAR;
+					samplerDesc.filterMag = eFilter::LINEAR;
 				}
 				else if (right == L"ANISOTROPIC") {
-					samplerDesc.mag = eFilter::ANISOTROPIC;
+					samplerDesc.filterMag = eFilter::ANISOTROPIC;
 				}
 			} else if (left == L"ADDRESSU") {
 				if (right == L"CLAMP") {
@@ -1815,7 +1807,7 @@ D3D11_STENCIL_OP ConvertToNativeStencilOp(eStencilOp stencilOp) {
 	default: return D3D11_STENCIL_OP_REPLACE;
 	}
 }
-D3D11_DEPTH_STENCIL_DESC ConvertToNativeDepthStencil(tDepthStencilDesc depthStencil) {
+D3D11_DEPTH_STENCIL_DESC ConvertToNativeDepthStencil(const tDepthStencilDesc& depthStencil) {
 	D3D11_DEPTH_STENCIL_DESC ret;
 	ret.DepthEnable = (depthStencil.depthEnable ? TRUE : FALSE);
 	ret.DepthFunc = ConvertToNativeCompFunc(depthStencil.depthCompare);
@@ -1837,7 +1829,7 @@ D3D11_DEPTH_STENCIL_DESC ConvertToNativeDepthStencil(tDepthStencilDesc depthSten
 	return ret;
 }
 
-D3D11_SAMPLER_DESC ConvertToNativeSampler(tSamplerDesc sDesc) {
+D3D11_SAMPLER_DESC ConvertToNativeSampler(const tSamplerDesc& sDesc) {
 	D3D11_SAMPLER_DESC r;
 
 	switch (sDesc.addressU) {
@@ -1859,8 +1851,8 @@ D3D11_SAMPLER_DESC ConvertToNativeSampler(tSamplerDesc sDesc) {
 	r.MaxLOD = 1.0f;
 	r.MipLODBias = 1;
 
-	if (sDesc.mag == sDesc.min && sDesc.mag == sDesc.mip) {
-		switch (sDesc.mag) {
+	if (sDesc.filterMag == sDesc.filterMin && sDesc.filterMag == sDesc.filterMip) {
+		switch (sDesc.filterMag) {
 			case eFilter::POINT:		r.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;	break;
 			case eFilter::LINEAR:		r.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR; break;
 			case eFilter::ANISOTROPIC:
