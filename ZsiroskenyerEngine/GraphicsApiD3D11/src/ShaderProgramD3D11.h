@@ -29,8 +29,11 @@ public:
 	~cShaderProgramD3D11();
 	void Release() override;
 
-	void SetSlotLookups(std::map<zsString, size_t> textureSlots);
-	size_t GetTextureSlot(const zsString& varName);
+	void SetTextureSlotsVS(std::map<zsString, size_t> texSlotsVS);
+	void SetTextureSlotsPS(std::map<zsString, size_t> texSlotsPS);
+
+	int GetTextureSlotVS(const zsString& varName);
+	int GetTextureSlotPS(const zsString& varName);
 
 	ID3D11VertexShader* GetVertexShader() const;
 	ID3D11HullShader* GetHullShader() const;
@@ -57,5 +60,6 @@ private:
 	ID3D11PixelShader*		ps;
 
 	// Texture slot look up
-	std::map<zsString, size_t> textureSlots;
+	std::map<zsString, size_t> textureSlotsVS;
+	std::map<zsString, size_t> textureSlotsPS;
 };

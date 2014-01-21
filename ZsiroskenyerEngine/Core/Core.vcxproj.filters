@@ -163,6 +163,7 @@
     </ClInclude>
     <ClInclude Include="src\FileUtil.h" />
     <ClInclude Include="src\Transformable.h" />
+    <ClInclude Include="src\CgShaderHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\math\color.cpp">
@@ -254,6 +255,7 @@
     <ClCompile Include="src\FileUtil.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="src\CgShaderHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Game">

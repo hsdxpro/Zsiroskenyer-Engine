@@ -14,6 +14,7 @@
     <ClInclude Include="src\algorithms\sort.h" />
     <ClInclude Include="src\algorithms\statistics.h" />
     <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\CgShaderHelper.h" />
     <ClInclude Include="src\common.h" />
     <ClInclude Include="src\Core.h" />
     <ClInclude Include="src\CreateGAPI.h" />
@@ -75,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\CgShaderHelper.cpp" />
     <ClCompile Include="src\common.cpp" />
     <ClCompile Include="src\Core.cpp" />
     <ClCompile Include="src\CreateGAPI.cpp" />
@@ -169,7 +171,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>$(OutDir)\CommonOS.lib;$(SolutionDir)\..\Externals\ASSIMP\lib\assimp.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)\CommonOS.lib;$(SolutionDir)\..\Externals\ASSIMP\lib\assimp.lib;$(SolutionDir)../Externals/Cg/lib/x32/cg.lib;$(SolutionDir)../Externals/Cg/lib/x32/cgD3D11.lib;$(SolutionDir)../Externals/Cg/lib/x32/cgGL.lib</AdditionalDependencies>
     </Lib>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
