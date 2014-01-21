@@ -166,6 +166,7 @@
     <ClInclude Include="src\lighting\lighting.h">
       <Filter>Common\lighting</Filter>
     </ClInclude>
+    <ClInclude Include="src\CgShaderHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\math\color.cpp">
@@ -256,9 +257,6 @@
     </ClCompile>
     <ClCompile Include="src\FileUtil.cpp">
       <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lighting\lighting.cpp">
-      <Filter>Common\lighting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

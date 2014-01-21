@@ -33,14 +33,22 @@ void cShaderProgramD3D11::Release() {
 	delete this;
 }
 
-void cShaderProgramD3D11::SetSlotLookups(std::map<zsString, size_t> textureSlots) {
-	this->textureSlots = textureSlots;
+void cShaderProgramD3D11::SetTextureSlotsVS(std::map<zsString, size_t> texSlotsVS) {
+	textureSlotsVS = texSlotsVS;
 }
 
-size_t cShaderProgramD3D11::GetTextureSlot(const zsString& varName) {
-	auto i = textureSlots.find(varName);
-	//ASSERT_MSG(i != textureSlots.end(), L"Texture name: " + varName + L" doesn't exists in that shader");
-	return (i != textureSlots.end() ? i->second : std::numeric_limits<size_t>::max());
+void cShaderProgramD3D11::SetTextureSlotsPS(std::map<zsString, size_t> texSlotsPS) {
+	textureSlotsPS = texSlotsPS;
+}
+
+int cShaderProgramD3D11::GetTextureSlotVS(const zsString& varName) {
+	auto i = textureSlotsVS.find(varName);
+	return (i != textureSlotsVS.end()) ? i->second : -1;
+}
+
+int cShaderProgramD3D11::GetTextureSlotPS(const zsString& varName) {
+	auto i = textureSlotsPS.find(varName);
+	return (i != textureSlotsPS.end()) ? i->second : -1;
 }
 
 ID3D11VertexShader* cShaderProgramD3D11::GetVertexShader() const {

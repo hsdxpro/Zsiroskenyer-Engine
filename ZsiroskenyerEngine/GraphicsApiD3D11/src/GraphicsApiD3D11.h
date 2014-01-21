@@ -35,28 +35,6 @@ IGraphicsApi* CreateGraphicsApiD3D11(IWindow* targetWindow, unsigned backBufferW
 
 class cGraphicsApiD3D11 : public IGraphicsApi {
 public:
-	// Compiling profiles for cg
-	enum class eProfileCG {
-		SM_5_0_BEGIN = 0,
-		VS_5_0 = 0,
-		HS_5_0,
-		DS_5_0,
-		GS_5_0,
-		PS_5_0,
-		SM_4_0_BEGIN = 5,
-		VS_4_0 = 5,
-		HS_4_0,
-		DS_4_0,
-		GS_4_0,
-		PS_4_0,
-		SM_3_0_BEGIN = 10,
-		VS_3_0 = 10,
-		PS_3_0,
-		SM_2_0_BEGIN = 12,
-		VS_2_0 = 12,
-		PS_2_0,
-	};
-
 	cGraphicsApiD3D11();
 	~cGraphicsApiD3D11();
 	void Release() override;
@@ -109,7 +87,7 @@ public:
 
 	// --- misc --- //
 	ITexture2D* GetDefaultRenderTarget() const override;
-	const wchar_t* GetLastErrorMessage() const override;
+	const wchar_t* GetLastErrorMsg() const override;
 
 private:
 	eGapiResult CreateDevice();
@@ -117,11 +95,10 @@ private:
 	eGapiResult CreateViewsForBB();
 	eGapiResult CreateDefaultStates();
 	HRESULT CompileShaderFromFile(const zsString& fileName, const zsString& entry, const zsString& profile, zsString* compilerMessage, ID3DBlob** ppBlobOut);
-	eGapiResult CompileCgToHLSL(const zsString& cgFileName, const zsString& hlslFileName, eProfileCG compileProfile);
 	void ApplyConstantBuffers();
 protected:
 	// Error handling
-	zsString lastErrorMessage;
+	zsString lastErrorMsg;
 	
 	// backBuffer will be the main render target
 	cTexture2DD3D11* defaultRenderTarget;
