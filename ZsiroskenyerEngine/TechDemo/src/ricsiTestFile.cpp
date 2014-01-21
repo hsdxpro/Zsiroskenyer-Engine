@@ -52,23 +52,6 @@ cGraphicsLight* sun;
 IGraphicsScene* gScene;
 
 int ricsiMain() {
-	/*
-	cSerializable ser;
-	ser << L"STR1";
-	ser << 5;
-	ser << L"STR2";
-	ser << 10;
-	ser << L"STR3";
-
-	zsString strs[3];
-	size_t val1 = 0;
-	size_t val2 = 0;
-	ser >> strs[0];
-	ser >> val1;
-	ser >> strs[1];
-	ser >> val2;
-	ser >> strs[2];
-*/
 
 	// Window description
 	IWindow::tDesc winDesc;

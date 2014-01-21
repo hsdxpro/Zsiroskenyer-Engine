@@ -96,6 +96,7 @@ private:
 	eGapiResult CreateDefaultStates();
 	HRESULT CompileShaderFromFile(const zsString& fileName, const zsString& entry, const zsString& profile, zsString* compilerMessage, ID3DBlob** ppBlobOut);
 	void ApplyConstantBuffers();
+
 protected:
 	// Error handling
 	zsString lastErrorMsg;
