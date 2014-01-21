@@ -4,8 +4,10 @@
 
 #include "Cg/cg.h"
 
+#include "PipelineState.h"
 #include "zsString.h"
 #include <map>
+#include <list>
 
 // TODO cgShaderHelper only supports 1 pass 1 tech per effect per cg file
 class cCgShaderHelper {
@@ -49,6 +51,7 @@ public:
 	bool CompileCg(const zsString& cgFilePath, const zsString& shaderOut, cCgShaderHelper::eProfileCG compileProfile);
 
 	std::map<zsString, size_t> GetHLSLTextureSlots(const zsString& hlslFilePath);
+	std::map<zsString, tSamplerDesc> GetSamplerStates(const std::list<zsString>& cgFileLines);
 
 	const wchar_t* cCgShaderHelper::GetLastErrorMsg();
 protected:

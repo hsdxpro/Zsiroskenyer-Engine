@@ -180,6 +180,111 @@ std::map<zsString, size_t> cCgShaderHelper::GetHLSLTextureSlots(const zsString& 
 	return result;
 }
 
+std::map<zsString, tSamplerDesc> cCgShaderHelper::GetSamplerStates(const std::list<zsString>& cgFileLines) {
+	std::map<zsString, tSamplerDesc> result;
+
+	// Lines that contains "sampler" and "=", contains sampler states under that
+	const zsString words[2] = { L"sampler", L"=" };
+	auto samplerLineIndices = cStrUtil::GetLinesContainingAllStr(cgFileLines, words, 2);
+
+	// For each sampler line that uses SamplerStates 
+	for (auto it = samplerLineIndices.begin(); it != samplerLineIndices.end(); it++) {
+		// Sampler Name
+		
+		const zsString& _samplerName = *std::next(cgFileLines.begin(), *it);
+		zsString samplerName = _samplerName;
+		cStrUtil::TrimBorder(samplerName, ' ');
+		cStrUtil::Between(samplerName, ' ', ' ');
+
+
+		const auto samplerStateLines = cStrUtil::GetLines(cgFileLines, *it + 1, L";");
+
+		// TODO Noob mode : assume one state per line
+		// ex.
+		// MipFilter = POINT,
+		// MinFilter = POINT,
+		// MagFilter = POINT,
+
+		tSamplerDesc samplerDesc;
+
+		// For each of the above lines
+		for (auto state = samplerStateLines.begin(); state != samplerStateLines.end(); state++) {
+			const zsString& row = *std::next(cgFileLines.begin(), *state);
+
+			// ex. "MipFilter = POINT,", split, trim to "MipFilter", "POINT", then lower those
+			std::list<zsString> parts = cStrUtil::SplitAt(row, '=');
+			const wchar_t borders[2] = { ' ', ',' };
+			cStrUtil::TrimBorder(parts, borders, 2);
+			cStrUtil::ToUpper(parts);
+
+			auto it = parts.begin();
+			const zsString& left = *it++;
+			const zsString& right = *it;
+
+			if (left == L"MIPFILTER") {
+				if (right == L"POINT") {
+					samplerDesc.filterMip = eFilter::POINT;
+				}
+				else if (right == L"LINEAR") {
+					samplerDesc.filterMip = eFilter::LINEAR;
+				}
+				else if (right == L"ANISOTROPIC") {
+					samplerDesc.filterMip = eFilter::ANISOTROPIC;
+				}
+
+			}
+			else if (left == L"MINFILTER") {
+				if (right == L"POINT") {
+					samplerDesc.filterMin = eFilter::POINT;
+				}
+				else if (right == L"LINEAR") {
+					samplerDesc.filterMin = eFilter::LINEAR;
+				}
+				else if (right == L"ANISOTROPIC") {
+					samplerDesc.filterMin = eFilter::ANISOTROPIC;
+				}
+
+			}
+			else if (left == L"MAGFILTER") {
+				if (right == L"POINT") {
+					samplerDesc.filterMag = eFilter::POINT;
+				}
+				else if (right == L"LINEAR") {
+					samplerDesc.filterMag = eFilter::LINEAR;
+				}
+				else if (right == L"ANISOTROPIC") {
+					samplerDesc.filterMag = eFilter::ANISOTROPIC;
+				}
+			}
+			else if (left == L"ADDRESSU") {
+				if (right == L"CLAMP") {
+					samplerDesc.addressU = eAddress::CLAMP;
+				}
+				else if (right == L"WRAP") {
+					samplerDesc.addressU = eAddress::WRAP;
+				}
+				else if (right == L"MIRROR") {
+					samplerDesc.addressU = eAddress::MIRROR;
+				}
+			}
+			else if (left == L"ADDRESSV") {
+				if (right == L"CLAMP") {
+					samplerDesc.addressV = eAddress::CLAMP;
+				}
+				else if (right == L"WRAP") {
+					samplerDesc.addressV = eAddress::WRAP;
+				}
+				else if (right == L"MIRROR") {
+					samplerDesc.addressV = eAddress::MIRROR;
+				}
+			}
+		}
+		result[samplerName] = samplerDesc;
+	}
+	return result;
+}
+
+
 const wchar_t* cCgShaderHelper::GetLastErrorMsg() {
 	return lastErrorMsg.c_str();
 }

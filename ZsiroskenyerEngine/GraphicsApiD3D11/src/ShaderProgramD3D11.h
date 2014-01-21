@@ -32,15 +32,21 @@ public:
 	void SetTextureSlotsVS(std::map<zsString, size_t> texSlotsVS);
 	void SetTextureSlotsPS(std::map<zsString, size_t> texSlotsPS);
 
-	int GetTextureSlotVS(const zsString& varName);
-	int GetTextureSlotPS(const zsString& varName);
+	void SetSamplerStatesVS(std::map<size_t, size_t> samplerStatesVS);
+	void SetSamplerStatesPS(std::map<size_t, size_t> samplerStatesPS);
 
-	ID3D11VertexShader* GetVertexShader() const;
-	ID3D11HullShader* GetHullShader() const;
-	ID3D11DomainShader* GetDomainShader() const;
-	ID3D11GeometryShader* GetGeometryShader() const;
-	ID3D11PixelShader* GetPixelShader() const;
-	ID3D11InputLayout* GetInputLayout() const;
+	int GetTextureSlotVS(const zsString& varName) const;
+	int GetTextureSlotPS(const zsString& varName) const;
+
+	const std::map<size_t, size_t>& GetSamplerStatesVS() const;
+	const std::map<size_t, size_t>& GetSamplerStatesPS() const;
+
+	const ID3D11VertexShader* GetVertexShader() const;
+	const ID3D11HullShader* GetHullShader() const;
+	const ID3D11DomainShader* GetDomainShader() const;
+	const ID3D11GeometryShader* GetGeometryShader() const;
+	const ID3D11PixelShader* GetPixelShader() const;
+	const ID3D11InputLayout* GetInputLayout() const;
 
 	size_t GetVertexFormatSize() const override;
 	
@@ -62,4 +68,9 @@ private:
 	// Texture slot look up
 	std::map<zsString, size_t> textureSlotsVS;
 	std::map<zsString, size_t> textureSlotsPS;
+
+	// Sampler slot look up
+	// Sampler hash, slot idx
+	std::map<size_t, size_t> samplerStatesVS;
+	std::map<size_t, size_t> samplerStatesPS;
 };

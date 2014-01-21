@@ -41,40 +41,56 @@ void cShaderProgramD3D11::SetTextureSlotsPS(std::map<zsString, size_t> texSlotsP
 	textureSlotsPS = texSlotsPS;
 }
 
-int cShaderProgramD3D11::GetTextureSlotVS(const zsString& varName) {
+void cShaderProgramD3D11::SetSamplerStatesVS(std::map<size_t, size_t> samplerStatesVS) {
+	this->samplerStatesVS = samplerStatesVS;
+}
+
+void cShaderProgramD3D11::SetSamplerStatesPS(std::map<size_t, size_t> samplerStatesPS) {
+	this->samplerStatesPS = samplerStatesPS;
+}
+
+int cShaderProgramD3D11::GetTextureSlotVS(const zsString& varName) const {
 	auto i = textureSlotsVS.find(varName);
 	return (i != textureSlotsVS.end()) ? i->second : -1;
 }
 
-int cShaderProgramD3D11::GetTextureSlotPS(const zsString& varName) {
+int cShaderProgramD3D11::GetTextureSlotPS(const zsString& varName) const {
 	auto i = textureSlotsPS.find(varName);
 	return (i != textureSlotsPS.end()) ? i->second : -1;
 }
 
-ID3D11VertexShader* cShaderProgramD3D11::GetVertexShader() const {
+const std::map<size_t, size_t>& cShaderProgramD3D11::GetSamplerStatesVS() const {
+	return samplerStatesVS;
+}
+
+const std::map<size_t, size_t>& cShaderProgramD3D11::GetSamplerStatesPS() const {
+	return samplerStatesPS;
+}
+
+const ID3D11VertexShader* cShaderProgramD3D11::GetVertexShader() const {
 	return vs;
 }
 
-ID3D11HullShader* cShaderProgramD3D11::GetHullShader() const {
+const ID3D11HullShader* cShaderProgramD3D11::GetHullShader() const {
 	return hs;
 }
 
-ID3D11DomainShader* cShaderProgramD3D11::GetDomainShader() const {
+const ID3D11DomainShader* cShaderProgramD3D11::GetDomainShader() const {
 	return ds;
 }
 
-ID3D11GeometryShader* cShaderProgramD3D11::GetGeometryShader() const {
+const ID3D11GeometryShader* cShaderProgramD3D11::GetGeometryShader() const {
 	return gs;
 }
 
-ID3D11PixelShader* cShaderProgramD3D11::GetPixelShader() const {
+const ID3D11PixelShader* cShaderProgramD3D11::GetPixelShader() const {
 	return ps;
 }
 
-ID3D11InputLayout* cShaderProgramD3D11::GetInputLayout() const {
+const ID3D11InputLayout* cShaderProgramD3D11::GetInputLayout() const {
 	return inputLayout;
 }
 
-size_t cShaderProgramD3D11::GetVertexFormatSize() const{
+size_t cShaderProgramD3D11::GetVertexFormatSize() const {
 	return vertexFormatSize;
 }

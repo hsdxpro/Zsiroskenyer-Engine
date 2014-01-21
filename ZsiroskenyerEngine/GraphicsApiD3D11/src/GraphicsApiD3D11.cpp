@@ -425,6 +425,19 @@ void cGraphicsApiD3D11::ApplyConstantBuffers() {
 	vsConstBufferStateChanged = psConstBufferStateChanged = false;
 }
 
+void cGraphicsApiD3D11::ApplySamplerStates() {
+	// Set each VertexShader samplers
+	auto vsSamplerStates = activeShaderProg->GetSamplerStatesVS();
+	for (auto vsSamplersIt = vsSamplerStates.begin(); vsSamplersIt != vsSamplerStates.end(); vsSamplersIt++) {
+		d3dcon->VSSetSamplers(vsSamplersIt->second, 1, &samplerStates[vsSamplersIt->first]);
+	}
+
+	// Set each PixelShader samplers
+	auto psSamplerStates = activeShaderProg->GetSamplerStatesPS();
+	for (auto psSamplersIt = psSamplerStates.begin(); psSamplersIt != psSamplerStates.end(); psSamplersIt++) {
+		d3dcon->PSSetSamplers(psSamplersIt->second, 1, &samplerStates[psSamplersIt->first]);
+	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //	Manage graphics resources
@@ -694,13 +707,14 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	cCgShaderHelper::tCgInfo cgInfo = cgHelper.LoadCgShader(shaderPath_);
 
 	bool						existingEntries	[nDomains]; memset(existingEntries, 0, nDomains * sizeof(bool));
-	zsString					entryNames		[nDomains];
+	zsString					entryNames		[nDomains]; // BULLSHIT Only CG need that for parsing
 	zsString					binPaths		[nDomains];
 	zsString					profileNames	[nDomains];
 	cCgShaderHelper::eProfileCG cgProfiles		[nDomains];
 
 	// Texture slots per domain
-	std::map<zsString, size_t> textureSlots[nDomains];
+	std::map<zsString, size_t> shaderTextureSlots[nDomains];
+	std::map<size_t, size_t> shaderSamplerStates[nDomains];
 
 	// VertexShader entry
 	existingEntries[VS] = cgInfo.vsExists;
@@ -767,14 +781,13 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 				return eGapiResult::ERROR_UNKNOWN;
 			}
 
-			textureSlots[i] = cgHelper.GetHLSLTextureSlots(binPaths[i]);
+			shaderTextureSlots[i] = cgHelper.GetHLSLTextureSlots(binPaths[i]);
 
 			byteCodes[i] = blobs[i]->GetBufferPointer();
 			byteCodeSizes[i] = blobs[i]->GetBufferSize();
 
 			// Write byteCode as binary file
-			cFileUtil::Clear(binPaths[i]);
-			std::ofstream binFile(binPaths[i], std::ios::binary);
+			std::ofstream binFile(binPaths[i], std::ios::trunc | std::ios::binary);
 			cFileUtil::WriteBinary(binFile, byteCodes[i], byteCodeSizes[i]);
 			binFile.close();
 		}
@@ -822,105 +835,14 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		}
 	}
 
-	// Parsing cg
+	// Get Samplers from cg
 	std::ifstream cgFile(shaderPath.c_str());
 	auto cgFileLines = cFileUtil::GetLines(cgFile);
-	
-	
-	// Lines that contains "sampler" and "=", contains sampler states under that
-	const zsString words[2] = { L"sampler", L"=" };
-	auto samplerLineIndices = cStrUtil::GetLinesContainingAllStr(cgFileLines, words, 2);
 
-	std::map<zsString, tSamplerDesc> samplerPairs;
+	std::map<zsString, tSamplerDesc> samplerPairs = cgHelper.GetSamplerStates(cgFileLines);
 
-	// For each sampler line that uses SamplerStates 
-	for (auto it = samplerLineIndices.begin(); it != samplerLineIndices.end(); it++) {
-		// Sampler Name
-		zsString& samplerName = *std::next(cgFileLines.begin(), *it);
-		cStrUtil::TrimBorder(samplerName, ' ');
-		cStrUtil::Between(samplerName, ' ', ' ');
-
-
-		const auto samplerStateLines = cStrUtil::GetLines(cgFileLines, *it + 1, L";");
-
-		// Noob mode : assume one state per line
-		// ex.
-		// MipFilter = POINT,
-		// MinFilter = POINT,
-		// MagFilter = POINT,
-		
-		tSamplerDesc samplerDesc;
-
-		// For each of the above lines
-		for (auto state = samplerStateLines.begin(); state != samplerStateLines.end(); state++) {
-			const zsString& row = *std::next(cgFileLines.begin(), *state);
-
-			// ex. "MipFilter = POINT,", split, trim to "MipFilter", "POINT", then lower those
-			std::list<zsString> parts = cStrUtil::SplitAt(row, '=');
-			const wchar_t borders[2] = { ' ', ',' };
-			cStrUtil::TrimBorder(parts, borders, 2);
-			cStrUtil::ToUpper(parts);
-
-			auto it = parts.begin();
-			const zsString& left = *it++;
-			const zsString& right = *it;
-
-			if (left == L"MIPFILTER") {
-				if (right == L"POINT") {
-					samplerDesc.filterMip = eFilter::POINT;
-				} else if (right == L"LINEAR") {
-					samplerDesc.filterMip = eFilter::LINEAR;
-				}
-				else if (right == L"ANISOTROPIC") {
-					samplerDesc.filterMip = eFilter::ANISOTROPIC;
-				}
-
-			} else if (left == L"MINFILTER") {
-				if (right == L"POINT") {
-					samplerDesc.filterMin = eFilter::POINT;
-				}
-				else if (right == L"LINEAR") {
-					samplerDesc.filterMin = eFilter::LINEAR;
-				}
-				else if (right == L"ANISOTROPIC") {
-					samplerDesc.filterMin = eFilter::ANISOTROPIC;
-				}
-
-			} else if (left == L"MAGFILTER") {
-				if (right == L"POINT") {
-					samplerDesc.filterMag = eFilter::POINT;
-				}
-				else if (right == L"LINEAR") {
-					samplerDesc.filterMag = eFilter::LINEAR;
-				}
-				else if (right == L"ANISOTROPIC") {
-					samplerDesc.filterMag = eFilter::ANISOTROPIC;
-				}
-			} else if (left == L"ADDRESSU") {
-				if (right == L"CLAMP") {
-					samplerDesc.addressU = eAddress::CLAMP;
-				}
-				else if (right == L"WRAP") {
-					samplerDesc.addressU = eAddress::WRAP;
-				}
-				else if (right == L"MIRROR") {
-					samplerDesc.addressU = eAddress::MIRROR;
-				}
-			} else if (left == L"ADDRESSV") {
-				if (right == L"CLAMP") {
-					samplerDesc.addressV = eAddress::CLAMP;
-				}
-				else if (right == L"WRAP") {
-					samplerDesc.addressV = eAddress::WRAP;
-				}
-				else if (right == L"MIRROR") {
-					samplerDesc.addressV = eAddress::MIRROR;
-				}
-			}
-		}
-		samplerPairs[samplerName] = samplerDesc;
-
-		D3D11_SAMPLER_DESC sDesc = ConvertToNativeSampler(samplerDesc);
+	for (auto it = samplerPairs.begin(); it != samplerPairs.end(); it++) {
+		D3D11_SAMPLER_DESC sDesc = ConvertToNativeSampler(it->second);
 
 		// D3D11_SAMPLER_DESC hasher
 		struct _hasher {
@@ -933,20 +855,30 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		} hasher;
 
 		size_t hash = hasher(sDesc);
-
 		// Not found that sampler..
 		if (samplerStates.find(hash) == samplerStates.end()) {
 			ID3D11SamplerState* state = NULL;
-			d3ddev->CreateSamplerState(&sDesc, &state);
+			HRESULT hr = d3ddev->CreateSamplerState(&sDesc, &state);
+			if (FAILED(hr)) {
+				lastErrorMsg = L"Fuck can't create SamplerState";
+			}
 			samplerStates[hash] = state;
 			SAFE_RELEASE(state);
 		}
 
+		// Iterate through all samplers and check whether sampler exists in that domain, if it, add to specfic sampler domain
+		for (size_t i = 0; i < nDomains; i++) {
+			std::map<zsString, size_t> textureSlotsPerDomain = shaderTextureSlots[i];
 
-		// Match samplerState slots and texture names..
-		// Add <samplerHash, slotIdx> to shaders..
+			for (auto it = samplerPairs.begin(); it != samplerPairs.end(); it++) {
+				// sampler found in domain
+				auto texIt = textureSlotsPerDomain.find(it->first);
+				if (texIt != textureSlotsPerDomain.end()) {
+					shaderSamplerStates[i][hash] = texIt->second;
+				}
+			}
+		}
 	}
-
 
 	// Parse input Layout... from VERTEX_SHADER
 	// - 1. search for vertexShader Entry name ex:"VS_MAIN(", get return value, for example VS_OUT
@@ -1039,8 +971,11 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	cShaderProgramD3D11* shProg = new cShaderProgramD3D11(this, alignedByteOffset, inputLayout, vs, hs, ds, gs, ps);
 
 	// Set look up maps
-	shProg->SetTextureSlotsVS(textureSlots[VS]);
-	shProg->SetTextureSlotsPS(textureSlots[PS]);
+	shProg->SetTextureSlotsVS(shaderTextureSlots[VS]);
+	shProg->SetTextureSlotsPS(shaderTextureSlots[PS]);
+
+	shProg->SetSamplerStatesVS(shaderSamplerStates[VS]);
+	shProg->SetSamplerStatesPS(shaderSamplerStates[PS]);
 
 	// return and tell everyone dat success
 	*resource = shProg;
@@ -1215,21 +1150,25 @@ void cGraphicsApiD3D11::Present() {
 
 // Draw functions
 void cGraphicsApiD3D11::Draw(size_t nVertices, size_t idxStartVertex /*= 0*/) {
+	ApplySamplerStates();
 	ApplyConstantBuffers();
 	d3dcon->Draw(nVertices, idxStartVertex);
 }
 
 void cGraphicsApiD3D11::DrawIndexed(size_t nIndices, size_t idxStartIndex /*= 0*/) {
+	ApplySamplerStates();
 	ApplyConstantBuffers();
 	d3dcon->DrawIndexed(nIndices, idxStartIndex, 0);
 }
 
 void cGraphicsApiD3D11::DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex /*= 0*/, size_t idxStartInstance /*= 0*/) {
+	ApplySamplerStates();
 	ApplyConstantBuffers();
 	d3dcon->DrawInstanced(nVerticesPerInstance, nInstances, idxStartVertex, idxStartInstance);
 }
 
 void cGraphicsApiD3D11::DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex /*= 0*/, size_t idxStartInstance /*= 0*/) {
+	ApplySamplerStates();
 	ApplyConstantBuffers();
 	d3dcon->DrawIndexedInstanced(nIndicesPerInstance, nInstances, idxStartIndex, 0, idxStartInstance);
 }
@@ -1301,9 +1240,9 @@ void cGraphicsApiD3D11::SetShaderProgram(IShaderProgram* shProg) {
 
 	activeShaderProg = (cShaderProgramD3D11*)shProg;
 	const cShaderProgramD3D11* shProgD3D11 = (cShaderProgramD3D11*)shProg;
-	d3dcon->IASetInputLayout(shProgD3D11->GetInputLayout());
-	d3dcon->VSSetShader(shProgD3D11->GetVertexShader(), 0, 0);
-	d3dcon->PSSetShader(shProgD3D11->GetPixelShader(), 0, 0);
+	d3dcon->IASetInputLayout(const_cast<ID3D11InputLayout*>(shProgD3D11->GetInputLayout()));
+	d3dcon->VSSetShader(const_cast<ID3D11VertexShader*>(shProgD3D11->GetVertexShader()), 0, 0);
+	d3dcon->PSSetShader(const_cast<ID3D11PixelShader*>(shProgD3D11->GetPixelShader()), 0, 0);
 }
 
 // Set primitive topology
@@ -1832,7 +1771,7 @@ D3D11_DEPTH_STENCIL_DESC ConvertToNativeDepthStencil(const tDepthStencilDesc& de
 }
 
 D3D11_SAMPLER_DESC ConvertToNativeSampler(const tSamplerDesc& sDesc) {
-	D3D11_SAMPLER_DESC r;
+	D3D11_SAMPLER_DESC r; memset(&r, 0, sizeof(r));
 
 	switch (sDesc.addressU) {
 		case eAddress::CLAMP:	r.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;	break;
