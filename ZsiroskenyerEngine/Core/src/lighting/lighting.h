@@ -11,6 +11,7 @@
 
 #include "../math/vec3.h"
 #include <algorithm>
+#include <cassert>
 
 
 // Spectrum
@@ -48,7 +49,7 @@ public:
 	static const int min = 380; // inclusive
 	static const int max = 780; // inclusive
 private:
-	float intensity[780 - 380 + 1];
+	float intensity[max - min + 1];
 	static float __dummy;
 };
 
@@ -83,6 +84,7 @@ private:
 			idx = 0;
 		if (idx>79)
 			idx = 79;
+		assert(idx + 1 < 81 && idx>=0);
 		float v = (wavelength - idx)*CIEColorMatch::lookupTable[idx][offset] 
 				+ (1 + idx - wavelength)*CIEColorMatch::lookupTable[idx + 1][offset];
 		return v;
