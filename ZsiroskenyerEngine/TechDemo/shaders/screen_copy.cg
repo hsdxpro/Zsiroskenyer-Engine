@@ -1,7 +1,9 @@
 sampler2D texture0 = {
-    MipFilter = POINT,
-    MinFilter = POINT,
-    MagFilter = POINT,
+    	MipFilter = POINT,
+    	MinFilter = POINT,
+    	MagFilter = POINT,
+	AddressU = CLAMP,
+	AddressV = CLAMP,
 };
 
 struct VS_IN {

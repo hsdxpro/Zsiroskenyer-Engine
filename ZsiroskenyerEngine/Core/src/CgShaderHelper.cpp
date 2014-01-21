@@ -211,8 +211,8 @@ std::unordered_map<zsString, tSamplerDesc> cCgShaderHelper::GetSamplerStates(con
 
 			// ex. "MipFilter = POINT,", split, trim to "MipFilter", "POINT", then lower those
 			std::list<zsString> parts = cStrUtil::SplitAt(row, '=');
-			const wchar_t borders[2] = { ' ', ',' };
-			cStrUtil::TrimBorder(parts, borders, 2);
+			const wchar_t borders[3] = { ' ', ',', '\t'};
+			cStrUtil::TrimBorder(parts, borders, 3);
 			cStrUtil::ToUpper(parts);
 
 			auto it = parts.begin();

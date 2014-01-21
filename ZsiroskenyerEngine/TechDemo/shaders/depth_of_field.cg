@@ -1,9 +1,15 @@
 sampler2D inputTexture= {
+	MipFilter = LINEAR,
+    	MinFilter = LINEAR,
+    	MagFilter = LINEAR,
 	AddressU = CLAMP,
 	AddressV = CLAMP,
 };
 
 sampler2D depthTexture= {
+	MipFilter = LINEAR,
+    	MinFilter = LINEAR,
+    	MagFilter = LINEAR,
 	AddressU = CLAMP,
 	AddressV = CLAMP,
 };

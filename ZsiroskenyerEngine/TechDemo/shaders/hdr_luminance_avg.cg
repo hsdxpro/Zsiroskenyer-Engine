@@ -1,8 +1,8 @@
 // input texture sampler
 sampler2D textureInput = {
-    MipFilter = LINEAR,
-    MinFilter = LINEAR,
-    MagFilter = LINEAR,
+    	MipFilter = LINEAR,
+    	MinFilter = LINEAR,
+    	MagFilter = LINEAR,
 	AddressU = Clamp,
 	AddressW = Clamp,
 };

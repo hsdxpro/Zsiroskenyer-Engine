@@ -2,8 +2,21 @@ float4x4 wvp : register(c0);
 float4x4 world : register(c4);
 float3 camPos : register(c8);
 
-sampler2D diffuseTex;
-sampler2D normalTex;
+sampler2D diffuseTex = {
+	MipFilter = LINEAR,
+    	MinFilter = LINEAR,
+    	MagFilter = LINEAR,
+	AddressU = WRAP,
+	AddressV = WRAP,
+};
+
+sampler2D normalTex = {
+	MipFilter = LINEAR,
+    	MinFilter = LINEAR,
+    	MagFilter = LINEAR,
+	AddressU = WRAP,
+	AddressV = WRAP,
+};
 
 struct VS_IN {
 	float3 posL 	: POSITION;
