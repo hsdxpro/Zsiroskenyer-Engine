@@ -576,7 +576,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 	// create texture resource
 	hr = d3ddev->CreateTexture2D(&texDesc, NULL, &tex);
 	if (FAILED(hr)) {
-		lastErrorMessage = L"failed to create resource";
+		lastErrorMsg = L"failed to create resource";
 		if (hr == E_OUTOFMEMORY)
 			return eGapiResult::ERROR_OUT_OF_MEMORY;
 		else
@@ -607,7 +607,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 			SAFE_RELEASE(rtv);
 			SAFE_RELEASE(srv);
 			SAFE_RELEASE(tex);
-			lastErrorMessage = L"failed to create depth-stencil view";
+			lastErrorMsg = L"failed to create depth-stencil view";
 			if (hr == E_OUTOFMEMORY)
 				return eGapiResult::ERROR_OUT_OF_MEMORY;
 			else
@@ -618,7 +618,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 		hr = d3ddev->CreateRenderTargetView(tex, NULL, &rtv);
 		if (FAILED(hr)) {
 			SAFE_RELEASE(tex);
-			lastErrorMessage = L"failed to create render target view";
+			lastErrorMsg = L"failed to create render target view";
 			if (hr == E_OUTOFMEMORY)
 				return eGapiResult::ERROR_OUT_OF_MEMORY;
 			else
@@ -630,7 +630,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 		if (FAILED(hr)) {
 			SAFE_RELEASE(rtv);
 			SAFE_RELEASE(tex);
-			lastErrorMessage = L"failed to create shader resource view";
+			lastErrorMsg = L"failed to create shader resource view";
 			if (hr == E_OUTOFMEMORY)
 				return eGapiResult::ERROR_OUT_OF_MEMORY;
 			else
@@ -746,6 +746,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 		// Found binary ... Read it
 		if (binExistences[i]) {
+			// TOOD READING BINARY SADERS
 			/*
 			byteCodeSizes[i] = cFileUtil::GetSize(binPaths[i]);
 			std::ifstream binFile(binPaths[i].c_str(), std::ios::binary);
@@ -753,15 +754,16 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			binFile.close();
 			byteCodes[i] = byteCodeHolder[i];*/
 		}
-		else { // There is no binary
-			// Compile Cg to hlsl
+		else { // binary doesn't exists
+			
+			// Compile cg to (hlsl)
 			cgHelper.CompileCg(shaderPath, binPaths[i], cgProfiles[i]);
 
-			// Compile hlsl to bytecode
+			// Compile (hlsl) to bytecode
 			zsString compMessage;
 			HRESULT hr = CompileShaderFromFile(binPaths[i], L"main", profileNames[i], &compMessage, &blobs[i]);
 			if (FAILED(hr)) {
-				ASSERT_MSG(false, L"Failed to compile hlsl file, something is wrong with the CG file: " + shaderPath);
+				lastErrorMsg = L"Failed to compile hlsl file, something is wrong with the CG file: " + shaderPath;
 				return eGapiResult::ERROR_UNKNOWN;
 			}
 
@@ -1553,8 +1555,8 @@ eGapiResult cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Misc
-const wchar_t* cGraphicsApiD3D11::GetLastErrorMessage() const {
-	return lastErrorMessage.c_str();
+const wchar_t* cGraphicsApiD3D11::GetLastErrorMsg() const {
+	return lastErrorMsg.c_str();
 }
 
 

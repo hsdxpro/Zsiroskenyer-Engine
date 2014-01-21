@@ -78,5 +78,5 @@ public:
 	// --- misc --- //
 	virtual eGapiResult SetWindow(IWindow *renderWindow) = 0;
 	virtual ITexture2D* GetDefaultRenderTarget() const = 0;
-	virtual const wchar_t* GetLastErrorMessage() const = 0;
+	virtual const wchar_t* GetLastErrorMsg() const = 0;
 };

@@ -152,7 +152,7 @@ void cGraphicsEngine::cDeferredRenderer::LoadShaders() {
 				return shaderProg;
 			}
 			default: {
-				const zsString errMsg = gApi->GetLastErrorMessage();
+				const zsString errMsg = gApi->GetLastErrorMsg();
 				char* s = new char[errMsg.size()+1];
 				s[errMsg.size()] = '\0';
 				wcstombs(s, errMsg.c_str(), errMsg.size());

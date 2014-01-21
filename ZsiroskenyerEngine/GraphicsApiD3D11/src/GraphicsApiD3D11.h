@@ -87,7 +87,7 @@ public:
 
 	// --- misc --- //
 	ITexture2D* GetDefaultRenderTarget() const override;
-	const wchar_t* GetLastErrorMessage() const override;
+	const wchar_t* GetLastErrorMsg() const override;
 
 private:
 	eGapiResult CreateDevice();
@@ -98,7 +98,7 @@ private:
 	void ApplyConstantBuffers();
 protected:
 	// Error handling
-	zsString lastErrorMessage;
+	zsString lastErrorMsg;
 	
 	// backBuffer will be the main render target
 	cTexture2DD3D11* defaultRenderTarget;
