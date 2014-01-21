@@ -382,8 +382,9 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 	Matrix44 test = shaderConstants.invViewProj * shaderConstants.viewProj;
 
-////////////////////////////////////////////
-// --- --- RENDER EACH LIGHTGROUP --- --- // dir, spot, ambient, point
+	
+	// --- --- RENDER EACH LIGHTGROUP --- --- // dir, spot, ambient, point
+
 	//-------------------------------------------------------------------------//
 	// --- --- --- --- --- --- --- DIRECTIONAL LIGHTS  --- --- --- --- --- --- //
 	//-------------------------------------------------------------------------//

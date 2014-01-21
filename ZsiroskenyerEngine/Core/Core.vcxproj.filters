@@ -258,6 +258,10 @@
     <ClCompile Include="src\FileUtil.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="src\CgShaderHelper.cpp" />
+    <ClCompile Include="src\lighting\lighting.cpp">
+      <Filter>Common\lighting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Game">
