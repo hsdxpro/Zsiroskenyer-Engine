@@ -705,6 +705,10 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	
 	cCgShaderHelper cgHelper;
 	cCgShaderHelper::tCgInfo cgInfo = cgHelper.LoadCgShader(shaderPath_);
+	if (cgHelper.GetLastErrorMsg() != NULL) {
+		lastErrorMsg = cgHelper.GetLastErrorMsg();
+		return eGapiResult::ERROR_UNKNOWN;
+	}
 
 	bool						existingEntries	[nDomains]; memset(existingEntries, 0, nDomains * sizeof(bool));
 	zsString					entryNames		[nDomains]; // BULLSHIT Only CG need that for parsing

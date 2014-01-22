@@ -284,5 +284,5 @@ std::unordered_map<zsString, tSamplerDesc> cCgShaderHelper::GetSamplerStates(con
 
 
 const wchar_t* cCgShaderHelper::GetLastErrorMsg() {
-	return lastErrorMsg.c_str();
+	return (lastErrorMsg.size() == 0 ) ? NULL : lastErrorMsg.c_str();
 }
