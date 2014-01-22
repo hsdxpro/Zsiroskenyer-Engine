@@ -92,12 +92,10 @@ float4 PS_MAIN(float4 posH : POSITION, float2 clipPos : TEXTURE0) : COLOR0 {
 	lookDir = normalize(viewTarget.xyz - camPos);
 
 	// compute latitude & longitude (relative to sun) of view
-	/*
-	float viewLatitude = asin(clamp(normalize(float2(length(lookDir.xy), lookDir.z)).y, -1, 1));
-	float sunLatitude = asin(clamp(normalize(float2(length(-sunDir.xy), -sunDir.z)).y, -1, 1));
-	float viewLongitude = 
-		acos(clamp(dot(normalize(float3(lookDir.xy, 0.f)), normalize(float3(sunDir.xy, 0.f))), -1, 1));
-	*/
+	float viewLatitude = asin(clamp(normalize(float2(length(lookDir.xy), lookDir.z)).y, -1, 1));	
+	//float sunLatitude = asin(clamp(normalize(float2(length(-sunDir.xy), -sunDir.z)).y, -1, 1));
+	//float viewLongitude = 
+	//	acos(clamp(dot(normalize(float3(lookDir.xy, 0.f)), normalize(float3(sunDir.xy, 0.f))), -1, 1));
 		
 	// get relative air mass
 	float airMass = AirMass(viewLatitude);
@@ -133,28 +131,31 @@ float4 PS_MAIN(float4 posH : POSITION, float2 clipPos : TEXTURE0) : COLOR0 {
 		color = float3(0.6f, 0.6f, 0.6);
 	}
 	*/
+
+	if (viewLatitude < 0.0f) {
+		return float4(0.6f, 0.6f, 0.6, 1.0f);
+	}
+
+
 	color = zenithColor;
 
 	// CIE sky model
 	float a = -1.0,
 		b = -0.32,
-		c = 10.0,
+		c = 3.0,
 		d = -3.0,
 		e = 0.45; // hardcoded bullshit
 
-	float cosZenithAngle = clamp(dot(-sunDir, float3(0.0f,0.0f,1.0f)), -1.0f, 1.0f);
+	float cosZenithAngle = clamp(dot(lookDir, float3(0.0f,0.0f,1.0f)), -1.0f, 1.0f);
 	float cosElementAngle = clamp(dot(-sunDir, lookDir), -1.0f, 1.0f);
 	
-	if (cosZenithAngle < 0.0f) {
-		return float3(0.6f, 0.6f, 0.6);
-	}
-	
 	float phi = 1.0f + a*exp(b/cosZenithAngle);
-	float f = 1.0f + c*(exp(d*elementAngle) - exp(d*3.1415926f/2.0f)) + e * cosElementAngle*cosElementAngle;
+	float f = 1.0f + c*(exp(d*acos(cosElementAngle)) - exp(d*3.1415926f/2.0f)) + e * cosElementAngle*cosElementAngle;
+	//phi = 1.0f;
 
 	color = float3(phi*f, phi*f, phi*f) * zenithColor;
 	
-	return float4(color, 1.0f);
+	return float4(max(color, float3(0,0,0)), 1.0f);
 }
 
 
