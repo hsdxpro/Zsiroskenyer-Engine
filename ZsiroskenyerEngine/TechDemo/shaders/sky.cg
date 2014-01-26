@@ -142,7 +142,7 @@ float4 PS_MAIN(float4 posH : POSITION, float2 clipPos : TEXTURE0) : COLOR0 {
 	// CIE sky model
 	float a = -1.0,
 		b = -0.32,
-		c = 3.0,
+		c = 10.0,
 		d = -3.0,
 		e = 0.45; // hardcoded bullshit
 

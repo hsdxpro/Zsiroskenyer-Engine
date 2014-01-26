@@ -1,3 +1,6 @@
+#include "tone_mapping.cg"
+
+
 // texture input sampler
 sampler2D textureInput = {
     	MipFilter = LINEAR,
@@ -8,9 +11,7 @@ sampler2D textureInput = {
 };
 
 // constant buffers
-struct {
-	float logAvgLum;
-} constants : register(c0);
+float avgLum : register(c0);
 
 // in/out structures
 struct VS_IN {
@@ -34,19 +35,9 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 // pixel shader
 float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	float4 color = tex2D(textureInput, In.tex0);
-	float logAvgLum = constants.logAvgLum;
-	float pixelLum = color.r*0.2126 + color.g*0.7152 + color.b*0.0722;
-	float absAvgLum = pow(10.0f, logAvgLum);
-	// clamping for 50/50: 1/505.0=1.998e-3 & 1.998
-	float magic = 1.998f;
-	float a = absAvgLum*magic*1e-3f;
-	float b = absAvgLum*magic;
-	float t = ((pixelLum-a)/(b-a));
-	
-	color.rgb -= color.rgb / max(1e-12f, pixelLum) * b;
-	
-	color.rgb = max(color.rgb, float3(0.0f, 0.0f, 0.0f));
-	
+
+	color.rgb = LensEffect(color.rgb, avgLum);
+
 	return color;
 }
 

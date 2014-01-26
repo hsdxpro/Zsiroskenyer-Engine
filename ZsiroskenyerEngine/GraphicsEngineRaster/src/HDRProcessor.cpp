@@ -18,6 +18,7 @@ cGraphicsEngine::cHDRProcessor::cHDRProcessor(cGraphicsEngine& parent) : parent(
 	blurBuffer = NULL;
 	downSampled = NULL;
 	luminanceStaging = NULL;
+	shaderBlurHoriz = shaderBlurVert = shaderCompose = shaderLumAvg = shaderLumSample = shaderOverbright = NULL;
 	source = NULL;
 	dest = NULL;
 	for (auto& t : luminanceBuffer)
@@ -77,20 +78,38 @@ void cGraphicsEngine::cHDRProcessor::Cleanup() {
 
 // load shaders
 void cGraphicsEngine::cHDRProcessor::LoadShaders() {
-	auto Check = [](eGapiResult r, const char* errMsg)->void {
+	auto Create = [this](const zsString& shader)->IShaderProgram* {
+		// create shader program
+		IShaderProgram* shaderProg;
+		auto r = gApi->CreateShaderProgram(&shaderProg, shader.c_str());
+		// check results
 		switch (r) {
-			case eGapiResult::OK:
-				return;
-			default:
-				throw std::runtime_error(errMsg);
+			case eGapiResult::OK: {
+									  return shaderProg;
+			}
+			default: {
+						 const zsString errMsg = gApi->GetLastErrorMsg();
+						 char* s = new char[errMsg.size() + 1];
+						 s[errMsg.size()] = '\0';
+						 wcstombs(s, errMsg.c_str(), errMsg.size());
+						 std::runtime_error errThrow(s);
+						 delete[] s;
+						 throw errThrow;
+			}
 		}
 	};
-	Check(gApi->CreateShaderProgram(&shaderLumSample, L"shaders/hdr_luminance_sample.cg"), "lum_sample");
-	Check(gApi->CreateShaderProgram(&shaderLumAvg, L"shaders/hdr_luminance_avg.cg"), "lum_avg");
-	Check(gApi->CreateShaderProgram(&shaderCompose, L"shaders/hdr_compose.cg"), "compose");
-	Check(gApi->CreateShaderProgram(&shaderBlurHoriz, L"shaders/hdr_blur_horiz.cg"), "blur_horiz");
-	Check(gApi->CreateShaderProgram(&shaderBlurVert, L"shaders/hdr_blur_vert.cg"), "blur_vert");
-	Check(gApi->CreateShaderProgram(&shaderOverbright, L"shaders/hdr_overbright_downsample.cg"), "overbright");
+	try {
+		shaderLumSample = Create(L"shaders/hdr_luminance_sample.cg");
+		shaderLumAvg = Create(L"shaders/hdr_luminance_avg.cg");
+		shaderCompose = Create(L"shaders/hdr_compose.cg");
+		shaderBlurHoriz = Create(L"shaders/hdr_blur_horiz.cg");
+		shaderBlurVert = Create(L"shaders/hdr_blur_vert.cg");
+		shaderOverbright = Create(L"shaders/hdr_overbright_downsample.cg");
+	}
+	catch (...) {
+		UnloadShaders();
+		throw;
+	}
 }
 
 void cGraphicsEngine::cHDRProcessor::UnloadShaders() {
@@ -185,7 +204,7 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 
 	// shader constants
 	struct {
-		float logAvgLum;
+		float avgLum;
 		float blueShift;
 		float pad1;
 		float pad2;
@@ -193,7 +212,7 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 
 	
 	// downsample that bullshit for blurring
-	shaderConstants.logAvgLum = adaptedLuminance;
+	shaderConstants.avgLum = pow(10.0f, adaptedLuminance);
 
 	gApi->SetRenderTargets(1, &downSampled);
 	gApi->SetShaderProgram(shaderOverbright);
@@ -212,7 +231,7 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	gApi->Draw(3);
 	
 	// compose to destination buffer
-	shaderConstants.logAvgLum = adaptedLuminance;
+	shaderConstants.avgLum = pow(10.0f, adaptedLuminance);
 	// blueshift: mesopic range from -2.3 to 0.7 mcd/m2
 	shaderConstants.blueShift = 1.0f - std::min(std::max((adaptedLuminance + 2.3f) / (0.7f + 2.3f), 0.0f), 1.0f);
 
