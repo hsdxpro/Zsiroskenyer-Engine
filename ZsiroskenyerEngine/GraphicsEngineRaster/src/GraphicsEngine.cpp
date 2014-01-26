@@ -159,6 +159,7 @@ IGraphicsScene* cGraphicsEngine::CreateScene(tRenderState state) {
 		return NULL;
 	}
 }
+
 void cGraphicsEngine::DeleteScene(const IGraphicsScene* scene) {
 	auto it = graphicsScenes.find((cGraphicsScene*)scene);
 	if (it != graphicsScenes.end()) {

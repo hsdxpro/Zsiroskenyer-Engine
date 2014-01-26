@@ -139,5 +139,8 @@
     <None Include="..\TechDemo\shaders\sky.cg">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\TechDemo\shaders\tone_mapping.cg">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

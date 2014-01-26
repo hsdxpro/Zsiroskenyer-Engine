@@ -61,6 +61,7 @@
     <None Include="..\TechDemo\shaders\screen_copy.cg" />
     <None Include="..\TechDemo\shaders\sky.cg" />
     <None Include="..\TechDemo\shaders\test.cg" />
+    <None Include="..\TechDemo\shaders\tone_mapping.cg" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{593438BA-D952-4A17-AD30-7C261AB425EC}</ProjectGuid>
