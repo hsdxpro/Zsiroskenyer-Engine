@@ -49,7 +49,7 @@
     <ClInclude Include="src\IWindow.h" />
     <ClInclude Include="src\Level.h" />
     <ClInclude Include="src\lighting\lighting.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="src\LogicEngine.h" />
     <ClInclude Include="src\math\color.h" />
@@ -98,7 +98,7 @@
     <ClCompile Include="src\IWindow.cpp" />
     <ClCompile Include="src\Level.cpp" />
     <ClCompile Include="src\lighting\lighting.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="src\LogicEngine.cpp" />
     <ClCompile Include="src\math\color.cpp" />

@@ -140,6 +140,10 @@ float4 PS_MAIN(float4 posH : POSITION, float2 clipPos : TEXTURE0) : COLOR0 {
 	//float showTemp = tHorizon;
 	//color = float3(showTemp, showTemp, showTemp);
 
+	// add sun disk
+	float sunDisk = saturate(sign(cosElementAngle - 0.99995934231156f));
+	color += sunColor * (40.f*sunDisk);
+
 	return float4(max(color, float3(0,0,0)), 1.0f);
 }
 
