@@ -499,6 +499,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	skyConstants.camPos = cam->GetPos();
 	skyConstants.sunDir = directionalLights.size() > 0 ? directionalLights[0]->direction : Vec3(0, 0, -1);
 	skyConstants.sunColor = directionalLights.size() > 0 ? directionalLights[0]->color : Vec3(0.9, 0.9, 0.9);
+	skyConstants.sunColor = Vec3(1.0f, 0.5f, 0.2f);
 	skyConstants.horizonColor = Vec3(0.77, 0.84, 0.9); // daylight
 	skyConstants.horizonColor = Vec3(0.92, 0.5, 0.3); // sunset
 	skyConstants.zenithColor = Vec3(0.5, 0.68, 0.9);

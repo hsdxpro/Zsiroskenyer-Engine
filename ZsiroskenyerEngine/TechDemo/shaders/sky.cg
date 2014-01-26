@@ -1,3 +1,5 @@
+#include "tone_mapping.cg"
+
 //------------------------------------------------------------------------------
 //	Constant buffer
 //------------------------------------------------------------------------------
@@ -86,58 +88,21 @@ float4 PS_MAIN(float4 posH : POSITION, float2 clipPos : TEXTURE0) : COLOR0 {
 	float t;
 
 	// compute look direction
-	float3 lookDir;
-	float4 viewTarget = mul(float4(clipPos, 0.0f, 1.0f), invViewProj);
+	float4 viewTarget = mul(float4(clipPos, 0.2f, 1.0f), invViewProj);
 	viewTarget /= viewTarget.w;
-	lookDir = normalize(viewTarget.xyz - camPos);
+	float3 lookDir = normalize(viewTarget.xyz - camPos);
+	lookDir = normalize(lookDir);
 
 	// compute latitude & longitude (relative to sun) of view
 	float viewLatitude = asin(clamp(normalize(float2(length(lookDir.xy), lookDir.z)).y, -1, 1));	
 	//float sunLatitude = asin(clamp(normalize(float2(length(-sunDir.xy), -sunDir.z)).y, -1, 1));
 	//float viewLongitude = 
 	//	acos(clamp(dot(normalize(float3(lookDir.xy, 0.f)), normalize(float3(sunDir.xy, 0.f))), -1, 1));
-		
-	// get relative air mass
-	float airMass = AirMass(viewLatitude);
-	float normAirMass = airMass / AirMass0();
 
-	/*
-	// blend horizon & zenith color	
-	t = sqrt(normAirMass);
-	float3 skyColor = zenithColor;//t*horizonColor + (1-t)*zenithColor;
-	
-	// calculate sun color
-	float3 rayleighed = float3(1.0f, 0.5f, 0.2f);
-	float3 base = float3(1.0f, 1.0f, 1.0f);
-	t = 2.0f * (pow(2.0f, -AirMass(sunLatitude)/AirMass0()) - 0.5f);
-	float3 sunPhysicalColor = (1-t)*rayleighed + t*base;
-
-	
-	// add illumination variation
-	float sunNearIllum = 0.5*-dot(lookDir, sunDir)+0.5f;
-	skyColor += 2.0f * sunPhysicalColor * 0.25f * pow(sunNearIllum, 3.0f);
-	skyColor += 2.0f * sunPhysicalColor * 0.75f * sqrt(normAirMass)*(0.25f*sunNearIllum+0.75f);
-	
-	// sum up colors
-	if (acos(saturate(-dot(lookDir, sunDir))) < radians(1.0f*31.0f/60.f)) {
-		color = skyColor + 100.f*sunPhysicalColor;
-	}
-	else {
-		color = skyColor;
-	}
-
-	// return
-	if (viewLatitude < 0.0f) {
-		color = float3(0.6f, 0.6f, 0.6);
-	}
-	*/
-
+	// no sky below horizon
 	if (viewLatitude < 0.0f) {
 		return float4(0.6f, 0.6f, 0.6, 1.0f);
 	}
-
-
-	color = zenithColor;
 
 	// CIE sky model
 	float a = -1.0,
@@ -149,12 +114,32 @@ float4 PS_MAIN(float4 posH : POSITION, float2 clipPos : TEXTURE0) : COLOR0 {
 	float cosZenithAngle = clamp(dot(lookDir, float3(0.0f,0.0f,1.0f)), -1.0f, 1.0f);
 	float cosElementAngle = clamp(dot(-sunDir, lookDir), -1.0f, 1.0f);
 	
+	// phi: luminance graduation, f: scattering indicatrix
 	float phi = 1.0f + a*exp(b/cosZenithAngle);
 	float f = 1.0f + c*(exp(d*acos(cosElementAngle)) - exp(d*3.1415926f/2.0f)) + e * cosElementAngle*cosElementAngle;
-	//phi = 1.0f;
+	float Lr = phi*f;
 
-	color = float3(phi*f, phi*f, phi*f) * zenithColor;
-	
+	// horizon color
+	float phiZenith = 1.0f + a*exp(b);
+	float relGrad = phi / phiZenith;
+	float tHorizon = (relGrad-1.0f) / (1.0f/phiZenith);
+
+	// sun corona color
+	float relCorona = f;
+	float tCorona = (relCorona) / (c*(1.0f - exp(d*3.1415926f/2.0f)) + e);
+
+	// blending params
+	tHorizon *= relGrad / (relGrad + relCorona);
+	tCorona *= relCorona / (relGrad + relCorona);
+
+	color = float3(Lr, Lr, Lr)
+		* (tHorizon*horizonColor
+			+ tCorona*sunColor
+			+ (1.0f-tHorizon-tCorona)*zenithColor);
+
+	//float showTemp = tHorizon;
+	//color = float3(showTemp, showTemp, showTemp);
+
 	return float4(max(color, float3(0,0,0)), 1.0f);
 }
 
