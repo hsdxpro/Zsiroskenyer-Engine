@@ -199,14 +199,37 @@ int ricsiMain() {
 										L".dae",
 										L".dae",
 									};
-
+	static const Vec3 objPos[9] = {
+		Vec3(3.72f, 30.19f, 1.54f), // coyote
+		Vec3(0, 0, 0), // crate
+		Vec3(0,0,0), // cliff
+		Vec3(0,0,0), // ground
+		Vec3(18.14f, 7.26f, 0.48f), // ház
+		Vec3(0,0,0), // road
+		Vec3(0,0,0), // tunnel
+		Vec3(6.24f, 30.18f, 3.63f), // coyote tunnel painting
+		Vec3(-20.95f, -17.15f, 8.00f), // tunnel
+	};
+	static const Vec3 objRot[9] = {
+		Vec3(90.0/180*ZS_PI, 0, -14.892/180*ZS_PI),
+		Vec3(0, 0, 0),
+		Vec3(0, 0, 0),
+		Vec3(0, 0, 0),
+		Vec3(0, 0, 0),
+		Vec3(0, 0, 0),
+		Vec3(0, 0, 0),
+		Vec3(90.0/180*ZS_PI, 0, -6.64/180*ZS_PI),
+		Vec3(0, 0, 0),
+	};
 	const float mass = 0.0;
 	zsString basePath = L"../../Game Assets/";
 
 	ASSERT(sizeof(staticBaseNames) > 0);
 	for (size_t i = 0; i < sizeof(staticBaseNames) / sizeof(staticBaseNames[0]); i++) {
 		zsString geomPath = basePath + L"objects/" + staticBaseNames[i] + staticExtension[i];
-		core.AddEntity(s, geomPath, geomPath, basePath + L"materials/" + staticBaseNames[i] + L".zsm", mass);
+		auto entity = core.AddEntity(s, geomPath, geomPath, basePath + L"materials/" + staticBaseNames[i] + L".zsm", mass);
+		entity->SetPos(objPos[i]);
+		entity->SetRot(Quat::EulerAnglesToQuat(objRot[i]));
 	}
 	
 	// Our player
