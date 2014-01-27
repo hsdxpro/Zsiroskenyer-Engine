@@ -146,6 +146,7 @@ const char* cGraphicsEngine::GetLastErrorMessage() {
 eGraphicsResult cGraphicsEngine::ReloadShaders() {
 	auto Reload = [this](IShaderProgram** prog, const wchar_t* name)->void {
 		IShaderProgram* tmp = SafeLoadShader(gApi, name); // it throws on error!
+		(*prog)->Release();
 		*prog = tmp;
 	};
 	try {

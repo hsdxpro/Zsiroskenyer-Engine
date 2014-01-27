@@ -184,6 +184,7 @@ void cGraphicsEngine::cDeferredRenderer::UnloadShaders() {
 void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {
 	auto Reload = [this](IShaderProgram** prog, const wchar_t* name)->void {
 		IShaderProgram* tmp = SafeLoadShader(gApi, name); // it throws on error!
+		(*prog)->Release();
 		*prog = tmp;
 	};
 	Reload(&shaderGBuffer, L"shaders/deferred_gbuffer.cg");

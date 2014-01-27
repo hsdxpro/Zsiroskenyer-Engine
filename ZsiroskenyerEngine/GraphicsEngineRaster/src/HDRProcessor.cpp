@@ -109,6 +109,7 @@ void cGraphicsEngine::cHDRProcessor::UnloadShaders() {
 void cGraphicsEngine::cHDRProcessor::ReloadShaders() {
 	auto Reload = [this](IShaderProgram** prog, const wchar_t* name)->void {
 		IShaderProgram* tmp = SafeLoadShader(gApi, name); // it throws on error!
+		(*prog)->Release();
 		*prog = tmp;
 	};
 	Reload(&shaderLumSample, L"shaders/hdr_luminance_sample.cg");
