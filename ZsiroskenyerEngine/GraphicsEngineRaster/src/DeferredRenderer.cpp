@@ -56,7 +56,7 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 		LoadShaders();
 	}
 	catch (std::exception& e) {
-		throw std::runtime_error(std::string("failed to create shaders: ") + e.what());
+		throw std::runtime_error(std::string("failed to create shaders:\n") + e.what());
 	}
 
 	// Create buffers
@@ -144,25 +144,8 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 
 // load shaders
 void cGraphicsEngine::cDeferredRenderer::LoadShaders() {
-	auto Create = [this](const zsString& shader)->IShaderProgram* {
-		// create shader program
-		IShaderProgram* shaderProg;
-		auto r = gApi->CreateShaderProgram(&shaderProg, shader.c_str());
-		// check results
-		switch (r) {
-			case eGapiResult::OK: {
-				return shaderProg;
-			}
-			default: {
-				const zsString errMsg = gApi->GetLastErrorMsg();
-				char* s = new char[errMsg.size()+1];
-				s[errMsg.size()] = '\0';
-				wcstombs(s, errMsg.c_str(), errMsg.size());
-				std::runtime_error errThrow(s);
-				delete[] s;				
-				throw errThrow;
-			}
-		}
+	auto Create = [this](const wchar_t* shader)->IShaderProgram* {
+		return SafeLoadShader(gApi, shader);
 	};
 	try {
 		shaderGBuffer = Create(L"shaders/deferred_gbuffer.cg");
@@ -195,6 +178,25 @@ void cGraphicsEngine::cDeferredRenderer::UnloadShaders() {
 	SAFE_RELEASE(shaderDof);
 
 	SAFE_RELEASE(shaderSky);
+}
+
+// reload shaders
+void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {
+	auto Reload = [this](IShaderProgram** prog, const wchar_t* name)->void {
+		IShaderProgram* tmp = SafeLoadShader(gApi, name); // it throws on error!
+		*prog = tmp;
+	};
+	Reload(&shaderGBuffer, L"shaders/deferred_gbuffer.cg");
+
+	Reload(&shaderAmbient, L"shaders/deferred_light_ambient.cg");
+	Reload(&shaderDirectional, L"shaders/deferred_light_dir.cg");
+	Reload(&shaderPoint, L"shaders/deferred_light_point.cg");
+	Reload(&shaderSpot, L"shaders/deferred_light_spot.cg");
+
+	Reload(&shaderMotionBlur, L"shaders/motion_blur.cg");
+	Reload(&shaderDof, L"shaders/depth_of_field.cg");
+
+	Reload(&shaderSky, L"shaders/sky.cg");
 }
 
 // Render the scene to composition buffer

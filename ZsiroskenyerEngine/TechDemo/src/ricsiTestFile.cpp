@@ -244,7 +244,7 @@ int ricsiMain() {
 
 		// Shader reloading
 		if (GetAsyncKeyState('R') && GetAsyncKeyState(VK_LCONTROL))
-			gEngine->ReloadResources();
+			gEngine->ReloadShaders();
 
 		updateDemo(s->GetCamera(), deltaT);
 		core.Update(deltaT);

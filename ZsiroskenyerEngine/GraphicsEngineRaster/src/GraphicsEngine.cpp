@@ -19,18 +19,25 @@
 #include <string>
 #include <stdexcept>
 #include <iostream>
+#include <memory>
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // DLL pure C interface
 extern "C"
-__declspec(dllexport) IGraphicsEngine* CreateGraphicsEngineRaster(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config) {
+__declspec(dllexport) IGraphicsEngine* CreateGraphicsEngineRaster(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config, const char** errorMessage) {
 	cGraphicsEngine* engine = NULL;
+	static std::string errMsg;
 	try {
 		engine = new cGraphicsEngine(targetWindow, screenWidth, screenHeight, config);
 	}
 	catch (std::exception& e) {
-		std::cerr << "[fatal] graphics engine creation failed with message: " << e.what() << std::endl;
+		//std::cerr << "[fatal] graphics engine creation failed with message: " << e.what() << std::endl;
+		errMsg = "graphics engine creation failed with message: ";
+		errMsg += e.what();
+		if (errorMessage != nullptr) {
+			*errorMessage = errMsg.c_str();
+		}
 		delete engine;
 	}
 	return engine;
@@ -61,12 +68,13 @@ const tBlendDesc cGraphicsEngine::blendDefault = [](){
 
 ////////////////////////////////////////////////////////////////////////////////
 //	Constructor of the graphics engine
-cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config) 
-	:
-	screenWidth(screenWidth),
-	screenHeight(screenHeight),
-	deferredRenderer(NULL),
-	hdrProcessor(NULL)
+cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config)
+:
+screenWidth(screenWidth),
+screenHeight(screenHeight),
+deferredRenderer(NULL),
+hdrProcessor(NULL),
+shaderScreenCopy(NULL)
 {
 	// Create graphics api
 	switch (config.rasterEngine.gxApi) {
@@ -86,9 +94,11 @@ cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, un
 	resourceManager = new cResourceManager(gApi);
 
 	// Create shaders
-	eGapiResult r = gApi->CreateShaderProgram(&shaderScreenCopy, L"shaders/screen_copy.cg");
-	if (r != eGapiResult::OK) {
-		throw std::runtime_error(std::string("failed to create shaders"));
+	try {
+		LoadShaders();
+	}
+	catch (std::exception& e) {
+		throw std::runtime_error(std::string("failed to create shaders:\n") + e.what());
 	}
 
 	// Create deferred renderer
@@ -109,7 +119,7 @@ cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, un
 }
 
 cGraphicsEngine::~cGraphicsEngine() {
-	SAFE_RELEASE(shaderScreenCopy);
+	UnloadShaders();
 	SAFE_DELETE(resourceManager)
 	SAFE_RELEASE(gApi);
 	SAFE_DELETE(deferredRenderer);
@@ -123,14 +133,33 @@ void cGraphicsEngine::Release() {
 ////////////////////////////////////////////////////////////////////////////////
 //	Utility & Settings
 
-// reload all resourcess. TODO: not only shaders
-eGraphicsResult cGraphicsEngine::ReloadResources() {
-	return eGraphicsResult::OK;
-}
-
 // set global configuration
 eGraphicsResult cGraphicsEngine::SetConfig(tGraphicsConfig config) {
 	return eGraphicsResult::OK; // no config, no work
+}
+
+const char* cGraphicsEngine::GetLastErrorMessage() {
+	return lastErrorMessage.c_str();
+}
+
+// Reload shaders
+eGraphicsResult cGraphicsEngine::ReloadShaders() {
+	auto Reload = [this](IShaderProgram** prog, const wchar_t* name)->void {
+		IShaderProgram* tmp = SafeLoadShader(gApi, name); // it throws on error!
+		*prog = tmp;
+	};
+	try {
+		Reload(&shaderScreenCopy, L"shaders/screen_copy.cg");
+		deferredRenderer->ReloadShaders();
+		hdrProcessor->ReloadShaders();
+		return eGraphicsResult::OK;
+	}
+	catch (std::exception& e) {
+		lastErrorMessage = "";
+		lastErrorMessage += "failed to reload shader:\n";
+		lastErrorMessage += e.what();
+		return eGraphicsResult::ERROR_UNKNOWN;
+	}
 }
 
 // resize screen
@@ -228,6 +257,26 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, float elapsed) {
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// Internal stuff
+void cGraphicsEngine::LoadShaders() {
+	auto Create = [this](const wchar_t* shader)->IShaderProgram* {
+		return SafeLoadShader(gApi, shader);
+	};
+	try {
+		shaderScreenCopy = Create(L"shaders/screen_copy.cg");
+	}
+	catch (...) {
+		UnloadShaders();
+		throw;
+	}
+}
+void cGraphicsEngine::UnloadShaders() {
+	SAFE_RELEASE(shaderScreenCopy);
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
 //	Get sub-components where allowed
 cResourceManager* cGraphicsEngine::GetResourceManager() {
 	return resourceManager;
@@ -236,3 +285,28 @@ cResourceManager* cGraphicsEngine::GetResourceManager() {
 IGraphicsApi* cGraphicsEngine::GetGraphicsApi() {
 	return gApi;
 }
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Helpers
+auto SafeLoadShader(IGraphicsApi* gApi, const wchar_t* shader)->IShaderProgram* {
+	// create shader program
+	IShaderProgram* shaderProg;
+	auto r = gApi->CreateShaderProgram(&shaderProg, shader);
+	// check results
+	switch (r) {
+		case eGapiResult::OK: {
+								  return shaderProg;
+		}
+		default: {
+					 const zsString errMsg = gApi->GetLastErrorMsg();
+					 char* s = new char[errMsg.size() + 1];
+					 s[errMsg.size()] = '\0';
+					 wcstombs(s, errMsg.c_str(), errMsg.size());
+					 std::runtime_error errThrow(s);
+					 delete[] s;
+					 throw errThrow;
+		}
+	}
+};
+
