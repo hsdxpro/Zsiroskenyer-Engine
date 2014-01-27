@@ -259,8 +259,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 			ITexture2D* specular = mtl[i].textureSpecular.get();
 			ITexture2D* displace = mtl[i].textureDisplace.get();
 
-			if (diffuse)	gApi->SetTexture(L"diffuseTex", diffuse);
-			if (normal)	gApi->SetTexture(L"normalTex", normal);
+			if (diffuse) gApi->SetTexture(L"diffuseTex", diffuse);
+			if (normal)  gApi->SetTexture(L"normalTex", normal);
 			//if(specular)	gApi->SetTexture(L"specularTex",specular);
 			//if(displace)	gApi->SetTexture(L"displaceTex",displace);
 		}

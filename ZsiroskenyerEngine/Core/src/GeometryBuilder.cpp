@@ -32,7 +32,7 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 	cStrUtil::ToAnsi(filePath, ansiFilePath, 256);
 	const aiScene* scene = importer.ReadFile(ansiFilePath, aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_Triangulate /*| aiProcess_ImproveCacheLocality | aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes*/ | aiProcess_FlipWindingOrder);
 	if (scene == NULL) {
-			ILog::GetInstance()->MsgBox(L"Can't found 3D model: " + filePath);
+		ILog::GetInstance()->MsgBox(L"Can't found 3D model: " + filePath);
 		throw FileNotFoundException();
 	}
 
@@ -107,6 +107,7 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 		vertexI += mesh->mNumVertices;
 	}
 
+	// TODO temporary DISABLING, because it is slow
 	// Finally Index reordering for optimal post vertex cache
 	//size_t* reorderedIndices = new size_t[nIndex];
 	//reorderedIndices = tipsify(indices, nIndex / 3, nVertices, 16); // For vertexCache size 16 . I think it's ideal

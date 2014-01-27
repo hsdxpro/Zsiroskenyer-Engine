@@ -15,7 +15,7 @@ sampler2D blurTexture = {
     	MinFilter = LINEAR,
     	MagFilter = LINEAR,
 	AddressU = CLAMP,
-	AddressW = CLAMP,
+	AddressV = CLAMP,
 };
 
 //------------------------------------------------------------------------------

@@ -4,7 +4,7 @@ sampler2D textureInput = {
     	MinFilter = LINEAR,
     	MagFilter = LINEAR,
 	AddressU = Clamp,
-	AddressW = Clamp,
+	AddressV = Clamp,
 };
 
 // in/out structures
