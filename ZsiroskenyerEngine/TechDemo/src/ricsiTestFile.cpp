@@ -174,7 +174,7 @@ int ricsiMain() {
 
 	const int nEntities = 9;
 	// Static terrain
-	zsString staticBaseNames[nEntities] = { L"coyote",
+	static const zsString staticBaseNames[nEntities] = { L"coyote",
 										L"crate",
 										L"demo_cliff_fence",
 										L"demo_ground",
@@ -184,7 +184,7 @@ int ricsiMain() {
 										L"fake_tunnel",
 											L"tower" };
 
-	zsString staticExtension[nEntities] = { L".dae",
+	static const zsString staticExtension[nEntities] = { L".dae",
 										L".dae",
 										L".dae",
 										L".dae",
@@ -194,7 +194,7 @@ int ricsiMain() {
 										L".dae",
 										L".dae",
 									};
-	static const Vec3 objPos[9] = {
+	static const Vec3 objPos[nEntities] = {
 		Vec3(3.72f, 30.19f, 1.54f), // coyote
 		Vec3(0, 0, 0), // crate
 		Vec3(0,0,0), // cliff
@@ -205,7 +205,7 @@ int ricsiMain() {
 		Vec3(6.24f, 30.18f, 3.63f), // coyote tunnel painting
 		Vec3(-20.95f, -17.15f, 8.00f), // tunnel
 	};
-	static const Vec3 objRot[9] = {
+	static const Vec3 objRot[nEntities] = {
 		Vec3(90.0/180*ZS_PI, 0, -14.892/180*ZS_PI),
 		Vec3(0, 0, 0),
 		Vec3(0, 0, 0),
