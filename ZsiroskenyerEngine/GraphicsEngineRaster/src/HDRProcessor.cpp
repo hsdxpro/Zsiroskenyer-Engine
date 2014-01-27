@@ -30,7 +30,7 @@ cGraphicsEngine::cHDRProcessor::cHDRProcessor(cGraphicsEngine& parent) : parent(
 	}
 	catch (std::exception& e) {
 		Cleanup();
-		throw std::runtime_error(std::string("failed to create shaders: ") + e.what());
+		throw std::runtime_error(std::string("failed to create shaders:\n") + e.what());
 	}
 
 	// create luminance textures
@@ -78,25 +78,8 @@ void cGraphicsEngine::cHDRProcessor::Cleanup() {
 
 // load shaders
 void cGraphicsEngine::cHDRProcessor::LoadShaders() {
-	auto Create = [this](const zsString& shader)->IShaderProgram* {
-		// create shader program
-		IShaderProgram* shaderProg;
-		auto r = gApi->CreateShaderProgram(&shaderProg, shader.c_str());
-		// check results
-		switch (r) {
-			case eGapiResult::OK: {
-									  return shaderProg;
-			}
-			default: {
-						 const zsString errMsg = gApi->GetLastErrorMsg();
-						 char* s = new char[errMsg.size() + 1];
-						 s[errMsg.size()] = '\0';
-						 wcstombs(s, errMsg.c_str(), errMsg.size());
-						 std::runtime_error errThrow(s);
-						 delete[] s;
-						 throw errThrow;
-			}
-		}
+	auto Create = [this](const wchar_t* shader)->IShaderProgram* {
+		return SafeLoadShader(gApi, shader);
 	};
 	try {
 		shaderLumSample = Create(L"shaders/hdr_luminance_sample.cg");
@@ -112,6 +95,7 @@ void cGraphicsEngine::cHDRProcessor::LoadShaders() {
 	}
 }
 
+// unload shaders
 void cGraphicsEngine::cHDRProcessor::UnloadShaders() {
 	SAFE_RELEASE(shaderLumSample);
 	SAFE_RELEASE(shaderLumAvg);
@@ -119,6 +103,21 @@ void cGraphicsEngine::cHDRProcessor::UnloadShaders() {
 	SAFE_RELEASE(shaderBlurHoriz);
 	SAFE_RELEASE(shaderBlurVert);
 	SAFE_RELEASE(shaderOverbright);
+}
+
+// reload shaders
+void cGraphicsEngine::cHDRProcessor::ReloadShaders() {
+	auto Reload = [this](IShaderProgram** prog, const wchar_t* name)->void {
+		IShaderProgram* tmp = SafeLoadShader(gApi, name); // it throws on error!
+		(*prog)->Release();
+		*prog = tmp;
+	};
+	Reload(&shaderLumSample, L"shaders/hdr_luminance_sample.cg");
+	Reload(&shaderLumAvg, L"shaders/hdr_luminance_avg.cg");
+	Reload(&shaderCompose, L"shaders/hdr_compose.cg");
+	Reload(&shaderBlurHoriz, L"shaders/hdr_blur_horiz.cg");
+	Reload(&shaderBlurVert, L"shaders/hdr_blur_vert.cg");
+	Reload(&shaderOverbright, L"shaders/hdr_overbright_downsample.cg");
 }
 
 

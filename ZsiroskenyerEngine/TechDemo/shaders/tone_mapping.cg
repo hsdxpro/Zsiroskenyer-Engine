@@ -43,7 +43,7 @@ float RemapLuminance(float luminance, float adaptation) {
 float3 SaturateToFit(float3 color) {
 	float m = max(color.r, max(color.g, color.b));
 	float l = Luminance(color);
-	if (l-m != 0.0f) {
+	if (l-m < 0.0f) {
 		float t = min((l-1.0f)/(l-m), 1.0f);
 		float3 base = float3(l,l,l);
 		return base + (color-base)*t;
@@ -59,8 +59,8 @@ float3 ToneMap(float3 color, float adaptation) {
 	float inLum = Luminance(color);
 	float outLum = RemapLuminance(log10(inLum), log10(adaptation));
 	color = AdjustLuminance(color, outLum);
-	return color;
-	//return SaturateToFit(color);
+	return color; /*
+	return SaturateToFit(color);//*/
 }
 
 

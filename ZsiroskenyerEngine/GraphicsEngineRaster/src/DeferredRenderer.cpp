@@ -19,6 +19,8 @@
 #include "../../Core/src/GraphicsLight.h"
 #include "../../Core/src/Camera.h"
 
+#include "../../Core/src/lighting/lighting.h"
+
 // For lerping
 #include "../../Core/src/math/math_all.h"
 
@@ -54,7 +56,7 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 		LoadShaders();
 	}
 	catch (std::exception& e) {
-		throw std::runtime_error(std::string("failed to create shaders: ") + e.what());
+		throw std::runtime_error(std::string("failed to create shaders:\n") + e.what());
 	}
 
 	// Create buffers
@@ -142,25 +144,8 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 
 // load shaders
 void cGraphicsEngine::cDeferredRenderer::LoadShaders() {
-	auto Create = [this](const zsString& shader)->IShaderProgram* {
-		// create shader program
-		IShaderProgram* shaderProg;
-		auto r = gApi->CreateShaderProgram(&shaderProg, shader.c_str());
-		// check results
-		switch (r) {
-			case eGapiResult::OK: {
-				return shaderProg;
-			}
-			default: {
-				const zsString errMsg = gApi->GetLastErrorMsg();
-				char* s = new char[errMsg.size()+1];
-				s[errMsg.size()] = '\0';
-				wcstombs(s, errMsg.c_str(), errMsg.size());
-				std::runtime_error errThrow(s);
-				delete[] s;				
-				throw errThrow;
-			}
-		}
+	auto Create = [this](const wchar_t* shader)->IShaderProgram* {
+		return SafeLoadShader(gApi, shader);
 	};
 	try {
 		shaderGBuffer = Create(L"shaders/deferred_gbuffer.cg");
@@ -195,6 +180,26 @@ void cGraphicsEngine::cDeferredRenderer::UnloadShaders() {
 	SAFE_RELEASE(shaderSky);
 }
 
+// reload shaders
+void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {
+	auto Reload = [this](IShaderProgram** prog, const wchar_t* name)->void {
+		IShaderProgram* tmp = SafeLoadShader(gApi, name); // it throws on error!
+		(*prog)->Release();
+		*prog = tmp;
+	};
+	Reload(&shaderGBuffer, L"shaders/deferred_gbuffer.cg");
+
+	Reload(&shaderAmbient, L"shaders/deferred_light_ambient.cg");
+	Reload(&shaderDirectional, L"shaders/deferred_light_dir.cg");
+	Reload(&shaderPoint, L"shaders/deferred_light_point.cg");
+	Reload(&shaderSpot, L"shaders/deferred_light_spot.cg");
+
+	Reload(&shaderMotionBlur, L"shaders/motion_blur.cg");
+	Reload(&shaderDof, L"shaders/depth_of_field.cg");
+
+	Reload(&shaderSky, L"shaders/sky.cg");
+}
+
 // Render the scene to composition buffer
 void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// Declared here, will be used throughout whole function
@@ -207,7 +212,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->ClearTexture(gBuffer[1], 0, Vec4(0.5f, 0.5f, 0.0f, 0.0f));
 	gApi->ClearTexture(gBuffer[2], 0, Vec4(0.0f, 0.0f, 0.0f, 0.0f));
 	gApi->ClearTexture(compositionBuffer, 0, Vec4(0.0f, 0.0f, 0.0f, 0.0f));
-	
+
 	//----------------------------------------------------------------------//
 	// --- --- --- --- --- --- --- GBUFFER PASS --- --- --- --- --- --- --- //
 	//----------------------------------------------------------------------//
@@ -253,9 +258,9 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 			ITexture2D* normal = mtl[i].textureNormal.get();
 			ITexture2D* specular = mtl[i].textureSpecular.get();
 			ITexture2D* displace = mtl[i].textureDisplace.get();
-			
-			if(diffuse)	gApi->SetTexture(L"diffuseTex",	diffuse);
-			if(normal)	gApi->SetTexture(L"normalTex",	normal);
+
+			if (diffuse)	gApi->SetTexture(L"diffuseTex", diffuse);
+			if (normal)	gApi->SetTexture(L"normalTex", normal);
 			//if(specular)	gApi->SetTexture(L"specularTex",specular);
 			//if(displace)	gApi->SetTexture(L"displaceTex",displace);
 		}
@@ -288,9 +293,9 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	//--------------------------------------------------------------------------//
 	// --- --- --- --- --- --- --- COMPOSITION PASS --- --- --- --- --- --- --- //
 	//--------------------------------------------------------------------------//
-	
+
 	// Set render states
-		// Depth-stencil
+	// Depth-stencil
 	depthStencilState = depthStencilDefault;
 	depthStencilState.depthCompare = eComparisonFunc::ALWAYS;
 	depthStencilState.depthWriteEnable = false;
@@ -301,7 +306,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	depthStencilState.stencilOpBackFace.stencilPassDepthFail = eStencilOp::KEEP;
 	depthStencilState.stencilReadMask = depthStencilState.stencilWriteMask = 0x01;
 	depthStencilState.stencilOpFrontFace = depthStencilState.stencilOpBackFace;
-		// Additive blending
+	// Additive blending
 	blendState[0].blendOp = eBlendOp::ADD;
 	blendState[0].blendOpAlpha = eBlendOp::MAX;
 	blendState[0].destBlend = eBlendFactor::ONE;
@@ -348,7 +353,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 				break;
 		}
 	}
-		
+
 	// Struct for shader constants
 	/*
 	float4x4 invViewProj : register(c0);
@@ -363,7 +368,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	*/
 	struct {
 		Matrix44 viewProj;
-		Matrix44 invViewProj;		
+		Matrix44 invViewProj;
 		Vec3 camPos;		float _pad0;
 		Vec3 lightColor;	float _pad1;
 		Vec3 lightPos;		float _pad3;
@@ -382,7 +387,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 	Matrix44 test = shaderConstants.invViewProj * shaderConstants.viewProj;
 
-	
+
 	// --- --- RENDER EACH LIGHTGROUP --- --- // dir, spot, ambient, point
 
 	//-------------------------------------------------------------------------//
@@ -432,7 +437,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetTexture(L"gBuffer2", gBuffer[2]);
 	gApi->SetTexture(L"depthBuffer", depthBufferCopy);
 
-	gApi->SetVertexBuffer(vbPoint, 4*2*sizeof(float));
+	gApi->SetVertexBuffer(vbPoint, 4 * 2 * sizeof(float));
 	gApi->SetIndexBuffer(ibPoint);
 
 	for (auto light : pointLights) {
@@ -485,6 +490,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	//-------------------------------------------------------------------------//
 	// --- --- --- --- --- --- --- --- --- SKY --- --- --- --- --- --- --- --- //
 	//-------------------------------------------------------------------------//
+
 	struct {
 		Matrix44 invViewProj;
 		Vec3 camPos; float _pad1;
@@ -498,9 +504,20 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	skyConstants.invViewProj = shaderConstants.invViewProj;
 	skyConstants.camPos = cam->GetPos();
 	skyConstants.sunDir = directionalLights.size() > 0 ? directionalLights[0]->direction : Vec3(0, 0, -1);
-	skyConstants.sunColor = directionalLights.size() > 0 ? directionalLights[0]->color : Vec3(0.9, 0.9, 0.9);
-	skyConstants.horizonColor = Vec3(0.77, 0.84, 0.9); // daylight
-	skyConstants.horizonColor = Vec3(0.92, 0.5, 0.3); // sunset
+
+	IntensitySpectrum spectrum;
+	spectrum.BlackBody(6400);
+	spectrum.Scale(1.0f/spectrum[spectrum.Peak()]);
+	float sunZenithAngle = acos(Dot(-skyConstants.sunDir, Vec3(0, 0, 1)));
+	float airMass = RelativeAirMass(ZS_PI / 2.0 - sunZenithAngle) / RelativeAirMass(0);
+	Rayleigh(spectrum, airMass);
+	Vec3 sunColor = spectrum.ToRGB();
+	sunColor /= std::max(sunColor.x, std::max(sunColor.y, sunColor.z));
+
+	//skyConstants.sunColor = directionalLights.size() > 0 ? directionalLights[0]->color : Vec3(0.9, 0.9, 0.9);
+
+	skyConstants.sunColor = sunColor;
+	skyConstants.horizonColor = sunColor; // sunset
 	skyConstants.zenithColor = Vec3(0.5, 0.68, 0.9);
 	skyConstants.rayleighFactor = 1.0f;
 

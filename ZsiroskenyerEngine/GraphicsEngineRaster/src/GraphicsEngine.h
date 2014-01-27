@@ -25,7 +25,7 @@ class IWindow;
 ////////////////////////////////////////////////////////////////////////////////
 //	Dll accessor
 extern "C"
-__declspec(dllexport) IGraphicsEngine* CreateGraphicsEngineRaster(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config);
+__declspec(dllexport) IGraphicsEngine* CreateGraphicsEngineRaster(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config, const char** errorMessage = nullptr);
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -80,9 +80,10 @@ public:
 	void Release() override;
 
 	// utlity & settings
-	eGraphicsResult ReloadResources() override;
 	eGraphicsResult SetConfig(tGraphicsConfig config) override;
 	eGraphicsResult Resize(unsigned width, unsigned height) override;
+	eGraphicsResult ReloadShaders() override;
+	const char* GetLastErrorMessage() override;
 	
 	// scene management
 	IGraphicsScene*	CreateScene(tRenderState state = tRenderState()) override;
@@ -90,7 +91,7 @@ public:
 
 	// rendering pipeline
 	eGraphicsResult Update(float elapsed = 0.0f) override;
-		
+
 	// sub-component accessors
 	cResourceManager*	GetResourceManager();
 	IGraphicsApi*		GetGraphicsApi() override;
@@ -120,11 +121,17 @@ private:
 	cDeferredRenderer* deferredRenderer;
 	cHDRProcessor* hdrProcessor;
 	
-	// some member var for fast access in deferred functions
+	// shaders
+	void LoadShaders();
+	void UnloadShaders();
 	IShaderProgram* shaderScreenCopy;
 
+	// misc
+	std::string lastErrorMessage;
 
-	// --- --- SUBCLASSES --- --- //
+	////////////////////////////////////////////////
+	// --- --- --- --- SUBCLASSES --- --- --- --- //
+	////////////////////////////////////////////////
 
 	///////////////////////////////////////
 	// Deferred renderer helper subclass
@@ -141,6 +148,8 @@ private:
 
 		eGraphicsResult Resize(unsigned width, unsigned height);
 		ITexture2D* GetCompositionBuffer();
+
+		void ReloadShaders();
 	private:
 		void LoadShaders();
 		void UnloadShaders();
@@ -178,6 +187,8 @@ private:
 		eGraphicsResult SetSource(ITexture2D* srcTexture, unsigned sourceWidth, unsigned sourceHeight);
 		void SetDestination(ITexture2D* dest);
 		void Update(float elapsedSec = -1.0f);
+
+		void ReloadShaders();
 	private:
 		void LoadShaders();
 		void UnloadShaders();
@@ -197,3 +208,7 @@ private:
 		unsigned sourceWidth, sourceHeight;
 	};
 };
+
+
+// Helper function for safely loading shaders
+auto SafeLoadShader(IGraphicsApi* gApi, const wchar_t* shader)->IShaderProgram*;

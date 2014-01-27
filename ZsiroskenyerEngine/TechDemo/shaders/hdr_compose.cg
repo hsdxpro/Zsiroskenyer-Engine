@@ -71,7 +71,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	float4 color = tex2D(textureInput, In.tex0);
 	
 	float3 haloColor = tex2D(blurTexture, In.tex0);
-	//color.rgb += haloColor;
+	color.rgb += haloColor;
 	
 	color.rgb = ToneMap(color.rgb, avgLum);
 	/*

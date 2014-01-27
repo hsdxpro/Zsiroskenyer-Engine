@@ -105,7 +105,7 @@ int ricsiMain() {
 	
 	// skylight
 	skyLight->type = cGraphicsLight::AMBIENT;
-	skyLight->color = Vec3(1, 1, 1);
+	skyLight->color = Vec3(0.1, 0.2, 0.3);
 	
 	// other suns... well yeah
 	secondSunLight->type = cGraphicsLight::DIRECTIONAL;
@@ -244,7 +244,7 @@ int ricsiMain() {
 
 		// Shader reloading
 		if (GetAsyncKeyState('R') && GetAsyncKeyState(VK_LCONTROL))
-			gEngine->ReloadResources();
+			gEngine->ReloadShaders();
 
 		updateDemo(s->GetCamera(), deltaT);
 		core.Update(deltaT);

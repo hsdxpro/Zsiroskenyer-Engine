@@ -107,9 +107,10 @@ public:
 	// user functions
 	virtual eGraphicsResult SetConfig(tGraphicsConfig config) = 0;
 	
-	virtual eGraphicsResult ReloadResources() = 0;
 	virtual eGraphicsResult Resize(unsigned width, unsigned height) = 0;
 	virtual IGraphicsApi*	GetGraphicsApi() = 0;
+	virtual eGraphicsResult ReloadShaders() = 0;
+	virtual const char* GetLastErrorMessage() = 0;
 
 	virtual eGraphicsResult Update(float elapsed = 0.0f) = 0;
 
