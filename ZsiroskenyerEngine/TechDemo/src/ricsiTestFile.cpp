@@ -29,19 +29,14 @@
 #define _WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-using namespace std;
 
 // TODO: hide yo' wife, hide yo' kids, hide yo' warnings
 #pragma warning(disable: 4244)
 #pragma warning(disable: 4305)
 
-cEntity* player;
-IPhysicsEngine* pEngine;
-
 #define CAM_MOVE_SPEED 20
-#define PLAYER_MOVE_SPEED 4
 
-void updateDemo(cCamera& cam, float tDelta);
+void UpdateDemo(cCamera& cam, float tDelta);
 
 // a lovely light circle
 static const int sizeLightCircle = 20;
@@ -73,7 +68,6 @@ int ricsiMain() {
 	// Get Modules
 	IGraphicsEngine* gEngine = core.GetGraphicsEngine();
 	IGraphicsApi* gApi = gEngine->GetGraphicsApi(); 
-	pEngine = core.GetPhysicsEngine();
 
 
 	// Create scene with camera
@@ -177,8 +171,10 @@ int ricsiMain() {
 		light->color = colorRGB * 2.0f;
 	}
 
+
+	const int nEntities = 9;
 	// Static terrain
-	zsString staticBaseNames[9] = {		L"coyote",
+	zsString staticBaseNames[nEntities] = { L"coyote",
 										L"crate",
 										L"demo_cliff_fence",
 										L"demo_ground",
@@ -186,10 +182,9 @@ int ricsiMain() {
 										L"demo_road",
 										L"demo_tunnel",
 										L"fake_tunnel",
-										L"tower",
-									};
+											L"tower" };
 
-	zsString staticExtension[9] = {		L".dae",
+	zsString staticExtension[nEntities] = { L".dae",
 										L".dae",
 										L".dae",
 										L".dae",
@@ -225,6 +220,7 @@ int ricsiMain() {
 	zsString basePath = L"../../Game Assets/";
 
 	ASSERT(sizeof(staticBaseNames) > 0);
+	cEntity* entities[nEntities];
 	for (size_t i = 0; i < sizeof(staticBaseNames) / sizeof(staticBaseNames[0]); i++) {
 		zsString geomPath = basePath + L"objects/" + staticBaseNames[i] + staticExtension[i];
 		auto entity = core.AddEntity(s, geomPath, geomPath, basePath + L"materials/" + staticBaseNames[i] + L".zsm", mass);
@@ -232,8 +228,9 @@ int ricsiMain() {
 		entity->SetRot(Quat::EulerAnglesToQuat(objRot[i]));
 	}
 	
+
 	// Our player
-	player = core.AddEntity(s, basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 10.0, false);
+	cEntity* player = core.AddEntity(s, basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 10.0, false);
 	player->SetPos(Vec3(0.3, -19, 0.35));
 
 	// Soft body test
@@ -254,13 +251,12 @@ int ricsiMain() {
 		// Update everything
 		static cTimer t;
 		float deltaT = t.GetDeltaSeconds();
+		size_t fps = cTimer::GetFps(deltaT);
 
 		// Don't hog with set caption text... Fucking slow operation
 		static float timer1 = 0.0;
 		timer1 += deltaT;
-		size_t fps = cTimer::GetFps(deltaT);
-		if (timer1 > 1.0f)
-		{
+		if (timer1 > 1.0f) {
 			window->SetCaptionText(zsString(L"[Zsíroskenyér Engine 0.1 Beta]  FPS: ") + fps);
 			timer1 = 0.0f;
 		}
@@ -269,7 +265,10 @@ int ricsiMain() {
 		if (GetAsyncKeyState('R') && GetAsyncKeyState(VK_LCONTROL))
 			gEngine->ReloadShaders();
 
-		updateDemo(s->GetCamera(), deltaT);
+
+		UpdateDemo(s->GetCamera(), deltaT);
+
+		// Engine update
 		core.Update(deltaT);
 
 		// Debug rendering
@@ -285,7 +284,7 @@ int ricsiMain() {
 
 
 bool noJump = false; // don't commit suicide upon seeing this :D
-void updateDemo(cCamera& cam, float tDelta) {
+void UpdateDemo(cCamera& cam, float tDelta) {
 /*
 	static Quat playerRot;
 	Vec3 playerDir = Vec3(0, 1, 0) * playerRot;
@@ -324,8 +323,8 @@ void updateDemo(cCamera& cam, float tDelta) {
 
 	// Shooting boxes
 	//if (((short)GetAsyncKeyState(VK_LBUTTON)) & 0x80) // Press detect doesn't work :(
-	if (GetAsyncKeyState(VK_LBUTTON))
-		pEngine->ShootBox(0.3f, cam.GetPos(), cam.GetDirFront(), 60); // This function in the interface is just for test purposes
+	//if (GetAsyncKeyState(VK_LBUTTON))
+		//pEngine->ShootBox(0.3f, cam.GetPos(), cam.GetDirFront(), 60); // This function in the interface is just for test purposes
 
 
 	// CAMERA MOVING
@@ -345,7 +344,7 @@ void updateDemo(cCamera& cam, float tDelta) {
 		sunAngle += 15*tDelta;
 	if (GetAsyncKeyState('J'))
 		sunAngle -= 15*tDelta;
-	sunAngle = max(0.f, min(90.f, sunAngle));
+	sunAngle = std::max(0.f, std::min(90.f, sunAngle));
 	Vec3 sunDir = Vec3(0.0f, 1.0f, 0.0f).Normalize();
 	sunDir *= Quat(Vec3(1.0f, 0.0f, 0.0f), sunAngle / 180.f*ZS_PI);
 	sun->direction = sunDir.Normalize();
