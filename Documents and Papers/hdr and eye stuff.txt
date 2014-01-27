@@ -1,0 +1,3 @@
+Eye response function:
+(sort of looks good)
+response = tanh((x-1.5)*1.2)*0.5+0.5, where x is log luminance and ranges [0.0,3.0] (linear [1,1000])
