@@ -6,10 +6,27 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "_GeometryBuilder.h"
+
 #include "../../Core/src/GAPI.h"
+
+// DAE loading
+#include "ASSIMP/include/assimp/Importer.hpp"
+#include "ASSIMP/include/assimp/Scene.h"
+#include "ASSIMP/include/assimp/PostProcess.h"
+#include "../../Core/src/tipsify.h"
+
+// Utils
+#include "../../Core/src/StrUtil.h"
+#include "../../Core/src/FileUtil.h"
+
+// Math
+#include "../../Core/src/math/Vec3.h"
+#include "../../Core/src/math/Vec2.h"
+
+// Exception
 #include <cassert>
 #include <stdexcept>
-
+#include "../../Core/src/Exception.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //	Ctor
@@ -131,7 +148,111 @@ size_t _cGeometryBuilder::GetNumMatGroups() {
 ////////////////////////////////////////////////////////////////////////////////
 // Load files
 void _cGeometryBuilder::LoadFile(const zsString& path) {
-	throw std::runtime_error("Hogy a gecibe töltenénk már fájlt...?");
+	Reset();
+
+	Assimp::Importer importer;
+
+	if (!cFileUtil::isFileExits(path)) {
+		ILog::GetInstance()->MsgBox(L"Can't open file: " + path);
+		throw FileNotFoundException();
+	}
+
+	// read up dae scene
+	char ansiFilePath[256];
+	cStrUtil::ToAnsi(path, ansiFilePath, 256);
+	const aiScene* scene = importer.ReadFile(ansiFilePath, aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_Triangulate /*| aiProcess_ImproveCacheLocality | aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes*/ | aiProcess_FlipWindingOrder);
+	if (scene == NULL) {
+		ILog::GetInstance()->MsgBox(L"Can't found 3D model: " + path);
+		throw FileNotFoundException();
+	}
+
+	size_t nMeshes = scene->mNumMeshes;
+	aiMesh** meshes = scene->mMeshes;
+
+	nBytesVertices = 0;
+	nIndices = 0;
+	nMatGroups = nMeshes;
+
+	size_t nVertices = 0;
+
+	
+
+	// Count indices, vertices.  Gather material groups
+	matGroups = new tMatGroup[nMatGroups];
+	for (size_t i = 0; i < nMeshes; i++) {
+		aiMesh *mesh = meshes[i];
+
+		size_t nMeshIndices = mesh->mNumFaces * 3;
+
+		matGroups[i].id = mesh->mMaterialIndex;
+		matGroups[i].indexOffset = nIndices;
+		matGroups[i].indexCount = nMeshIndices;
+
+		nVertices += mesh->mNumVertices;
+		nIndices += nMeshIndices;
+	}
+
+	// DEFINE VERTEX STRUCTURE HERE.... @TODO REMOVE IT OR I KILL MYSELF
+	struct baseVertex {
+		Vec3 pos;
+		Vec3 normal;
+		Vec3 tangent;
+		Vec2 tex;
+		bool operator == (const baseVertex& v) { return pos == v.pos && normal == v.normal && tangent == v.tangent && tex == v.tex; }
+	};
+
+	// Geometry read up
+	
+	baseVertex* verticesPtr = new baseVertex[nVertices];
+	vertices = verticesPtr;
+	indices = new uint32_t[nIndices];
+
+	// Super TMP Vec3 for usage
+	aiVector3D* supTmpVec;
+
+	size_t indexI = 0;
+	size_t vertexI = 0;
+	size_t vertexOffset = 0;
+
+	for (size_t i = 0; i < nMeshes; i++) {
+		aiMesh* mesh = meshes[i];
+		for (size_t j = 0; j < mesh->mNumFaces; indexI += 3, j++) {
+			aiFace& face = mesh->mFaces[j];
+
+			// For each face index
+			for (size_t k = 0; k < 3; k++) {
+				if (face.mNumIndices < 3)
+					break;
+
+				unsigned vertIdx = face.mIndices[k];
+				// Index data
+				indices[indexI + k] = vertIdx + vertexI;
+
+				// Vertex Data
+				if (mesh->HasPositions()) {
+					supTmpVec = &mesh->mVertices[vertIdx];
+					verticesPtr[vertIdx + vertexI].pos = Vec3(supTmpVec->x, supTmpVec->y, supTmpVec->z);
+				}
+
+				if (mesh->HasNormals()) {
+					supTmpVec = &mesh->mNormals[vertIdx];
+					verticesPtr[vertIdx + vertexI].normal = Vec3(supTmpVec->x, supTmpVec->y, supTmpVec->z);
+				}
+
+				if (mesh->HasTangentsAndBitangents()) {
+					supTmpVec = &mesh->mTangents[vertIdx];
+					verticesPtr[vertIdx + vertexI].tangent = Vec3(supTmpVec->x, supTmpVec->y, supTmpVec->z);
+				}
+
+				// @TODO not general algorithm, wee need to handle more UV channels
+				supTmpVec = &mesh->mTextureCoords[0][vertIdx];
+				verticesPtr[vertIdx + vertexI].tex = Vec2(supTmpVec->x, -supTmpVec->y); // Fucking hate Assimp
+			}
+		}
+		vertexI += mesh->mNumVertices;
+	}
+
+	delete scene;
 }
 
 

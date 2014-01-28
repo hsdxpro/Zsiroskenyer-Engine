@@ -9,12 +9,12 @@
 // Common and Math
 #include "common.h"
 #include "StrUtil.h"
+#include "FileUtil.h"
 #include "math/vec3.h"
 #include "math/vec2.h"
 
 // Exception
 #include "Exception.h"
-#include "FileUtil.h"
 
 cGeometryBuilder::cGeometryBuilder() {
 }
