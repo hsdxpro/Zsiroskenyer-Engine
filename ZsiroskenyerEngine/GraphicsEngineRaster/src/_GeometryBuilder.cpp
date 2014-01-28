@@ -169,13 +169,10 @@ void _cGeometryBuilder::LoadFile(const zsString& path) {
 	size_t nMeshes = scene->mNumMeshes;
 	aiMesh** meshes = scene->mMeshes;
 
-	nBytesVertices = 0;
 	nIndices = 0;
 	nMatGroups = nMeshes;
 
 	size_t nVertices = 0;
-
-	
 
 	// Count indices, vertices.  Gather material groups
 	matGroups = new tMatGroup[nMatGroups];
@@ -246,13 +243,14 @@ void _cGeometryBuilder::LoadFile(const zsString& path) {
 
 				// @TODO not general algorithm, wee need to handle more UV channels
 				supTmpVec = &mesh->mTextureCoords[0][vertIdx];
-				verticesPtr[vertIdx + vertexI].tex = Vec2(supTmpVec->x, -supTmpVec->y); // Fucking hate Assimp
+				verticesPtr[vertIdx + vertexI].tex = Vec2(supTmpVec->x, -supTmpVec->y); // UV flip y
 			}
 		}
 		vertexI += mesh->mNumVertices;
 	}
 
-	delete scene;
+	vSize = sizeof(baseVertex);
+	nBytesVertices = nVertices * vSize;
 }
 
 
