@@ -40,7 +40,7 @@ matGroups(nullptr),
 nBytesVertices(0),
 nIndices(0),
 nMatGroups(0),
-vSize(1),
+vertexSize(1),
 gApi(gApi)
 {
 	return;
@@ -55,7 +55,7 @@ matGroups	(other.matGroups),
 nBytesVertices(other.nBytesVertices),
 nIndices	(other.nIndices),
 nMatGroups	(other.nMatGroups),
-vSize		(other.vSize),
+vertexSize		(other.vertexSize),
 gApi		(other.gApi)
 {
 	other.vertices = nullptr;
@@ -72,7 +72,7 @@ matGroups(nullptr),
 nBytesVertices(other.nBytesVertices),
 nIndices	(other.nIndices),
 nMatGroups	(other.nMatGroups),
-vSize		(other.vSize),
+vertexSize		(other.vertexSize),
 gApi		(other.gApi)
 {
 	InsertBuf((uint8_t**)&vertices, 0, (uint8_t*)other.vertices, nBytesVertices, 0);
@@ -249,8 +249,8 @@ void _cGeometryBuilder::LoadFile(const zsString& path) {
 		vertexI += mesh->mNumVertices;
 	}
 
-	vSize = sizeof(baseVertex);
-	nBytesVertices = nVertices * vSize;
+	vertexSize = sizeof(baseVertex);
+	nBytesVertices = nVertices * vertexSize;
 }
 
 
@@ -292,7 +292,7 @@ _cGeometryBuilder& _cGeometryBuilder::operator=(const _cGeometryBuilder& other) 
 // validation
 
 bool _cGeometryBuilder::ValidateVertices() {
-	return nBytesVertices%vSize == 0;
+	return nBytesVertices%vertexSize == 0;
 }
 
 bool _cGeometryBuilder::ValidateIndices() {
@@ -300,7 +300,7 @@ bool _cGeometryBuilder::ValidateIndices() {
 	for (size_t i = 0; i < nIndices; i++) {
 		maxIndex = (maxIndex>indices[i] ? maxIndex : indices[i]);
 	}
-	return maxIndex < nBytesVertices / vSize;
+	return maxIndex < nBytesVertices / vertexSize;
 }
 
 bool _cGeometryBuilder::ValidateMatGroups() {

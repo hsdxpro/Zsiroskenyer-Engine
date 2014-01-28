@@ -83,6 +83,6 @@ private:
 	size_t nMatGroups;
 
 	// misc
-	unsigned vSize;
+	unsigned vertexSize;
 	IGraphicsApi* gApi;
 };
