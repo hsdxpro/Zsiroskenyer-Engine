@@ -21,6 +21,8 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <fstream>
+#include <sstream>
 
 #include "../../Core/src/Timer.h"
 
@@ -239,6 +241,20 @@ int ricsiMain() {
 	//cEntity* crate =  core.AddEntity(s, basePath + L"objects/crate.dae", basePath + L"objects/crate.dae", basePath + L"materials/crate.zsm", 10.0, true);
 	//crate->SetPos(Vec3(9, 0, 40));
 
+	// fps limiter
+	std::ifstream configFile;
+	configFile.open("config.cfg");
+	static double fpsLimit = -1.0;
+	if (configFile.is_open()) {
+		std::string ln;
+		std::getline(configFile, ln);
+		double fps = strtod(ln.c_str(), nullptr);
+		if (fps < 1.0)
+			fpsLimit = -1.0;
+		else
+			fpsLimit = fps;
+	}
+
 	// Main loop
 	IWindow::eMessage msg;
 	while(window->IsOpened()) {
@@ -254,6 +270,18 @@ int ricsiMain() {
 		static cTimer t;
 		float deltaT = t.GetDeltaSeconds();
 		size_t fps = cTimer::GetFps(deltaT);
+
+		// maintain fps
+		static double sleptForLastFrame = 0.0;
+		if (fpsLimit > 0.0) {
+			double targetFrameTime = 1.0 / fpsLimit;
+			targetFrameTime -= deltaT - sleptForLastFrame;
+			sleptForLastFrame = std::max(0.0, targetFrameTime);
+			if (targetFrameTime > 0.0) {
+				int sleepMicro = targetFrameTime*1e6;
+				std::this_thread::sleep_for(std::chrono::microseconds(sleepMicro));
+			}
+		}
 
 		// Don't hog with set caption text... Fucking slow operation
 		static float timer1 = 0.0;
