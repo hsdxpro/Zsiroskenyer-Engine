@@ -108,8 +108,8 @@ public:
 	Vec3 operator * (const Vec3& v) const;
 
 	// Compare matrices
-	bool operator==(const Matrix44& m2) const;
-	bool operator!=(const Matrix44& m2) const;
+	bool operator == (const Matrix44& m2) const;
+	bool operator != (const Matrix44& m2) const;
 };
 
 // Utility

@@ -11,6 +11,9 @@
 class cGeometryBuilder {
 public:
 	struct tGeometryDesc {
+		struct tMatGroup {
+			size_t id, indexOffset, indexCount;
+		};
 
 		void* indices;
 		void* vertices;
@@ -20,6 +23,8 @@ public:
 
 		size_t indexStride;
 		size_t vertexStride;
+
+		std::vector<tMatGroup> matGroups;
 	};
 
 	// Free up dynamic memory in the result !

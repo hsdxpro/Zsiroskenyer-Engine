@@ -56,6 +56,13 @@ cGeometryRef cResourceManager::GetGeometry(const zsString& filePath) {
 		gApi->CreateIndexBuffer(&IB, d.nIndices * d.indexStride, eUsage::IMMUTABLE, d.indices);
 		geom = new cGeometry(VB, IB);
 
+		std::vector<cGeometry::tMatGroup> matGroup;
+
+		for (cGeometryBuilder::tGeometryDesc::tMatGroup& e : d.matGroups)
+			matGroup.push_back({ e.id, e.indexOffset, e.indexCount });
+
+		geom->SetMatGroups(matGroup);
+
 		// insert into database
 		geometries.insert(GeometryMapT::value_type(filePath, geom));
 	}

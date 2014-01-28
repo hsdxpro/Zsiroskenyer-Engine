@@ -20,6 +20,10 @@ cGeometry::~cGeometry() {
 	if (VB!=nullptr) VB->Release();
 }
 
+void cGeometry::SetMatGroups(std::vector<tMatGroup>& g) {
+	matGroups = g;
+}
+
 const IIndexBuffer* cGeometry::GetIndexBuffer() const {
 	return IB;
 }

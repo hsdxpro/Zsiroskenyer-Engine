@@ -41,11 +41,22 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 	size_t nMeshes = scene->mNumMeshes;
 	aiMesh** meshes = scene->mMeshes;
 
-	// count indices, vertices
+	// count indices, vertices, matGroups
+	std::vector<tGeometryDesc::tMatGroup> matGroups;
 	for(size_t i = 0; i < nMeshes; i++) {
 		aiMesh *mesh = meshes[i];
+
+		size_t nMeshIndices = mesh->mNumFaces * 3;
+
+		// Mat group
+		tGeometryDesc::tMatGroup g;
+			g.id = mesh->mMaterialIndex;
+			g.indexOffset = nIndex;
+			g.indexCount = nMeshIndices;
+		matGroups.push_back(g);
+
 		nVertices += mesh->mNumVertices;
-		nIndex += mesh->mNumFaces * 3;
+		nIndex += nMeshIndices;
 	}
 
 	// DEFINE VERTEX STRUCTURE HERE.... @TODO REMOVE IT OR I KILL MYSELF
@@ -123,5 +134,6 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 		geomDesc.indices = indices;
 		geomDesc.nIndices = nIndex;
 		geomDesc.indexStride = sizeof(unsigned);
+		geomDesc.matGroups = matGroups;
 	return geomDesc;
 }
