@@ -241,8 +241,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 	// Foreach: Instance group
 	for (auto& group : parent.sceneManager->GetInstanceGroups()) {
-		cGeometry* geom = group->geom.get();
-		cMaterial* mtl = group->mtl.get();
+		cGeometry& geom = *group->geom.get();
+		cMaterial& mtl = *group->mtl.get();
 
 		// Set Geometry
 		const IIndexBuffer* ib = (*group->geom).GetIndexBuffer();
@@ -250,13 +250,43 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		gApi->SetVertexBuffer((*(group->geom)).GetVertexBuffer(), shaderGBuffer->GetVertexFormatSize());
 		
 		// Foreach: Entity polygon material group
-		for (auto& matGroup : geom->GetMatGroups()) {
+		for (auto& matGroup : geom.GetMatGroups()) {
+			// Set material
+			auto submtl = mtl[matGroup.id % mtl.GetNSubMaterials()];
+			ITexture2D* diffuse = submtl.textureDiffuse.get();
+			ITexture2D* normal = submtl.textureNormal.get();
+			ITexture2D* specular = submtl.textureSpecular.get();
+			ITexture2D* displace = submtl.textureDisplace.get();
+
+			if (diffuse) gApi->SetTexture(L"diffuseTex", diffuse);
+			if (normal)  gApi->SetTexture(L"normalTex", normal);
 
 
+			// Foreach: Entity -> Draw this group
+			for (auto& entity : group->entities) {
+				// Entity world matrix
+				Matrix44 worldMat = entity->GetWorldMatrix();
+				// WorldViewProj matrix
+				Matrix44 wvp = worldMat * viewProjMat;
+				// cbuffer
+				struct gBuffConstantBuff
+				{
+					Matrix44 wvp;
+					Matrix44 worldMat;
+					Vec3 camPos; float pad1;
+				} buff;
+				buff.wvp = wvp;
+				buff.worldMat = worldMat;
+				buff.camPos = cam->GetPos();
+
+				gApi->SetVSConstantBuffer(&buff, sizeof(buff), 0);
+
+				// draw
+				gApi->DrawIndexed(matGroup.indexCount, matGroup.indexOffset);
+			}
 		}
 
-
-
+		/*
 		// Set SubMaterials
 		auto& mtl = *group->mtl;
 		for (size_t i = 0; i < mtl.GetNSubMaterials(); i++) {
@@ -292,6 +322,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 			gApi->SetVSConstantBuffer(&buff, sizeof(buff), 0);
 			gApi->DrawIndexed(ib->GetSize() / sizeof(unsigned));
 		}
+		*/
 	}
 
 	// copy depth to shader resource
