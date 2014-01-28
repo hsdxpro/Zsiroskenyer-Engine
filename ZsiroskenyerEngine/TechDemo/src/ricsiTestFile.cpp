@@ -222,17 +222,18 @@ int ricsiMain() {
 	ASSERT(sizeof(staticBaseNames) > 0);
 	cEntity* entities[nEntities];
 	for (size_t i = 0; i < sizeof(staticBaseNames) / sizeof(staticBaseNames[0]); i++) {
-		//zsString geomPath = basePath + L"objects/" + staticBaseNames[i] + staticExtension[i];
-		//auto entity = core.AddEntity(s, geomPath, geomPath, basePath + L"materials/" + staticBaseNames[i] + L".zsm", mass);
-		//entity->SetPos(objPos[i]);
-		//entity->SetRot(Quat::EulerAnglesToQuat(objRot[i]));
+		zsString geomPath = basePath + L"objects/" + staticBaseNames[i] + staticExtension[i];
+		auto entity = core.AddEntity(s, geomPath, geomPath, basePath + L"materials/" + staticBaseNames[i] + L".zsm", mass);
+		entity->SetPos(objPos[i]);
+		entity->SetRot(Quat::EulerAnglesToQuat(objRot[i]));
 	}
 	
-	core.AddEntity(s, basePath + L"objects/multi-mat_tetraeder.dae", basePath + L"objects/multi-mat_tetraeder.dae", basePath + L"materials/multi_mat_teszt.zsm", 0.0f);
+	cEntity* tmp = core.AddEntity(s, basePath + L"objects/multi-mat_tetraeder.dae", basePath + L"objects/multi-mat_tetraeder.dae", basePath + L"materials/multi_mat_teszt.zsm", 0.0f);
+	tmp->SetPos(Vec3(0, 0, 10));
 
 	// Our player
-	//cEntity* player = core.AddEntity(s, basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 10.0, false);
-	//player->SetPos(Vec3(0.3, -19, 0.35));
+	cEntity* player = core.AddEntity(s, basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 10.0, false);
+	player->SetPos(Vec3(0.3, -19, 0.35));
 
 	// Soft body test
 	//cEntity* crate =  core.AddEntity(s, basePath + L"objects/crate.dae", basePath + L"objects/crate.dae", basePath + L"materials/crate.zsm", 10.0, true);
@@ -266,7 +267,6 @@ int ricsiMain() {
 		if (GetAsyncKeyState('R') && GetAsyncKeyState(VK_LCONTROL))
 			gEngine->ReloadShaders();
 
-		Sleep(22);
 		UpdateDemo(s->GetCamera(), deltaT);
 
 		// Engine update
