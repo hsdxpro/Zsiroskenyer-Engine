@@ -61,17 +61,17 @@ float cCamera::GetFarPlane() const {
 
 Matrix44 cCamera::GetViewMatrix() const {
 	const Vec3 up(0.0f, 0.0f, 1.0f);
-	return Matrix44().ViewRH(pos, target, up);
+	return Matrix44::ViewRH(pos, target, up);
 }
 
 void cCamera::CalcProjMatrix() {
 	switch (projType)
 	{
 	case ORTHO:
-		proj.ProjOrtographic(nearPlane, farPlane, projOrtho.left, projOrtho.right, projOrtho.bottom, projOrtho.top);
+		proj = Matrix44::ProjOrtographic(nearPlane, farPlane, projOrtho.left, projOrtho.right, projOrtho.bottom, projOrtho.top);
 		break;
 	case PERSP:
-		proj.ProjPerspective(nearPlane, farPlane, projPersp.fovRad, projPersp.aspectRatio);
+		proj = Matrix44::ProjPerspective(nearPlane, farPlane, projPersp.fovRad, projPersp.aspectRatio);
 		break;
 	default:
 		ASSERT_MSG(false, L"OMG wtf camera not ORTHO and not PERSP");
@@ -112,7 +112,6 @@ const Vec3& cCamera::GetPos() const {
 }
 
 const Quat& cCamera::GetRot() const {
-	//const Vec3 up(0, 0, 1);
 	return Quat::DirToRot(target - pos, GetDirUp());
 }
 

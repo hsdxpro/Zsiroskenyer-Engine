@@ -234,9 +234,6 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	eGapiResult r = gApi->SetDepthStencilState(depthStencilState, 0x01);
 
 
-	// Just lerping view, then combine how you want	
-	//Matrix44 currView = cam->GetViewMatrix();	
-	//Matrix44 currView = lerp(prevView, currView, 0.01f);
 	Matrix44 projMat = cam->GetProjMatrix();
 	Matrix44 viewMat = cam->GetViewMatrix();
 	Matrix44 viewProjMat = viewMat * projMat;

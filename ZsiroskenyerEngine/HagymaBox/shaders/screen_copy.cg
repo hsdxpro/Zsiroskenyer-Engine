@@ -1,5 +1,10 @@
-sampler2D texture0 : register(s0);
-
+sampler2D texture0 = {
+    	MipFilter = POINT,
+    	MinFilter = POINT,
+    	MagFilter = POINT,
+	AddressU = CLAMP,
+	AddressV = CLAMP,
+};
 
 struct VS_IN {
 	float3 posL 	: POSITION;
@@ -27,3 +32,12 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	Out.color = tex2D(texture0, In.tex0);
 	return Out;
 };
+
+technique t
+{
+	pass p
+	{
+		VertexProgram = compile vs_4_0 VS_MAIN();
+		FragmentProgram = compile ps_4_0 PS_MAIN();
+	}
+}

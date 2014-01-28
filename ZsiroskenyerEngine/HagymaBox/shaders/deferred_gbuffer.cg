@@ -2,9 +2,21 @@ float4x4 wvp : register(c0);
 float4x4 world : register(c4);
 float3 camPos : register(c8);
 
-sampler2D diffuseTex : register(s0);
-sampler2D normalTex  : register(s1);
+sampler2D diffuseTex = {
+	MipFilter = LINEAR,
+    	MinFilter = LINEAR,
+    	MagFilter = LINEAR,
+	AddressU = WRAP,
+	AddressV = WRAP,
+};
 
+sampler2D normalTex = {
+	MipFilter = LINEAR,
+    	MinFilter = LINEAR,
+    	MagFilter = LINEAR,
+	AddressU = WRAP,
+	AddressV = WRAP,
+};
 
 struct VS_IN {
 	float3 posL 	: POSITION;
@@ -19,27 +31,25 @@ struct VS_OUT {
 	float3 tangentW	: TEXCOORD1;
 	float2 tex0 	: TEXCOORD2;
 	float3 posW 	: TEXCOORD3;
-	float2 savedZW  : TEXCOORD4;
-	float3x3 TBN	: TEXCOORD5;
+	float3x3 TBN	: TEXCOORD4;
 };
 
 struct PS_OUT {
 	float4 gBuffer0 : COLOR0;
 	float4 gBuffer1 : COLOR1;
 	float4 gBuffer2 : COLOR2;
-	float depth	: DEPTH;
 };
 
 
 VS_OUT VS_MAIN(VS_IN In) {
 	VS_OUT Out;
-	Out.tex0 = In.tex0;
 
 	Out.posW = In.posL.x * world[0].xyz + ( In.posL.y * world[1].xyz + (In.posL.z * world[2].xyz) + world[3].xyz);
 	Out.normalW = In.normalL.x* world[0].xyz + ( In.normalL.y * world[1].xyz + (In.normalL.z * world[2].xyz));
 	Out.tangentW = In.tangentL.x* world[0].xyz + ( In.tangentL.y * world[1].xyz + (In.tangentL.z * world[2].xyz));
 	Out.posH = In.posL.x * wvp[0] + ( In.posL.y * wvp[1] + (In.posL.z * wvp[2] + wvp[3]));
-	Out.savedZW = Out.posH.zw;
+
+	Out.tex0 = In.tex0;
 
 	// Calculate TBN base per vertex (CHEAP) (Tangent to World space)
 		float3 N = Out.normalW;
@@ -52,26 +62,39 @@ VS_OUT VS_MAIN(VS_IN In) {
 PS_OUT PS_MAIN(VS_OUT In) {
 	PS_OUT Out;
 
-	// Linearly corrected depth
-	Out.depth = In.savedZW.x / In.savedZW.y;//In.posH.z;
+//----------------------------------------------------------//
+//-----------------gBuffer0: DIFFUSECOLOR------------------//
+//--------------------------------------------------------//
+	Out.gBuffer0.xyz = tex2D(diffuseTex, In.tex0);
 
-	// Storing color good
-	Out.gBuffer0 = tex2D(diffuseTex, In.tex0);// * float4(intensity, intensity, intensity, 1.0f);
+//----------------------------------------------------------//
+//--------------------gBuffer1: NORMALS--------------------//
+//--------------------------------------------------------//
 
-	// Sample normal, in tangent space
-	float3 normalT = normalize(tex2D(normalTex, In.tex0).xyz * 2.0f - 1.0f);
+	// Normals from NORMAL MAP
+	float3 n = mul(normalize(tex2D(normalTex, In.tex0).xyz * 2.0f - 1.0f), In.TBN);
+	//Out.gBuffer0.xyz = n;
+	// Normals FROM GEOMETRY
+	//float3 n = In.normalW;
 
-	//float3 normalW = mul(In.TBN, normalT);
-	float3 normalW = In.normalW; // Normals from geometry
-	
-	// Pack normals
-	float3 n = normalize(normalW);
+	// Pack normalsw
 	Out.gBuffer1.r = n.x;
 	Out.gBuffer1.g = 0.5f*n.y + (n.z>0.f ? 0.5f:-0.5f);
-
 	
+//----------------------------------------------------------//
+//---------------gBuffer2: DEBUG PURPOSES------------------//
+//--------------------------------------------------------//	
 	// Buffer2 reserved for future use
-	Out.gBuffer2 = float4(In.tangentW.xyz*0.5+float3(0.5,0.5,0.5),1.0f); // NOT USED YET | FOR DEBUG
-
+	Out.gBuffer2 = tex2D(diffuseTex, In.tex0);//float4(In.tangentW.xyz*0.5+float3(0.5,0.5,0.5),1.0f); // NOT USED YET | FOR DEBUG
+	
 	return Out;
 };
+
+technique t
+{
+	pass p
+	{
+		VertexProgram = compile vs_4_0 VS_MAIN();
+		FragmentProgram = compile ps_4_0 PS_MAIN();
+	}
+}

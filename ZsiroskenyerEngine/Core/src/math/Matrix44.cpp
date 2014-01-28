@@ -248,10 +248,10 @@ Matrix44 Matrix44::Inverse(const Matrix44& in) {
 	out._44 = (in._11*O - in._12*Q + in._13*R) * det_A;
 
 	// post multiplication by det_A, cause det_a was not available when these were computed
-	out._11 *= det_A; 
-	out._21 *= det_A; 
-	out._31 *= det_A; 
-	out._41	*= det_A; 
+	out._11 *= det_A;
+	out._21 *= det_A;
+	out._31 *= det_A;
+	out._41	*= det_A;
 
 	return out;
 }
@@ -286,101 +286,87 @@ Matrix44& Matrix44::Translate(const Vec3& t) {
 	return *this;
 }
 
-Matrix44& Matrix44::Translation( float x, float y, float z) {
-	Identity();
-	_41 = x;
-	_42 = y;
-	_43 = z;
-	return *this;
+Matrix44 Matrix44::Translation( float x, float y, float z) {
+	Matrix44 m;
+		m._41 = x;
+		m._42 = y;
+		m._43 = z;
+	return m;
 }
 
-Matrix44& Matrix44::Translation(const Vec3& v) {
-	Identity();
-	_41 = v.x;
-	_42 = v.y;
-	_43 = v.z;
-	return *this;
+Matrix44 Matrix44::Translation(const Vec3& v) {
+	Matrix44 m;
+		m._41 = v.x;
+		m._42 = v.y;
+		m._43 = v.z;
+	return m;
 }
 
-Matrix44& Matrix44::RotationEuler(const Vec3& rot) {
-	Identity();
-	Matrix44 tmp;
-	tmp.RotationX(rot.x);
-	*this *= tmp;
-	tmp.RotationY(rot.y);
-	*this *= tmp;
-	tmp.RotationZ(rot.z);
-	*this *= tmp;
-	return *this;
+Matrix44 Matrix44::RotationEuler(const Vec3& rot) {
+	return RotationX(rot.x) * RotationY(rot.y) * RotationZ(rot.z);
 }
 
-Matrix44& Matrix44::RotationEuler(float x, float y, float z) {
-	Identity();
-	Matrix44 tmp;
-	tmp.RotationX(x);
-	*this *= tmp;
-	tmp.RotationY(y);
-	*this *= tmp;
-	tmp.RotationZ(z);
-	*this *= tmp;
-	return *this;
+Matrix44 Matrix44::RotationEuler(float x, float y, float z) {
+	return RotationX(x) * RotationY(y) * RotationZ(z);
 }
 
-Matrix44& Matrix44::RotationX(float angle) {
-	Identity();
-	_22 = _33 = cos(angle);
-	_32 = _23 = sin(angle); _32 *= -1;
-	return *this;
+Matrix44 Matrix44::RotationX(float angle) {
+	Matrix44 m;
+		m._22 = m._33 = cos(angle);
+		m._32 = m._23 = sin(angle); m._32 *= -1;
+	return m;
 }
 
-Matrix44& Matrix44::RotationY(float angle) {
-	Identity();
-	_11 = _33 = cos(angle);
-	_13 = _31 = sin(angle); _13 *= -1;
-	return *this;
+Matrix44 Matrix44::RotationY(float angle) {
+	Matrix44 m;
+		m._11 = m._33 = cos(angle);
+		m._13 = m._31 = sin(angle); m._13 *= -1;
+	return m;
 }
 
-Matrix44& Matrix44::RotationZ(float angle) {
-	Identity();
-	_11 = _22 = cos(angle);
-	_21 = _12 = sin(angle); _21 *= -1;
-	return *this;
+Matrix44 Matrix44::RotationZ(float angle) {
+	Matrix44 m;
+		m._11 = m._22 = cos(angle);
+		m._21 = m._12 = sin(angle); m._21 *= -1;
+	return m;
 }
 
-Matrix44& Matrix44::RotationAxisAngle(const Vec3& axis, float angle) {
+Matrix44 Matrix44::RotationAxisAngle(const Vec3& axis, float angle) {
+	Matrix44 m;
+
 	float c = cos(angle);
 	float s = sin(angle);
 	float t = 1.f-c;
 
-	_11 = t*axis.x*axis.x + c;				_12 = t*axis.x*axis.y + axis.z*s;		_13 = t*axis.x*axis.z - axis.y*s;
-	_21 = t*axis.x*axis.y - axis.z*s;		_22 = t*axis.y*axis.y + c;				_23 = t*axis.y*axis.z + axis.x*s;
-	_31 = t*axis.x*axis.z + axis.y*s;		_32 = t*axis.y*axis.z - axis.x*s;		_33 = t*axis.z*axis.z + c;
+	m._11 = t*axis.x*axis.x + c;			m._12 = t*axis.x*axis.y + axis.z*s;		m._13 = t*axis.x*axis.z - axis.y*s;
+	m._21 = t*axis.x*axis.y - axis.z*s;		m._22 = t*axis.y*axis.y + c;			m._23 = t*axis.y*axis.z + axis.x*s;
+	m._31 = t*axis.x*axis.z + axis.y*s;		m._32 = t*axis.y*axis.z - axis.x*s;		m._33 = t*axis.z*axis.z + c;
 
 	// Set back temps to zero
-	_41 = 0.f;
-	_42 = 0.f;
-	_43 = 0.f;
-	_14 = 0.f;
-	_24 = 0.f;
-	_34 = 0.f;
-	_44 = 1.f;
+	/*m._41 = 0.f;
+	m._42 = 0.f;
+	m._43 = 0.f;
+	m._14 = 0.f;
+	m._24 = 0.f;
+	m._34 = 0.f;
+	m._44 = 1.f;*/
 
-	return *this;
+	return m;
 };
 
-Matrix44& Matrix44::RotationQuat ( const Quat& q) {
-	_11 =1.f-2.f*(q.y*q.y + q.z*q.z);		_12 =2.f*(q.x*q.y + q.z*q.w);		_13 =2.f*(q.x*q.z - q.y*q.w);		_14 =0.f;
-	_21 =2.f*(q.x*q.y - q.z*q.w);			_22 =1.f-2.f*(q.x*q.x + q.z*q.z);	_23 =2.f*(q.y*q.z + q.x*q.w);		_24 =0.f;
-	_31 =2.f*(q.x*q.z + q.y*q.w);			_32 =2.f*(q.y*q.z - q.x*q.w);		_33 =1.f-2.f*(q.x*q.x + q.y*q.y);	_34 =0.f;
-	_41 =0.f;								_42 =0.f;							_43 =0.f;							_44 =1.f;
-
-	return *this;
+Matrix44 Matrix44::RotationQuat ( const Quat& q) {
+	Matrix44 m;
+		m._11 =1.f-2.f*(q.y*q.y + q.z*q.z);		m._12 =2.f*(q.x*q.y + q.z*q.w);		m._13 =2.f*(q.x*q.z - q.y*q.w);		m._14 =0.f;
+		m._21 =2.f*(q.x*q.y - q.z*q.w);			m._22 =1.f-2.f*(q.x*q.x + q.z*q.z);	m._23 =2.f*(q.y*q.z + q.x*q.w);		m._24 =0.f;
+		m._31 =2.f*(q.x*q.z + q.y*q.w);			m._32 =2.f*(q.y*q.z - q.x*q.w);		m._33 =1.f-2.f*(q.x*q.x + q.y*q.y);	m._34 =0.f;
+		m._41 =0.f;								m._42 =0.f;							m._43 =0.f;							m._44 =1.f;
+	return m;
 };
 
 
-Matrix44& Matrix44::ViewRH(const Vec3& eye, const Vec3& target, const Vec3& up) {
+Matrix44 Matrix44::ViewRH(const Vec3& eye, const Vec3& target, const Vec3& up) {
 	Vec3 baseFront = (target - eye).Normalize();		// The "look-at" vector.
-	Vec3 baseRight = Cross(baseFront, up).Normalize();// The "right" vector.
+	Vec3 baseRight = Cross(baseFront, up).Normalize();	// The "right" vector.
 	Vec3 baseUp = Cross(baseRight, baseFront);			// The "up" vector.
 
 	// Create a 4x4 orientation matrix from the right, up, and at vectors
@@ -398,27 +384,26 @@ Matrix44& Matrix44::ViewRH(const Vec3& eye, const Vec3& target, const Vec3& up) 
 							-eye.x, -eye.y, -eye.z,  1 );
 
 	// Combine the orientation and translation to compute the view matrix
-	*this = ( translation * orientation );
-	return *this;
+	return translation * orientation;
 }
 
-Matrix44& Matrix44::ProjPerspective(float nearPlane, float farPlane, float fovRad, float aspectRatio) {
-	Identity();
-	_11  = _22 = 1.0f / tanf(fovRad * 0.5f);
-	_11 /=	 aspectRatio;
-	_33  =   farPlane / (farPlane - nearPlane);
-	_43  =  -(farPlane * nearPlane) / (farPlane - nearPlane);
-	_34  =  1;
-	_44  =	0;
-	return *this;;
+Matrix44 Matrix44::ProjPerspective(float nearPlane, float farPlane, float fovRad, float aspectRatio) {
+	Matrix44 m;
+		m._11  = m._22 = 1.0f / tanf(fovRad * 0.5f);
+		m._11 /= aspectRatio;
+		m._33  = farPlane / (farPlane - nearPlane);
+		m._43  = -(farPlane * nearPlane) / (farPlane - nearPlane);
+		m._34  = 1;
+		m._44  = 0;
+	return m;
 }
 
-Matrix44& Matrix44::ProjOrtographic(float nearPlane, float farPlane, float left, float right, float bottom, float top) {
-	Identity();
-	_11 = 2 / (right - left);
-	_22 = 2 / (top - bottom);
-	_33 = 2 / (farPlane - nearPlane);
-	return *this;
+Matrix44 Matrix44::ProjOrtographic(float nearPlane, float farPlane, float left, float right, float bottom, float top) {
+	Matrix44 m;
+		m._11 = 2 / (right - left);
+		m._22 = 2 / (top - bottom);
+		m._33 = 2 / (farPlane - nearPlane);
+	return m;
 }
 
 ///////////////////////////////////////////////////////////////////////////

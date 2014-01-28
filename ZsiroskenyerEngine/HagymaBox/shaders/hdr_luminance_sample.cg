@@ -1,10 +1,10 @@
 // input texture sampler
-sampler2D textureInput : register(s0) = {
-    MipFilter = LINEAR,
-    MinFilter = LINEAR,
-    MagFilter = LINEAR,
-	AddressU = Clamp,
-	AddressW = Clamp,
+sampler2D textureInput = {
+    	MipFilter = LINEAR,
+    	MinFilter = LINEAR,
+    	MagFilter = LINEAR,
+	AddressU = CLAMP,
+	AddressV = CLAMP,
 };
 
 // in/out structures
@@ -31,4 +31,13 @@ float PS_MAIN(VS_OUT In) : COLOR0 {
 	float4 color = tex2D(textureInput, In.tex0);
 	float luminance = color.r*0.2126 + color.g*0.7152 + color.b*0.0722;
 	return luminance;
+}
+
+technique t
+{
+	pass p
+	{
+		VertexProgram = compile vs_4_0 VS_MAIN();
+		FragmentProgram = compile ps_4_0 PS_MAIN();
+	}
 }

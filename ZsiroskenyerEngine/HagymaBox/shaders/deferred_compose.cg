@@ -1,10 +1,10 @@
 //------------------------------------------------------------------------------
 //	G-buffer input textures
 //------------------------------------------------------------------------------
-sampler2D gBuffer0 : register(s0);
-sampler2D gBuffer1 : register(s1);
-sampler2D gBuffer2 : register(s2);
-sampler2D depthBuffer : register(s3);
+sampler2D gBuffer0;
+sampler2D gBuffer1;
+sampler2D gBuffer2;
+sampler2D depthBuffer;
 
 //------------------------------------------------------------------------------
 //	Constant buffer
@@ -207,32 +207,6 @@ float CookTorranceMagic(float3 N, float3 I, float L)
         return clamp((F*D*G)/(PI*NdotV),0.1f, 2.0f);
 }
 
-/* garbage
-float Directionallight(float3 dir, float3 norm, float3 posW,float specexponent, float specularIntensity, float diffuseIntensity)
-{
-	float4 result = float4(0,0,0,0);
-	float3 lightvec = -normalize(dir);
-
-	float difflight = saturate(dot(lightvec,norm));
-
-	float speclight = 0.0f;
-	
-	result = difflight * diffuseIntensity;
-
-	if(difflight > 0.0f)
-	{	
-		//result += CookTorranceMagic(norm, posW - camPos);
-
-		float3 viewvec = normalize( camPos - posW );
-		float3 halfvec = normalize( lightvec + viewvec );
-	  	speclight = pow(saturate(dot(norm,halfvec)),specexponent) * specularIntensity;
-		result+= speclight;	
-	}
-
-	return result;		
-}
-*/
-
 //------------------------------------------------------------------------------
 //	Diffuse lighting term
 //------------------------------------------------------------------------------
@@ -377,19 +351,11 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	return Out;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+technique t
+{
+	pass p
+	{
+		VertexProgram = compile vs_4_0 VS_MAIN();
+		FragmentProgram = compile ps_4_0 PS_MAIN();
+	}
+}

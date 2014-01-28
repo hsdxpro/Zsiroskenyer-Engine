@@ -1,10 +1,10 @@
 // texture input sampler
-sampler2D textureInput : register(s0) = {
-    MipFilter = LINEAR,
-    MinFilter = LINEAR,
-    MagFilter = LINEAR,
+sampler2D textureInput = {
+    	MipFilter = LINEAR,
+    	MinFilter = LINEAR,
+    	MagFilter = LINEAR,
 	AddressU = Clamp,
-	AddressW = Clamp,
+	AddressV = Clamp,
 };
 
 // constant buffers
@@ -45,4 +45,13 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	//sum.a = 1.0f;
 
 	return sum;
+}
+
+technique t
+{
+	pass p
+	{
+		VertexProgram = compile vs_4_0 VS_MAIN();
+		FragmentProgram = compile ps_4_0 PS_MAIN();
+	}
 }
