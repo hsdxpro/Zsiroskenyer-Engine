@@ -167,6 +167,9 @@
       <Filter>Common\lighting</Filter>
     </ClInclude>
     <ClInclude Include="src\CgShaderHelper.h" />
+    <ClInclude Include="src\ICustomGeometry.h">
+      <Filter>M_GraphicsEngine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\math\color.cpp">

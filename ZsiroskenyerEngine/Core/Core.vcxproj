@@ -30,6 +30,7 @@
     <ClInclude Include="src\GeometryBuilder.h" />
     <ClInclude Include="src\GraphicsEntity.h" />
     <ClInclude Include="src\GraphicsLight.h" />
+    <ClInclude Include="src\ICustomGeometry.h" />
     <ClInclude Include="src\IDLLLoader.h" />
     <ClInclude Include="src\IGraphicsApi.h" />
     <ClInclude Include="src\IGraphicsEngine.h" />

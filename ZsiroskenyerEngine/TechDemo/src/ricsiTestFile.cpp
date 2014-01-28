@@ -30,6 +30,7 @@
 #define NOMINMAX
 #define _WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#pragma message("This file is officially part of the \"How not to C++\" book")
 
 
 // TODO: hide yo' wife, hide yo' kids, hide yo' warnings
