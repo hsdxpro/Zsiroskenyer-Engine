@@ -387,6 +387,42 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 	// --- --- RENDER EACH LIGHTGROUP --- --- // dir, spot, ambient, point
 
+	//------------------------------------------------------------------------//
+	// --- --- --- --- --- --- --- COMPUTE SKY PARAMS --- --- --- --- --- --- //
+	//------------------------------------------------------------------------//
+	struct {
+		Matrix44 invViewProj;
+		Vec3 camPos; float _pad1;
+		Vec3 sunDir; float _pad2;
+		Vec3 sunColor; float _pad3;
+		Vec3 horizonColor; float _pad4;
+		Vec3 zenithColor; float _pad5;
+		float rayleighFactor; float _pad6[3];
+	} skyConstants;
+
+	skyConstants.invViewProj = shaderConstants.invViewProj;
+	skyConstants.camPos = cam->GetPos();
+	skyConstants.sunDir = directionalLights.size() > 0 ? directionalLights[0]->direction : Vec3(0, 0, -1);
+
+	IntensitySpectrum spectrum;
+	spectrum.BlackBody(6400);
+	spectrum.Scale(1.0f / spectrum[spectrum.Peak()]);
+	float sunZenithAngle = acos(Dot(-skyConstants.sunDir, Vec3(0, 0, 1)));
+	float airMass = RelativeAirMass(ZS_PI / 2.0 - sunZenithAngle) / RelativeAirMass(0);
+	Rayleigh(spectrum, airMass*3.0f);
+	Vec3 sunColor = spectrum.ToRGB();
+	sunColor /= std::max(sunColor.x, std::max(sunColor.y, sunColor.z));
+
+	skyConstants.sunColor = sunColor;
+	skyConstants.horizonColor = sunColor; // sunset
+	skyConstants.zenithColor = Vec3(0.5, 0.68, 0.9);
+	skyConstants.rayleighFactor = 1.0f;
+
+	if (directionalLights.size() > 0) {
+		directionalLights[0]->color = sunColor;
+	}
+
+
 	//-------------------------------------------------------------------------//
 	// --- --- --- --- --- --- --- DIRECTIONAL LIGHTS  --- --- --- --- --- --- //
 	//-------------------------------------------------------------------------//
@@ -487,36 +523,6 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	//-------------------------------------------------------------------------//
 	// --- --- --- --- --- --- --- --- --- SKY --- --- --- --- --- --- --- --- //
 	//-------------------------------------------------------------------------//
-
-	struct {
-		Matrix44 invViewProj;
-		Vec3 camPos; float _pad1;
-		Vec3 sunDir; float _pad2;
-		Vec3 sunColor; float _pad3;
-		Vec3 horizonColor; float _pad4;
-		Vec3 zenithColor; float _pad5;
-		float rayleighFactor; float _pad6[3];
-	} skyConstants;
-
-	skyConstants.invViewProj = shaderConstants.invViewProj;
-	skyConstants.camPos = cam->GetPos();
-	skyConstants.sunDir = directionalLights.size() > 0 ? directionalLights[0]->direction : Vec3(0, 0, -1);
-
-	IntensitySpectrum spectrum;
-	spectrum.BlackBody(6400);
-	spectrum.Scale(1.0f/spectrum[spectrum.Peak()]);
-	float sunZenithAngle = acos(Dot(-skyConstants.sunDir, Vec3(0, 0, 1)));
-	float airMass = RelativeAirMass(ZS_PI / 2.0 - sunZenithAngle) / RelativeAirMass(0);
-	Rayleigh(spectrum, airMass);
-	Vec3 sunColor = spectrum.ToRGB();
-	sunColor /= std::max(sunColor.x, std::max(sunColor.y, sunColor.z));
-
-	//skyConstants.sunColor = directionalLights.size() > 0 ? directionalLights[0]->color : Vec3(0.9, 0.9, 0.9);
-
-	skyConstants.sunColor = sunColor;
-	skyConstants.horizonColor = sunColor; // sunset
-	skyConstants.zenithColor = Vec3(0.5, 0.68, 0.9);
-	skyConstants.rayleighFactor = 1.0f;
 
 	depthStencilState.stencilOpBackFace.stencilCompare = eComparisonFunc::EQUAL;
 	depthStencilState.stencilOpFrontFace = depthStencilState.stencilOpBackFace;

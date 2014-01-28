@@ -59,7 +59,7 @@ float3 ToneMap(float3 color, float adaptation) {
 	float inLum = Luminance(color);
 	float outLum = RemapLuminance(log10(inLum), log10(adaptation));
 	color = AdjustLuminance(color, outLum);
-	return color; /*
+	//return color; /*
 	return SaturateToFit(color);//*/
 }
 
