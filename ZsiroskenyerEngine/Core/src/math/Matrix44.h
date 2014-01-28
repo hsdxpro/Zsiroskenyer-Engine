@@ -63,22 +63,22 @@ public:
 	Matrix44& Translate(float x, float y, float z);
 	Matrix44& Translate(const Vec3& t);
 
-	Matrix44& RotationAxisAngle(const Vec3& axis, float angle);
-	Matrix44& RotationQuat(const Quat&); // typecast ((Matrix44)quaternion) is possibly slower than this shit
+	static Matrix44 RotationAxisAngle(const Vec3& axis, float angle);
+	static Matrix44 RotationQuat(const Quat&); // typecast ((Matrix44)quaternion) is possibly slower than this shit
 
-	Matrix44& Translation(float x, float y, float z);
-	Matrix44& Translation(const Vec3& v);
+	static Matrix44 Translation(float x, float y, float z);
+	static Matrix44 Translation(const Vec3& v);
 
-	Matrix44& RotationEuler(const Vec3& rot);
-	Matrix44& RotationEuler(float x, float y, float z);
+	static Matrix44 RotationEuler(const Vec3& rot);
+	static Matrix44 RotationEuler(float x, float y, float z);
+ 
+	static Matrix44 RotationX(float angle);
+	static Matrix44 RotationY(float angle);
+	static Matrix44 RotationZ(float angle);
 
-	Matrix44& RotationX(float angle);
-	Matrix44& RotationY(float angle);
-	Matrix44& RotationZ(float angle);
-
-	Matrix44& ViewRH(const Vec3& eye, const Vec3& target, const Vec3& up);
-	Matrix44& ProjPerspective(float nearPlane, float farPlane, float fovRad, float aspectRatio);
-	Matrix44& ProjOrtographic(float nearPlane, float farPlane, float left, float right, float bottom, float top);
+	static Matrix44 ViewRH(const Vec3& eye, const Vec3& target, const Vec3& up);
+	static Matrix44 ProjPerspective(float nearPlane, float farPlane, float fovRad, float aspectRatio);
+	static Matrix44 ProjOrtographic(float nearPlane, float farPlane, float left, float right, float bottom, float top);
 
 	// Accessors
 	float& operator() (unsigned row, unsigned col);

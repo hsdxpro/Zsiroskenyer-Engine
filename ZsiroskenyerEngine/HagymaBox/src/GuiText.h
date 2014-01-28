@@ -9,8 +9,10 @@ class cGuiText {
 public:
 	//-------- FULLY INTERNAL ----------//
 	friend class cGui;
+
 protected:
 	cGuiText(cGui* parent, cGraphicsEntity* e);
+
 protected:
 	cGraphicsEntity* entity;
 	cGui* parent;

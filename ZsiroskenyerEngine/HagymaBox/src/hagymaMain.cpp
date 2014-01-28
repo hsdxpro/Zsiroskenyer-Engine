@@ -115,8 +115,7 @@ void updateDemo(cCamera& cam, float deltaT) {
 		mouseDeltaY = -maxLimit;
 	if (mouseDeltaY > maxLimit)
 		mouseDeltaY = maxLimit;
-	Matrix44 camRotMat;
-	camRotMat.RotationEuler(mouseDeltaY, 0, mouseDeltaX);
+	Matrix44 camRotMat = Matrix44::RotationEuler(mouseDeltaY, 0, mouseDeltaX);
 
 	// Rot front vec with that. apply target
 	Vec3 frontVec(0, 1, 0);
