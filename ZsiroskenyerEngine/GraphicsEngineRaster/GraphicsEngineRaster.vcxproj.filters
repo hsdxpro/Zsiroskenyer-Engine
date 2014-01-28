@@ -52,6 +52,9 @@
     <ClCompile Include="src\_GeometryBuilder.cpp">
       <Filter>Geometry</Filter>
     </ClCompile>
+    <ClCompile Include="src\UserGeometry.cpp">
+      <Filter>Geometry</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GraphicsEngine.h" />
@@ -80,6 +83,9 @@
       <Filter>Geometry</Filter>
     </ClInclude>
     <ClInclude Include="src\DeferredLightVolume.h" />
+    <ClInclude Include="src\UserGeometry.h">
+      <Filter>Geometry</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\TechDemo\shaders\deferred_compose.cg">

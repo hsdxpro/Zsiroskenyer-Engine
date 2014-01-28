@@ -194,3 +194,9 @@ bool cResourceManager::IsValid(cResourceManager* rm) {
 	return it != validManagers.end();
 }
 std::unordered_set<cResourceManager*> cResourceManager::validManagers;
+
+
+// Misc
+IGraphicsApi* cResourceManager::GetGraphicsApi() {
+	return gApi;
+}

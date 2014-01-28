@@ -27,7 +27,7 @@ public:
 	~_cGeometryBuilder();
 
 	// vertex data
-	void SetVertexStride();
+	void SetVertexStride(size_t vSize);
 	void InsertVertices(const void* verts, size_t bytes, size_t offset = 0);
 	void EraseVertices(size_t offset, size_t bytes);
 	void* GetVertices();

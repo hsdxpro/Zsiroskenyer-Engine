@@ -33,7 +33,7 @@ class cResourceManager {
 	friend class cMaterialRef;
 	friend class cTextureRef;
 public:
-	// resource aquisiti
+	// resource aquisition
 	cGeometryRef GetGeometry(const zsString& filePath);
 	cMaterialRef GetMaterial(const zsString& filePath);
 	cTextureRef GetTexture(const zsString& filePath);
@@ -41,6 +41,9 @@ public:
 	// constructor
 	cResourceManager(IGraphicsApi* gApi);
 	~cResourceManager();
+
+	// misc
+	IGraphicsApi* GetGraphicsApi();
 
 	// check if manager is still valid
 	static bool IsValid(cResourceManager* mgr);

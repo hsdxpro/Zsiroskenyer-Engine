@@ -74,6 +74,10 @@ _cGeometryBuilder::~_cGeometryBuilder() {
 ////////////////////////////////////////////////////////////////////////////////
 // Insert/Remove stuff
 
+void _cGeometryBuilder::SetVertexStride(size_t vSize) {
+	this->vSize = vSize;
+}
+
 // vertex data
 void _cGeometryBuilder::InsertVertices(const void* verts, size_t bytes, size_t offset) {
 	InsertBuf((uint8_t**)&vertices, nBytesVertices, (uint8_t*)verts, bytes, offset);
