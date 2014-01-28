@@ -242,13 +242,23 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	Matrix44 viewProjMat = viewMat * projMat;
 	static Matrix44 prevView = viewMat;
 
-	// Render each instanceGroup
+	// Foreach: Instance group
 	for (auto& group : parent.sceneManager->GetInstanceGroups()) {
+		cGeometry* geom = group->geom.get();
+		cMaterial* mtl = group->mtl.get();
 
 		// Set Geometry
 		const IIndexBuffer* ib = (*group->geom).GetIndexBuffer();
 		gApi->SetIndexBuffer(ib);
 		gApi->SetVertexBuffer((*(group->geom)).GetVertexBuffer(), shaderGBuffer->GetVertexFormatSize());
+		
+		// Foreach: Entity polygon material group
+		for (auto& matGroup : geom->GetMatGroups()) {
+
+
+		}
+
+
 
 		// Set SubMaterials
 		auto& mtl = *group->mtl;
@@ -271,7 +281,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 			Matrix44 worldMat = entity->GetWorldMatrix();
 			// WorldViewProj matrix
 			Matrix44 wvp = worldMat * viewProjMat;
-
+			// cbuffer
 			struct gBuffConstantBuff
 			{
 				Matrix44 wvp;
