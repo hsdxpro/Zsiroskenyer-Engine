@@ -25,7 +25,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="src\Material.cpp" />
-    <ClCompile Include="_GeometryBuilder.cpp" />
+    <ClCompile Include="src\_GeometryBuilder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\DeferredLightVolume.h" />

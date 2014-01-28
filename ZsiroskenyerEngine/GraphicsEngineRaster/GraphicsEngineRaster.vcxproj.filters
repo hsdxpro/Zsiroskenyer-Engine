@@ -49,7 +49,7 @@
     <ClCompile Include="src\DeferredRenderer.cpp" />
     <ClCompile Include="src\HDRProcessor.cpp" />
     <ClCompile Include="src\GraphicsScene.cpp" />
-    <ClCompile Include="_GeometryBuilder.cpp">
+    <ClCompile Include="src\_GeometryBuilder.cpp">
       <Filter>Geometry</Filter>
     </ClCompile>
   </ItemGroup>
