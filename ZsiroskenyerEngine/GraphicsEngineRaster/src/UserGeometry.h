@@ -8,11 +8,23 @@
 #pragma once
 
 #include "_GeometryBuilder.h"
-#include "../../Core/src/ICustomGeometry.h"
+#include "ResourceReference.h"
+#include "../../Core/src/IGeometryBuilder.h"
 
 class cResourceManager;
 
-class cUserGeometry : public ICustomGeometry {
+
+class cUserGeometryRef : public cGeometryRef, public IGeometryRef {
+public:
+	cUserGeometryRef() : cGeometryRef() {}
+	cUserGeometryRef(const cGeometryRef& ref) : cGeometryRef(ref) {}
+	void Release() override {
+		delete this;
+	}
+};
+
+
+class cUserGeometry : public IGeometryBuilder {
 public:
 	// ctor
 	cUserGeometry(cResourceManager& rm);
@@ -38,15 +50,19 @@ public:
 	void LoadFile(const wchar_t* path) override;
 
 	// clone
-	void Clone(ICustomGeometry* other) override;
+	void Clone(IGeometryBuilder* other) override;
 
 	// submit or reset
 	IGeometryRef* Submit(const wchar_t* name) override;
 	void Reset()  override;
+
+	// politely ask for an error message
+	const char* YUNoWorkBitch() override;
 
 	// release
 	void Release() override;
 private:
 	cResourceManager& rm;
 	_cGeometryBuilder builder;
+	std::string errorMessage;
 };

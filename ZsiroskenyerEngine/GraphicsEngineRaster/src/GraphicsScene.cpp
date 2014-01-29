@@ -6,6 +6,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "GraphicsEngine.h"
+#include "UserGeometry.h"
 
 
 //	Constructor & destructor
@@ -23,6 +24,15 @@ cGraphicsScene::~cGraphicsScene() {
 //	Add/Remove scene entities
 cGraphicsEntity* cGraphicsScene::CreateEntity(const wchar_t* geomPath, const wchar_t* mtlPath) {
 	cGeometryRef geom = parent.resourceManager->GetGeometry(geomPath);
+	cMaterialRef mtl = parent.resourceManager->GetMaterial(mtlPath);
+
+	if (!geom || !mtl)
+		return NULL;
+
+	return sceneManager.AddEntity(std::move(geom), std::move(mtl));
+}
+cGraphicsEntity* cGraphicsScene::CreateEntity(IGeometryRef* customGeom, const wchar_t* mtlPath) {
+	cGeometryRef geom = *(cGeometryRef*)customGeom;
 	cMaterialRef mtl = parent.resourceManager->GetMaterial(mtlPath);
 
 	if (!geom || !mtl)

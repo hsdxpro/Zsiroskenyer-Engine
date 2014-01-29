@@ -22,6 +22,9 @@ class ITexture2D;
 class IShaderProgram;
 class IWindow;
 
+class IGeometryBuilder;
+class IGeometryRef;
+
 ////////////////////////////////////////////////////////////////////////////////
 //	Dll accessor
 extern "C"
@@ -39,6 +42,7 @@ public:
 
 	// entities & lights
 	cGraphicsEntity* CreateEntity(const wchar_t* geomPath, const wchar_t* mtlPath) override;
+	cGraphicsEntity* CreateEntity(IGeometryRef* customGeom, const wchar_t* mtlPath) override;
 	void DeleteEntity(const cGraphicsEntity* entity) override;
 	cGraphicsLight* CreateLight() override;
 	void DeleteLight(const cGraphicsLight* light) override;
@@ -88,6 +92,8 @@ public:
 	// scene management
 	IGraphicsScene*	CreateScene(tRenderState state = tRenderState()) override;
 	void			DeleteScene(const IGraphicsScene* scene) override;
+
+	IGeometryBuilder* CreateCustomGeometry() override;
 
 	// rendering pipeline
 	eGraphicsResult Update(float elapsed = 0.0f) override;

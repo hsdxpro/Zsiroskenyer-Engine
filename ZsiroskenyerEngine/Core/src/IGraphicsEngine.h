@@ -16,6 +16,8 @@ class cGraphicsEntity;
 class cGraphicsLight;
 class cCamera;
 class IWindow;
+class IGeometryRef;
+class IGeometryBuilder;
 
 ////////////////////////////////////////////////////////////////////////////////
 //	Configuration
@@ -81,6 +83,7 @@ class IGraphicsScene {
 public:
 	// entities & lights
 	virtual cGraphicsEntity* CreateEntity(const wchar_t* geomPath, const wchar_t* mtlPath) = 0;
+	virtual cGraphicsEntity* CreateEntity(IGeometryRef* customGeom, const wchar_t* mtlPath) = 0;
 	virtual void DeleteEntity(const cGraphicsEntity* entity) = 0;
 	virtual cGraphicsLight* CreateLight() = 0;
 	virtual void DeleteLight(const cGraphicsLight* light) = 0;
@@ -117,4 +120,6 @@ public:
 	// scene management
 	virtual IGraphicsScene*	CreateScene(tRenderState state = tRenderState()) = 0;
 	virtual void			DeleteScene(const IGraphicsScene* scene) = 0;
+
+	virtual IGeometryBuilder* CreateCustomGeometry() = 0;
 };

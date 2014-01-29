@@ -14,10 +14,8 @@
 #include "../../Core/src/StrUtil.h"
 #include "../../Core/src/FileUtil.h"
 
+
 ////////////////////////////////////////////////////////////////////////////////
-//	ResourceManager
-
-
 //	Constructors
 cResourceManager::cResourceManager(IGraphicsApi* gApi) : gApi(gApi) {
 	validManagers.insert(this);
@@ -40,7 +38,7 @@ cResourceManager::~cResourceManager() {
 }
 
 
-
+////////////////////////////////////////////////////////////////////////////////
 //	Load/unload geometries
 cGeometryRef cResourceManager::GetGeometry(const zsString& filePath) {
 	cGeometry* geom;
@@ -80,6 +78,21 @@ void cResourceManager::UnloadGeometry(const cGeometry* geometry) {
 	}
 }
 
+// Custom, externally generated geometries
+cGeometryRef cResourceManager::AddGeometry(cGeometry* geometry, const zsString& name) {
+	// check if name is taken
+	auto it = geometries.left.find(name);
+	if (it == geometries.left.end()) { // it's not taken
+		// insert into database
+		geometries.insert(GeometryMapT::value_type(name, geometry));
+	}
+	else { // it's taken
+		throw std::invalid_argument("name already in use");
+		return cGeometryRef(this, nullptr);
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
 //	Load/unload materials
 cMaterialRef cResourceManager::GetMaterial(const zsString& filePath) {
 	cMaterial* mtl;
@@ -155,6 +168,7 @@ void cResourceManager::UnloadMaterial(const cMaterial* material) {
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////
 //	Load/Unload textures
 cTextureRef cResourceManager::GetTexture(const zsString& filePath) {
 	ITexture2D* texture;
@@ -187,7 +201,7 @@ void cResourceManager::UnloadTexture(const ITexture2D* texture) {
 }
 
 
-
+////////////////////////////////////////////////////////////////////////////////
 // register and unregister managers to see if they are valid
 bool cResourceManager::IsValid(cResourceManager* rm) {
 	auto it = validManagers.find(rm);
@@ -196,6 +210,7 @@ bool cResourceManager::IsValid(cResourceManager* rm) {
 std::unordered_set<cResourceManager*> cResourceManager::validManagers;
 
 
+////////////////////////////////////////////////////////////////////////////////
 // Misc
 IGraphicsApi* cResourceManager::GetGraphicsApi() {
 	return gApi;

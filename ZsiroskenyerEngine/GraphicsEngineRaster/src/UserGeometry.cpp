@@ -75,13 +75,27 @@ void cUserGeometry::LoadFile(const wchar_t* path) {
 }
 
 // clone
-void cUserGeometry::Clone(ICustomGeometry* other) {
+void cUserGeometry::Clone(IGeometryBuilder* other) {
 	builder = ((cUserGeometry*)other)->builder;
 }
 
-// submit or reset
+// submit
 IGeometryRef* cUserGeometry::Submit(const wchar_t* name) {
-	return nullptr;
+	try {
+		cGeometry* geom = builder.Create();
+		cGeometryRef gref = rm.AddGeometry(geom, name);
+		auto ugref = new cUserGeometryRef(gref);
+		return ugref;
+	}
+	catch (std::exception& e) {
+		errorMessage = e.what();
+		return nullptr;
+	}
+}
+
+// error messages
+const char* cUserGeometry::YUNoWorkBitch() {
+	return errorMessage.c_str();
 }
 
 // reset

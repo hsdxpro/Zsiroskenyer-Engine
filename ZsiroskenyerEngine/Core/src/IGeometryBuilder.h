@@ -10,10 +10,13 @@
 
 #include <cstdint>
 
-class IGeometryRef;
+class IGeometryRef {
+public:
+	virtual void Release() = 0;
+};
 
 
-class ICustomGeometry {
+class IGeometryBuilder {
 public:
 	struct tMatGroup {
 		size_t id, indexOffset, indexCount;
@@ -40,11 +43,14 @@ public:
 	virtual void LoadFile(const wchar_t* path) = 0;
 
 	// clone
-	virtual void Clone(ICustomGeometry* other) = 0;
+	virtual void Clone(IGeometryBuilder* other) = 0;
 
 	// submit or reset
 	virtual IGeometryRef* Submit(const wchar_t* name) = 0;
 	virtual void Reset() = 0;
+
+	// politely ask for an error message
+	virtual const char* YUNoWorkBitch() = 0;
 
 	// release
 	virtual void Release() = 0;

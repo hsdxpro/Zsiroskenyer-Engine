@@ -38,6 +38,9 @@ public:
 	cMaterialRef GetMaterial(const zsString& filePath);
 	cTextureRef GetTexture(const zsString& filePath);
 
+	// add custom geometries
+	cGeometryRef AddGeometry(cGeometry* geometry, const zsString& name);
+
 	// constructor
 	cResourceManager(IGraphicsApi* gApi);
 	~cResourceManager();

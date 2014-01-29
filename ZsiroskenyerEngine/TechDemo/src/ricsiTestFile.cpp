@@ -266,7 +266,7 @@ int ricsiMain() {
 				s->GetCamera().SetAspectRatio((float)GetSystemMetrics(SM_CXSCREEN) / GetSystemMetrics(SM_CYSCREEN));
 			}
 		}
-	
+
 		// Update everything
 		static cTimer t;
 		float deltaT = t.GetDeltaSeconds();

@@ -8,6 +8,8 @@
 #include "ResourceManager.h"
 
 #include "Geometry.h"
+#include "UserGeometry.h"
+
 #include "..\..\Core\src\GraphicsEntity.h"
 #include "..\..\Core\src\Camera.h"
 
@@ -204,6 +206,10 @@ void cGraphicsEngine::DeleteScene(const IGraphicsScene* scene) {
 	}
 }
 
+// create curtom geometry builder
+IGeometryBuilder* cGraphicsEngine::CreateCustomGeometry() {
+	return new cUserGeometry(*resourceManager);
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
