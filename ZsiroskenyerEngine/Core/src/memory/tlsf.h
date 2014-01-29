@@ -39,7 +39,7 @@
 
 // log2 and 2^n 
 inline unsigned log2(size_t n) {
-	unsigned long idx;
+	unsigned long idx = 0;
 	_BitScanReverse(&idx, n);
 	return idx;
 }
@@ -62,7 +62,7 @@ inline size_t exp2(unsigned y) {
 
 // find first set
 inline unsigned ffs(size_t arg) {
-	unsigned long idx;
+	unsigned long idx = 0;
 	_BitScanForward(&idx, arg);
 	return idx;
 }

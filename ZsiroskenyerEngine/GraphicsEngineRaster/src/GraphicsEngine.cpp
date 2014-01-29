@@ -40,7 +40,6 @@ __declspec(dllexport) IGraphicsEngine* CreateGraphicsEngineRaster(IWindow* targe
 		if (errorMessage != nullptr) {
 			*errorMessage = errMsg.c_str();
 		}
-		delete engine;
 	}
 	return engine;
 }

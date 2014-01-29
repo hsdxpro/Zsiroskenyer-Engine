@@ -91,8 +91,8 @@ _cGeometryBuilder::~_cGeometryBuilder() {
 ////////////////////////////////////////////////////////////////////////////////
 // Insert/Remove stuff
 
-void _cGeometryBuilder::SetVertexStride(size_t vSize) {
-	this->vSize = vSize;
+void _cGeometryBuilder::SetVertexStride(size_t vertexSize) {
+	this->vertexSize = vertexSize;
 }
 
 // vertex data

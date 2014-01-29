@@ -449,7 +449,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	spectrum.BlackBody(6400);
 	spectrum.Scale(1.0f / spectrum[spectrum.Peak()]);
 	float sunZenithAngle = acos(Dot(-skyConstants.sunDir, Vec3(0, 0, 1)));
-	float airMass = RelativeAirMass(ZS_PI / 2.0 - sunZenithAngle) / RelativeAirMass(0);
+	float airMass = RelativeAirMass((float)ZS_PI / 2.0f - sunZenithAngle) / RelativeAirMass(0);
 	Rayleigh(spectrum, airMass*3.0f);
 	Vec3 sunColor = spectrum.ToRGB();
 	sunColor /= std::max(sunColor.x, std::max(sunColor.y, sunColor.z));
