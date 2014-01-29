@@ -115,6 +115,7 @@
     <ClCompile Include="src\StrUtil.cpp" />
     <ClCompile Include="src\TagParser.cpp" />
     <ClCompile Include="src\Timer.cpp" />
+    <ClCompile Include="src\tipsify.cpp" />
     <ClCompile Include="src\Transform3D.cpp" />
     <ClCompile Include="src\VertexFormat.cpp" />
     <ClCompile Include="src\zsString.cpp">

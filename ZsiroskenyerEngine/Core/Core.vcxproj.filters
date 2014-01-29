@@ -265,6 +265,9 @@
     <ClCompile Include="src\lighting\lighting.cpp">
       <Filter>Common\lighting</Filter>
     </ClCompile>
+    <ClCompile Include="src\tipsify.cpp">
+      <Filter>M_GraphicsEngine\Classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Game">
