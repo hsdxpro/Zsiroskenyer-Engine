@@ -85,6 +85,7 @@ cGeometryRef cResourceManager::AddGeometry(cGeometry* geometry, const zsString& 
 	if (it == geometries.left.end()) { // it's not taken
 		// insert into database
 		geometries.insert(GeometryMapT::value_type(name, geometry));
+		return cGeometryRef(this, geometry);
 	}
 	else { // it's taken
 		throw std::invalid_argument("name already in use");

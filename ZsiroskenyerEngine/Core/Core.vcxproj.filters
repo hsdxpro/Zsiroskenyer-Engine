@@ -170,6 +170,12 @@
     <ClInclude Include="src\IGeometryBuilder.h">
       <Filter>M_GraphicsEngine</Filter>
     </ClInclude>
+    <ClInclude Include="src\multithreading\WorkerThread.h">
+      <Filter>Common\multithreading</Filter>
+    </ClInclude>
+    <ClInclude Include="src\multithreading\ThreadPool.h">
+      <Filter>Common\multithreading</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\math\color.cpp">
@@ -267,6 +273,12 @@
     </ClCompile>
     <ClCompile Include="src\tipsify.cpp">
       <Filter>M_GraphicsEngine\Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\multithreading\WorkerThread.cpp">
+      <Filter>Common\multithreading</Filter>
+    </ClCompile>
+    <ClCompile Include="src\multithreading\ThreadPool.cpp">
+      <Filter>Common\multithreading</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

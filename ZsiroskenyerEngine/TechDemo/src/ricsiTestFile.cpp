@@ -255,6 +255,7 @@ int ricsiMain() {
 		else
 			fpsLimit = fps;
 	}
+	gEngine->Resize(1280, 960);
 
 	// Main loop
 	IWindow::eMessage msg;

@@ -64,6 +64,8 @@
     <ClInclude Include="src\memory\fixed_size_pool.h" />
     <ClInclude Include="src\memory\tlsf.h" />
     <ClInclude Include="src\multithreading\spinlock.h" />
+    <ClInclude Include="src\multithreading\ThreadPool.h" />
+    <ClInclude Include="src\multithreading\WorkerThread.h" />
     <ClInclude Include="src\PipelineState.h" />
     <ClInclude Include="src\Renderer.h" />
     <ClInclude Include="src\ResourceProperty.h" />
@@ -111,6 +113,8 @@
     <ClCompile Include="src\math\Vec4.cpp" />
     <ClCompile Include="src\memory\tlsf.cpp" />
     <ClCompile Include="src\multithreading\spinlock.cpp" />
+    <ClCompile Include="src\multithreading\ThreadPool.cpp" />
+    <ClCompile Include="src\multithreading\WorkerThread.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\StrUtil.cpp" />
     <ClCompile Include="src\TagParser.cpp" />

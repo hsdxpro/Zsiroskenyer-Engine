@@ -1,229 +1,216 @@
 #include <iostream>
 #include <conio.h>
-#include "../../Core/src/math/math_all.h"
-#include "../../Core/src/memory/tlsf.h"
 #include <random>
 #include <deque>
-#include "../../Core/src/zsString.h"
+#include "../../Core/src/multithreading/WorkerThread.h"
+#include "../../Core/src/multithreading/ThreadPool.h"
+#include <condition_variable>
+
+#include <Windows.h>
 
 using namespace std;
 
-////////////////////////////////////////////////////////////////////////////////
-// Test TLSF
-#define ALLOC_COUNT 100000
-#define PATTERN_SIZE 100000
-
-void TestTLSF() {
-	unsigned char pattern[PATTERN_SIZE];
-	mt19937 randomEngine;
-	uniform_int_distribution<unsigned> randomGen;
-	uniform_int_distribution<size_t> randomSize(16, 1 * 1048576);
-	uniform_int_distribution<size_t> randomIndex;
-	randomEngine.seed(5489);
-	TLSF pool;
-
-	// generate pattern
-	for (int i = 0; i < PATTERN_SIZE; i++) {
-		pattern[i] = (unsigned char)randomGen(randomEngine);
+/*
+class cMalloc {
+public:
+	static bool display;
+	static void* alloc(size_t size) {
+		void* ptr = malloc(size);
+		if (display)
+			cout << "malloc: " << ptr << ", " << size << endl;
+		return ptr;
 	}
-
-	// database for remebering allocations
-	struct tAlloced {
-		unsigned char* ptr;
-		size_t size;
-	};
-	deque<tAlloced> allocs;
-
-	// allocate some stuff at start
-	for (size_t i = 0; i < 100; i++) {
-		// generate random allocation size
-		size_t size = randomSize(randomEngine);
-		// allocate and check result
-		unsigned char* p = (unsigned char*)pool.allocate(size);
-		if (p == NULL) {
-			cout << "failed to alloc: " << i << endl;
-			break;
-		}
-		// copy pattern
-		for (size_t j = 0; j < size; j++) {
-			p[j] = pattern[j%PATTERN_SIZE];
-		}
-		// add stuff to database
-		tAlloced allocation = {p, size};
-		allocs.push_back(allocation);
+	static void dealloc(void* ptr) {
+		if (display)
+			cout << "free: " << ptr << endl;
+		free(ptr);
 	}
-	// allocate over and over again to shuffle things
-	for (size_t i = 0; i < ALLOC_COUNT; i++) {
-		// print status message
-		if (i % (ALLOC_COUNT / 100) == 99) {
-			cout << i / (ALLOC_COUNT / 100) + 1 << "%" << endl;
-		}
-
-		// generate a random index
-		size_t index = randomIndex(randomEngine) % allocs.size();
-		auto it = allocs.begin() + index;
-		// check pattern
-		for (size_t j = 0; j < it->size; j++) {
-			if (pattern[j%PATTERN_SIZE] != it->ptr[j]) {
-				cout << "patterns don't match: " << j << " " << it->ptr;
-				break;
-			}
-		}
-		// free memory
-		pool.deallocate(it->ptr);
-		allocs.erase(it);
-
-		// generate random allocation size
-		size_t size = randomSize(randomEngine);
-		// allocate and check result
-		unsigned char* p = (unsigned char*)pool.allocate(size);
-		if (p == NULL) {
-			cout << "failed to alloc: " << i << endl;
-			break;
-		}
-		// copy pattern
-		for (size_t j = 0; j < size; j++) {
-			p[j] = pattern[j%PATTERN_SIZE];
-		}
-		// add stuff to database
-		tAlloced allocation = {p, size};
-		allocs.push_back(allocation);
-	}
-
+};
+bool cMalloc::display = false;
+void* operator new(size_t size){
+	return cMalloc::alloc(size);
 }
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-// Test serializer
-#define NUM_STRINGS_WRITTEN 500
-#define NUM_INTEGERS_WRITTEN 500
-#define NUM_STRINGS 10000
-#define NUM_INTEGERS 10000
-void TestSerializer() {
-	/*
-	cSerializable s;
-	mt19937 randomEngine;
-	uniform_int_distribution<unsigned> randomNumber(1, 1000000);
-
-
-
-	// generate 'some' random strings & integers
-	vector<zsString> strings;
-	for (int i = 0; i < NUM_STRINGS; i++) {
-		char str[256] = {'\0'};
-		auto n = randomNumber(randomEngine);
-		itoa(n, str, 10);
-		strings.push_back(str);
-	}
-	vector<size_t> integers;
-	for (int i = 0; i < NUM_INTEGERS; i++) {
-		integers.push_back(randomNumber(randomEngine));
-	}
-	cout << "strings & integers generated!" << endl;
-
-
-
-	// add like 500 random strings
-	for (int i = 0; i < NUM_STRINGS_WRITTEN; i++) {
-		s << strings[i];
-	}
-	cout << "strings added!" << endl;
-	// add like 500 random numbers
-	for (int i = 0; i < NUM_INTEGERS_WRITTEN; i++) {
-		s << integers[i];
-	}
-	// add like 500 random strings
-	for (int i = 0; i < NUM_STRINGS_WRITTEN; i++) {
-		s << strings[i + NUM_STRINGS_WRITTEN];
-	}
-	cout << "strings added!" << endl;
-	// add like 500 random numbers
-	for (int i = 0; i < NUM_INTEGERS_WRITTEN; i++) {
-		s << integers[i + NUM_INTEGERS_WRITTEN];
-	}
-
-
-
-	// write them to file
-	s.WriteToFile("TEST_FILE.dat");
-	cout << "written to file" << endl;
-
-	// nahh, we don't want this, we want a new one
-	s.~cSerializable();
-	new (&s) cSerializable();
-	cout << "new instance created" << endl;
-	
-	// read it back
-	s.ReadFromFile("TEST_FILE.dat");
-	cout << "data read back from file" << endl;
-
-
-
-	// read back all added strings
-	bool isCorrect = true;
-
-	for (int i = 0; i < NUM_STRINGS_WRITTEN; i++) {
-		zsString str;
-		s >> str;
-		if (str != strings[i]) {
-			cout << "(s) NOT EQUAL\n";
-			isCorrect = false;
-		}
-	}
-	// read back all added numbers
-	for (int i = 0; i < NUM_INTEGERS_WRITTEN; i++) {
-		size_t val;
-		s >> val;
-		if (val != integers[i]) {
-			cout << "(i) NOT EQUAL\n";
-			isCorrect = false;
-		}
-	}
-	for (int i = 0; i < NUM_STRINGS_WRITTEN; i++) {
-		zsString str;
-		s >> str;
-		if (str != strings[i + NUM_STRINGS_WRITTEN]) {
-			cout << "(s) NOT EQUAL\n";
-			isCorrect = false;
-		}
-	}
-	// read back all added numbers
-	for (int i = 0; i < NUM_INTEGERS_WRITTEN; i++) {
-		size_t val;
-		s >> val;
-		if (val != integers[i + NUM_INTEGERS_WRITTEN]) {
-			cout << "(i) NOT EQUAL\n";
-			isCorrect = false;
-		}
-	}
-
-
-
-	// display feedback
-	if (isCorrect)
-		cout << "all string & numbers succesfully read back!" << endl;
-	else
-		cout << "all string & numbers read back, but there were errors" << endl;
-	*/
+void operator delete(void* ptr){
+	cMalloc::dealloc(ptr);
 }
-
-
-////////////////////////////////////////////////////////////////////////////////
-// Test strings
-void TestString(const zsString str) {
-	auto c = str.c_str();
-	wcout << c;
-}
-
+*/
 
 ////////////////////////////////////////////////////////////////////////////////
 // Main
-int petiMain() {	
-	//TestSerializer();
-	//TestTLSF();
+int petiMain() {
+	/*
+	LARGE_INTEGER st, en, freq;
+	unsigned long long cycle;
+	QueryPerformanceFrequency(&freq);
 
-	TestString(L"Just go fuck yourself!");
+
+	// cout the number of cores
+	cout << "cores: " << cThreadPool::GetNumLogicalCores() << endl;
+	cThreadPool pool;
+
+	// launch some int() jobs
+	int id = 0;
+	std::mutex lk;
+	auto fut = pool.EnqueueForeach(
+	[&lk, &id](){
+		lk.lock();
+		id++;
+		cout << id << endl;
+		lk.unlock();
+		return id; 
+	});
+
+	// wait for results
+	fut.wait();
+	auto res = fut.get();
+	for (auto& v : res) {
+		cout << v << " ";
+	}
+	cout << endl << endl;
+	
+	// launch some void() jobs
+	id = 0;
+	auto fut2 = pool.EnqueueForeach(
+		[&lk, &id](){
+		lk.lock();
+		id++;
+		cout << id << endl;
+		lk.unlock();
+	});
+	fut2.wait();
+	cout << endl << endl;
+	fut2.get();
+
+	// copy test
+	struct CopyTest {
+		CopyTest() { cout << "consturct\n"; }
+		CopyTest(const CopyTest& other) { cout << "copy\n"; }
+		CopyTest(CopyTest&& other) { cout << "move\n"; }
+		~CopyTest() { cout << "destroy\n"; }
+	} copyTest;
+
+	// std::thread overhead
+	QueryPerformanceCounter(&st);
+	cycle = __rdtsc();
+	thread t([](){return 42; });
+	cycle = __rdtsc() - cycle;
+	QueryPerformanceCounter(&en);
+	cout << "Launching an std::thread took\n    "
+		<< double(en.QuadPart - st.QuadPart) / double(freq.QuadPart) * 1e6 << " microsecs\n"
+		<< "   " << cycle << "   cycles\n";
+
+	t.join();
+
+	// worker thread overhead
+	cWorkerThread w;
+	QueryPerformanceCounter(&st);
+
+	cycle = __rdtsc();
+	auto fut4 = w.Enqueue([](){return 42; });
+	cycle = __rdtsc()-cycle;
+
+	QueryPerformanceCounter(&en);
+	fut4.wait();
+	cout << "Launching a task on worker thread took\n   "
+		<< double(en.QuadPart - st.QuadPart) / double(freq.QuadPart) * 1e6 << " microsecs\n"
+		<< "   " << cycle << "   cycles:\n";
+
+	// threadpool overhead
+	/*
+	const int nPooledTasks = 10000;
+	cout << "Launching " << nPooledTasks << " async stuff... \n";
+	auto start = chrono::high_resolution_clock::now();
+	for (int i = 0; i < nPooledTasks; i++) {
+		pool.EnqueueForeach([](){return 42; });
+	}
+	QueryPerformanceCounter(&st);
+	auto fut3 = pool.EnqueueForeach([](){return 42; });
+	QueryPerformanceCounter(&en);
+	fut3.wait();
+	auto timeMs = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - start).count();
+	cout << "aaaaaaand it took " << timeMs << " milliseconds.\n";
+	cout << "Launching last task took "
+		<< double(en.QuadPart - st.QuadPart) / double(freq.QuadPart) * 1e6 << " microsecs\n";
+	*/
+
+	spinlock queueLock;
+	queue<int*> execQueue;
+	std::mutex waitMutex1;
+	spinlock waitMutex2;
+	atomic<bool> notified;
+	atomic<bool> locked;
+
+	// worker thread function
+	thread 	worker(
+	[&]() {
+		bool isContinue = true;
+		do {
+			// try to lock mutex
+			if (!notified) {
+				while (!locked){}
+				locked = false;
+				waitMutex1.lock();
+				waitMutex1.unlock();
+			}
+			bool b = notified.exchange(false);
+			if (b) {
+				notified = b;
+			}
+
+			while (queueLock.lock(), execQueue.size() > 0) {
+				auto data = execQueue.front();
+				execQueue.pop();
+				queueLock.unlock();
+
+				if (data != nullptr) {
+					//cout << *data;
+					delete data;
+				}
+				else {
+					isContinue = false;
+				}
+			}
+			queueLock.unlock();
+
+		} while (isContinue);
+	});
+	
+	// some var
+	int n = 0;
+
+	// enqueue rutin
+	waitMutex1.lock();
+	locked = true;
+	auto Enqueue = [&](int* p) {
+		queueLock.lock();
+		execQueue.push(p);
+		queueLock.unlock();
+
+		waitMutex1.unlock();
+		notified = true;
+		waitMutex2.lock();
+		waitMutex2.unlock();
+		waitMutex1.lock();
+		locked = true;
+	};
+
+	// timing
+	auto start = __rdtsc();
+
+	// enqueue
+	for (int i = 0; i < 10000; i++) {
+		Enqueue(new int(++n));
+	}
+	Enqueue(nullptr);
+
+	// timing
+	auto time = __rdtsc() - start;
+	cout << double(time)/3.3e9*1e6;
+	
+	// join thread
+	worker.join();
+
+	waitMutex1.unlock();
 
 	_getch();
 	return 0;
