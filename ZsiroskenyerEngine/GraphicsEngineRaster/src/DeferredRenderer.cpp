@@ -249,7 +249,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		gApi->SetIndexBuffer(ib);
 		gApi->SetVertexBuffer((*(group->geom)).GetVertexBuffer(), shaderGBuffer->GetVertexFormatSize());
 		
-		// Foreach: Entity polygon material group
+		// Foreach: Entity per-poly material group
 		for (auto& matGroup : geom.GetMatGroups()) {
 			// Set material
 			auto submtl = mtl[matGroup.id % mtl.GetNSubMaterials()];

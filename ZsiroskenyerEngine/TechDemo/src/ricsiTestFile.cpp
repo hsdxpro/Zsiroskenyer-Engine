@@ -209,14 +209,14 @@ int ricsiMain() {
 		Vec3(-20.95f, -17.15f, 8.00f), // tunnel
 	};
 	static const Vec3 objRot[nEntities] = {
-		Vec3(90.0/180*ZS_PI, 0, -14.892/180*ZS_PI),
+		Vec3(90.0/180.0*ZS_PI, 0, -14.892/180.0*ZS_PI),
 		Vec3(0, 0, 0),
 		Vec3(0, 0, 0),
 		Vec3(0, 0, 0),
 		Vec3(0, 0, 0),
 		Vec3(0, 0, 0),
 		Vec3(0, 0, 0),
-		Vec3(90.0/180*ZS_PI, 0, -6.64/180*ZS_PI),
+		Vec3(90.0/180.0*ZS_PI, 0, -6.64/180.0*ZS_PI),
 		Vec3(0, 0, 0),
 	};
 	const float mass = 0.0;
@@ -228,7 +228,8 @@ int ricsiMain() {
 		zsString geomPath = basePath + L"objects/" + staticBaseNames[i] + staticExtension[i];
 		auto entity = core.AddEntity(s, geomPath, geomPath, basePath + L"materials/" + staticBaseNames[i] + L".zsm", mass);
 		entity->SetPos(objPos[i]);
-		entity->SetRot(Quat::EulerAnglesToQuat(objRot[i]));
+		Quat rot = Quat::EulerAnglesToQuat(objRot[i]);
+		entity->SetRot(rot);
 	}
 	
 	cEntity* tmp = core.AddEntity(s, basePath + L"objects/multi-mat_tetraeder.dae", basePath + L"objects/multi-mat_tetraeder.dae", basePath + L"materials/multi_mat_teszt.zsm", 0.0f);
@@ -255,7 +256,7 @@ int ricsiMain() {
 		else
 			fpsLimit = fps;
 	}
-	gEngine->Resize(1280, 960);
+	//gEngine->Resize(1280, 960);
 
 	// Main loop
 	IWindow::eMessage msg;
