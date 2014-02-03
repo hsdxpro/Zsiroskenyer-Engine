@@ -152,5 +152,11 @@
     <None Include="..\TechDemo\shaders\tone_mapping.cginc">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\TechDemo\shaders\common.cginc">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\TechDemo\shaders\common_color.cginc">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

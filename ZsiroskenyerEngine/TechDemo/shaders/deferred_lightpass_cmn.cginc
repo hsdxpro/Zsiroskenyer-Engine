@@ -3,6 +3,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+#include "common.cginc"
 
 //------------------------------------------------------------------------------
 //	Common shader constants
@@ -44,26 +45,6 @@ sampler2D depthBuffer = {
     MagFilter = POINT,
 };
 
-
-// Convert from clip space to world space
-float3 GetWorldPosition(float2 screenCoords, float depth) {
-	screenCoords.x = 2.0f * (screenCoords.x - 0.5f);
-	screenCoords.y = -2.0f * (screenCoords.y - 0.5f);
-	float4 posH = float4(screenCoords, depth, 1.0f); // NDC space
-	float4 posW = mul(posH, invViewProj);
-	posW /= posW.w;
-	return posW.xyz;
-}
-
-// Unpack normals
-float3 UnpackNormal(float2 packedNormal) {
-	float3 normal;
-	normal.x = packedNormal.r;
-	normal.y = 2.0f*(packedNormal.g>0.0f ? packedNormal.g-0.5f:packedNormal.g+0.5f);
-	normal.z = sqrt(clamp(1.0f - normal.x*normal.x - normal.y*normal.y, 0, 1)) * (packedNormal.g>0.0f ? 1.0f:-1.0f);
-	return normal;
-}
-
 // Decode whole g-buffer
 void DecodeGBuffer(in float2 texCoord, out float3 diffuse, out float3 normal, out float3 worldPos, out float depth) {
 	float4 gb0 = tex2D(gBuffer0, texCoord); // diffuse.rgb & alpha(unused)
@@ -73,7 +54,7 @@ void DecodeGBuffer(in float2 texCoord, out float3 diffuse, out float3 normal, ou
 	
 	diffuse = gb0.rgb;
 	normal = UnpackNormal(gb1);
-	worldPos = GetWorldPosition(texCoord, depth);	
+	worldPos = GetWorldPosition(texCoord, depth, invViewProj);	
 }
 
 //------------------------------------------------------------------------------

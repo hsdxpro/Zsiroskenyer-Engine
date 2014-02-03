@@ -5,7 +5,7 @@
 //	AO data written to 1 channel output buffer
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "cmn_ricsi.cginc"
+#include "common.cginc"
 
 //------------------------------------------------------------------------------
 //	Input textures (normal & depth)
