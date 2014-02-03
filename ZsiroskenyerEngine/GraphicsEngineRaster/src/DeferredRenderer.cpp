@@ -290,6 +290,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	Matrix44 projMat = cam->GetProjMatrix();
 	Matrix44 viewMat = cam->GetViewMatrix();
 	Matrix44 viewProjMat = viewMat * projMat;
+	Matrix44 invViewProjMat = Matrix44::Inverse(viewProjMat);
 	static Matrix44 prevView = viewMat;
 
 	// Foreach: Instance group
@@ -364,11 +365,20 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// --- --- --- --- --AMBIENT OCCLUSION (composition pass)-- --- --- --- --- //
 	//--------------------------------------------------------------------------//
 
+	struct _aoShaderConstants {
+		Matrix44 projMat;
+		Matrix44 invViewProj;
+		Vec3 camPos; float pad1;
+	} aoShaderConstants;
+	aoShaderConstants.projMat = projMat;
+	aoShaderConstants.invViewProj = invViewProjMat;
+	aoShaderConstants.camPos = cam->GetPos();
+
 	gApi->SetShaderProgram(shaderSSAO);
 	gApi->SetRenderTargets(1, &ambientOcclusionBuffer, NULL);
 	gApi->SetTexture(L"normalTexture", gBuffer[1]);
 	gApi->SetTexture(L"depthTexture", depthBufferCopy);
-	// ! Set shader constants here ! // 
+	gApi->SetPSConstantBuffer(&aoShaderConstants, sizeof(aoShaderConstants), 0);
 	gApi->Draw(3);
 
 
@@ -490,19 +500,19 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 	// normalize sky color params
 	auto NormalizeColor = [](Vec3 c) {
-		return c / (0.2126f*c.x + 0.7152f*c.y + 0.0722f*c.z);
+		return c / (0.2126f * c.x + 0.7152f * c.y + 0.0722f * c.z);
 	};
 	sunColor = NormalizeColor(sunColor);
 	zenithColor = NormalizeColor(zenithColor);
 	hazeColor = NormalizeColor(hazeColor);
 
 	skyConstants.sunColor = sunColor;
-	skyConstants.horizonColor = (2.0f*sunColor + hazeColor)/3.0f; // sunset
+	skyConstants.horizonColor = (2.0f * sunColor + hazeColor) / 3.0f; // sunset
 	skyConstants.zenithColor = zenithColor;
 	skyConstants.rayleighFactor = 1.0f;	
 
 	if (directionalLights.size() > 0) {
-		directionalLights[0]->color = sunColor*1.4f;
+		directionalLights[0]->color = sunColor * 1.4f;
 	}
 
 
@@ -636,7 +646,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		Matrix44 prevViewProj;
 	} shaderConstants2;
 
-	shaderConstants2.invViewProj = Matrix44::Inverse(viewProjMat);
+	shaderConstants2.invViewProj = invViewProjMat;
 	shaderConstants2.prevViewProj = prevView * projMat;
 
 	gApi->SetPSConstantBuffer(&shaderConstants2, sizeof(shaderConstants2), 0);
