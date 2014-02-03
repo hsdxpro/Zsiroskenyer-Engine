@@ -1,4 +1,4 @@
-#include "tone_mapping.cg"
+#include "tone_mapping.cginc"
 
 //------------------------------------------------------------------------------
 // Textures
@@ -86,6 +86,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 
 	color.rgb = max(color.rgb, float3(0.0f, 0.0f, 0.0f));
 	*/
+
 	return color;
 }
 

@@ -32,6 +32,11 @@
 #include <windows.h>
 #pragma message("This file is officially part of the \"How not to C++\" book")
 
+// REMOVE THIS OR I KILL MYSELF
+#pragma comment(linker,"\"/manifestdependency:type='win32' \
+name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
+processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+
 
 // TODO: hide yo' wife, hide yo' kids, hide yo' warnings
 #pragma warning(disable: 4244)
@@ -101,8 +106,11 @@ int ricsiMain() {
 	sun = sunLight;
 	
 	// skylight
+	Vec3 skyColor(0.1, 0.2, 0.3);
+	skyColor /= 0.2126f*skyColor.x + 0.7152f*skyColor.y + 0.0722f*skyColor.z;
+	skyColor *= 0.3f;
 	skyLight->type = cGraphicsLight::AMBIENT;
-	skyLight->color = Vec3(0.1, 0.2, 0.3);
+	skyLight->color = skyColor;
 	
 	// other suns... well yeah
 	secondSunLight->type = cGraphicsLight::DIRECTIONAL;

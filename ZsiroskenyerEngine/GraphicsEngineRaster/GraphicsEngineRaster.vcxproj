@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\PostProcessor.cpp" />
     <ClCompile Include="src\DeferredRenderer.cpp" />
     <ClCompile Include="src\DllMain.cpp" />
     <ClCompile Include="src\Geometry.cpp" />
@@ -62,8 +63,9 @@
     <None Include="..\TechDemo\shaders\motion_blur.cg" />
     <None Include="..\TechDemo\shaders\screen_copy.cg" />
     <None Include="..\TechDemo\shaders\sky.cg" />
+    <None Include="..\TechDemo\shaders\ssao.cg" />
     <None Include="..\TechDemo\shaders\test.cg" />
-    <None Include="..\TechDemo\shaders\tone_mapping.cg" />
+    <None Include="..\TechDemo\shaders\tone_mapping.cginc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{593438BA-D952-4A17-AD30-7C261AB425EC}</ProjectGuid>

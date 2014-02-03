@@ -167,10 +167,12 @@ private:
 		ITexture2D* DOFInput;
 		ITexture2D* depthBuffer;
 		ITexture2D* depthBufferCopy;
+		ITexture2D* ambientOcclusionBuffer;
 
 		IGraphicsApi* gApi;
 		IShaderProgram* shaderGBuffer;
 		IShaderProgram *shaderDirectional, *shaderPoint, *shaderSpot, *shaderAmbient, *shaderSky;
+		IShaderProgram* shaderSSAO;
 		IShaderProgram *shaderDof, *shaderMotionBlur;
 		cGraphicsEngine& parent;
 
@@ -181,6 +183,29 @@ private:
 		ITexture2D* motionBlurredBuffer;
 
 		unsigned bufferWidth, bufferHeight;
+	};
+
+	///////////////////////////////////////
+	// General post-processor helper class
+	class cPostProcessor {
+		friend class cGraphicsEngine;
+	public:
+		cPostProcessor(cGraphicsEngine& parent);
+		cPostProcessor(const cPostProcessor&) = delete;
+		~cPostProcessor();
+		cPostProcessor& operator=(const cPostProcessor&) = delete;
+
+		//eGraphicsResult Resize(unsigned width, unsigned height);
+
+		//void SetTarget(ITexture2D* target);
+		//void SetSource(ITexture2D* source);
+	private:
+		//void LoadShaders();
+		//void UnloadShaders();
+		//void Cleanup();
+
+		cGraphicsEngine& parent;
+		IGraphicsApi* gApi;
 	};
 
 	///////////////////////////////////////

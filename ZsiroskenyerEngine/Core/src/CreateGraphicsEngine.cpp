@@ -5,12 +5,12 @@
 
 
 static DllHandle hDllRaster = 0;
-IGraphicsEngine*(*CreateGraphicsEngineRaster)(IWindow*, unsigned, unsigned, tGraphicsConfig);
+IGraphicsEngine*(*CreateGraphicsEngineRaster)(IWindow*, unsigned, unsigned, tGraphicsConfig, const char** errorMessage);
 
-IGraphicsEngine* CreateGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config) {
+IGraphicsEngine* CreateGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config, const char** errorMessage) {
 	if (hDllRaster) {
 		if (CreateGraphicsEngineRaster)
-			return CreateGraphicsEngineRaster(targetWindow, screenWidth, screenHeight, config);
+			return CreateGraphicsEngineRaster(targetWindow, screenWidth, screenHeight, config, errorMessage);
 		else
 			return 0;
 	}
@@ -19,11 +19,11 @@ IGraphicsEngine* CreateGraphicsEngine(IWindow* targetWindow, unsigned screenWidt
 		if (!hDllRaster) {
 			return nullptr;
 		}
-		CreateGraphicsEngineRaster = (IGraphicsEngine*(*)(IWindow*, unsigned, unsigned, tGraphicsConfig))GetFunctionAddress(hDllRaster, "CreateGraphicsEngineRaster");
+		CreateGraphicsEngineRaster = (IGraphicsEngine*(*)(IWindow*, unsigned, unsigned, tGraphicsConfig, const char**))GetFunctionAddress(hDllRaster, "CreateGraphicsEngineRaster");
 		if (!CreateGraphicsEngineRaster) {
 			assert(false);
 			return nullptr;
 		}
-		return CreateGraphicsEngineRaster(targetWindow, screenWidth, screenHeight, config);
+		return CreateGraphicsEngineRaster(targetWindow, screenWidth, screenHeight, config, errorMessage);
 	}
 }

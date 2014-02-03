@@ -8,8 +8,42 @@
 #include "Camera.h"
 #include "Entity.h"
 
+#include <Windows.h> // remove this or I kill myself
+					// btw, it's for graphics engine error message MessageBox()
+
 cCore::cCore(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config) {
-	graphicsEngine = CreateGraphicsEngine(targetWindow, screenWidth, screenHeight, config);
+	// try to create graphics engine
+	bool tryCreateGEngine = true;
+	while (tryCreateGEngine) {
+		const char* graphicsEngineError;
+		graphicsEngine = CreateGraphicsEngine(targetWindow, screenWidth, screenHeight, config, &graphicsEngineError);
+		if (!graphicsEngine) {
+			int choice;
+			choice = MessageBoxA(NULL, 
+				graphicsEngineError, 
+				"Failed to create graphics engine", 
+				MB_RETRYCANCEL | MB_ICONERROR);
+			switch (choice) {
+				case IDRETRY:
+					tryCreateGEngine = true;
+					break;
+				case IDOK:
+				case IDCANCEL:
+				default:
+					MessageBoxA(NULL,
+						"THE PROGRAM WILL NOW FORCE-QUIT",
+						"Couldn't create Graphics Engine",
+						MB_ICONWARNING | MB_OK);
+					exit(1);
+					break;
+			}
+		}
+		else {
+			tryCreateGEngine = false;
+		}
+	}
+
+	// create other stuff
 	physicsEngine = Factory.CreatePhysicsEngineBullet();
 	logicEngine = new cLogicEngine();
 

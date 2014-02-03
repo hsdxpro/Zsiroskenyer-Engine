@@ -126,9 +126,12 @@ void cGraphicsEngine::cHDRProcessor::ReloadShaders() {
 
 //	Set HDR range float buffer
 eGraphicsResult cGraphicsEngine::cHDRProcessor::SetSource(ITexture2D* srcTexture, unsigned sourceWidth, unsigned sourceHeight) {
-	// release old downsampled buffers
-	SAFE_RELEASE(blurBuffer);
-	SAFE_RELEASE(downSampled);
+	// backup old buffers
+	auto blurBuffer_ = blurBuffer;
+	auto downSampled_ = downSampled;
+	// backup size
+	auto sourceWidth_ = this->sourceWidth;
+	auto sourceHeight_ = this->sourceHeight;
 
 	// set internal vars
 	this->sourceWidth = sourceWidth;
@@ -142,15 +145,26 @@ eGraphicsResult cGraphicsEngine::cHDRProcessor::SetSource(ITexture2D* srcTexture
 	desc.format = eFormat::R16G16B16A16_FLOAT;
 	desc.width = sourceWidth / 2;
 	desc.height = sourceHeight / 2;
-	auto r = parent.gApi->CreateTexture(&downSampled, desc);
-	if (r != eGapiResult::OK) {
+	auto r1 = parent.gApi->CreateTexture(&downSampled, desc);
+	auto r2 = parent.gApi->CreateTexture(&blurBuffer, desc);
+	// check results
+	if (r1 != eGapiResult::OK || r2 != eGapiResult::OK) {
+		// failure!
+		// cleanup
+		SAFE_RELEASE(downSampled);
+		SAFE_RELEASE(blurBuffer);
+		// rollback
+		this->sourceWidth = sourceWidth_;
+		this->sourceHeight = sourceHeight_;
+		blurBuffer = blurBuffer_;
+		downSampled = downSampled_;
+		// return
 		return eGraphicsResult::ERROR_UNKNOWN;
 	}
-	r = parent.gApi->CreateTexture(&blurBuffer, desc);
-	if (r != eGapiResult::OK) {
-		SAFE_RELEASE(downSampled)
-		return eGraphicsResult::ERROR_UNKNOWN;
-	}
+
+	// release old buffers
+	SAFE_RELEASE(blurBuffer_);
+	SAFE_RELEASE(downSampled_);
 
 	return eGraphicsResult::OK;
 }

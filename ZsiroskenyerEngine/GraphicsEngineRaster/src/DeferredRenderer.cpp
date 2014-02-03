@@ -38,14 +38,22 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 	// Buffers to null
 	compositionBuffer = NULL;
 	depthBuffer = NULL;
+	depthBufferCopy = NULL;
 	DOFInput = NULL;
-	shaderAmbient = shaderDirectional = shaderPoint = shaderSpot = NULL;
-	shaderDof = shaderMotionBlur = NULL;
-	ibSpot = ibPoint = NULL;
-	shaderSky = NULL;
-	vbSpot = vbPoint = NULL;
+	ambientOcclusionBuffer = NULL;
 	for (auto& v : gBuffer)
 		v = NULL;
+
+	// shaders to null
+	shaderAmbient = shaderDirectional = shaderPoint = shaderSpot = NULL;
+	shaderDof = shaderMotionBlur = NULL;
+	shaderSky = NULL;
+	shaderSSAO = NULL;
+
+	// light volumes to null
+	ibSpot = ibPoint = NULL;	
+	vbSpot = vbPoint = NULL;
+
 
 	// Set size
 	bufferWidth = parent.screenWidth;
@@ -87,6 +95,8 @@ void cGraphicsEngine::cDeferredRenderer::Cleanup() {
 	SAFE_RELEASE(compositionBuffer);
 	SAFE_RELEASE(depthBuffer);
 	SAFE_RELEASE(depthBufferCopy);
+	SAFE_RELEASE(ambientOcclusionBuffer);
+	SAFE_RELEASE(DOFInput);
 	// mesh objects
 	SAFE_RELEASE(ibPoint);
 	SAFE_RELEASE(vbPoint);
@@ -103,42 +113,79 @@ cGraphicsEngine::cDeferredRenderer::~cDeferredRenderer() {
 
 //	Buffer handling
 eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
-	// release old buffers first
-	for (auto& v : gBuffer)
-		SAFE_RELEASE(v);
-	SAFE_RELEASE(compositionBuffer);
-	SAFE_RELEASE(depthBuffer);
-	SAFE_RELEASE(DOFInput);
+	// backup old buffers
+	for (auto& p : gBuffer) SAFE_RELEASE(p);
+	ITexture2D* gBuffer_[3] = {gBuffer[0], gBuffer[1], gBuffer[1]};
+	auto compositionBuffer_ = compositionBuffer;
+	auto DOFInput_ = DOFInput;
+	auto depthBuffer_ = depthBuffer;
+	auto depthBufferCopy_ = depthBufferCopy;
+	auto ambientOcclusionBuffer_ = ambientOcclusionBuffer;
 
 	// create new buffers
-	eGapiResult results[7];
+	eGapiResult results[8];
+	int idxResult = -1;
 	ITexture2D::tDesc desc;
 	desc.width = bufferWidth;
 	desc.height = bufferHeight;
 	desc.bind = (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE;
 	desc.usage = eUsage::DEFAULT;
 
-	desc.format = eFormat::R8G8B8A8_UNORM;		results[0] = gApi->CreateTexture(&gBuffer[0], desc);
-	desc.format = eFormat::R16G16_SNORM;		results[1] = gApi->CreateTexture(&gBuffer[1], desc);
-	desc.format = eFormat::R8G8B8A8_UNORM;		results[2] = gApi->CreateTexture(&gBuffer[2], desc);
-	desc.format = eFormat::R16G16B16A16_FLOAT;	results[3] = gApi->CreateTexture(&compositionBuffer, desc);
-	desc.format = eFormat::R16G16B16A16_FLOAT;	results[4] = gApi->CreateTexture(&DOFInput, desc);
+	// g-buffers
+	desc.format = eFormat::R8G8B8A8_UNORM;		results[++idxResult] = gApi->CreateTexture(&gBuffer[0], desc);
+	desc.format = eFormat::R16G16_SNORM;		results[++idxResult] = gApi->CreateTexture(&gBuffer[1], desc);
+	desc.format = eFormat::R8G8B8A8_UNORM;		results[++idxResult] = gApi->CreateTexture(&gBuffer[2], desc);
+	// light accumulation buffer
+	desc.format = eFormat::R16G16B16A16_FLOAT;	results[++idxResult] = gApi->CreateTexture(&compositionBuffer, desc);
+	// post-processing buffers
+	desc.format = eFormat::R16G16B16A16_FLOAT;	results[++idxResult] = gApi->CreateTexture(&DOFInput, desc);
+	// ambient occlusion
+	desc.width = desc.width>=256 ? desc.width / 2 : desc.width;
+	desc.height = desc.height>=256 ? desc.height / 2 : desc.height;
+	desc.format = eFormat::R8_UNORM;			results[++idxResult] = gApi->CreateTexture(&ambientOcclusionBuffer, desc);
+	desc.width = bufferWidth; desc.height = bufferHeight;
 
+	// depth buffer and depth copy
 	desc.format = eFormat::R24_UNORM_X8_TYPELESS;	desc.depthFormat = eFormat::D24_UNORM_S8_UINT;	desc.bind = (int)eBind::DEPTH_STENCIL;
-	results[5] = gApi->CreateTexture(&depthBuffer, desc);
+	results[++idxResult] = gApi->CreateTexture(&depthBuffer, desc);
 	desc.bind = (int)eBind::SHADER_RESOURCE;
-	results[6] = gApi->CreateTexture(&depthBufferCopy, desc);
+	results[++idxResult] = gApi->CreateTexture(&depthBufferCopy, desc);
 
+	// check results
 	for (int i = 0; i < sizeof(results) / sizeof(results[0]); i++) {
 		if (results[i] != eGapiResult::OK) {
+			// release non-working stuff
 			for (auto& p : gBuffer) SAFE_RELEASE(p);
 			SAFE_RELEASE(compositionBuffer);
 			SAFE_RELEASE(DOFInput);
 			SAFE_RELEASE(depthBuffer);
 			SAFE_RELEASE(depthBufferCopy);
+			SAFE_RELEASE(ambientOcclusionBuffer);
+			
+			// rollback to previous
+			compositionBuffer = compositionBuffer_;
+			DOFInput = DOFInput_;
+			depthBuffer = depthBuffer_;
+			depthBufferCopy = depthBufferCopy_;
+			ambientOcclusionBuffer = ambientOcclusionBuffer_;
+			for (int i = 0; i < sizeof(gBuffer) / sizeof(gBuffer[0]); ++i)
+				gBuffer[i] = gBuffer_[i];
+
+			// return dat error
 			return results[i];
 		}
 	}
+
+	// release old buffers on success
+	for (auto& v : gBuffer_)
+		SAFE_RELEASE(v);
+	SAFE_RELEASE(compositionBuffer_);
+	SAFE_RELEASE(depthBuffer_);
+	SAFE_RELEASE(DOFInput_);
+	SAFE_RELEASE(depthBufferCopy_);
+	SAFE_RELEASE(ambientOcclusionBuffer_);
+
+
 	return eGapiResult::OK;
 }
 
@@ -159,6 +206,8 @@ void cGraphicsEngine::cDeferredRenderer::LoadShaders() {
 		shaderDof = Create(L"shaders/depth_of_field.cg");
 
 		shaderSky = Create(L"shaders/sky.cg");
+
+		shaderSSAO = Create(L"shaders/ssao.cg");
 	}
 	catch (...) {
 		UnloadShaders();
@@ -178,6 +227,8 @@ void cGraphicsEngine::cDeferredRenderer::UnloadShaders() {
 	SAFE_RELEASE(shaderDof);
 
 	SAFE_RELEASE(shaderSky);
+
+	SAFE_RELEASE(shaderSSAO);
 }
 
 // reload shaders
@@ -198,6 +249,8 @@ void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {
 	Reload(&shaderDof, L"shaders/depth_of_field.cg");
 
 	Reload(&shaderSky, L"shaders/sky.cg");
+
+	Reload(&shaderSSAO, L"shaders/ssao.cg");
 }
 
 // Render the scene to composition buffer
@@ -285,44 +338,6 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 				gApi->DrawIndexed(matGroup.indexCount, matGroup.indexOffset);
 			}
 		}
-
-		/*
-		// Set SubMaterials
-		auto& mtl = *group->mtl;
-		for (size_t i = 0; i < mtl.GetNSubMaterials(); i++) {
-			// Set textures
-			ITexture2D* diffuse = mtl[i].textureDiffuse.get();
-			ITexture2D* normal = mtl[i].textureNormal.get();
-			ITexture2D* specular = mtl[i].textureSpecular.get();
-			ITexture2D* displace = mtl[i].textureDisplace.get();
-
-			if (diffuse) gApi->SetTexture(L"diffuseTex", diffuse);
-			if (normal)  gApi->SetTexture(L"normalTex", normal);
-			//if(specular)	gApi->SetTexture(L"specularTex",specular);
-			//if(displace)	gApi->SetTexture(L"displaceTex",displace);
-		}
-
-		// Draw each entity
-		for (auto& entity : group->entities) {
-			// Entity world matrix
-			Matrix44 worldMat = entity->GetWorldMatrix();
-			// WorldViewProj matrix
-			Matrix44 wvp = worldMat * viewProjMat;
-			// cbuffer
-			struct gBuffConstantBuff
-			{
-				Matrix44 wvp;
-				Matrix44 worldMat;
-				Vec3 camPos; float pad1;
-			} buff;
-			buff.wvp = wvp;
-			buff.worldMat = worldMat;
-			buff.camPos = cam->GetPos();
-
-			gApi->SetVSConstantBuffer(&buff, sizeof(buff), 0);
-			gApi->DrawIndexed(ib->GetSize() / sizeof(unsigned));
-		}
-		*/
 	}
 
 	// copy depth to shader resource
@@ -331,9 +346,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	//--------------------------------------------------------------------------//
 	// --- --- --- --- --- --- --- COMPOSITION PASS --- --- --- --- --- --- --- //
 	//--------------------------------------------------------------------------//
-
-	// Set render states
-	// Depth-stencil
+	
+	// Depth-stencil state
 	depthStencilState = depthStencilDefault;
 	depthStencilState.depthCompare = eComparisonFunc::ALWAYS;
 	depthStencilState.depthWriteEnable = false;
@@ -344,7 +358,25 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	depthStencilState.stencilOpBackFace.stencilPassDepthFail = eStencilOp::KEEP;
 	depthStencilState.stencilReadMask = depthStencilState.stencilWriteMask = 0x01;
 	depthStencilState.stencilOpFrontFace = depthStencilState.stencilOpBackFace;
-	// Additive blending
+
+
+	//--------------------------------------------------------------------------//
+	// --- --- --- --- --AMBIENT OCCLUSION (composition pass)-- --- --- --- --- //
+	//--------------------------------------------------------------------------//
+
+	gApi->SetShaderProgram(shaderSSAO);
+	gApi->SetRenderTargets(1, &ambientOcclusionBuffer, NULL);
+	gApi->SetTexture(L"normalTexture", gBuffer[1]);
+	gApi->SetTexture(L"depthTexture", depthBufferCopy);
+	// ! Set shader constants here ! // 
+	gApi->Draw(3);
+
+
+	//--------------------------------------------------------------------------//
+	// --- --- --- --- --- RENDER STATES (composition pass) --- --- --- --- --- //
+	//--------------------------------------------------------------------------//
+	
+	// Additive blending state
 	blendState[0].blendOp = eBlendOp::ADD;
 	blendState[0].blendOpAlpha = eBlendOp::MAX;
 	blendState[0].destBlend = eBlendFactor::ONE;
@@ -450,17 +482,27 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	spectrum.Scale(1.0f / spectrum[spectrum.Peak()]);
 	float sunZenithAngle = acos(Dot(-skyConstants.sunDir, Vec3(0, 0, 1)));
 	float airMass = RelativeAirMass((float)ZS_PI / 2.0f - sunZenithAngle) / RelativeAirMass(0);
-	Rayleigh(spectrum, airMass*3.0f);
+	Rayleigh(spectrum, airMass*2.0f);
 	Vec3 sunColor = spectrum.ToRGB();
 	sunColor /= std::max(sunColor.x, std::max(sunColor.y, sunColor.z));
+	Vec3 zenithColor = Vec3(0.5, 0.68, 0.9);
+	Vec3 hazeColor = Vec3(0.8f, 0.7f, 0.68f);
+
+	// normalize sky color params
+	auto NormalizeColor = [](Vec3 c) {
+		return c / (0.2126f*c.x + 0.7152f*c.y + 0.0722f*c.z);
+	};
+	sunColor = NormalizeColor(sunColor);
+	zenithColor = NormalizeColor(zenithColor);
+	hazeColor = NormalizeColor(hazeColor);
 
 	skyConstants.sunColor = sunColor;
-	skyConstants.horizonColor = sunColor; // sunset
-	skyConstants.zenithColor = Vec3(0.5, 0.68, 0.9);
-	skyConstants.rayleighFactor = 1.0f;
+	skyConstants.horizonColor = (2.0f*sunColor + hazeColor)/3.0f; // sunset
+	skyConstants.zenithColor = zenithColor;
+	skyConstants.rayleighFactor = 1.0f;	
 
 	if (directionalLights.size() > 0) {
-		directionalLights[0]->color = sunColor;
+		directionalLights[0]->color = sunColor*1.4f;
 	}
 
 
@@ -494,6 +536,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetTexture(L"gBuffer1", gBuffer[1]);
 	gApi->SetTexture(L"gBuffer2", gBuffer[2]);
 	gApi->SetTexture(L"depthBuffer", depthBufferCopy);
+	gApi->SetTexture(L"ambientOcclusionTexture", ambientOcclusionBuffer);
 
 	// load shader constants
 	shaderConstants.lightColor = ambientLight;
@@ -632,10 +675,18 @@ ITexture2D* cGraphicsEngine::cDeferredRenderer::GetCompositionBuffer() {
 ////////////////////////////////////////////////////////////////////////////////
 //	Public usage
 eGraphicsResult cGraphicsEngine::cDeferredRenderer::Resize(unsigned width, unsigned height) {
+	auto bufferWidth_ = bufferWidth;
+	auto bufferHeight_ = bufferHeight;
+
 	// reallocate buffers w/ new size
 	bufferWidth = width;
 	bufferHeight = height;
 	eGapiResult r = ReallocBuffers();
+	// rollback on failure
+	if (r != eGapiResult::OK) {
+		bufferWidth = bufferWidth_;
+		bufferHeight = bufferHeight_;
+	}
 	// analyze results and return
 	if (r == eGapiResult::OK)
 		return eGraphicsResult::OK;

@@ -1,0 +1,89 @@
+////////////////////////////////////////////////////////////////////////////////
+//	Zsiroskenyer Team
+////////////////////////////////////////////////////////////////////////////////
+//	Screen-space Ambient Occlusion.
+//	AO data written to 1 channel output buffer
+////////////////////////////////////////////////////////////////////////////////
+
+#include "deferred_lightpass_cmn.cginc"
+
+//------------------------------------------------------------------------------
+//	Input textures (normal & depth)
+//------------------------------------------------------------------------------
+
+sampler2D normalTexture = {
+    MipFilter = POINT,
+    MinFilter = POINT,
+    MagFilter = POINT,
+	AddressU = CLAMP,
+	AddressV = CLAMP,
+};
+sampler2D depthTexture = {
+    MipFilter = POINT,
+    MinFilter = POINT,
+    MagFilter = POINT,
+	AddressU = CLAMP,
+	AddressV = CLAMP,
+};
+
+
+//------------------------------------------------------------------------------
+//	Shader I/O sturctures
+//------------------------------------------------------------------------------
+
+struct VS_IN {
+	float3 posL 	: POSITION;
+};
+
+struct VS_OUT {
+	float4 posH 	: SV_POSITION;
+	float2 tex0 	: TEXCOORD2;
+};
+
+
+
+//------------------------------------------------------------------------------
+//	Vertex shader
+//------------------------------------------------------------------------------
+VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
+	VS_OUT Out;
+	Out.tex0 = float2( (VertexID << 1) & 2, VertexID & 2 );
+	Out.posH = float4(  Out.tex0 * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f), 0.0f, 1.0f );
+	return Out;
+}
+
+//------------------------------------------------------------------------------
+//	Pixel shader
+//------------------------------------------------------------------------------
+float PS_MAIN(VS_OUT In) : COLOR0 {
+	// sample normal and depth
+	float2 packedNormal = tex2D(normalTexture, In.tex0);
+	float3 normal = UnpackNormal(packedNormal);
+	float depth = tex2D(depthTexture, In.tex0);	
+	
+	// ! COMPUTE AO FROM "normal" AND "depth" ! //	
+
+	// generate checker pattern
+	float2 t = (In.tex0+float2(1.0f, 1.0f))*4.0f;
+	t -= floor(t);
+	t = saturate(t);
+	int x = t.x+0.5f;
+	int y = t.y+0.5f;
+	if ((x+y) % 2 == 0) {
+		return 1.0f;
+	}
+	else {
+		return 0.5f;
+	}
+};
+
+
+
+technique t
+{
+	pass p
+	{
+		VertexProgram = compile vs_4_0 VS_MAIN();
+		FragmentProgram = compile ps_4_0 PS_MAIN();
+	}
+}

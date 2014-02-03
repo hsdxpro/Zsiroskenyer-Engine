@@ -136,6 +136,10 @@ Vec3 Vec3::operator * (float s) const {
 	return vr;
 }
 
+Vec3 operator*(float s, Vec3 v) {
+	return v*s;
+}
+
 Vec3& Vec3::operator /= (float s) {
 	(*this) *= (1.0f / s);
 	return *this;
