@@ -16,6 +16,7 @@ cCgShaderHelper::tCgInfo cCgShaderHelper::LoadCgShader(const zsString& shaderPat
 	cgGLSetManageTextureParameters(con, CG_TRUE);
 
 	// Effect creation
+	assert(shaderPath.size() <= 256);
 	char ansiShaderPath[256];
 	cStrUtil::ToAnsi(shaderPath, ansiShaderPath, 256);
 	effect = cgCreateEffectFromFile(con, ansiShaderPath, NULL);

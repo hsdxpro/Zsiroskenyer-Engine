@@ -52,6 +52,64 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 	return Out;
 }
 
+
+
+float ProcessAO(float2 projtex)
+{
+/*
+  float SSAOraylength = 5.000150f;
+  float SSAOiterations = 2;
+
+  // Try depth independency, but not expected result TODO...
+  //float4 vsDeltaCoord  = float4(SSAOraylength, distance(camPos, GetWorldPosition(projtex, tex2D(depthBuffer, projtex).r)), 0, 1);
+
+  // Transform that to proj space, then divide, transform x,y to texture space,  now ssao will be depth independent
+  //float4 deltaCoord = mul(vsDeltaCoord, projMat);
+
+
+  float SMAP_DX = (deltaCoord.x + 1) /  2 / 800; // MAGICS, TODO
+  float SMAP_DY = SMAP_DX;
+
+//Ambient Gyüjtés folyamat kezdete 0
+ float ao = 0.0f;
+                                                   //  . .
+//Kiindulási pixel, normalja,pozíciója, és majd ezek körül mászkálunk négyzetekben..     . <- kiindulási pont
+ float3 refpos = GetPosition(projtex);
+ float3 refnorm = GetNormal(projtex);
+
+ float SSAORadius = 2.0f;
+ for (int j = 1; j <= SSAOiterations; ++j)
+ {
+   //8 körül levõ ponton mintavétel
+   //kezdés bal felsõ sarok órajárás irányban..
+   float2 coord1 = float2(-SMAP_DX,-SMAP_DY)*j * SSAORadius;
+   float2 coord2 = float2(0       ,-SMAP_DY)*j * SSAORadius;
+   float2 coord3 = float2(SMAP_DX ,-SMAP_DY)*j * SSAORadius;
+   float2 coord4 = float2(SMAP_DX ,0       )*j * SSAORadius;
+   float2 coord5 = float2(SMAP_DX ,SMAP_DY )*j * SSAORadius;
+   float2 coord6 = float2(0       ,SMAP_DY )*j * SSAORadius;
+   float2 coord7 = float2(-SMAP_DX,SMAP_DY )*j * SSAORadius;
+   float2 coord8 = float2(-SMAP_DX,0       )*j * SSAORadius;
+
+
+   ao+= doAmbientOcclusion(projtex,coord1,refpos,refnorm);
+   ao+= doAmbientOcclusion(projtex,coord2,refpos,refnorm);
+   ao+= doAmbientOcclusion(projtex,coord3,refpos,refnorm);
+   ao+= doAmbientOcclusion(projtex,coord4,refpos,refnorm);
+   ao+= doAmbientOcclusion(projtex,coord5,refpos,refnorm);
+   ao+= doAmbientOcclusion(projtex,coord6,refpos,refnorm);
+   ao+= doAmbientOcclusion(projtex,coord7,refpos,refnorm);
+   ao+= doAmbientOcclusion(projtex,coord8,refpos,refnorm);
+
+
+ } 
+ 
+  float SSAOintensity = 1.5f;
+  return (1.0f - (ao/SSAOiterations/8))*(SSAOintensity);
+*/
+return 0.0f;
+}
+
 //------------------------------------------------------------------------------
 //	Pixel shader
 //------------------------------------------------------------------------------
@@ -62,19 +120,7 @@ float PS_MAIN(VS_OUT In) : COLOR0 {
 	float depth = tex2D(depthTexture, In.tex0);	
 	
 	// ! COMPUTE AO FROM "normal" AND "depth" ! //	
-
-	// generate checker pattern
-	float2 t = (In.tex0+float2(1.0f, 1.0f))*4.0f;
-	t -= floor(t);
-	t = saturate(t);
-	int x = t.x+0.5f;
-	int y = t.y+0.5f;
-	if ((x+y) % 2 == 0) {
-		return 1.0f;
-	}
-	else {
-		return 0.5f;
-	}
+	return ProcessAO(float2(0.0f,0.0f));
 };
 
 
