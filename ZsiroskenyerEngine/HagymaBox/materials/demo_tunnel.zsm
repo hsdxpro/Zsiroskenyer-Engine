@@ -1,0 +1,9 @@
+id 0
+diffuse 0.9 0.9 0.9 1
+specular 1 1 1 1
+emissive 0 0 0 0
+glossiness 0.5
+tdiffuse ../textures/road_tileable.jpg
+tnormal ../textures/road_tileable_normal.jpg
+tspecular
+tdisplace
