@@ -686,6 +686,14 @@ HRESULT cGraphicsApiD3D11::CompileShaderFromFile(const zsString& fileName, const
 eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, const wchar_t* shaderPath_) {
 	const zsString shaderPath(shaderPath_);
 	
+	// File not exists
+	std::ifstream is(shaderPath.c_str());
+	if (!is.is_open())
+	{
+		lastErrorMsg = L"Shader file doesn't exists:  " + shaderPath;
+		return eGapiResult::ERROR_FILE_NOT_FOUND;
+	}
+
 	// TODO read last write of that shader if last_write < curr_last_write (elavult)
 	//last_write_time()
 	//boost::filesystem::last_write_time(boost::filesystem::path(shaderPath.c_str()));
