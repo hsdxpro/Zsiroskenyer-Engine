@@ -5,6 +5,16 @@
 
 #include "deferred_lightpass_cmn.cginc"
 
+//------------------------------------------------------------------------------
+//	Additional textures
+//------------------------------------------------------------------------------
+
+sampler2D ambientOcclusionTexture = {
+    MipFilter = LINEAR,
+    MinFilter = LINEAR,
+    MagFilter = LINEAR,
+};
+
 
 //------------------------------------------------------------------------------
 //	Vertex shader
@@ -34,8 +44,10 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	float4 color;
 	float3 diffuseColor;
 	diffuseColor = tex2D(gBuffer0, In.tex0);
-	
-	color.rgb = diffuseColor * lightColor;
+	float ambientOcclusion = tex2D(ambientOcclusionTexture, In.tex0);
+
+	color.rgb = diffuseColor * lightColor * ambientOcclusion;
+	color.a = 1.0f;
 	
 	return color;
 }

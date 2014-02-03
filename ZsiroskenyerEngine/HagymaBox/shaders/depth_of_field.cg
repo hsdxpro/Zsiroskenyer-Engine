@@ -55,6 +55,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	float radius = min((depthComponent  + radialComponent)*2.8,2.8f);
 
 	float4 color = tex2D(inputTexture, In.tex0);
+	float alpha = color.a;
 	int quality = 4;
 	for( int i = 0; i < quality; i++)
 	{
@@ -65,6 +66,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	}
 
 	Out.color = color / (quality * 4 + 1);
+	Out.color.a = alpha;
 
 	return Out;
 }

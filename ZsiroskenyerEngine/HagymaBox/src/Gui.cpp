@@ -11,6 +11,7 @@ cGui::cGui() {
 
 cGui::cGui(IGraphicsScene* s, size_t width, size_t height)
 :scene(s), width(width), height(height) {
+	s->GetState().hdr.enabled = false;
 	s->GetCamera() = cCamera(cCamera::tProjOrtho(0, (float)width, (float)height, 0), 0.001f, 5000.0f);
 }
 

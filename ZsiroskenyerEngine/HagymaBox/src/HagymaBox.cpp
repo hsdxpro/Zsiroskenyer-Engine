@@ -17,8 +17,8 @@ cHagymaBox::cHagymaBox(IWindow* w) {
 	engineCore = new cCore(w, w->GetClientWidth(), w->GetClientHeight(), gCfg);
 
 	// 3D scene for editing
-	//scene = engineCore->GetGraphicsEngine()->CreateScene(); MORE SCENES FAIL
-	//scene->GetCamera() = cCamera(/*0.5*3.141592653589*/1.15f, (float)w->GetClientWidth() / w->GetClientHeight(), 0.01f, 5000.0f);
+	scene = engineCore->GetGraphicsEngine()->CreateScene(); // MORE SCENES FAIL
+	scene->GetCamera() = cCamera(cCamera::tProjPersp(/*0.5*3.141592653589*/1.15f, (float)w->GetClientWidth() / w->GetClientHeight()), 0.01f, 5000.0f);
 
 	// Create gui system
 	guiSystem = new cGuiSystem();
@@ -46,7 +46,7 @@ void cHagymaBox::InitGui() {
 	//cGuiButton* loadEntityBtn = mainGui->CreateButton(L"materials/buttonBG.zsm",0, 0, 1280, 1024);
 	//loadEntityBtn->SetText(L"ALMA");
 
-	mainGui->CreateImage(L"materials/cliff.zsm", 0, 0, 1280, 1024);
+	mainGui->CreateImage(L"materials/coyote.zsm", 0, 0, 400, 300);
 	//mainGui->CreateImage(L"materials/cliff.zsm", 400, 0, 400, 300);
 	//mainGui->CreateImage(L"materials/cliff.zsm", 0, 300, 400, 300);
 	//mainGui->CreateImage(L"materials/cliff.zsm", 400, 300, 400, 300);
@@ -55,9 +55,6 @@ void cHagymaBox::InitGui() {
 void cHagymaBox::Update(float deltaT) {
 	engineCore->Update(deltaT);
 	engineCore->GetGraphicsEngine()->GetGraphicsApi()->Present();
-	// Updating the gui system..
-
-	// Editor Logic here :....
 }
 
 cCore* cHagymaBox::GetEngineCore() {
@@ -65,6 +62,10 @@ cCore* cHagymaBox::GetEngineCore() {
 }
 
 cCamera& cHagymaBox::GetCamera() {
-	return mainGui->GetScene()->GetCamera();
-	//return scene->GetCamera();
+	return scene->GetCamera();
+}
+
+IGraphicsScene* cHagymaBox::GetScene()
+{
+	return scene;
 }

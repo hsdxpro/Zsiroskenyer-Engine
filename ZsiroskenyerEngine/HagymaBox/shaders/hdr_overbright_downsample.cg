@@ -1,4 +1,4 @@
-#include "tone_mapping.cg"
+#include "tone_mapping.cginc"
 
 
 // texture input sampler

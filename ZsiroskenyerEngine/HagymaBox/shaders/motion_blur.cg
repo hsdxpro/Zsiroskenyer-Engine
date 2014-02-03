@@ -52,6 +52,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 
 	// Get the initial color at this pixel.  
    	float4 color = tex2D(textureInput, In.tex0);
+	float alpha = color.a;
 
 	int nSamples = 8;
 	for(int i = 1; i < nSamples; ++i)     
@@ -59,6 +60,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 		color += tex2D(textureInput, In.tex0 + i * velocity);
  
 	Out.color = color / (nSamples + 1);
+	Out.color.a = alpha;
 	return Out;
 }
 

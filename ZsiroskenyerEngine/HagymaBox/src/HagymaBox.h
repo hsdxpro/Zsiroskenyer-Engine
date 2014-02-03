@@ -20,6 +20,7 @@ public:
 
 	cCore* GetEngineCore();
 	cCamera& GetCamera();
+	IGraphicsScene* GetScene();
 
 protected:
 	void InitGui();
