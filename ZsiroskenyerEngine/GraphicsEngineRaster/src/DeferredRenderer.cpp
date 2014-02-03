@@ -51,7 +51,7 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 	shaderSSAO = NULL;
 
 	// light volumes to null
-	ibSpot = ibPoint = NULL;	
+	ibSpot = ibPoint = NULL;
 	vbSpot = vbPoint = NULL;
 
 
@@ -168,8 +168,9 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 			depthBuffer = depthBuffer_;
 			depthBufferCopy = depthBufferCopy_;
 			ambientOcclusionBuffer = ambientOcclusionBuffer_;
-			for (int i = 0; i < sizeof(gBuffer) / sizeof(gBuffer[0]); ++i)
-				gBuffer[i] = gBuffer_[i];
+			for (int j = 0; j < sizeof(gBuffer) / sizeof(gBuffer[0]); ++j) {
+				gBuffer[j] = gBuffer_[j];
+			}
 
 			// return dat error
 			return results[i];
