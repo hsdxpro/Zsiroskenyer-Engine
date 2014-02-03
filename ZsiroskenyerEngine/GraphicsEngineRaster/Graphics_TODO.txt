@@ -1,0 +1,24 @@
+-- visual quality algorithms
+1. ambient occlusion back in pipeline - check
+2. shadow mapping (at least some basic)
+3. order-independent transparency
+
+-- engine structure & resource handling
+1. different g-buffer shaders
+	- different if has feature or not (is there normal map?, cutout map?)
+	- proper processing of input material
+		(diffuse color vs. diffuse texture)
+	- different vertex formats
+2. lightpass shaders
+	- support for most physical material properties
+		-> multiple shaders (when to use which?!)
+		-> one uber shader (won't it be slow as fuck?!)
+3. vertex format
+	- user-made geometry must have vertex format defined explicitly by user
+	- consequence: geometry must have vertex format defined by file
+	- consequence: engine must support arbitrary vertex formats
+		(only a subset of all vertex formats, but can mix them in the pipeline)
+4. instanced rendering
+	- what type of instanced rendering...?
+	- does the graphics api handle it implicitly...?
+	- anyway, we're gonna implement it if 4 cores are not enough!
