@@ -693,6 +693,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		lastErrorMsg = L"Shader file doesn't exists:  " + shaderPath;
 		return eGapiResult::ERROR_FILE_NOT_FOUND;
 	}
+	is.close();
 
 	// TODO read last write of that shader if last_write < curr_last_write (elavult)
 	//last_write_time()
