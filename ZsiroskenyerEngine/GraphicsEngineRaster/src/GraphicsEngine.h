@@ -103,21 +103,21 @@ public:
 	IGraphicsApi*		GetGraphicsApi() override;
 private:
 	// rendering functions
-	void RenderScene(cGraphicsScene& scene, float elapsed);
+	void RenderScene(cGraphicsScene& scene, ITexture2D* target, float elapsed);
 	void RenderForward();
 	void RenderDeferred();
 	// render states
 	static const tDepthStencilDesc depthStencilDefault;
 	static const tBlendDesc blendDefault;
+	// rendering stuff
+	cSceneManager* sceneManager; // temporary storage for current scene state (copied from cScene)
+	cCamera* camera;
+	float elapsed;
+	ITexture2D* currentSceneBuffer;
 
 	// state
 	unsigned screenWidth, screenHeight;
 	tGraphicsConfig config;
-
-	// scene state loaded there
-	cSceneManager* sceneManager;
-	cCamera* camera;
-	float elapsed;
 
 	// sub-compnents: rendering & graphical
 	IGraphicsApi* gApi;
@@ -131,6 +131,9 @@ private:
 	void LoadShaders();
 	void UnloadShaders();
 	IShaderProgram* shaderScreenCopy;
+	
+	// buffers
+	void ReloadBuffers();
 
 	// misc
 	std::string lastErrorMessage;

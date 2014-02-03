@@ -75,7 +75,8 @@ screenWidth(screenWidth),
 screenHeight(screenHeight),
 deferredRenderer(NULL),
 hdrProcessor(NULL),
-shaderScreenCopy(NULL)
+shaderScreenCopy(NULL),
+currentSceneBuffer(NULL)
 {
 	// Create graphics api
 	switch (config.rasterEngine.gxApi) {
@@ -93,6 +94,14 @@ shaderScreenCopy(NULL)
 
 	// Create resource manager
 	resourceManager = new cResourceManager(gApi);
+
+	// Create texture buffers
+	try {
+		ReloadBuffers();
+	}
+	catch (std::exception& e) {
+		throw std::runtime_error(std::string("failed to create buffers: ") + e.what());
+	}
 
 	// Create shaders
 	try {
@@ -124,6 +133,7 @@ cGraphicsEngine::~cGraphicsEngine() {
 	SAFE_DELETE(resourceManager)
 	SAFE_RELEASE(gApi);
 	SAFE_DELETE(deferredRenderer);
+	SAFE_RELEASE(currentSceneBuffer);
 }
 
 void cGraphicsEngine::Release() {
@@ -172,9 +182,14 @@ eGraphicsResult cGraphicsEngine::Resize(unsigned width, unsigned height) {
 	screenHeight = height;
 
 	gApi->SetBackBufferSize(screenWidth, screenHeight);
-	if (deferredRenderer) {
-		result = deferredRenderer->Resize(screenWidth, screenHeight);
+	result = deferredRenderer->Resize(screenWidth, screenHeight);
+	try {
+		ReloadBuffers();
 	}
+	catch (...) {
+		return eGraphicsResult::ERROR_OUT_OF_MEMORY;
+	}
+	
 	return result;
 }
 
@@ -214,20 +229,49 @@ IGeometryBuilder* cGraphicsEngine::CreateCustomGeometry() {
 ////////////////////////////////////////////////////////////////////////////////
 //	Update scene
 eGraphicsResult cGraphicsEngine::Update(float elapsed) {
+	// handle incorrect elapsed times
 	if (elapsed < 1e-8f) {
 		elapsed = 1e-8f;
 	}
-	//gApi->Clear(true, true);
-
-	for (auto& scene : graphicsSceneOrder) {
-		RenderScene(*scene, elapsed);
+	// is there anything to render at all...?
+	if (graphicsSceneOrder.size() == 0) {
+		return eGraphicsResult::OK;
 	}
+
+	// render first scene straight to backbuffer
+	RenderScene(*graphicsSceneOrder[0], gApi->GetDefaultRenderTarget(), elapsed);
+
+	// set blend state
+	tBlendDesc blendScene;
+	blendScene.alphaToCoverageEnable = false;
+	blendScene.independentBlendEnable = false;
+	blendScene[0].blendOp = eBlendOp::ADD;
+	blendScene[0].blendOpAlpha = eBlendOp::ADD;
+	blendScene[0].destBlend = eBlendFactor::INV_SRC_ALPHA;
+	blendScene[0].destBlendAlpha = eBlendFactor::ZERO;
+	blendScene[0].srcBlend = eBlendFactor::SRC_ALPHA;
+	blendScene[0].srcBlendAlpha = eBlendFactor::ONE;
+	blendScene[0].writeMask = (int)eBlendWriteMask::ALL;
+	blendScene[0].enable = true;
+
+	// render remaining scenes
+	for (size_t i = 1; i < graphicsSceneOrder.size(); ++i) {
+		// render dat scene
+		RenderScene(*graphicsSceneOrder[i], currentSceneBuffer, elapsed);
+		// accumulate to backbuffer
+		gApi->SetBlendState(blendScene);
+		gApi->SetShaderProgram(shaderScreenCopy);
+		gApi->SetTexture(L"texture0", currentSceneBuffer);
+		gApi->SetRenderTargetDefault();
+		gApi->Draw(3);
+	}
+
 	return eGraphicsResult::OK;
 }
 
 
 // Render a graphics scene
-void cGraphicsEngine::RenderScene(cGraphicsScene& scene, float elapsed) {
+void cGraphicsEngine::RenderScene(cGraphicsScene& scene, ITexture2D* target, float elapsed) {
 	// load settings from scene
 	camera = &scene.camera;
 	camera->SetAspectRatio(float((double)screenWidth / (double)screenHeight));
@@ -237,7 +281,6 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, float elapsed) {
 	// --- --- composition w/ deferred --- --- //
 	ASSERT(deferredRenderer);
 	deferredRenderer->RenderComposition();
-
 	
 	// --- --- post-process --- --- //
 	static ITexture2D* compBuf_Check = NULL; // TODO: Remove this or I kill myself
@@ -245,17 +288,18 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, float elapsed) {
 
 	// HDR
 	if (scene.state.hdr.enabled) {
+		// update hdr source buffer as needed
 		if (composedBuffer != compBuf_Check) {
 			compBuf_Check = composedBuffer;
 			hdrProcessor->SetSource(composedBuffer, screenWidth, screenHeight);
 		}
 		hdrProcessor->adaptedLuminance = scene.luminanceAdaptation; // copy luminance value
-		hdrProcessor->SetDestination(gApi->GetDefaultRenderTarget());	// set destination as backbuffer
-		hdrProcessor->Update(elapsed);									// update hdr
+		hdrProcessor->SetDestination(target);						// set destination
+		hdrProcessor->Update(elapsed);								// update hdr
 		scene.luminanceAdaptation = hdrProcessor->adaptedLuminance; // copy luminance value
 	}
 	else {
-		gApi->SetRenderTargetDefault();
+		gApi->SetRenderTargets(1, &target);
 		gApi->SetShaderProgram(shaderScreenCopy);
 		//gApi->SetTexture(L"texture0", composedBuffer);
 		gApi->SetTexture(composedBuffer, 0);
@@ -279,6 +323,33 @@ void cGraphicsEngine::LoadShaders() {
 }
 void cGraphicsEngine::UnloadShaders() {
 	SAFE_RELEASE(shaderScreenCopy);
+}
+
+void cGraphicsEngine::ReloadBuffers() {
+	// backup
+	auto currentSceneBuffer_ = currentSceneBuffer;
+
+	// try create new
+	ITexture2D::tDesc desc;
+	desc.arraySize = 1;
+	desc.bind = (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE;
+	desc.width = screenWidth;
+	desc.height = screenHeight;
+	desc.mipLevels = 1;
+	desc.usage = eUsage::DEFAULT;
+
+	desc.format = eFormat::R8G8B8A8_UNORM;
+	auto bufResult = gApi->CreateTexture(&currentSceneBuffer, desc);
+
+	if (bufResult != eGapiResult::OK) {
+		// failed: rollback
+		currentSceneBuffer = currentSceneBuffer_;
+		// throw
+		throw std::runtime_error("scene backbuffer");
+	}
+
+	// success: release old
+	SAFE_RELEASE(currentSceneBuffer_);
 }
 
 
