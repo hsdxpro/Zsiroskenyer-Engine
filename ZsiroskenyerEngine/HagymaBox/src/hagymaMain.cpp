@@ -223,6 +223,16 @@ int main() {
 		while (window->HandleMessage(&msg));
 
 		float deltaT = t.GetDeltaSeconds();
+		size_t fps = cTimer::GetFps(deltaT);
+
+		// Don't hog with set caption text... Fucking slow operation
+		static float timer1 = 0.0;
+		timer1 += deltaT;
+		if (timer1 > 1.0f) {
+			window->SetCaptionText(zsString(L"[Zsíroskenyér Engine 0.1 Beta]  FPS: ") + fps);
+			timer1 = 0.0f;
+		}
+
 		updateDemo(editor.GetCamera(), deltaT);
 		editor.Update(deltaT);
 	}

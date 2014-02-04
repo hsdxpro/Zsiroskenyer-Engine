@@ -209,7 +209,7 @@ int ricsiMain() {
 		Vec3(3.72f, 30.19f, 1.54f), // coyote
 		Vec3(0, 0, 0), // crate
 		Vec3(0,0,0), // cliff
-		Vec3(0,0,0), // ground
+		Vec3(0,0,0), // groundt az ho
 		Vec3(18.14f, 7.26f, 0.48f), // ház
 		Vec3(0,0,0), // road
 		Vec3(0,0,0), // tunnel
