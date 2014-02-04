@@ -245,12 +245,15 @@ eGraphicsResult cGraphicsEngine::Update(float elapsed) {
 	tBlendDesc blendScene;
 	blendScene.alphaToCoverageEnable = false;
 	blendScene.independentBlendEnable = false;
-	blendScene[0].blendOp = eBlendOp::ADD;
-	blendScene[0].blendOpAlpha = eBlendOp::ADD;
+
+	blendScene[0].blendOp = eBlendOp::ADD; 
 	blendScene[0].destBlend = eBlendFactor::INV_SRC_ALPHA;
-	blendScene[0].destBlendAlpha = eBlendFactor::ZERO;
 	blendScene[0].srcBlend = eBlendFactor::SRC_ALPHA;
+
+	blendScene[0].blendOpAlpha = eBlendOp::ADD;	
+	blendScene[0].destBlendAlpha = eBlendFactor::ZERO;	
 	blendScene[0].srcBlendAlpha = eBlendFactor::ONE;
+
 	blendScene[0].writeMask = (int)eBlendWriteMask::ALL;
 	blendScene[0].enable = true;
 
@@ -258,11 +261,13 @@ eGraphicsResult cGraphicsEngine::Update(float elapsed) {
 	for (size_t i = 1; i < graphicsSceneOrder.size(); ++i) {
 		// render dat scene
 		RenderScene(*graphicsSceneOrder[i], currentSceneBuffer, elapsed);
+
 		// accumulate to backbuffer
 		gApi->SetBlendState(blendScene);
+		
+		gApi->SetRenderTargetDefault();
 		gApi->SetShaderProgram(shaderScreenCopy);
 		gApi->SetTexture(L"texture0", currentSceneBuffer);
-		gApi->SetRenderTargetDefault();
 		gApi->Draw(3);
 	}
 
@@ -277,6 +282,7 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, ITexture2D* target, flo
 	camera->SetAspectRatio(float((double)screenWidth / (double)screenHeight));
 	sceneManager = &scene.sceneManager;
 	this->elapsed = elapsed;
+	lastCameraMatrix = &scene.lastCameraMatrix;
 
 	// --- --- composition w/ deferred --- --- //
 	ASSERT(deferredRenderer);

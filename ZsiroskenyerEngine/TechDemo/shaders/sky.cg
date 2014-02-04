@@ -102,7 +102,7 @@ float4 PS_MAIN(float4 posH : POSITION, float2 clipPos : TEXTURE0) : COLOR0 {
 
 	// no sky below horizon
 	if (viewLatitude < 0.0f) {
-		return float4(0.6f, 0.6f, 0.6, 1.0f);
+		return float4(0.6f, 0.6f, 0.6, 0.0f);
 	}
 
 	// CIE sky model
@@ -146,7 +146,7 @@ float4 PS_MAIN(float4 posH : POSITION, float2 clipPos : TEXTURE0) : COLOR0 {
 	float sunDisk = saturate((cosElementAngle - 0.9993908270191f)*2188.7050f);
 	color += sunColor * (10.f*pow(sunDisk, 10.f));
 
-	return float4(max(color, float3(0,0,0)), 1.0f);
+	return float4(max(color, float3(0,0,0)), 0.0f);
 }
 
 

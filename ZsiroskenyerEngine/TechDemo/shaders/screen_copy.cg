@@ -16,9 +16,6 @@ struct VS_OUT {
 	float2 tex0 	: TEXCOORD2;
 };
 
-struct PS_OUT {
-	float4 color: COLOR0;
-};
 
 VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 	VS_OUT Out;
@@ -27,10 +24,9 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 	return Out;
 }
 
-PS_OUT PS_MAIN(VS_OUT In) {
-	PS_OUT Out;
-	Out.color = tex2D(texture0, In.tex0);
-	return Out;
+float4 PS_MAIN(VS_OUT In) : COLOR0 {
+	float4 color = tex2D(texture0, In.tex0);
+	return color;
 };
 
 technique t

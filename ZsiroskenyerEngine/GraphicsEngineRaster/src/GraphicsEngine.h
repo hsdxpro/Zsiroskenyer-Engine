@@ -10,6 +10,7 @@
 #include "../../Core/src/IGraphicsEngine.h"
 #include "../../Core/src/GAPI.h"
 #include "../../Core/src/Camera.h"
+#include "../../Core/src/math/Matrix44.h"
 #include "SceneManager.h"
 #include <set>
 #include <deque>
@@ -66,6 +67,7 @@ private:
 
 	// temporary per-scene renderer data
 	float luminanceAdaptation;
+	Matrix44 lastCameraMatrix;
 };
 
 
@@ -112,6 +114,7 @@ private:
 	// rendering stuff
 	cSceneManager* sceneManager; // temporary storage for current scene state (copied from cScene)
 	cCamera* camera;
+	Matrix44* lastCameraMatrix;
 	float elapsed;
 	ITexture2D* currentSceneBuffer;
 

@@ -15,6 +15,7 @@ cGraphicsScene::cGraphicsScene(cGraphicsEngine& parent, tRenderState state)
 	camera(cCamera::tProjPersp(70.0f/180.f*3.1415926f, 1.0f), 0.5f, 2000.0f),
 	luminanceAdaptation(0.0f)
 {
+	lastCameraMatrix.Identity();
 }
 
 cGraphicsScene::~cGraphicsScene() {
