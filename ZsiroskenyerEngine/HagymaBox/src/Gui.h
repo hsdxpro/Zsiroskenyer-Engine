@@ -21,9 +21,9 @@ public:
 	friend class cGuiSystem;
 
 	// Create image on the gui with material etc
-	cGuiImage* CreateImage(const zsString& mtlPath, size_t posX, size_t posY, size_t width, size_t height);
-	cGuiButton* CreateButton(const zsString& mtlPath, size_t posX, size_t posY, size_t width, size_t height);
-	cGuiText* CreateText(eFontType fT, size_t posX, size_t posY, const zsString& str);
+	cGuiImage* AddImage(const zsString& mtlPath, size_t posX, size_t posY, size_t width, size_t height);
+	cGuiButton* AddButton(const zsString& mtlPath, size_t posX, size_t posY, size_t width, size_t height);
+	cGuiText* AddText(eFontType fT, size_t posX, size_t posY, const zsString& str);
 
 	IGraphicsScene* GetScene();
 

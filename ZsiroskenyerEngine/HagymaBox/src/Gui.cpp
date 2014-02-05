@@ -15,15 +15,15 @@ cGui::cGui(IGraphicsScene* s, size_t width, size_t height)
 	s->GetCamera() = cCamera(cCamera::tProjOrtho(0, (float)width, (float)height, 0), 0.001f, 5000.0f);
 }
 
-cGuiImage* cGui::CreateImage(const zsString& mtlPath, size_t posX, size_t posY, size_t width, size_t height) {
+cGuiImage* cGui::AddImage(const zsString& mtlPath, size_t posX, size_t posY, size_t width, size_t height) {
 	return new cGuiImage(this, CreateQuad(mtlPath, posX, posY, width, height), width, height);
 }
 
-cGuiButton* cGui::CreateButton(const zsString& mtlPath, size_t posX, size_t posY, size_t width, size_t height) {
+cGuiButton* cGui::AddButton(const zsString& mtlPath, size_t posX, size_t posY, size_t width, size_t height) {
 	return new cGuiButton(this, CreateQuad(mtlPath, posX, posY, width, height), width, height);
 }
 
-cGuiText* cGui::CreateText(eFontType fT, size_t posX, size_t posY, const zsString& str) {
+cGuiText* cGui::AddText(eFontType fT, size_t posX, size_t posY, const zsString& str) {
 	// TODO
 	return NULL;
 

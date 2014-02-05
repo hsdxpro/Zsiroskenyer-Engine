@@ -46,10 +46,7 @@ void cHagymaBox::InitGui() {
 	//cGuiButton* loadEntityBtn = mainGui->CreateButton(L"materials/buttonBG.zsm",0, 0, 1280, 1024);
 	//loadEntityBtn->SetText(L"ALMA");
 
-	mainGui->CreateImage(L"materials/coyote.zsm", 0, 0, 400, 300);
-	//mainGui->CreateImage(L"materials/cliff.zsm", 400, 0, 400, 300);
-	//mainGui->CreateImage(L"materials/cliff.zsm", 0, 300, 400, 300);
-	//mainGui->CreateImage(L"materials/cliff.zsm", 400, 300, 400, 300);
+	mainGui->AddImage(L"materials/coyote.zsm", 0, 0, 400, 300);
 }
 
 void cHagymaBox::Update(float deltaT) {

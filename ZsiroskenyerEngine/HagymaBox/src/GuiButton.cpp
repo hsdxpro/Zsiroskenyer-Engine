@@ -9,5 +9,5 @@ cGuiButton::cGuiButton(cGui* parent, cGraphicsEntity* e, size_t width, size_t he
 
 void cGuiButton::SetText(const zsString& str) {
 	const Vec3& pos = entity->GetPos();
-	parent->CreateText(eFontType::DEFAULT, (size_t)pos.x, (size_t)pos.y, str);
+	parent->AddText(eFontType::DEFAULT, (size_t)pos.x, (size_t)pos.y, str);
 }

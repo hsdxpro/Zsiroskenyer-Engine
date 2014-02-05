@@ -9,9 +9,6 @@ cGuiSystem::cGuiSystem()
 {}
 
 cGuiSystem::~cGuiSystem() {
-	for (auto i = images.begin(); i != images.end(); i++)
-		SAFE_DELETE(*i);
-
 	for (auto i = guis.begin(); i != guis.end(); i++)
 		SAFE_DELETE(*i);
 }
