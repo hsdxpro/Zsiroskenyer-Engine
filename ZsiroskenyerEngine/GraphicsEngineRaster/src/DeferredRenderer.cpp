@@ -292,7 +292,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	Matrix44 projMat = cam->GetProjMatrix();
 	Matrix44 viewMat = cam->GetViewMatrix();
 	Matrix44 viewProjMat = viewMat * projMat;
-	Matrix44 invViewProjMat = Matrix44::Inverse(viewProjMat);
+	Matrix44 invViewProjMat = Matrix44Inverse(viewProjMat);
 	Matrix44& prevView = *parent.lastCameraMatrix;
 
 	// Foreach: Instance group

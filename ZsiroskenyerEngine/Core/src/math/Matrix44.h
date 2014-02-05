@@ -52,29 +52,6 @@ public:
 	Matrix44& Transpose();
 	float Determinant();
 
-	// Static matrix stuff
-	static Matrix44 Inverse(const Matrix44& in);
-	static Matrix44 Transpose(const Matrix44& in);
-	static Matrix44 RotationAxisAngle(const Vec3& axis, float angle);
-	static Matrix44 RotationQuat(const Quat&); // typecast ((Matrix44)quaternion) is possibly slower than this shit
-
-	static Matrix44 Translation(float x, float y, float z);
-	static Matrix44 Translation(const Vec3& v);
-
-	static Matrix44 Scaling(float x, float y, float z);
-	static Matrix44 Scaling(const Vec3& v);
-
-	static Matrix44 RotationEuler(const Vec3& rot);
-	static Matrix44 RotationEuler(float x, float y, float z);
-
-	static Matrix44 RotationX(float angle);
-	static Matrix44 RotationY(float angle);
-	static Matrix44 RotationZ(float angle);
- 
-	static Matrix44 ViewRH(const Vec3& eye, const Vec3& target, const Vec3& up);
-	static Matrix44 ProjPerspective(float nearPlane, float farPlane, float fovRad, float aspectRatio);
-	static Matrix44 ProjOrtographic(float nearPlane, float farPlane, float left, float right, float bottom, float top);
-
 //---PRE TRANSFORMS---//
 	Matrix44& PreRotate(const Quat& q);
 
@@ -132,8 +109,29 @@ std::ostream& operator << (std::ostream& os, const Matrix44& m);
 Matrix44 lerp(const Matrix44& m1, const Matrix44& m2, float t);
 
 
+//-------------GLOBALS---------------///
+
+Matrix44 Matrix44Inverse(const Matrix44& in);
+Matrix44 Matrix44Transpose(const Matrix44& in);
+
+Matrix44 Matrix44RotationAxisAngle(const Vec3& axis, float angle);
+Matrix44 Matrix44RotationQuat(const Quat&); // typecast ((Matrix44)quaternion) is possibly slower than this shit
+Matrix44 Matrix44RotationEuler(const Vec3& rot);
+Matrix44 Matrix44RotationEuler(float x, float y, float z);
+
+Matrix44 Matrix44Translation(float x, float y, float z);
+Matrix44 Matrix44Translation(const Vec3& v);
+
+Matrix44 Matrix44Scaling(float x, float y, float z);
+Matrix44 Matrix44Scaling(const Vec3& v);
 
 
+Matrix44 Matrix44RotationX(float angle);
+Matrix44 Matrix44RotationY(float angle);
+Matrix44 Matrix44RotationZ(float angle);
 
+Matrix44 Matrix44ViewRH(const Vec3& eye, const Vec3& target, const Vec3& up);
+Matrix44 Matrix44ProjPerspective(float nearPlane, float farPlane, float fovRad, float aspectRatio);
+Matrix44 Matrix44ProjOrtographic(float nearPlane, float farPlane, float left, float right, float bottom, float top);
 
 
