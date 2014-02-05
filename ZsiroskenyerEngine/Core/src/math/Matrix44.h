@@ -55,30 +55,43 @@ public:
 	// Static matrix stuff
 	static Matrix44 Inverse(const Matrix44& in);
 	static Matrix44 Transpose(const Matrix44& in);
-
-	// Linear transformations
-	Matrix44& Scale(float x, float y, float z);
-	Matrix44& Scale(const Vec3& s);
-
-	Matrix44& Translate(float x, float y, float z);
-	Matrix44& Translate(const Vec3& t);
-
 	static Matrix44 RotationAxisAngle(const Vec3& axis, float angle);
 	static Matrix44 RotationQuat(const Quat&); // typecast ((Matrix44)quaternion) is possibly slower than this shit
 
 	static Matrix44 Translation(float x, float y, float z);
 	static Matrix44 Translation(const Vec3& v);
 
+	static Matrix44 Scaling(float x, float y, float z);
+	static Matrix44 Scaling(const Vec3& v);
+
 	static Matrix44 RotationEuler(const Vec3& rot);
 	static Matrix44 RotationEuler(float x, float y, float z);
- 
+
 	static Matrix44 RotationX(float angle);
 	static Matrix44 RotationY(float angle);
 	static Matrix44 RotationZ(float angle);
-
+ 
 	static Matrix44 ViewRH(const Vec3& eye, const Vec3& target, const Vec3& up);
 	static Matrix44 ProjPerspective(float nearPlane, float farPlane, float fovRad, float aspectRatio);
 	static Matrix44 ProjOrtographic(float nearPlane, float farPlane, float left, float right, float bottom, float top);
+
+//---PRE TRANSFORMS---//
+	Matrix44& PreRotate(const Quat& q);
+
+	Matrix44& PreScale(float x, float y, float z);
+	Matrix44& PreScale(const Vec3& s);
+
+	Matrix44& PreTranslate(float x, float y, float z);
+	Matrix44& PreTranslate(const Vec3& t);
+
+//---POST TRANSFORMS---//
+	Matrix44& PostRotate(const Quat& q);
+
+	Matrix44& PostScale(float x, float y, float z);
+	Matrix44& PostScale(const Vec3& s);
+
+	Matrix44& PostTranslate(float x, float y, float z);
+	Matrix44& PostTranslate(const Vec3& t);
 
 	// Accessors
 	float& operator() (unsigned row, unsigned col);
@@ -115,7 +128,7 @@ public:
 // Utility
 std::ostream& operator << (std::ostream& os, const Matrix44& m);
 
-
+// GLobals
 Matrix44 lerp(const Matrix44& m1, const Matrix44& m2, float t);
 
 

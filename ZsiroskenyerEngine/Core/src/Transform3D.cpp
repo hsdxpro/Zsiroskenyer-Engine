@@ -6,8 +6,8 @@ cTransform3D::cTransform3D()
 
 Matrix44 cTransform3D::GetWorldMatrix() const {
 	Matrix44 world;
-		world.RotationQuat(this->rot);
-		world.Scale(this->scale);
-		world.Translate(this->pos);
+		world.PostRotate(this->rot);
+		world.PostScale(this->scale);
+		world.PostTranslate(this->pos);
 	return world;
 }

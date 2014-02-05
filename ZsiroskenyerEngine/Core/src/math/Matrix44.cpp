@@ -186,6 +186,57 @@ float Matrix44::Determinant() {
 		- _14 * (_21 * (_32 * _43 - _42 * _33) - _22 * (_31 * _43 - _41 * _33) + _23 * (_31 * _42 - _32 * _41));
 }
 
+//---------------- PRE TRANSFORM -------------------//
+Matrix44& Matrix44::PreRotate(const Quat& q) {
+	return *this = RotationQuat(q) * *this;
+}
+
+Matrix44& Matrix44::PreScale(float x, float y, float z) {
+	return *this = Scaling(x,y,z) * *this;
+}
+
+Matrix44& Matrix44::PreScale(const Vec3& s) {
+	return *this = Scaling(s) * *this;
+}
+
+Matrix44& Matrix44::PreTranslate(float x, float y, float z) {
+	return *this = Translation(x, y, z) * *this;
+}
+
+Matrix44& Matrix44::PreTranslate(const Vec3& t) {
+	return *this = Translation(t) * *this;
+}
+
+
+//---------------- POST TRANSFORM -------------------//
+Matrix44& Matrix44::PostRotate(const Quat& q) {
+	return *this *= RotationQuat(q);
+}
+
+Matrix44& Matrix44::PostScale(float x, float y, float z) {
+	return *this *= Scaling(x, y, z);
+}
+
+Matrix44& Matrix44::PostScale(const Vec3& s) {
+	return *this *= Scaling(s);
+}
+
+Matrix44& Matrix44::PostTranslate(float x, float y, float z) {
+	_41 += x;
+	_42 += y;
+	_43 += z;
+	return *this;
+}
+
+Matrix44& Matrix44::PostTranslate(const Vec3& t) {
+	_41 += t.x;
+	_42 += t.y;
+	_43 += t.z;
+	return *this;
+}
+
+
+
 // Static matrix stuff
 Matrix44 Matrix44::Transpose(const Matrix44& in) {
 	Matrix44 out = in;
@@ -198,7 +249,7 @@ Matrix44 Matrix44::Inverse(const Matrix44& in) {
 	// determinant
 	float det_A;
 	// partial computations for speed optimizations (hopefully faster, should be tested)
-	float 
+	float
 		A = in._33 * in._44 - in._43 * in._34,
 		B = in._32 * in._44 - in._42 * in._34,
 		C = in._32 * in._43 - in._42 * in._33,
@@ -251,40 +302,11 @@ Matrix44 Matrix44::Inverse(const Matrix44& in) {
 	out._11 *= det_A;
 	out._21 *= det_A;
 	out._31 *= det_A;
-	out._41	*= det_A;
+	out._41 *= det_A;
 
 	return out;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Linear transformations
-Matrix44& Matrix44::Scale(float x, float y, float z) {
-	_11 *= x;
-	_22 *= y;
-	_33 *= z;
-	return *this;
-}
-
-Matrix44& Matrix44::Scale(const Vec3& s) {
-	_11 *= s.x;
-	_22 *= s.y;
-	_33 *= s.z;
-	return *this;
-}
-
-Matrix44& Matrix44::Translate(float x, float y, float z) {
-	_41 += x;
-	_42 += y;
-	_43 += z;
-	return *this;
-}
-
-Matrix44& Matrix44::Translate(const Vec3& t) {
-	_41 += t.x;
-	_42 += t.y;
-	_43 += t.z;
-	return *this;
-}
 
 Matrix44 Matrix44::Translation( float x, float y, float z) {
 	Matrix44 m;
@@ -300,6 +322,20 @@ Matrix44 Matrix44::Translation(const Vec3& v) {
 		m._42 = v.y;
 		m._43 = v.z;
 	return m;
+}
+
+Matrix44 Matrix44::Scaling(float x, float y, float z) {
+	return Matrix44(x, 0, 0, 0,
+					0, y, 0, 0,
+					0, 0, z, 0,
+					0, 0, 0, 1);
+}
+
+Matrix44 Matrix44::Scaling(const Vec3& v) {
+	return Matrix44(v.x, 0,   0,   0,
+					0,   v.y, 0,   0,
+					0,   0,   v.z, 0,
+					0,   0,   0,   1);
 }
 
 Matrix44 Matrix44::RotationEuler(const Vec3& rot) {
@@ -423,6 +459,8 @@ std::ostream& operator << (std::ostream& os, const Matrix44& m) {
 }
 
 
+
+//------------------------------------GLOBALS-------//
 Matrix44 lerp(const Matrix44& m1, const Matrix44& m2, float t) {
 	return m2 * t + m1 * (1 - t);
 }
