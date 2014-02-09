@@ -46,6 +46,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SoundEngineFMOD", "SoundEng
 		{0444E71E-FDC6-4511-B395-6946993BBB5F} = {0444E71E-FDC6-4511-B395-6946993BBB5F}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GUISystem", "GUISystem\GUISystem.vcxproj", "{58BFDBD1-AFAA-4678-B008-8853D57F5355}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -84,6 +86,10 @@ Global
 		{7AED32B4-90C6-4822-9385-E6EA75DCE59E}.Debug|Win32.Build.0 = Debug|Win32
 		{7AED32B4-90C6-4822-9385-E6EA75DCE59E}.Release|Win32.ActiveCfg = Release|Win32
 		{7AED32B4-90C6-4822-9385-E6EA75DCE59E}.Release|Win32.Build.0 = Release|Win32
+		{58BFDBD1-AFAA-4678-B008-8853D57F5355}.Debug|Win32.ActiveCfg = Debug|Win32
+		{58BFDBD1-AFAA-4678-B008-8853D57F5355}.Debug|Win32.Build.0 = Debug|Win32
+		{58BFDBD1-AFAA-4678-B008-8853D57F5355}.Release|Win32.ActiveCfg = Release|Win32
+		{58BFDBD1-AFAA-4678-B008-8853D57F5355}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

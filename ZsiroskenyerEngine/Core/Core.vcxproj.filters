@@ -79,9 +79,6 @@
     <ClInclude Include="src\IVertexBuffer.h">
       <Filter>M_GraphicsApi</Filter>
     </ClInclude>
-    <ClInclude Include="src\IShaderManager.h">
-      <Filter>M_GraphicsEngine</Filter>
-    </ClInclude>
     <ClInclude Include="src\IGraphicsEngine.h">
       <Filter>M_GraphicsEngine</Filter>
     </ClInclude>

@@ -39,9 +39,6 @@
     <ClInclude Include="src\INetworkEngine.h" />
     <ClInclude Include="src\IPhysicsEngine.h" />
     <ClInclude Include="src\IPhysicsEntity.h" />
-    <ClInclude Include="src\IShaderManager.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="src\IShaderProgram.h" />
     <ClInclude Include="src\ISoundEngine.h" />
     <ClInclude Include="src\ITexture2D.h" />

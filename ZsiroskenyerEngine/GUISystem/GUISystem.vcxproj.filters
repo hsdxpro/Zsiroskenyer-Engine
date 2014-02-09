@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Core">
+      <UniqueIdentifier>{c817d559-1b6a-4724-bdde-0e7789f96a6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Widgets">
+      <UniqueIdentifier>{e8aea75e-06e9-4f6b-9aeb-43a38722b0ce}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\GuiSystem.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Frame.h">
+      <Filter>Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Layout.h">
+      <Filter>Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Button.h">
+      <Filter>Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TextEdit.h">
+      <Filter>Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TextLabel.h">
+      <Filter>Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Slider.h">
+      <Filter>Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GuiRenderer.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Widget.h">
+      <Filter>Widgets</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
