@@ -121,9 +121,6 @@
     <ClInclude Include="src\VertexFormat.h">
       <Filter>M_GraphicsEngine\Classes</Filter>
     </ClInclude>
-    <ClInclude Include="src\GraphicsEntity.h">
-      <Filter>M_GraphicsEngine\Classes</Filter>
-    </ClInclude>
     <ClInclude Include="src\Transform3D.h" />
     <ClInclude Include="src\Entity.h">
       <Filter>Game</Filter>
@@ -149,9 +146,6 @@
     <ClInclude Include="src\CreateGraphicsEngine.h">
       <Filter>M_GraphicsEngine</Filter>
     </ClInclude>
-    <ClInclude Include="src\GraphicsLight.h">
-      <Filter>M_GraphicsEngine\Classes</Filter>
-    </ClInclude>
     <ClInclude Include="src\PipelineState.h">
       <Filter>M_GraphicsApi</Filter>
     </ClInclude>
@@ -175,6 +169,12 @@
     </ClInclude>
     <ClInclude Include="src\multithreading\ThreadPool.h">
       <Filter>Common\multithreading</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IGraphicsEntity.h">
+      <Filter>M_GraphicsEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IGraphicsLight.h">
+      <Filter>M_GraphicsEngine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -236,9 +236,6 @@
     <ClCompile Include="src\VertexFormat.cpp">
       <Filter>M_GraphicsEngine\Classes</Filter>
     </ClCompile>
-    <ClCompile Include="src\GraphicsEntity.cpp">
-      <Filter>M_GraphicsEngine\Classes</Filter>
-    </ClCompile>
     <ClCompile Include="src\Transform3D.cpp" />
     <ClCompile Include="src\Entity.cpp">
       <Filter>Game</Filter>
@@ -254,9 +251,6 @@
     </ClCompile>
     <ClCompile Include="src\CreateGraphicsEngine.cpp">
       <Filter>M_GraphicsEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GraphicsLight.cpp">
-      <Filter>M_GraphicsEngine\Classes</Filter>
     </ClCompile>
     <ClCompile Include="src\common.cpp">
       <Filter>Common</Filter>

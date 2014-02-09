@@ -28,12 +28,12 @@
     <ClInclude Include="src\GAPI.h" />
     <ClInclude Include="src\GapiResult.h" />
     <ClInclude Include="src\GeometryBuilder.h" />
-    <ClInclude Include="src\GraphicsEntity.h" />
-    <ClInclude Include="src\GraphicsLight.h" />
     <ClInclude Include="src\IGeometryBuilder.h" />
     <ClInclude Include="src\IDLLLoader.h" />
     <ClInclude Include="src\IGraphicsApi.h" />
     <ClInclude Include="src\IGraphicsEngine.h" />
+    <ClInclude Include="src\IGraphicsEntity.h" />
+    <ClInclude Include="src\IGraphicsLight.h" />
     <ClInclude Include="src\IIndexBuffer.h" />
     <ClInclude Include="src\ILog.h" />
     <ClInclude Include="src\INetworkEngine.h" />
@@ -93,8 +93,6 @@
     <ClCompile Include="src\FileUtil.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\GeometryBuilder.cpp" />
-    <ClCompile Include="src\GraphicsEntity.cpp" />
-    <ClCompile Include="src\GraphicsLight.cpp" />
     <ClCompile Include="src\IDLLLoader.cpp" />
     <ClCompile Include="src\ILog.cpp" />
     <ClCompile Include="src\ITransformable3D.cpp" />

@@ -9,8 +9,8 @@
 #include "SceneManager.h"
 #include "ResourceManager.h"
 #include "InstanceGroup.h"
-#include "../../Core/src/GraphicsEntity.h"
-#include "../../Core/src/GraphicsLight.h"
+#include "GraphicsEntity.h"
+#include "GraphicsLight.h"
 #include "../../Core/src/Exception.h"
 #include "../../Core/src/Camera.h"
 

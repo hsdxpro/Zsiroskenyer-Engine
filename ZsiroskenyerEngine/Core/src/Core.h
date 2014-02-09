@@ -61,7 +61,7 @@ protected:
 	cRenderer* debugRenderer;
 
 	// Entities from modules
-	std::list<cGraphicsEntity*> graphicsEntities;
+	std::list<IGraphicsEntity*> graphicsEntities;
 	std::list<IPhysicsEntity*> physicsEntities;
 
 	std::vector<cCore::tLinkNode> entityLinks;

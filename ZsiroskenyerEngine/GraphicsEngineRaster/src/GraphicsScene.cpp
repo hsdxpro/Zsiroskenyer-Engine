@@ -7,6 +7,8 @@
 
 #include "GraphicsEngine.h"
 #include "UserGeometry.h"
+#include "GraphicsEntity.h"
+#include "GraphicsLight.h"
 
 
 //	Constructor & destructor
@@ -23,7 +25,7 @@ cGraphicsScene::~cGraphicsScene() {
 
 
 //	Add/Remove scene entities
-cGraphicsEntity* cGraphicsScene::CreateEntity(const wchar_t* geomPath, const wchar_t* mtlPath) {
+IGraphicsEntity* cGraphicsScene::CreateEntity(const wchar_t* geomPath, const wchar_t* mtlPath) {
 	cGeometryRef geom = parent.resourceManager->GetGeometry(geomPath);
 	cMaterialRef mtl = parent.resourceManager->GetMaterial(mtlPath);
 
@@ -32,7 +34,7 @@ cGraphicsEntity* cGraphicsScene::CreateEntity(const wchar_t* geomPath, const wch
 
 	return sceneManager.AddEntity(std::move(geom), std::move(mtl));
 }
-cGraphicsEntity* cGraphicsScene::CreateEntity(IGeometryRef* customGeom, const wchar_t* mtlPath) {
+IGraphicsEntity* cGraphicsScene::CreateEntity(IGeometryRef* customGeom, const wchar_t* mtlPath) {
 	cGeometryRef geom = *(cGeometryRef*)customGeom;
 	cMaterialRef mtl = parent.resourceManager->GetMaterial(mtlPath);
 
@@ -41,16 +43,16 @@ cGraphicsEntity* cGraphicsScene::CreateEntity(IGeometryRef* customGeom, const wc
 
 	return sceneManager.AddEntity(std::move(geom), std::move(mtl));
 }
-void cGraphicsScene::DeleteEntity(const cGraphicsEntity* entity) {
-	sceneManager.RemoveEntity(entity);
+void cGraphicsScene::DeleteEntity(const IGraphicsEntity* entity) {
+	sceneManager.RemoveEntity(static_cast<const cGraphicsEntity*>(entity));
 }
 
 //	Add/Remove scene lights
-cGraphicsLight* cGraphicsScene::CreateLight() {
+IGraphicsLight* cGraphicsScene::CreateLight() {
 	return sceneManager.AddLight();
 }
-void cGraphicsScene::DeleteLight(const cGraphicsLight* light) {
-	sceneManager.RemoveLight(light);
+void cGraphicsScene::DeleteLight(const IGraphicsLight* light) {
+	sceneManager.RemoveLight(static_cast<const cGraphicsLight*>(light));
 }
 
 //	Interface

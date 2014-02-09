@@ -2,12 +2,12 @@
 // consist of cGraphicsEntity, cPhysicsEntity etc..
 #pragma once
 
-#include "GraphicsEntity.h"
+#include "IGraphicsEntity.h"
 #include "IPhysicsEntity.h"
 
 class cEntity {
 public:
-	cEntity(cGraphicsEntity* g, IPhysicsEntity* p);
+	cEntity(IGraphicsEntity* g, IPhysicsEntity* p);
 
 	void SetPos(const Vec3& pos);
 	void SetRot(const Quat& rot);
@@ -15,10 +15,10 @@ public:
 
 	const Vec3& GetPos();
 
-	cGraphicsEntity* GetGraphicsEntity();
+	IGraphicsEntity* GetGraphicsEntity();
 	IPhysicsEntity* GetPhysicsEntity();
 
 protected:
-	cGraphicsEntity* graphicsEntity;
+	IGraphicsEntity* graphicsEntity;
 	IPhysicsEntity* physicsEntity;
 };

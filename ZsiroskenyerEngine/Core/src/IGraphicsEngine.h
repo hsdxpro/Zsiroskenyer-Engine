@@ -12,8 +12,8 @@
 
 class IGraphicsApi;
 class IShaderManager;
-class cGraphicsEntity;
-class cGraphicsLight;
+class IGraphicsEntity;
+class IGraphicsLight;
 class cCamera;
 class IWindow;
 class IGeometryRef;
@@ -82,11 +82,11 @@ enum class eGraphicsResult : signed int {
 class IGraphicsScene {
 public:
 	// entities & lights
-	virtual cGraphicsEntity* CreateEntity(const wchar_t* geomPath, const wchar_t* mtlPath) = 0;
-	virtual cGraphicsEntity* CreateEntity(IGeometryRef* customGeom, const wchar_t* mtlPath) = 0;
-	virtual void DeleteEntity(const cGraphicsEntity* entity) = 0;
-	virtual cGraphicsLight* CreateLight() = 0;
-	virtual void DeleteLight(const cGraphicsLight* light) = 0;
+	virtual IGraphicsEntity* CreateEntity(const wchar_t* geomPath, const wchar_t* mtlPath) = 0;
+	virtual IGraphicsEntity* CreateEntity(IGeometryRef* customGeom, const wchar_t* mtlPath) = 0;
+	virtual void DeleteEntity(const IGraphicsEntity* entity) = 0;
+	virtual IGraphicsLight* CreateLight() = 0;
+	virtual void DeleteLight(const IGraphicsLight* light) = 0;
 	virtual void Clear() = 0;
 
 	// scene state

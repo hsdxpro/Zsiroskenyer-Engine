@@ -2,7 +2,7 @@
 
 // Visualities
 #include "../../Core/src/IGraphicsEngine.h"
-#include "../../Core/src/GraphicsLight.h"
+#include "../../Core/src/IGraphicsLight.h"
 #include "../../GraphicsEngineRaster/src/ResourceManager.h"
 #include "../../Core/src/Camera.h"
 #include "../../Core/src/Game.h"
@@ -48,9 +48,9 @@ void UpdateDemo(cCamera& cam, float tDelta);
 
 // a lovely light circle
 static const int sizeLightCircle = 20;
-cGraphicsLight* lightCircle[sizeLightCircle];
+IGraphicsLight* lightCircle[sizeLightCircle];
 // sun
-cGraphicsLight* sun;
+IGraphicsLight* sun;
 // scene
 IGraphicsScene* gScene;
 
@@ -87,12 +87,12 @@ int ricsiMain() {
 
 
 	// Add some fucking lights :)
-	cGraphicsLight* sunLight = s->CreateLight();
-	cGraphicsLight* skyLight = s->CreateLight();
-	cGraphicsLight* secondSunLight = s->CreateLight();
-	cGraphicsLight* thirdSunLight = s->CreateLight();	
-	cGraphicsLight* pointLight = s->CreateLight();
-	cGraphicsLight* spotLight = s->CreateLight();
+	IGraphicsLight* sunLight = s->CreateLight();
+	IGraphicsLight* skyLight = s->CreateLight();
+	IGraphicsLight* secondSunLight = s->CreateLight();
+	IGraphicsLight* thirdSunLight = s->CreateLight();
+	IGraphicsLight* pointLight = s->CreateLight();
+	IGraphicsLight* spotLight = s->CreateLight();
 
 
 	for (auto& light : lightCircle) {
@@ -100,62 +100,56 @@ int ricsiMain() {
 	}
 
 	// sunlight
-	sunLight->type = cGraphicsLight::DIRECTIONAL;
-	sunLight->color = Vec3(1, 1, 1);
-	sunLight->direction = Vec3(.5f, .5f, -0.1f).Normalize();
+	sunLight->SetType(IGraphicsLight::DIRECTIONAL);
+	sunLight->SetColor(Vec3(1, 1, 1));
+	sunLight->SetDirection(Vec3(.5f, .5f, -0.1f).Normalize());
 	sun = sunLight;
 	
 	// skylight
 	Vec3 skyColor(0.1, 0.2, 0.3);
 	skyColor /= 0.2126f*skyColor.x + 0.7152f*skyColor.y + 0.0722f*skyColor.z;
 	skyColor *= 0.3f;
-	skyLight->type = cGraphicsLight::AMBIENT;
-	skyLight->color = skyColor;
+	skyLight->SetType(IGraphicsLight::AMBIENT);
+	skyLight->SetColor(skyColor);
 	
 	// other suns... well yeah
-	secondSunLight->type = cGraphicsLight::DIRECTIONAL;
-	secondSunLight->color = Vec3(1.2, 0.03, 0.95);
-	secondSunLight->direction = Vec3(-0.8f, 0.0f, -0.2f).Normalize();
+	secondSunLight->SetType(IGraphicsLight::DIRECTIONAL);
+	secondSunLight->SetColor(Vec3(1.2, 0.03, 0.95));
+	secondSunLight->SetDirection(Vec3(-0.8f, 0.0f, -0.2f).Normalize());
 
-	thirdSunLight->type = cGraphicsLight::DIRECTIONAL;
-	thirdSunLight->color = Vec3(0.2, 0.8f, 0.77f);
-	thirdSunLight->direction = Vec3(0.8, -0.1f, -0.3f).Normalize();
+	thirdSunLight->SetType(IGraphicsLight::DIRECTIONAL);
+	thirdSunLight->SetColor(Vec3(0.2, 0.8f, 0.77f));
+	thirdSunLight->SetDirection(Vec3(0.8, -0.1f, -0.3f).Normalize());
 
-	sunLight->enabled = true;
-	secondSunLight->enabled = thirdSunLight->enabled = false;
+	sunLight->Enable(true);
+	secondSunLight->Enable(false);
+	thirdSunLight->Enable(false);
 
 	// a big point light
-	pointLight->atten0 = 0.0f;
-	pointLight->atten1 = 0.2f;
-	pointLight->atten2 = 0.2f;
-	pointLight->color = Vec3(0.2, 0.2, 0.9)*10;
-	pointLight->position = Vec3(8, 8, 2);
-	pointLight->range = 10.f;
-	pointLight->type = cGraphicsLight::POINT;
+	pointLight->SetAtten(0.0f, 0.2f, 0.2f);
+	pointLight->SetColor(Vec3(0.2, 0.2, 0.9)*10);
+	pointLight->SetPosition(Vec3(8, 8, 2));
+	pointLight->SetRange(10.f);
+	pointLight->SetType(IGraphicsLight::POINT);
 
 	// searchlight :D
-	spotLight->atten0 = 0.0f;
-	spotLight->atten1 = 0.2f;
-	spotLight->atten2 = 0.1f;
-	spotLight->smallAngle = 24.0f / 180.0f*3.1415926f;
-	spotLight->bigAngle = 30.0f / 180.0f*3.1415926f;
-	spotLight->color = Vec3(1.0f, 0.95f, 0.88f)*10.f;
-	spotLight->direction = Vec3(0.5, 0.5, -0.5).Normalize();
-	spotLight->position = Vec3(0, 0, 10);
-	spotLight->range = 80;
-	spotLight->type = cGraphicsLight::SPOT;
+	spotLight->SetAtten(0.0f, 0.2f, 0.1f);
+	spotLight->SetAngleInner(24.0f / 180.0f*3.1415926f);
+	spotLight->SetAngleOuter(30.0f / 180.0f*3.1415926f);
+	spotLight->SetColor(Vec3(1.0f, 0.95f, 0.88f)*10.f);
+	spotLight->SetDirection(Vec3(0.5, 0.5, -0.5).Normalize());
+	spotLight->SetPosition(Vec3(0, 0, 10));
+	spotLight->SetRange(80);
+	spotLight->SetType(IGraphicsLight::SPOT);
 
 
 	// circle of light muhaha
 	for (auto& light : lightCircle) {
-		light->type = cGraphicsLight::POINT;
+		light->SetType(IGraphicsLight::POINT);
 
-		light->atten0 = 0.0f;
-		light->atten1 = 0.5f;
-		light->atten2 = 0.8f;
-
-		light->position = Vec3(0, 0, 0);
-		light->range = 2.5f;
+		light->SetAtten(0.0f, 0.5f, 0.8f);
+		light->SetPosition(Vec3(0, 0, 0));
+		light->SetRange(2.5f);
 		float H=(float)(&light-lightCircle)/(float)sizeLightCircle,
 			S=1.0f,
 			L=0.5f;
@@ -179,7 +173,7 @@ int ricsiMain() {
 			colorRGB = Vec3(0, 0, 0);
 		float m = L - 0.5*C;
 		colorRGB += Vec3(m, m, m);
-		light->color = colorRGB * 2.0f;
+		light->SetColor(colorRGB * 2.0f);
 	}
 
 
@@ -357,7 +351,7 @@ void UpdateDemo(cCamera& cam, float tDelta) {
 		Vec3 v(10.0, 0.0, 0.0);
 		Quat q(Vec3(0,0,1).Normalize(), ZS_PI2*angle);
 		v *= q;
-		lightCircle[i]->position = v;
+		lightCircle[i]->SetPosition(v);
 	}
 	
 
@@ -387,7 +381,7 @@ void UpdateDemo(cCamera& cam, float tDelta) {
 	sunAngle = std::max(0.f, std::min(90.f, sunAngle));
 	Vec3 sunDir = Vec3(0.0f, 1.0f, 0.0f).Normalize();
 	sunDir *= Quat(Vec3(1.0f, 0.0f, 0.0f), sunAngle / 180.f*ZS_PI);
-	sun->direction = sunDir.Normalize();
+	sun->SetDirection(sunDir.Normalize());
 
 	// Enable/DISABLE HDR
 	static bool wasHdrToggled = false;

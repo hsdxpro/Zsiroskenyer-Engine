@@ -15,8 +15,8 @@
 #include "../../Core/src/ITexture2D.h"
 #include "../../Core/src/IIndexBuffer.h"
 
-#include "../../Core/src/GraphicsEntity.h"
-#include "../../Core/src/GraphicsLight.h"
+#include "GraphicsEntity.h"
+#include "GraphicsLight.h"
 #include "../../Core/src/Camera.h"
 
 #include "../../Core/src/lighting/lighting.h"

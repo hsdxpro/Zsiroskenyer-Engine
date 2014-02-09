@@ -1,6 +1,6 @@
 #include "Entity.h"
 
-cEntity::cEntity(cGraphicsEntity* g, IPhysicsEntity* p)
+cEntity::cEntity(IGraphicsEntity* g, IPhysicsEntity* p)
 :graphicsEntity(g), physicsEntity(p) {
 }
 
@@ -26,7 +26,7 @@ const Vec3& cEntity::GetPos() {
 	//return graphicsEntity->GetPos();
 }
 
-cGraphicsEntity* cEntity::GetGraphicsEntity() {
+IGraphicsEntity* cEntity::GetGraphicsEntity() {
 	return graphicsEntity;
 }
 

@@ -10,7 +10,7 @@
 #include "Geometry.h"
 #include "UserGeometry.h"
 
-#include "..\..\Core\src\GraphicsEntity.h"
+#include "GraphicsEntity.h"
 #include "..\..\Core\src\Camera.h"
 
 #include "..\..\Core\src\GAPI.h"

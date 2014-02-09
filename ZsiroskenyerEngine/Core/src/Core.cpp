@@ -103,7 +103,7 @@ void cCore::UpdateChildLinksRecursively(cCore::tLinkNode& n) {
 
 cEntity* cCore::AddEntity(IGraphicsScene* s, const zsString& graphGeomPath,const zsString& physicsGeom, const zsString& mtlPath, float mass, bool soft /*= false*/ ) {
 	// Create entity module parts
-	cGraphicsEntity* gEntity = s->CreateEntity(graphGeomPath.c_str(), mtlPath.c_str());
+	IGraphicsEntity* gEntity = s->CreateEntity(graphGeomPath.c_str(), mtlPath.c_str());
 	IPhysicsEntity* pEntity;
 
 	if (soft)

@@ -19,6 +19,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{ddcdb1fc-4aec-4c9f-80c9-bcca7e907012}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Entity">
+      <UniqueIdentifier>{865a85d9-2841-432f-80c4-59d935276367}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\GraphicsEngine.cpp" />
@@ -37,9 +40,6 @@
     <ClCompile Include="src\SceneManager.cpp">
       <Filter>Managers</Filter>
     </ClCompile>
-    <ClCompile Include="src\ShaderManager.cpp">
-      <Filter>Managers</Filter>
-    </ClCompile>
     <ClCompile Include="src\Geometry.cpp">
       <Filter>Geometry</Filter>
     </ClCompile>
@@ -56,6 +56,12 @@
       <Filter>Geometry</Filter>
     </ClCompile>
     <ClCompile Include="src\PostProcessor.cpp" />
+    <ClCompile Include="src\GraphicsEntity.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GraphicsLight.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GraphicsEngine.h" />
@@ -71,9 +77,6 @@
     <ClInclude Include="src\SceneManager.h">
       <Filter>Managers</Filter>
     </ClInclude>
-    <ClInclude Include="src\ShaderManager.h">
-      <Filter>Managers</Filter>
-    </ClInclude>
     <ClInclude Include="src\Geometry.h">
       <Filter>Geometry</Filter>
     </ClInclude>
@@ -86,6 +89,12 @@
     <ClInclude Include="src\DeferredLightVolume.h" />
     <ClInclude Include="src\UserGeometry.h">
       <Filter>Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GraphicsEntity.h">
+      <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GraphicsLight.h">
+      <Filter>Entity</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

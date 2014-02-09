@@ -26,6 +26,9 @@ class IWindow;
 class IGeometryBuilder;
 class IGeometryRef;
 
+class IGraphicsEntity;
+class IGraphicsLight;
+
 ////////////////////////////////////////////////////////////////////////////////
 //	Dll accessor
 extern "C"
@@ -42,11 +45,11 @@ public:
 	~cGraphicsScene();
 
 	// entities & lights
-	cGraphicsEntity* CreateEntity(const wchar_t* geomPath, const wchar_t* mtlPath) override;
-	cGraphicsEntity* CreateEntity(IGeometryRef* customGeom, const wchar_t* mtlPath) override;
-	void DeleteEntity(const cGraphicsEntity* entity) override;
-	cGraphicsLight* CreateLight() override;
-	void DeleteLight(const cGraphicsLight* light) override;
+	IGraphicsEntity* CreateEntity(const wchar_t* geomPath, const wchar_t* mtlPath) override;
+	IGraphicsEntity* CreateEntity(IGeometryRef* customGeom, const wchar_t* mtlPath) override;
+	void DeleteEntity(const IGraphicsEntity* entity) override;
+	IGraphicsLight* CreateLight() override;
+	void DeleteLight(const IGraphicsLight* light) override;
 
 	// scene state
 	cCamera& GetCamera() override;

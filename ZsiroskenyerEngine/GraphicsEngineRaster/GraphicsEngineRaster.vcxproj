@@ -11,6 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\GraphicsEntity.cpp" />
+    <ClCompile Include="src\GraphicsLight.cpp" />
     <ClCompile Include="src\PostProcessor.cpp" />
     <ClCompile Include="src\DeferredRenderer.cpp" />
     <ClCompile Include="src\DllMain.cpp" />
@@ -22,14 +24,13 @@
     <ClCompile Include="src\ResourceManager.cpp" />
     <ClCompile Include="src\ResourceReference.cpp" />
     <ClCompile Include="src\SceneManager.cpp" />
-    <ClCompile Include="src\ShaderManager.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="src\Material.cpp" />
     <ClCompile Include="src\UserGeometry.cpp" />
     <ClCompile Include="src\_GeometryBuilder.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\GraphicsEntity.h" />
+    <ClInclude Include="src\GraphicsLight.h" />
     <ClInclude Include="src\UserGeometry.h" />
     <ClInclude Include="src\DeferredLightVolume.h" />
     <ClInclude Include="src\Geometry.h" />
@@ -38,9 +39,6 @@
     <ClInclude Include="src\ResourceManager.h" />
     <ClInclude Include="src\ResourceReference.h" />
     <ClInclude Include="src\SceneManager.h" />
-    <ClInclude Include="src\ShaderManager.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="src\Material.h" />
     <ClInclude Include="src\_GeometryBuilder.h" />
   </ItemGroup>
