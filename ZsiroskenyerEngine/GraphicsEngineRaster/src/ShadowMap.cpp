@@ -111,8 +111,8 @@ bool cShadowMap::ViewProjMatrix(
 	const cGraphicsLight& light,
 	const Matrix44& cameraView,
 	const Matrix44& cameraProj,
-	float nearClip = 0.0f,
-	float farClip = 1.0f)
+	float nearClip,
+	float farClip)
 {
 	// check out that bullcrap :)
 	assert(nearClip < farClip);
@@ -139,4 +139,7 @@ bool cShadowMap::ViewProjMatrix(
 
 	}
 
+
+	// na bazmeg csak hogy forduljon!!!4!
+	return false;
 }
