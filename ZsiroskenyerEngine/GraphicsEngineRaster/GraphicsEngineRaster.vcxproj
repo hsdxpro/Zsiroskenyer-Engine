@@ -25,12 +25,14 @@
     <ClCompile Include="src\ResourceReference.cpp" />
     <ClCompile Include="src\SceneManager.cpp" />
     <ClCompile Include="src\Material.cpp" />
+    <ClCompile Include="src\ShadowMap.cpp" />
     <ClCompile Include="src\UserGeometry.cpp" />
     <ClCompile Include="src\_GeometryBuilder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GraphicsEntity.h" />
     <ClInclude Include="src\GraphicsLight.h" />
+    <ClInclude Include="src\ShadowMap.h" />
     <ClInclude Include="src\UserGeometry.h" />
     <ClInclude Include="src\DeferredLightVolume.h" />
     <ClInclude Include="src\Geometry.h" />

@@ -22,6 +22,9 @@
     <Filter Include="Entity">
       <UniqueIdentifier>{865a85d9-2841-432f-80c4-59d935276367}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Misc">
+      <UniqueIdentifier>{13753518-cab2-4424-ab0f-dac2c280a02c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\GraphicsEngine.cpp" />
@@ -62,6 +65,9 @@
     <ClCompile Include="src\GraphicsLight.cpp">
       <Filter>Entity</Filter>
     </ClCompile>
+    <ClCompile Include="src\ShadowMap.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GraphicsEngine.h" />
@@ -95,6 +101,9 @@
     </ClInclude>
     <ClInclude Include="src\GraphicsLight.h">
       <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ShadowMap.h">
+      <Filter>Misc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

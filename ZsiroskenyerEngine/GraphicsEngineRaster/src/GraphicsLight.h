@@ -10,6 +10,8 @@
 #include "../../Core/src/IGraphicsLight.h"
 
 
+////////////////////////////////////////////////////////////////////////////////
+//	Ligth objects
 class cGraphicsLight : public IGraphicsLight {
 	friend class cGraphicsEngine;
 public:
@@ -62,4 +64,6 @@ private:
 	float smallAngle, bigAngle; // spot light cone angle
 	float cutoff; // no sharp edges [0,1)
 	bool enabled;
+
+	bool castShadows;
 };
