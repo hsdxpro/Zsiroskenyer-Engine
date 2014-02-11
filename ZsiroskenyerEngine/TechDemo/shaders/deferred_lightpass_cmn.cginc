@@ -66,23 +66,14 @@ float Fresnel(float NdotL, float fresnelBias, float fresnelPow) {
   return max(fresnelBias + (1.0 - fresnelBias) * pow(facing, fresnelPow), 0.0);
 }
 
-float CookTorranceSpecular(float3 N, float3 I, float3 L)
+float CookTorranceSpecular(float3 N, float3 viewDir, float3 L, float roughness, float IOR)
 {
-
-	float Ka = 1;
-	float Ks = .8;
-	float Kd = .8;
-	float IOR = 1.3;
-	float roughness = .1;
-	float opacity = 1;
-	float specularColor = 1;
-	float3 diffuseColor = float3(.6, .6, .6);
-	float gaussConstant  = 100;
+	const float gaussConstant  = 100;
 
     //the things we need:	
     // normalized normal and vector to eye
     float3 Nn = normalize(N);
-    float3 Vn = normalize(-I);
+    float3 Vn = viewDir;
     float Ktransmit;
     float m = roughness;
     float F = Fresnel( dot(N, L), 1/IOR, Ktransmit);
@@ -101,7 +92,7 @@ float CookTorranceSpecular(float3 N, float3 I, float3 L)
     float alpha = acos(NdotH);
     
     //microfacet distribution
-    float D = 0.5f;//gaussConstant*exp(-(alpha*alpha)/(m*m));
+    float D = gaussConstant*exp(-(alpha*alpha)/(m*m));
     
     //geometric attenuation factor
     float G = min(1, min((2 * NdotH * NdotV / VdotH), (2 * NdotH * NdotL / VdotH)));
@@ -115,12 +106,12 @@ float CookTorranceSpecular(float3 N, float3 I, float3 L)
 float3 DiffuseLight(float3 lightDir, float3 lightColor, float3 normal) {
 	//float c = clamp(-dot(lightDir, normal), 0.0, 1.0);
 	//return c * lightColor;
-	return float3(0.0, 0.0, 0.0);
+	return float3(0,0,0);
 }
 
 // specular light
-float3 SpecularLight(float3 lightDir, float3 lightColor, float3 lightPos, float3 surfacePos, float3 normal, float3 viewDir, float glossiness) {
-	float cook = CookTorranceSpecular(normal, reflect(normalize(lightDir), normal), normalize(lightPos - surfacePos));
+float3 SpecularLight(float3 lightColor, float3 surfPosToLight, float3 normal, float3 viewDir, float glossiness) {
+	float cook = lightColor * CookTorranceSpecular(normal, viewDir, normalize(surfPosToLight), 0.2, 2.3);
 	return float3(cook, cook, cook);
 }
 

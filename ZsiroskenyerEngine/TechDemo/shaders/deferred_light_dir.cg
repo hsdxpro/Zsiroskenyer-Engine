@@ -40,7 +40,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	
 	// calculate lighting terms
 	float3 diffuseTerm = DiffuseLight(lightDir, lightColor, normal);
-	float3 specTerm = SpecularLight(lightDir, lightColor, lightPos, worldPos, normal, normalize(worldPos - camPos), 0.2f);
+	float3 specTerm = SpecularLight(lightColor, -lightDir, normal, normalize(worldPos - camPos), 0.2f);
 
 	color.rgb += diffuseTerm*diffuseColor + specTerm; // note: no light attenuation
 	color.a = 1.0f;
