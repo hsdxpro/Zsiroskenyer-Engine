@@ -466,7 +466,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	shaderConstants.viewProj = viewProj;
 	shaderConstants.invViewProj = viewProj;
 	shaderConstants.invViewProj.Inverse();
-
+	shaderConstants.camPos = cam->GetPos();
 	Matrix44 test = shaderConstants.invViewProj * shaderConstants.viewProj;
 
 

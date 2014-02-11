@@ -61,16 +61,67 @@ void DecodeGBuffer(in float2 texCoord, out float3 diffuse, out float3 normal, ou
 //	Lighting term calculation
 //------------------------------------------------------------------------------
 
+float Fresnel(float NdotL, float fresnelBias, float fresnelPow) {
+  float facing = (1.0 - NdotL);
+  return max(fresnelBias + (1.0 - fresnelBias) * pow(facing, fresnelPow), 0.0);
+}
+
+float CookTorranceSpecular(float3 N, float3 I, float3 L)
+{
+
+	float Ka = 1;
+	float Ks = .8;
+	float Kd = .8;
+	float IOR = 1.3;
+	float roughness = .1;
+	float opacity = 1;
+	float specularColor = 1;
+	float3 diffuseColor = float3(.6, .6, .6);
+	float gaussConstant  = 100;
+
+    //the things we need:	
+    // normalized normal and vector to eye
+    float3 Nn = normalize(N);
+    float3 Vn = normalize(-I);
+    float Ktransmit;
+    float m = roughness;
+    float F = Fresnel( dot(N, L), 1/IOR, Ktransmit);
+    
+    float cook = 0;
+    float NdotV = dot(Nn, Vn);
+
+    //half angle vector
+    float3 Ln = normalize(L);
+    float3 H = normalize(Vn + Ln);
+    
+    float NdotH = dot(Nn, H);
+    float NdotL = dot(Nn, Ln);
+    float VdotH = dot(Vn, H);
+    
+    float alpha = acos(NdotH);
+    
+    //microfacet distribution
+    float D = 0.5f;//gaussConstant*exp(-(alpha*alpha)/(m*m));
+    
+    //geometric attenuation factor
+    float G = min(1, min((2 * NdotH * NdotV / VdotH), (2 * NdotH * NdotL / VdotH)));
+
+    //sum contributions
+	const float PI = 3.14159265358f;
+    return (F*D*G)/(PI*NdotV) / PI;
+}
+
 // diffuse light
 float3 DiffuseLight(float3 lightDir, float3 lightColor, float3 normal) {
-	float c = clamp(-dot(lightDir, normal), 0.0, 1.0);
-	return c * lightColor;
+	//float c = clamp(-dot(lightDir, normal), 0.0, 1.0);
+	//return c * lightColor;
+	return float3(0.0, 0.0, 0.0);
 }
 
 // specular light
-float3 SpecularLight(float3 lightDir, float3 lightColor, float3 normal, float3 viewDir, float glossiness) {
-	float specFactor = 0.0f;
-	return lightColor * specFactor;;
+float3 SpecularLight(float3 lightDir, float3 lightColor, float3 lightPos, float3 surfacePos, float3 normal, float3 viewDir, float glossiness) {
+	float cook = CookTorranceSpecular(normal, reflect(normalize(lightDir), normal), normalize(lightPos - surfacePos));
+	return float3(cook, cook, cook);
 }
 
 //------------------------------------------------------------------------------

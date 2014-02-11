@@ -153,13 +153,8 @@ float ambientocclusionprocess(float2 projtex)
 
 float Fresnel(float NdotL, float fresnelBias, float fresnelPow)
 {
-
   float facing = (1.0 - NdotL);
-
-  return max(fresnelBias +
-
-             (1.0 - fresnelBias) * pow(facing, fresnelPow), 0.0);
-
+  return max(fresnelBias + (1.0 - fresnelBias) * pow(facing, fresnelPow), 0.0);
 }
 
 float CookTorranceMagic(float3 N, float3 I, float L)
