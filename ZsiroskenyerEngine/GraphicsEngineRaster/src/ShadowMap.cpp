@@ -136,9 +136,12 @@ bool cShadowMap::ViewProjMatrix(
 	}
 	// interpolate for near and far clips
 	for (int i = 0; i < 4; i++) {
-
+		auto tmp = frustumPoints[i];
+		frustumPoints[i] = (1 - nearClip)*frustumPoints[i] + nearClip*frustumPoints[i + 4];
+		frustumPoints[i+1] = (1 - farClip)*frustumPoints[i] + farClip*frustumPoints[i + 4];
 	}
 
+	// compute matrix from eight points
 
 	// na bazmeg csak hogy forduljon!!!4!
 	return false;
