@@ -73,10 +73,10 @@ float CookTorranceSpecular(float3 N, float3 viewDir, float3 L, float roughness, 
     //the things we need:	
     // normalized normal and vector to eye
     float3 Nn = normalize(N);
-    float3 Vn = viewDir;
+    float3 Vn = -viewDir;
     float Ktransmit;
     float m = roughness;
-    float F = Fresnel( dot(N, L), 1/IOR, Ktransmit);
+    float F = Fresnel( dot(N, L), 0, 1 / IOR);
     
     float cook = 0;
     float NdotV = dot(Nn, Vn);
@@ -111,8 +111,9 @@ float3 DiffuseLight(float3 lightDir, float3 lightColor, float3 normal) {
 
 // specular light
 float3 SpecularLight(float3 lightColor, float3 surfPosToLight, float3 normal, float3 viewDir, float glossiness) {
-	float cook = lightColor * CookTorranceSpecular(normal, viewDir, normalize(surfPosToLight), 0.2, 2.3);
-	return float3(cook, cook, cook);
+	float cook = lightColor * CookTorranceSpecular(normal, viewDir, normalize(surfPosToLight), 0.6, 1.3);
+	// UBER TODO WHY DO YOU CLAMP THAT AWESOME VALUE?
+	return clamp(float3(cook, cook, cook), 0.0f, 10000.0f);
 }
 
 //------------------------------------------------------------------------------
