@@ -76,39 +76,39 @@ void cGraphicsLight::SetCutoff(float cutoff) {
 }
 
 // get
-auto cGraphicsLight::GetType() -> eLightType {
+auto cGraphicsLight::GetType() const -> eLightType {
 	return type;
 }
-Vec3 cGraphicsLight::GetColor() {
+Vec3 cGraphicsLight::GetColor() const {
 	return color;
 }
-Vec3 cGraphicsLight::GetPosition() {
+Vec3 cGraphicsLight::GetPosition() const {
 	return position;
 }
-Vec3 cGraphicsLight::GetDirection() {
+Vec3 cGraphicsLight::GetDirection() const {
 	return direction;
 }
 
-float cGraphicsLight::GetAtten0() {
+float cGraphicsLight::GetAtten0() const {
 	return atten0;
 }
-float cGraphicsLight::GetAtten1() {
+float cGraphicsLight::GetAtten1() const {
 	return atten1;
 }
-float cGraphicsLight::GetAtten2() {
+float cGraphicsLight::GetAtten2() const {
 	return atten2;
 }
 
-float cGraphicsLight::GetRange() {
+float cGraphicsLight::GetRange() const {
 	return range;
 }
-float cGraphicsLight::GetAngleInner() {
+float cGraphicsLight::GetAngleInner() const {
 	return smallAngle;
 }
-float cGraphicsLight::GetAngleOuter() {
+float cGraphicsLight::GetAngleOuter() const {
 	return bigAngle;
 }
-float cGraphicsLight::GetCutoff() {
+float cGraphicsLight::GetCutoff() const {
 	return cutoff;
 }
 
@@ -116,6 +116,6 @@ float cGraphicsLight::GetCutoff() {
 void cGraphicsLight::Enable(bool val) {
 	enabled = val;
 }
-bool cGraphicsLight::IsEnabled() {
+bool cGraphicsLight::IsEnabled() const {
 	return enabled;
 }

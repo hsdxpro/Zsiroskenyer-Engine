@@ -37,23 +37,23 @@ public:
 	void SetCutoff(float cutoff) override;
 
 	// get
-	eLightType GetType() override;
-	Vec3 GetColor() override;
-	Vec3 GetPosition() override;
-	Vec3 GetDirection() override;
+	eLightType GetType() const override;
+	Vec3 GetColor() const override;
+	Vec3 GetPosition() const override;
+	Vec3 GetDirection() const override;
 
-	float GetAtten0() override;
-	float GetAtten1() override;
-	float GetAtten2() override;
+	float GetAtten0() const override;
+	float GetAtten1() const override;
+	float GetAtten2() const override;
 
-	float GetRange() override;
-	float GetAngleInner() override;
-	float GetAngleOuter() override;
-	float GetCutoff() override;
+	float GetRange() const override;
+	float GetAngleInner() const override;
+	float GetAngleOuter() const override;
+	float GetCutoff() const override;
 
 	// enable/disable
 	void Enable(bool val) override;
-	bool IsEnabled() override;
+	bool IsEnabled() const override;
 
 private:
 	eLightType type;
