@@ -155,6 +155,7 @@ float PS_MAIN(VS_OUT In) : COLOR0 {
 	
 	// ! COMPUTE AO FROM "normal" AND "depth" ! //	
 	return ProcessAO(In.tex0);
+	//return 1.0f;
 };
 
 
