@@ -40,21 +40,21 @@ public:
 	virtual void SetCutoff(float cutoff) = 0;
 
 	// get
-	virtual eLightType GetType() = 0;
-	virtual Vec3 GetColor() = 0;
-	virtual Vec3 GetPosition() = 0;
-	virtual Vec3 GetDirection() = 0;
+	virtual eLightType GetType() const = 0;
+	virtual Vec3 GetColor() const = 0;
+	virtual Vec3 GetPosition() const = 0;
+	virtual Vec3 GetDirection() const = 0;
 
-	virtual float GetAtten0() = 0;
-	virtual float GetAtten1() = 0;
-	virtual float GetAtten2() = 0;
+	virtual float GetAtten0() const = 0;
+	virtual float GetAtten1() const = 0;
+	virtual float GetAtten2() const = 0;
 
-	virtual float GetRange() = 0;
-	virtual float GetAngleInner() = 0;
-	virtual float GetAngleOuter() = 0;
-	virtual float GetCutoff() = 0;
+	virtual float GetRange() const = 0;
+	virtual float GetAngleInner() const = 0;
+	virtual float GetAngleOuter() const = 0;
+	virtual float GetCutoff() const = 0;
 
 	// enable/disable
 	virtual void Enable(bool val) = 0;
-	virtual bool IsEnabled() = 0;
+	virtual bool IsEnabled() const = 0;
 };

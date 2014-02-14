@@ -111,6 +111,7 @@ int ricsiMain() {
 	skyColor *= 0.3f;
 	skyLight->SetType(IGraphicsLight::AMBIENT);
 	skyLight->SetColor(skyColor);
+	skyLight->Enable(true);
 	
 	// other suns... well yeah
 	secondSunLight->SetType(IGraphicsLight::DIRECTIONAL);
