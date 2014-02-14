@@ -61,8 +61,8 @@ void DecodeGBuffer(in float2 texCoord, out float3 diffuse, out float3 normal, ou
 //	Lighting term calculation
 //------------------------------------------------------------------------------
 
-float Fresnel(float NdotL, float fresnelBias, float fresnelPow) {
-  float facing = (1.0 - NdotL);
+float Fresnel(float NdotV, float fresnelBias, float fresnelPow) {
+  float facing = (1.0 - NdotV);
   return max(fresnelBias + (1.0 - fresnelBias) * pow(facing, fresnelPow), 0.0);
 }
 
@@ -76,7 +76,7 @@ float CookTorranceSpecular(float3 N, float3 viewDir, float3 L, float roughness, 
     float3 Vn = -viewDir;
     float Ktransmit;
     float m = roughness;
-    float F = Fresnel( dot(N, L), 0, 1 / IOR);
+    float F = Fresnel( dot(N, Vn), 0, 1 / IOR);
     
     float cook = 0;
     float NdotV = dot(Nn, Vn);
@@ -89,7 +89,7 @@ float CookTorranceSpecular(float3 N, float3 viewDir, float3 L, float roughness, 
     float NdotL = dot(Nn, Ln);
     float VdotH = dot(Vn, H);
     
-    float alpha = acos(NdotH);
+    float alpha = saturate(acos(NdotH));
     
     //microfacet distribution
     float D = gaussConstant*exp(-(alpha*alpha)/(m*m));
@@ -99,7 +99,8 @@ float CookTorranceSpecular(float3 N, float3 viewDir, float3 L, float roughness, 
 
     //sum contributions
 	const float PI = 3.14159265358f;
-    return (F*D*G)/(PI*NdotV) / PI;
+    //return (F*D*G)/(PI*NdotV) / PI;
+	return F * D * G / NdotV / PI / PI;
 }
 
 // diffuse light
@@ -111,9 +112,9 @@ float3 DiffuseLight(float3 lightDir, float3 lightColor, float3 normal) {
 
 // specular light
 float3 SpecularLight(float3 lightColor, float3 surfPosToLight, float3 normal, float3 viewDir, float glossiness) {
-	float cook = lightColor * CookTorranceSpecular(normal, viewDir, normalize(surfPosToLight), 0.6, 1.3);
+	float3 cook = lightColor * CookTorranceSpecular(normal, viewDir, normalize(surfPosToLight), 0.85f, 1.3);
 	// UBER TODO WHY DO YOU CLAMP THAT AWESOME VALUE?
-	return clamp(float3(cook, cook, cook), 0.0f, 10000.0f);
+	return clamp(cook, 0, 1000000000);
 }
 
 //------------------------------------------------------------------------------

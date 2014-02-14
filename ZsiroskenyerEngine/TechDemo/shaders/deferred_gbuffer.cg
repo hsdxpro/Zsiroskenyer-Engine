@@ -69,7 +69,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	if (diffuseColor.a < 0.5f) {
 		discard;
 	}
-	Out.gBuffer0.xyz = diffuseColor.xyz;
+	//Out.gBuffer0.xyz = diffuseColor.xyz;
 	Out.gBuffer0.xyz = float3(0.5f, 0.5f, 0.5f); // SPECULAR LIGHT DEBUGGING NOW
 //----------------------------------------------------------//
 //--------------------gBuffer1: NORMALS--------------------//
