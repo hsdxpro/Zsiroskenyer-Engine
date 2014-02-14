@@ -43,8 +43,7 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 PS_OUT PS_MAIN(VS_OUT In) {
 	PS_OUT Out;
 
-
-	/* OLD CoC CALCULATING
+	/*
 	float avgRefDepth = 0;
 
 	avgRefDepth += tex2D(depthTexture, float2(0.45f, 0.45f));
@@ -61,8 +60,8 @@ PS_OUT PS_MAIN(VS_OUT In) {
 
 	// Bluring radius
 	float radius = min((depthComponent  + radialComponent)*2.8,2.8f);
-	Out.color.rgb = float3(radius, radius, radius);
-	return Out;
+	//Out.color.rgb = float3(radius, radius, radius);
+	//return Out;
 
 	float4 color = tex2D(inputTexture, In.tex0);
 	float alpha = color.a;
@@ -79,26 +78,47 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	Out.color.a = alpha;
 	*/
 
+	
 	float3 focusPointW = GetWorldPosition( In.tex0, tex2D(depthTexture, float2(0.5f, 0.5f)), invViewProj);
-	float3 posW = GetWorldPosition( In.tex0, tex2D(depthTexture, In.tex0), invViewProj);;
+	float3 posW = GetWorldPosition( In.tex0, tex2D(depthTexture, In.tex0), invViewProj);
 
 	// Distance from lens center to focus point
-	float f = distance(focusPointW, camPos) + 0.01f; // 0.01f bias to avoid divide by zero
+	float f = distance(focusPointW, camPos); // 0.01f bias to avoid divide by zero
 
 	// Distance from lens center to object pos
-	float t = distance(posW, camPos);
+	float t = distance(posW, camPos) + 0.001f;
 
 	// Distance from lens center to "created" image
-	float k = f * t / t - f;
+	float k = abs(f * t / abs((t - f)));
 
 	// Diameter of our eye
-	const float eyeDiameter = 0.05f;
+	const float eyeDiameter = 1.02f;
 
 	// CoC radius --> Coc is ( CoCRadius * CoCRadius * PI )
-	float CoCRadius = eyeDiameter * (k - eyeDiameter) / (2 * k) * 100000;
+	float CoCRadius = eyeDiameter * (k - eyeDiameter) / (2 * k);
+	CoCRadius /= (eyeDiameter / 2.0f);
+	CoCRadius = (CoCRadius - 1.0f) * -1.0f;
+	
 
-	Out.color.rgb = float3(CoCRadius, CoCRadius, CoCRadius);
-	//Out.color.rgb = pow(CoCRadius / ( CoCRadius + 1), 4);
+
+	// Bluring radius
+	float radius = CoCRadius * 2;
+	//Out.color.rgb = radius;
+	//return Out;
+
+	float4 color = tex2D(inputTexture, In.tex0);
+	float alpha = color.a;
+	int quality = 54;
+	for( int i = 0; i < quality; i++)
+	{
+		color += tex2D(inputTexture, In.tex0 + float2(1.0f / 800, 0)  * (float)i  / quality * radius);
+		color += tex2D(inputTexture, In.tex0 + float2(0, 1.0f / 800)  * (float)i  / quality * radius);
+		color += tex2D(inputTexture, In.tex0 + float2(0, -1.0f / 800) * (float)i / quality * radius);
+		color += tex2D(inputTexture, In.tex0 + float2(-1.0f / 800, 0) * (float)i / quality * radius);
+	}
+
+	Out.color = color / (quality * 4 + 1);
+	Out.color.a = alpha;
 
 	return Out;
 }
