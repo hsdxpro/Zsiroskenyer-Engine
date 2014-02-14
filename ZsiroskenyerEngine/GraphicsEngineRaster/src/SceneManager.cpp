@@ -75,13 +75,13 @@ void cSceneManager::RemoveEntity(const cGraphicsEntity* entity) {
 
 
 // Add/Remove scene lights
-cGraphicsLight* cSceneManager::AddLight() {
-	cGraphicsLight* light = new cGraphicsLight();
+std::pair<cGraphicsLight, cShadowMap>* cSceneManager::AddLight() {
+	auto* light = new std::pair<cGraphicsLight, cShadowMap>();
 	lights.insert(light);
 	return light;
 }
-void cSceneManager::RemoveLight(const cGraphicsLight* light) {
-	auto it = lights.find(const_cast<cGraphicsLight*>(light));
+void cSceneManager::RemoveLight(const std::pair<cGraphicsLight, cShadowMap>* light) {
+	auto it = lights.find(const_cast<std::pair<cGraphicsLight, cShadowMap>*>(light));
 	if (it != lights.end()) {
 		lights.erase(it);
 	}
@@ -103,6 +103,6 @@ const std::unordered_set<cInstanceGroup*, cInstGroupPtrHasher,cInstGroupPtrCompa
 }
 
 // Get light list
-const std::unordered_set<cGraphicsLight*>& cSceneManager::GetLights() const {
+const std::unordered_set<std::pair<cGraphicsLight, cShadowMap>*>& cSceneManager::GetLights() const {
 	return lights;
 }

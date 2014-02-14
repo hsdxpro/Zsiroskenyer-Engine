@@ -49,10 +49,12 @@ void cGraphicsScene::DeleteEntity(const IGraphicsEntity* entity) {
 
 //	Add/Remove scene lights
 IGraphicsLight* cGraphicsScene::CreateLight() {
-	return sceneManager.AddLight();
+	return &(sceneManager.AddLight()->first);
 }
 void cGraphicsScene::DeleteLight(const IGraphicsLight* light) {
-	sceneManager.RemoveLight(static_cast<const cGraphicsLight*>(light));
+	auto light_ = static_cast<const cGraphicsLight*>(light);
+	using T = std::pair<cGraphicsLight, cShadowMap>;
+	sceneManager.RemoveLight(reinterpret_cast<T*>(size_t(light_)-offsetof(T,first)));
 }
 
 //	Interface

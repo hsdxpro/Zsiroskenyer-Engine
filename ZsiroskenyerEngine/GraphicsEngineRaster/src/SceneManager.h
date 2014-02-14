@@ -14,12 +14,14 @@
 #include "../../Core/src/zsString.h"
 
 #include "InstanceGroup.h"
+#include "ShadowMap.h"
+#include "GraphicsLight.h"
 
 #include <unordered_set>
+#include <utility>
 
 
 class cGraphicsEntity;
-class cGraphicsLight;
 class cResourceManager;
 class cCamera;
 
@@ -45,13 +47,13 @@ public:
 
 	cGraphicsEntity* AddEntity(cGeometryRef geom, cMaterialRef mtl);
 	void RemoveEntity(const cGraphicsEntity* entity);
-	cGraphicsLight* AddLight();
-	void RemoveLight(const cGraphicsLight* light);
+	std::pair<cGraphicsLight, cShadowMap>* AddLight();
+	void RemoveLight(const std::pair<cGraphicsLight, cShadowMap>* light);
 	void Clear();
 
 	const std::unordered_set<cInstanceGroup*, cInstGroupPtrHasher,cInstGroupPtrCompare>& GetInstanceGroups() const;
-	const std::unordered_set<cGraphicsLight*>& GetLights() const;
+	const std::unordered_set<std::pair<cGraphicsLight, cShadowMap>*>& GetLights() const;
 private:
 	std::unordered_set<cInstanceGroup*,	cInstGroupPtrHasher,cInstGroupPtrCompare> instanceGroups;
-	std::unordered_set<cGraphicsLight*> lights;
+	std::unordered_set<std::pair<cGraphicsLight, cShadowMap>*> lights;
 };

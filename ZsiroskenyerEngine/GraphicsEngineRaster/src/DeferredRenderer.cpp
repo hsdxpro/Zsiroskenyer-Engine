@@ -415,21 +415,22 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	Vec3 ambientLight(0.0f, 0.0f, 0.0f);
 
 	auto& lightList = parent.sceneManager->GetLights();
-	for (auto light : lightList) {
-		if (!light->enabled)
+	for (auto light_ : lightList) {
+		auto& light = light_->first;
+		if (!light.enabled)
 			continue;
-		switch (light->type) {
+		switch (light.type) {
 			case cGraphicsLight::AMBIENT:
-				ambientLight += light->color;
+				ambientLight += light.color;
 				break;
 			case cGraphicsLight::DIRECTIONAL:
-				directionalLights.push_back(light);
+				directionalLights.push_back(&light);
 				break;
 			case cGraphicsLight::POINT:
-				pointLights.push_back(light);
+				pointLights.push_back(&light);
 				break;
 			case cGraphicsLight::SPOT:
-				spotLights.push_back(light);
+				spotLights.push_back(&light);
 				break;
 			default:
 				break;
