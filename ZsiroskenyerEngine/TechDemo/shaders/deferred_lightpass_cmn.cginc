@@ -98,9 +98,8 @@ float CookTorranceSpecular(float3 N, float3 viewDir, float3 L, float roughness, 
     float G = min(1, min((2 * NdotH * NdotV / VdotH), (2 * NdotH * NdotL / VdotH)));
 
     //sum contributions
-	const float PI = 3.14159265358f;
-    //return (F*D*G)/(PI*NdotV) / PI;
-	return F * D * G / NdotV / PI / PI;
+	const float PISquare = 9.869604401f;
+	return F * D * G / NdotV / PISquare;
 }
 
 // diffuse light
