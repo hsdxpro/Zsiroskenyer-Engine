@@ -1,4 +1,6 @@
-sampler2D inputTexture= {
+#include "common.cginc"
+
+sampler2D inputTexture = {
 	MipFilter = LINEAR,
     	MinFilter = LINEAR,
     	MagFilter = LINEAR,
@@ -6,13 +8,16 @@ sampler2D inputTexture= {
 	AddressV = CLAMP,
 };
 
-sampler2D depthTexture= {
+sampler2D depthTexture = {
 	MipFilter = LINEAR,
     	MinFilter = LINEAR,
     	MagFilter = LINEAR,
 	AddressU = CLAMP,
 	AddressV = CLAMP,
 };
+
+float4x4 invViewProj;
+float3	 camPos;
 
 struct VS_IN {
 	float3 posL 	: POSITION;
@@ -37,6 +42,9 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 
 PS_OUT PS_MAIN(VS_OUT In) {
 	PS_OUT Out;
+
+
+	/* OLD CoC CALCULATING
 	float avgRefDepth = 0;
 
 	avgRefDepth += tex2D(depthTexture, float2(0.45f, 0.45f));
@@ -53,6 +61,8 @@ PS_OUT PS_MAIN(VS_OUT In) {
 
 	// Bluring radius
 	float radius = min((depthComponent  + radialComponent)*2.8,2.8f);
+	Out.color.rgb = float3(radius, radius, radius);
+	return Out;
 
 	float4 color = tex2D(inputTexture, In.tex0);
 	float alpha = color.a;
@@ -67,6 +77,28 @@ PS_OUT PS_MAIN(VS_OUT In) {
 
 	Out.color = color / (quality * 4 + 1);
 	Out.color.a = alpha;
+	*/
+
+	float3 focusPointW = GetWorldPosition( In.tex0, tex2D(depthTexture, float2(0.5f, 0.5f)), invViewProj);
+	float3 posW = GetWorldPosition( In.tex0, tex2D(depthTexture, In.tex0), invViewProj);;
+
+	// Distance from lens center to focus point
+	float f = distance(focusPointW, camPos) + 0.01f; // 0.01f bias to avoid divide by zero
+
+	// Distance from lens center to object pos
+	float t = distance(posW, camPos);
+
+	// Distance from lens center to "created" image
+	float k = f * t / t - f;
+
+	// Diameter of our eye
+	const float eyeDiameter = 0.05f;
+
+	// CoC radius --> Coc is ( CoCRadius * CoCRadius * PI )
+	float CoCRadius = eyeDiameter * (k - eyeDiameter) / (2 * k) * 100000;
+
+	Out.color.rgb = float3(CoCRadius, CoCRadius, CoCRadius);
+	//Out.color.rgb = pow(CoCRadius / ( CoCRadius + 1), 4);
 
 	return Out;
 }

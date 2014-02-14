@@ -113,7 +113,8 @@ float3 DiffuseLight(float3 lightDir, float3 lightColor, float3 normal) {
 float3 SpecularLight(float3 lightColor, float3 surfPosToLight, float3 normal, float3 viewDir, float glossiness) {
 	float3 cook = CookTorranceSpecular(normal, viewDir, normalize(surfPosToLight), 0.85f, 1.0);
 	// UBER TODO WHY DO YOU CLAMP THAT AWESOME VALUE?
-	return clamp(cook, 0, 1000000000);
+	//return clamp(cook, 0, 1000000000);
+	return float3(0,0,0);
 }
 
 //------------------------------------------------------------------------------

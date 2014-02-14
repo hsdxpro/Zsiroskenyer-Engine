@@ -666,8 +666,18 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// --- --- --- --- --- --- --- DEPTH OF FIELD --- --- --- --- --- --- --- --- //
 	//----------------------------------------------------------------------------//
 	gApi->SetRenderTargets(1, &compositionBuffer, NULL);
-
 	gApi->SetShaderProgram(shaderDof);
+
+	struct tDofConstants
+	{
+		Matrix44 invViewProj;
+		Vec3 camPos; float _pad;
+	} dofConstants;
+
+	dofConstants.invViewProj = invViewProjMat;
+	dofConstants.camPos = cam->GetPos();
+
+	gApi->SetPSConstantBuffer(&dofConstants, sizeof(dofConstants), 0);
 
 	gApi->SetTexture(L"inputTexture",DOFInput);
 	gApi->SetTexture(L"depthTexture", depthBufferCopy);

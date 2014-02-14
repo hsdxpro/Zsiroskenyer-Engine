@@ -53,7 +53,7 @@ VS_OUT VS_MAIN(VS_IN In) {
 
 	// Calculate TBN base per vertex (CHEAP) (Tangent to World space)
 		float3 N = Out.normalW;
-		float3 T = normalize(Out.tangentW - dot(Out.tangentW,N)*N);
+		float3 T = normalize(Out.tangentW - dot(Out.tangentW,N) * N);
 		float3 B = cross(N,T);
 	Out.TBN = float3x3(T,B,N);
 	return Out;
