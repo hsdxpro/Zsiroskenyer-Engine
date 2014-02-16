@@ -26,6 +26,7 @@
     <ClCompile Include="src\SceneManager.cpp" />
     <ClCompile Include="src\Material.cpp" />
     <ClCompile Include="src\ShadowMap.cpp" />
+    <ClCompile Include="src\ShadowRenderer.cpp" />
     <ClCompile Include="src\UserGeometry.cpp" />
     <ClCompile Include="src\_GeometryBuilder.cpp" />
   </ItemGroup>
@@ -65,6 +66,8 @@
     <None Include="..\TechDemo\shaders\LINE_RENDERER.cg" />
     <None Include="..\TechDemo\shaders\motion_blur.cg" />
     <None Include="..\TechDemo\shaders\screen_copy.cg" />
+    <None Include="..\TechDemo\shaders\shadowmap_cmn.cginc" />
+    <None Include="..\TechDemo\shaders\shadowmap_render_dir.cg" />
     <None Include="..\TechDemo\shaders\sky.cg" />
     <None Include="..\TechDemo\shaders\ssao.cg" />
     <None Include="..\TechDemo\shaders\test.cg" />

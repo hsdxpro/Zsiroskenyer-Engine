@@ -22,7 +22,7 @@
     <Filter Include="Entity">
       <UniqueIdentifier>{865a85d9-2841-432f-80c4-59d935276367}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Misc">
+    <Filter Include="Shadow">
       <UniqueIdentifier>{13753518-cab2-4424-ab0f-dac2c280a02c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -66,7 +66,10 @@
       <Filter>Entity</Filter>
     </ClCompile>
     <ClCompile Include="src\ShadowMap.cpp">
-      <Filter>Misc</Filter>
+      <Filter>Shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ShadowRenderer.cpp">
+      <Filter>Shadow</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -103,7 +106,7 @@
       <Filter>Entity</Filter>
     </ClInclude>
     <ClInclude Include="src\ShadowMap.h">
-      <Filter>Misc</Filter>
+      <Filter>Shadow</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -176,8 +179,11 @@
     <None Include="..\TechDemo\shaders\common_color.cginc">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\TechDemo\shaders\hbao.cg">
-      <Filter>Shaders</Filter>
+    <None Include="..\TechDemo\shaders\shadowmap_cmn.cginc">
+      <Filter>Shadow</Filter>
+    </None>
+    <None Include="..\TechDemo\shaders\shadowmap_render_dir.cg">
+      <Filter>Shadow</Filter>
     </None>
   </ItemGroup>
 </Project>
