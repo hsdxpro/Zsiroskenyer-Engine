@@ -26,6 +26,7 @@
     <ClCompile Include="src\SceneManager.cpp" />
     <ClCompile Include="src\Material.cpp" />
     <ClCompile Include="src\ShadowMap.cpp" />
+    <ClCompile Include="src\ShadowRenderer.cpp" />
     <ClCompile Include="src\UserGeometry.cpp" />
     <ClCompile Include="src\_GeometryBuilder.cpp" />
   </ItemGroup>

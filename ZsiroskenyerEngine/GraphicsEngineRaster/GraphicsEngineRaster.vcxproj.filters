@@ -68,6 +68,7 @@
     <ClCompile Include="src\ShadowMap.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
+    <ClCompile Include="src\ShadowRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GraphicsEngine.h" />

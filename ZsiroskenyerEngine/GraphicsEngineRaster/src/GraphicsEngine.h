@@ -247,6 +247,36 @@ private:
 		IShaderProgram *shaderLumSample, *shaderLumAvg, *shaderOverbright, *shaderBlurVert, *shaderBlurHoriz, *shaderCompose;
 		unsigned sourceWidth, sourceHeight;
 	};
+
+	///////////////////////////////////////
+	//	Shadow mapper helper class
+	class cShadowRenderer {
+	public:
+		cShadowRenderer();
+		~cShadowRenderer();
+
+		void RenderShadowMaps(cSceneManager& sceneManager);
+
+		void ReloadShaders();
+	private:
+		void LoadShaders();
+		void UnloadShaders();
+		void Cleanup();
+
+		IShaderProgram* shaderDirectional;
+		IShaderProgram* shaderSpot;
+		IShaderProgram* shaderPoint;
+
+		// light space view and projection matrices
+		static bool DirLightMatrices(
+			Matrix44& projOut,
+			Matrix44& viewOut,
+			const cGraphicsLight& light,
+			const Matrix44& cameraView,
+			const Matrix44& cameraProj,
+			float nearClip = 0.0f,
+			float farClip = 1.0f);
+	};
 };
 
 
