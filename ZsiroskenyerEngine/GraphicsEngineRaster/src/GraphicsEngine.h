@@ -181,7 +181,7 @@ private:
 		IGraphicsApi* gApi;
 		IShaderProgram* shaderGBuffer;
 		IShaderProgram *shaderDirectional, *shaderPoint, *shaderSpot, *shaderAmbient, *shaderSky;
-		IShaderProgram* shaderSSAO;
+		IShaderProgram* shaderSSAO, *shaderHBAO;
 		IShaderProgram *shaderDof, *shaderMotionBlur;
 		cGraphicsEngine& parent;
 

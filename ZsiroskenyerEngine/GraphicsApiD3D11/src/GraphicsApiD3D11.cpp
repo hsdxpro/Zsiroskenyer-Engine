@@ -660,7 +660,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 HRESULT cGraphicsApiD3D11::CompileShaderFromFile(const zsString& fileName, const zsString& entry, const zsString& profile, zsString* compilerMessage, ID3DBlob** ppBlobOut) {
 	HRESULT hr = S_OK;
 
-	DWORD dwShaderFlags = D3D10_SHADER_OPTIMIZATION_LEVEL3;
+	DWORD dwShaderFlags = D3D10_SHADER_SKIP_OPTIMIZATION | D3D10_SHADER_OPTIMIZATION_LEVEL0 | D3D10_SHADER_PREFER_FLOW_CONTROL;// D3D10_SHADER_OPTIMIZATION_LEVEL3;
 
 	ID3DBlob* pErrorBlob;
 	char ansiEntry[256];

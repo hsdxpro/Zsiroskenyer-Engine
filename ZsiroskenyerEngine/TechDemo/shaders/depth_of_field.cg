@@ -108,16 +108,16 @@ PS_OUT PS_MAIN(VS_OUT In) {
 
 	float4 color = tex2D(inputTexture, In.tex0);
 	float alpha = color.a;
-	int quality = 54;
-	for( int i = 0; i < quality; i++)
+	int quality = 8;
+	for( int i = 1; i < quality; ++i)
 	{
-		color += tex2D(inputTexture, In.tex0 + float2(1.0f / 800, 0)  * (float)i  / quality * radius);
-		color += tex2D(inputTexture, In.tex0 + float2(0, 1.0f / 800)  * (float)i  / quality * radius);
-		color += tex2D(inputTexture, In.tex0 + float2(0, -1.0f / 800) * (float)i / quality * radius);
-		color += tex2D(inputTexture, In.tex0 + float2(-1.0f / 800, 0) * (float)i / quality * radius);
+		color += tex2D(inputTexture, In.tex0 + float2(  1.0f / 800	,  0		  ) * (float)i  / quality * radius);
+		color += tex2D(inputTexture, In.tex0 + float2(  0			,  1.0f / 800 ) * (float)i  / quality * radius);
+		color += tex2D(inputTexture, In.tex0 + float2(  0			, -1.0f / 800 ) * (float)i  / quality * radius);
+		color += tex2D(inputTexture, In.tex0 + float2( -1.0f / 800	,  0		  ) * (float)i  / quality * radius);
 	}
 
-	Out.color = color / (quality * 4 + 1);
+	Out.color = color / ((quality - 1) * 4 + 1);
 	Out.color.a = alpha;
 
 	return Out;

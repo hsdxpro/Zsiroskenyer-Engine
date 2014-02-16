@@ -43,7 +43,7 @@ void cCamera::SetDir(const Vec3& p) {
 	target = pos + p;
 }
 
-float cCamera::GetFOV() const {
+float cCamera::GetFOVRad() const {
 	return projPersp.fovRad;
 }
 

@@ -118,9 +118,10 @@ bool cCgShaderHelper::CompileCg(const zsString& cgFilePath, const zsString& shad
 		break;
 	}
 	//cgc.exe proba.fx -profile vs_5_0 -entry MAIN -o proba.vs
-	zsString shellParams = cgcExePath + L" " + cgFilePath + L" " + entryAndProfile + L" -o " + shaderOut;
+	//zsString shellParams = cgcExePath + L" " + cgFilePath + L" " + entryAndProfile + L" -unroll all count=50 -o " + shaderOut;
+	zsString shellParams = cgcExePath + L" " + cgFilePath + L" " + entryAndProfile + L" -unroll none -inline all -o " + shaderOut;
 
-	// Process infos
+	// Process info
 	STARTUPINFO StartupInfo;
 	memset(&StartupInfo, 0, sizeof(StartupInfo));
 	StartupInfo.cb = sizeof(StartupInfo);
