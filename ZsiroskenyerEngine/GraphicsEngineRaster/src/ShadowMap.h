@@ -17,47 +17,97 @@
 #pragma once
  
 #include <vector>
-#include "GraphicsLight.h"
 #include "../../core/src/math/matrix44.h"
 #include "../../core/src/math/vec3.h"
 #include "../../Core/src/ResourceProperty.h"
+#include "GraphicsLight.h"
 
 class ITexture2D;
-class cGraphicsLight;
 class IGraphicsApi;
 
-////////////////////////////////////////////////////////////////////////////////
-//	Shadow map helper class
-class cShadowMap {
-public:
-	// ctor stuff
-	cShadowMap();
-	cShadowMap(IGraphicsApi* gApi, cGraphicsLight::eLightType type, unsigned resolution, eFormat readFormat, eFormat depthFormat, int cascades = 1);
-	~cShadowMap();
-	cShadowMap(const cShadowMap&) = delete;
-	cShadowMap& operator=(const cShadowMap&) = delete;
 
-	// initialize automatically clears previous "session"
-	void Init(IGraphicsApi* gApi, cGraphicsLight::eLightType type, unsigned resolution, eFormat readFormat, eFormat depthFormat, int cascades = 1);
-	// should we reinit it?
-	bool IsCompatible(IGraphicsApi* gApi, cGraphicsLight::eLightType type, unsigned resolution, eFormat readFormat, eFormat depthFormat, int cascades = 1);
+////////////////////////////////////////////////////////////////////////////////
+// Dir lights
+class cShadowMapDir {
+public:
+	// ctor
+	cShadowMapDir();
+	cShadowMapDir(IGraphicsApi* gApi, unsigned resolution, eFormat readFormat, eFormat depthFormat, int cascades = 1);
+	~cShadowMapDir();
+	cShadowMapDir(const cShadowMapDir&) = delete;
+	cShadowMapDir& operator=(const cShadowMapDir&) = delete;
+
+	// Init
+	void Init(IGraphicsApi* gApi, unsigned resolution, eFormat readFormat, eFormat depthFormat, int cascades = 1);
+	bool IsValid(IGraphicsApi* gApi, unsigned resolution, eFormat readFormat, eFormat depthFormat, int cascades = 1);
 	void Clear();
 
-	// getters
-	IGraphicsApi* GetGraphicsApi() const;
+	operator bool();
+
+	// Map type
+	struct tMap {
+		ITexture2D* texture;
+		mutable Matrix44 viewMat;
+		mutable Matrix44 projMat;
+	};
+
+	// Get
+	unsigned GetResolution() const;
 	eFormat GetReadFormat() const;
 	eFormat GetDepthFormat() const;
-	const std::vector<ITexture2D*>& GetMaps() const;
-	int GetNumCascades() const;
+	const std::vector<tMap>& GetMaps() const;
 
-	
-
-	// check if there's a shadow map
-	operator bool();
+	// Transform
+	static bool Transform(
+		Matrix44& projOut,
+		Matrix44& viewOut,
+		const Vec3& lightDir,
+		const Matrix44& cameraView,
+		const Matrix44& cameraProj,
+		float nearClip = 0.0f,
+		float farClip = 1.0f);
 private:
 	unsigned resolution;
 	IGraphicsApi* gApi;
 	eFormat readFormat, depthFormat;
+	int cascades;
+	std::vector<tMap> maps;
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+//	Shadow map helper class
+class cShadowMap : private cShadowMapDir {
+public:
+	// type
+	void SetType(cGraphicsLight::eLightType type) {
+		this->type = type;
+	}
+	cGraphicsLight::eLightType GetType() {
+		return type;
+	}
+	// clear
+	void Clear() {
+		((cShadowMapDir*)this)->Clear();
+	}
+	void ClearUnneeded() {
+		switch (type) {
+			case cGraphicsLight::DIRECTIONAL:{
+
+				break;
+			}
+			case cGraphicsLight::SPOT:{
+				((cShadowMapDir*)this)->Clear();
+				break;
+			}
+			case cGraphicsLight::POINT:{
+				((cShadowMapDir*)this)->Clear();
+				break;
+			}
+			default:
+				Clear();
+		}
+	}
+private:
 	cGraphicsLight::eLightType type;
-	std::vector<ITexture2D*> maps;
 };

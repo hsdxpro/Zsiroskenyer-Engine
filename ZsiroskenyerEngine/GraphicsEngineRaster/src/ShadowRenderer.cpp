@@ -7,13 +7,17 @@
 
 
 #include "GraphicsEngine.h"
+#include "SceneManager.h"
+#include "../../Core/src/GAPI.h"
 #include <stdexcept>
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constructor
-cGraphicsEngine::cShadowRenderer::cShadowRenderer()
+cGraphicsEngine::cShadowRenderer::cShadowRenderer(cGraphicsEngine& parent)
 :
+parent(parent),
+gApi(parent.gApi),
 shaderDirectional(nullptr),
 shaderPoint(nullptr),
 shaderSpot(nullptr)
@@ -45,8 +49,55 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 		auto& light = v->first;
 		auto& shadowMap = v->second;
 
+		switch (light.type) {
+			case cGraphicsLight::DIRECTIONAL:{
+				// set sh map type
+				shadowMap.SetType(light.type);
+				shadowMap.ClearUnneeded();
+				// get map for type
+				auto& shm = *(cShadowMapDir*)&shadowMap;
+				// init map if not compatible with currently inited
+				if (!shm.IsValid(gApi, 512, eFormat::R16_UNORM, eFormat::D16_UNORM, 1)) {
+					shm.Init(gApi, 512, eFormat::R16_UNORM, eFormat::D16_UNORM, 1);
+				}
 
+				// foreach cascade
+				for (size_t i = 0; i < shm.GetMaps().size(); i++) {
+					// compute transforms
+					auto& map = shm.GetMaps()[i];
+					shm.Transform(map.projMat, map.viewMat, light.direction, parent.camera->GetViewMatrix(), parent.camera->GetProjMatrix());
 
+					// setup render
+					gApi->SetRenderTargets(1, NULL, map.texture);
+					gApi->SetShaderProgram(shaderDirectional);
+
+					// foreach inst grp
+					for (auto& instgrp : sceneManager.GetInstanceGroups()) {
+						// set geom params
+						static_assert(false, 
+							"\nNem lehet shadow mapet renderelni mert hasznalhatatlan a vertex format / vertex stride\n"
+							"Amig nem fixeljuk, addig sehova... ki ne kommenteld ezt!"							
+						);
+						gApi->SetVertexBuffer(instgrp->geom->GetVertexBuffer(), 0);
+						gApi->SetIndexBuffer(instgrp->geom->GetIndexBuffer());
+
+						// render objects
+						for (auto& obj : instgrp->entities) {
+
+						}
+					}
+				}
+				break;
+			}
+			case cGraphicsLight::SPOT:{
+
+				break;
+			}
+			case cGraphicsLight::POINT:{
+
+				break;
+			}
+		}
 	}
 }
 
@@ -63,92 +114,4 @@ void cGraphicsEngine::cShadowRenderer::LoadShaders() {
 
 void cGraphicsEngine::cShadowRenderer::UnloadShaders() {
 
-}
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-// Transformations
-
-// directional lights' matrices
-bool cGraphicsEngine::cShadowRenderer::DirLightMatrices(
-	Matrix44& projOut,
-	Matrix44& viewOut,
-	const cGraphicsLight& light,
-	const Matrix44& cameraView,
-	const Matrix44& cameraProj,
-	float nearClip,
-	float farClip)
-{
-	// check out that bullcrap :)
-	assert(nearClip < farClip);
-	assert(0.0f <= nearClip);
-	assert(farClip <= 1.0f);
-
-	// get the frustum's 8 points
-	// layout is like:
-	// 3,2 - these are array indices
-	// 0,1 - 2d "schematic" when looking from camera
-	Vec3 frustumPoints[8] = {
-		{-1, -1, 0}, {1, -1, 0}, {1, 1, 0}, {-1, 1, 0},
-		{-1, -1, 1}, {1, -1, 1}, {1, 1, 1}, {-1, 1, 1},
-	};
-	// inverse transform them from clip space
-	Matrix44 invCameraViewProj = Matrix44Inverse(cameraView*cameraProj);
-	for (auto& v : frustumPoints) {
-		Vec4 v4 = v;
-		v4 *= invCameraViewProj;
-		v = v4 / v4.w;
-	}
-	// interpolate for near and far clips
-	for (int i = 0; i < 4; i++) {
-		auto tmp = frustumPoints[i];
-		frustumPoints[i] = (1 - nearClip)*frustumPoints[i] + nearClip*frustumPoints[i + 4];
-		frustumPoints[i + 1] = (1 - farClip)*frustumPoints[i] + farClip*frustumPoints[i + 4];
-	}
-
-	// ONLY DIRECTIONAL LIGHTS!
-	// rotate them pointz as if lightDir was (0,0,1)
-	Vec3 targetLigthDir(0, 0, 1);
-	Vec3 lightDir = Normalize(light.GetDirection());
-	auto cp = Cross(lightDir, targetLigthDir);
-	auto dp = 1.0f + Dot(lightDir, targetLigthDir);
-	Quat rot(cp.x, cp.y, cp.z, dp);
-
-	for (auto& v : frustumPoints) {
-		v *= rot;
-	}
-	// this rotation is the view matrix
-	Matrix44 viewMat = rot;
-
-	// fuck that, an axis aligned bounding rect's gonna be good
-#pragma message("QUALITY WARN: replace this with smallest area arbitrary bounding rectangle")
-	Vec3 limitMin = frustumPoints[0],
-		limitMax = frustumPoints[0];
-	for (auto& v : frustumPoints) {
-		limitMin.x = std::min(v.x, limitMin.x);
-		limitMin.y = std::min(v.y, limitMin.y);
-		limitMin.z = std::min(v.z, limitMin.z);
-
-		limitMax.x = std::max(v.x, limitMax.x);
-		limitMax.y = std::max(v.y, limitMax.y);
-		limitMax.z = std::max(v.z, limitMax.z);
-	}
-	// check if limits have real volume or they are just 2D
-	// in the latter case, no projection exists
-	Vec3 volumeDim = limitMax - limitMin;
-	static const float epsilon = 1e-25f;
-	if (!(epsilon < volumeDim.x && epsilon < volumeDim.y && epsilon < volumeDim.z)) {
-		return false;
-	}
-
-	// now make some projection from this
-	Matrix44 projMat = Matrix44ProjOrtographic(limitMin.z, limitMax.z, limitMin.x, limitMax.x, limitMin.y, limitMax.y);
-
-	// set output matrices
-	viewOut = viewMat;
-	projOut = projMat;
-
-	// so far we've succeeded
-	return true;
 }
