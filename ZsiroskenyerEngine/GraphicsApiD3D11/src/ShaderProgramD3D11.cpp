@@ -33,11 +33,11 @@ void cShaderProgramD3D11::Release() {
 	delete this;
 }
 
-void cShaderProgramD3D11::SetTextureSlotsVS(const std::unordered_map<zsString, size_t>& texSlotsVS) {
+void cShaderProgramD3D11::SetTextureSlotsVS(const std::unordered_map<zsString, uint16_t>& texSlotsVS) {
 	textureSlotsVS = texSlotsVS;
 }
 
-void cShaderProgramD3D11::SetTextureSlotsPS(const std::unordered_map<zsString, size_t>& texSlotsPS) {
+void cShaderProgramD3D11::SetTextureSlotsPS(const std::unordered_map<zsString, uint16_t>& texSlotsPS) {
 	textureSlotsPS = texSlotsPS;
 }
 
@@ -91,6 +91,6 @@ const ID3D11InputLayout* cShaderProgramD3D11::GetInputLayout() const {
 	return inputLayout;
 }
 
-size_t cShaderProgramD3D11::GetVertexFormatSize() const {
+uint16_t cShaderProgramD3D11::GetVertexFormatSize() const {
 	return vertexFormatSize;
 }

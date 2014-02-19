@@ -142,15 +142,15 @@ bool cCgShaderHelper::CompileCg(const zsString& cgFilePath, const zsString& shad
 	return true;
 }
 
-std::unordered_map<zsString, size_t> cCgShaderHelper::GetHLSLTextureSlots(const zsString& hlslFilePath) {
-	std::unordered_map<zsString, size_t> result;
+std::unordered_map<zsString, uint16_t> cCgShaderHelper::GetHLSLTextureSlots(const zsString& hlslFilePath) {
+	std::unordered_map<zsString, uint16_t> result;
 
 	// Parse hlsl code for samplers, textures
 	std::ifstream hlslFile(hlslFilePath);
 
-	std::unordered_map<zsString, size_t> textureSlotsParsed;
+	std::unordered_map<zsString, uint16_t> textureSlotsParsed;
 
-	size_t texIdx = 0;
+	uint16_t texIdx = 0;
 	bool reachTextures = false;
 	bool reachSampling = false;
 

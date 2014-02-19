@@ -22,10 +22,10 @@ class cShaderProgramD3D11 : public IShaderProgram {
 public:
 
 	struct tSamplerInfo {
-		size_t gApiSamplerIdx;
-		size_t slotIdx;
-
-		tSamplerInfo(size_t gApiSamplerIdx, size_t slotIdx) :gApiSamplerIdx(gApiSamplerIdx), slotIdx(slotIdx){}
+		uint16_t gApiSamplerIdx;
+		uint16_t slotIdx;
+		
+		tSamplerInfo(uint16_t gApiSamplerIdx, uint16_t slotIdx) :gApiSamplerIdx(gApiSamplerIdx), slotIdx(slotIdx){}
 	};
 
 	cShaderProgramD3D11(cGraphicsApiD3D11* parent,
@@ -37,8 +37,8 @@ public:
 	~cShaderProgramD3D11();
 	void Release() override;
 
-	void SetTextureSlotsVS(const std::unordered_map<zsString, size_t>& texSlotsVS);
-	void SetTextureSlotsPS(const std::unordered_map<zsString, size_t>& texSlotsPS);
+	void SetTextureSlotsVS(const std::unordered_map<zsString, uint16_t>& texSlotsVS);
+	void SetTextureSlotsPS(const std::unordered_map<zsString, uint16_t>& texSlotsPS);
 
 	void SetSamplerStatesVS(const std::vector<tSamplerInfo>& samplerStatesVS);
 	void SetSamplerStatesPS(const std::vector<tSamplerInfo>& samplerStatesPS);
@@ -56,7 +56,7 @@ public:
 	const ID3D11PixelShader* GetPixelShader() const;
 	const ID3D11InputLayout* GetInputLayout() const;
 
-	size_t GetVertexFormatSize() const override;
+	uint16_t GetVertexFormatSize() const override;
 	
 private:
 	// parent
@@ -64,7 +64,7 @@ private:
 
 	// input layout
 	ID3D11InputLayout* inputLayout;
-	size_t vertexFormatSize;
+	uint16_t vertexFormatSize;
 
 	// In Sequence of the Dx pipeline :) 
 	ID3D11VertexShader*		vs;
@@ -73,13 +73,11 @@ private:
 	ID3D11GeometryShader*	gs;
 	ID3D11PixelShader*		ps;
 
-	// Texture slot look up
 	// Texture name, slot idx
-	std::unordered_map<zsString, size_t> textureSlotsVS;
-	std::unordered_map<zsString, size_t> textureSlotsPS;
+	std::unordered_map<zsString, uint16_t> textureSlotsVS;
+	std::unordered_map<zsString, uint16_t> textureSlotsPS;
 
 	// Sampler slot look up
-	// Sampler hash, vector<slot idx>
 	std::vector<tSamplerInfo> samplerStatesVS;
 	std::vector<tSamplerInfo> samplerStatesPS;
 };
