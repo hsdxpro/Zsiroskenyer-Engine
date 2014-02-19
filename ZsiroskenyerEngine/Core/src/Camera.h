@@ -42,7 +42,7 @@ public:
 	void SetTarget(const Vec3& p);
 	void SetDir(const Vec3& p);
 
-	float GetFOV() const;
+	float GetFOVRad() const;
 	float GetAspectRatio() const;
 	float GetNearPlane() const;
 	float GetFarPlane() const;

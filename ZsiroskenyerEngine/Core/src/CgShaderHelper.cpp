@@ -118,9 +118,10 @@ bool cCgShaderHelper::CompileCg(const zsString& cgFilePath, const zsString& shad
 		break;
 	}
 	//cgc.exe proba.fx -profile vs_5_0 -entry MAIN -o proba.vs
-	zsString shellParams = cgcExePath + L" " + cgFilePath + L" " + entryAndProfile + L" -o " + shaderOut;
+	//zsString shellParams = cgcExePath + L" " + cgFilePath + L" " + entryAndProfile + L" -unroll all count=50 -o " + shaderOut;
+	zsString shellParams = cgcExePath + L" " + cgFilePath + L" " + entryAndProfile + L" -unroll none -inline all -o " + shaderOut;
 
-	// Process infos
+	// Process info
 	STARTUPINFO StartupInfo;
 	memset(&StartupInfo, 0, sizeof(StartupInfo));
 	StartupInfo.cb = sizeof(StartupInfo);
@@ -141,15 +142,15 @@ bool cCgShaderHelper::CompileCg(const zsString& cgFilePath, const zsString& shad
 	return true;
 }
 
-std::unordered_map<zsString, size_t> cCgShaderHelper::GetHLSLTextureSlots(const zsString& hlslFilePath) {
-	std::unordered_map<zsString, size_t> result;
+std::unordered_map<zsString, uint16_t> cCgShaderHelper::GetHLSLTextureSlots(const zsString& hlslFilePath) {
+	std::unordered_map<zsString, uint16_t> result;
 
 	// Parse hlsl code for samplers, textures
 	std::ifstream hlslFile(hlslFilePath);
 
-	std::unordered_map<zsString, size_t> textureSlotsParsed;
+	std::unordered_map<zsString, uint16_t> textureSlotsParsed;
 
-	size_t texIdx = 0;
+	uint16_t texIdx = 0;
 	bool reachTextures = false;
 	bool reachSampling = false;
 

@@ -9,13 +9,41 @@ class cFileUtil {
 public:
 	static bool Clear(const zsString& path);
 
-	static bool ReadBinary(std::ifstream& file, void* data, size_t dataSize);
+// Binary writes
+	static void Write(std::ofstream& o, void* data, uint32_t size);
 
-	static bool WriteBinary(std::ofstream& file, void* data, size_t dataSize);
+	template<class T>
+	static void Write(std::ofstream& o, const T& data);
 
+	template<>
+	static void Write<const wchar_t*>(std::ofstream& o, const wchar_t* const& data);
+
+// Binary reads
+	static void Read(std::ifstream& i, const void* dataOut, uint32_t size);
+
+	template<class T>
+	static void Read(std::ifstream& i, T& out);
 
 	static bool isFileExits(const zsString& str);
 
 	static std::list<zsString> GetLines(std::ifstream& file);
 	static int GetSize(const zsString& path);
 };
+
+template<class T>
+static void cFileUtil::Write(std::ofstream& o, const T& data)
+{
+	o.write((const char*)&data, sizeof(T));
+}
+
+template<>
+static void cFileUtil::Write<const wchar_t*>(std::ofstream& o, const wchar_t* const& data)
+{
+	o.write((const char*)data, wcslen(data) * sizeof(wchar_t));
+}
+
+template<class T>
+static void cFileUtil::Read(std::ifstream& i, T& out)
+{
+	i.read((char*)&out, sizeof(T));
+}

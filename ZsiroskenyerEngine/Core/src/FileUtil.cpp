@@ -16,23 +16,15 @@ bool cFileUtil::Clear(const zsString& path) {
 	return true;
 }
 
-
-bool cFileUtil::ReadBinary(std::ifstream& file, void* dataOut, size_t dataSize) {
-	if (!file.is_open())
-		return false;
-
-	file.read((char*)dataOut, dataSize);
-	return true;
+void cFileUtil::Write(std::ofstream& o, void* data, uint32_t size)
+{
+	o.write((const char*)data, size);
 }
 
-bool cFileUtil::WriteBinary(std::ofstream& file, void* data, size_t dataSize) {
-	if (!file.is_open())
-		return false;
-
-	file.write((char*)data, dataSize);
-	return true;
+void cFileUtil::Read(std::ifstream& i, const void* dataOut, uint32_t size)
+{
+	i.read((char*)dataOut, size);
 }
-
 
 int cFileUtil::GetSize(const zsString& filePath) {
 	char ansiPath[256];

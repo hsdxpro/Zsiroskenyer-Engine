@@ -28,7 +28,7 @@
 #include <stdexcept>
 #include <vector>
 #include <memory>
-
+#include <stdlib.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 //	Constructor & Destructor
@@ -49,6 +49,7 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 	shaderDof = shaderMotionBlur = NULL;
 	shaderSky = NULL;
 	shaderSSAO = NULL;
+	shaderHBAO = NULL;
 
 	// light volumes to null
 	ibSpot = ibPoint = NULL;
@@ -209,6 +210,7 @@ void cGraphicsEngine::cDeferredRenderer::LoadShaders() {
 		shaderSky = Create(L"shaders/sky.cg");
 
 		shaderSSAO = Create(L"shaders/ssao.cg");
+		//shaderHBAO = Create(L"shaders/hbao.cg");
 	}
 	catch (...) {
 		UnloadShaders();
@@ -230,6 +232,7 @@ void cGraphicsEngine::cDeferredRenderer::UnloadShaders() {
 	SAFE_RELEASE(shaderSky);
 
 	SAFE_RELEASE(shaderSSAO);
+	SAFE_RELEASE(shaderHBAO);
 }
 
 // reload shaders
@@ -252,6 +255,7 @@ void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {
 	Reload(&shaderSky, L"shaders/sky.cg");
 
 	Reload(&shaderSSAO, L"shaders/ssao.cg");
+	//Reload(&shaderSSAO, L"shaders/hbao.cg");
 }
 
 // Render the scene to composition buffer
@@ -367,6 +371,62 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// --- --- --- --- --AMBIENT OCCLUSION (composition pass)-- --- --- --- --- //
 	//--------------------------------------------------------------------------//
 
+	/*
+	// HBAO FUCK YEAH, I really like the small and smart constant buffer :D
+	struct
+	{
+		float AOResolution[2];
+		float InvAOResolution[2];
+
+		float FocalLen[2];
+
+		float UVToViewA[2];
+		float UVToViewB[2];
+
+		float R;
+		float R2;
+		float NegInvR2;
+		float MaxRadiusPixels;
+
+		float AngleBias;
+		float TanAngleBias;
+		float PowExponent;
+		float Strength;
+	} data;
+
+	data.AOResolution[0] = (float)ambientOcclusionBuffer->GetWidth();
+	data.AOResolution[1] = (float)ambientOcclusionBuffer->GetHeight();
+	data.InvAOResolution[0] = 1.0f / data.AOResolution[0];
+	data.InvAOResolution[1] = 1.0f / data.AOResolution[1];
+
+	// TODO
+	const float fovYRad = cam->GetFOVRad() / cam->GetAspectRatio(); // HACKED ONE.......
+	data.FocalLen[0] = 1.0f / tanf(fovYRad * 0.5f) * (data.AOResolution[1] / data.AOResolution[0]);
+	data.FocalLen[1] = 1.0f / tanf(fovYRad * 0.5f);
+
+	data.UVToViewA[0] = 2.0f * (1.0f / data.FocalLen[0]);
+	data.UVToViewA[1] = -2.0f * (1.0f / data.FocalLen[1]);
+	data.UVToViewB[0] = -1.0f * (1.0f / data.FocalLen[0]);
+	data.UVToViewB[1] = 1.0f * (1.0f / data.FocalLen[1]);
+
+	data.R = 2; // WHOA RANDOM
+	data.R2 = data.R * data.R;
+	data.NegInvR2 = -1.0f / data.R2;
+	data.MaxRadiusPixels = 0.1f * std::min(gApi->GetDefaultRenderTarget()->GetWidth(), gApi->GetDefaultRenderTarget()->GetHeight());
+	data.AngleBias = 0; // TODO LOW GEOM FAILS
+	data.TanAngleBias = tanf(data.AngleBias);
+	data.PowExponent = 1; // TODO HACKED
+	data.Strength = 5; // TODO HACKED
+
+	gApi->SetShaderProgram(shaderHBAO);
+	gApi->SetRenderTargets(1, &ambientOcclusionBuffer, NULL);
+	//gApi->SetTexture(L"normalTexture", gBuffer[1]);
+	gApi->SetTexture(L"tLinearDepth", depthBufferCopy);
+	gApi->SetPSConstantBuffer(&data, sizeof(data), 0);
+	gApi->Draw(3);
+	*/
+
+	
 	struct _aoShaderConstants {
 		Matrix44 projMat;
 		Matrix44 invViewProj;
@@ -382,7 +442,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetTexture(L"depthTexture", depthBufferCopy);
 	gApi->SetPSConstantBuffer(&aoShaderConstants, sizeof(aoShaderConstants), 0);
 	gApi->Draw(3);
-
+	
 
 	//--------------------------------------------------------------------------//
 	// --- --- --- --- --- RENDER STATES (composition pass) --- --- --- --- --- //

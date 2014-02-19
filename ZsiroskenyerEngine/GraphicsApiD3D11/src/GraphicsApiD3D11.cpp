@@ -17,6 +17,7 @@
 
 #include <unordered_map>
 #include <fstream>
+#include <memory>
 // Ugly create shader last_write_time..
 //#include <boost/filesystem.hpp>
 
@@ -660,7 +661,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 HRESULT cGraphicsApiD3D11::CompileShaderFromFile(const zsString& fileName, const zsString& entry, const zsString& profile, zsString* compilerMessage, ID3DBlob** ppBlobOut) {
 	HRESULT hr = S_OK;
 
-	DWORD dwShaderFlags = D3D10_SHADER_OPTIMIZATION_LEVEL3;
+	DWORD dwShaderFlags = D3D10_SHADER_SKIP_OPTIMIZATION | D3D10_SHADER_OPTIMIZATION_LEVEL0 | D3D10_SHADER_PREFER_FLOW_CONTROL;// D3D10_SHADER_OPTIMIZATION_LEVEL3;
 
 	ID3DBlob* pErrorBlob;
 	char ansiEntry[256];
@@ -726,7 +727,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	cCgShaderHelper::eProfileCG cgProfiles		[nDomains];
 
 	// Texture slots per domain
-	std::unordered_map<zsString, size_t> shaderTextureSlots[nDomains];
+	std::unordered_map<zsString, uint16_t> shaderTextureSlots[nDomains];
 
 	// Samppler states per domain
 	std::vector<cShaderProgramD3D11::tSamplerInfo> shaderSamplerStates[nDomains];
@@ -755,6 +756,9 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	// TODO FORCING ALWAYS GENERATE SHADERS FROM CG's 
 	bool binExistences[nDomains]; memset(binExistences, 0, nDomains * sizeof(bool));
 
+	// ALWAYS LOAD THE FUCKING BINARY PLEASE :)
+	//bool binExistences[nDomains]; memset(binExistences, 1, nDomains * sizeof(bool));
+
 	// Shader Output data
 	ID3D11InputLayout*		inputLayout = NULL;
 	ID3D11VertexShader*		vs = NULL;
@@ -764,24 +768,58 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	ID3D11PixelShader*		ps = NULL;
 
 	// Shader ByteCodes
-	ID3DBlob* blobs[nDomains];		memset(blobs, 0, nDomains * sizeof(ID3DBlob*));
-	void* byteCodes[nDomains];		memset(byteCodes, 0, nDomains* sizeof(size_t));
-	size_t byteCodeSizes[nDomains]; memset(byteCodeSizes, 0, nDomains * sizeof(size_t));
+	ID3DBlob* blobs[nDomains];			memset(blobs, 0, nDomains * sizeof(ID3DBlob*));
+	void* byteCodes[nDomains];			memset(byteCodes, 0, nDomains* sizeof(size_t));
+	uint32_t byteCodeSizes[nDomains];	memset(byteCodeSizes, 0, nDomains * sizeof(size_t));
+
+	std::vector<std::shared_ptr<char>> tmpByteCodes;
+	for (size_t i = 0; i < nDomains; i++) tmpByteCodes.push_back(std::shared_ptr<char>(new char[512000]));
 
 	for (size_t i = 0; i < nDomains; i++) {
 		// not existing entry point skip it
 		if (!existingEntries[i])
 			continue;
 
-		// Found binary ... Read it
+		// Binary exists, read it
 		if (binExistences[i]) {
-			// TOOD READING BINARY SADERS
-			/*
-			byteCodeSizes[i] = cFileUtil::GetSize(binPaths[i]);
+			
 			std::ifstream binFile(binPaths[i].c_str(), std::ios::binary);
-			cFileUtil::ReadBinary(binFile, byteCodeHolder[i], byteCodeSizes[i]);
+
+			// Read shader byte code size
+			cFileUtil::Read(binFile, byteCodeSizes[i]);
+
+			// Read shader byte code
+			cFileUtil::Read(binFile, tmpByteCodes[i].get(), byteCodeSizes[i]);
+
+			byteCodes[i] = tmpByteCodes[i].get();
+
+			// Read textureSlots "descriptor"
+			uint8_t nTextureSlots;
+			cFileUtil::Read(binFile, nTextureSlots);
+
+			// Read each slot
+			wchar_t slotName[512];
+			
+			//zsString slotName;
+			uint16_t slotNameLength;
+			uint16_t slotIdx;
+			for (uint8_t j = 0; j < nTextureSlots; j++) {
+
+				// Read slot name length
+				cFileUtil::Read(binFile, slotNameLength);
+
+				// Read slot name
+				cFileUtil::Read(binFile, slotName, slotNameLength);
+
+				// Read slot index
+				cFileUtil::Read(binFile, slotIdx);
+
+				zsString name = slotName;
+				shaderTextureSlots[i][name] = slotIdx;
+			}
+
 			binFile.close();
-			byteCodes[i] = byteCodeHolder[i];*/
+			
 		}
 		else { // binary doesn't exists
 			
@@ -795,15 +833,40 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 				lastErrorMsg = L"Failed to compile hlsl file, something is wrong with the CG file: " + shaderPath;
 				return eGapiResult::ERROR_UNKNOWN;
 			}
-
-			shaderTextureSlots[i] = cgHelper.GetHLSLTextureSlots(binPaths[i]);
-
+			
+			// Bytecode info
 			byteCodes[i] = blobs[i]->GetBufferPointer();
 			byteCodeSizes[i] = blobs[i]->GetBufferSize();
 
-			// Write byteCode as binary file
+			// Gather samplers etc..
+			shaderTextureSlots[i] = cgHelper.GetHLSLTextureSlots(binPaths[i]);
+
+			// OverWrite file with
 			std::ofstream binFile(binPaths[i], std::ios::trunc | std::ios::binary);
-			cFileUtil::WriteBinary(binFile, byteCodes[i], byteCodeSizes[i]);
+
+			// Shader byte code size
+			cFileUtil::Write(binFile, byteCodeSizes[i]);
+				
+			// Shader byte code
+			cFileUtil::Write(binFile, byteCodes[i], byteCodeSizes[i]);
+
+			// nTextureSlots
+			cFileUtil::Write(binFile, shaderTextureSlots[i].size());
+
+			// each texture slots
+			for (auto p : shaderTextureSlots[i])
+			{
+				// Slot name length
+				uint16_t nameLength = p.first.size();
+				cFileUtil::Write(binFile, nameLength);
+
+				// Slot name
+				cFileUtil::Write(binFile, p.first.c_str());
+
+				// Slot index
+				cFileUtil::Write(binFile, p.second);
+			}
+
 			binFile.close();
 		}
 	}
@@ -882,7 +945,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 		// Iterate through all samplers and check whether sampler exists in that domain, if it, add to specfic sampler domain
 		for (size_t j = 0; j < nDomains; j++) {
-			std::unordered_map<zsString, size_t> textureSlotsPerDomain = shaderTextureSlots[j];
+			std::unordered_map<zsString, uint16_t> textureSlotsPerDomain = shaderTextureSlots[j];
 
 			// sampler found in domain
 			auto texIt = textureSlotsPerDomain.find(it->first);
@@ -968,11 +1031,6 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 	// Create input layout
 	hr = d3ddev->CreateInputLayout(vertexDecl, nVertexAttributes, byteCodes[VS], byteCodeSizes[VS], &inputLayout);
-	if (FAILED(hr))
-	{
-		int asd = 5;
-		asd++;
-	}
 	ASSERT_MSG(hr == S_OK, L"cGraphicsApiD3D11::CreateShaderProgram -> Can't create input layout for vertexShader: " + binPaths[VS]);
 
 	// FREE UP

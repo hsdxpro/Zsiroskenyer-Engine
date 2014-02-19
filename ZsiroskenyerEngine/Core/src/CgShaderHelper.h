@@ -50,7 +50,7 @@ public:
 
 	bool CompileCg(const zsString& cgFilePath, const zsString& shaderOut, cCgShaderHelper::eProfileCG compileProfile);
 
-	std::unordered_map<zsString, size_t> GetHLSLTextureSlots(const zsString& hlslFilePath);
+	std::unordered_map<zsString, uint16_t> GetHLSLTextureSlots(const zsString& hlslFilePath);
 	std::unordered_map<zsString, tSamplerDesc> GetSamplerStates(const std::list<zsString>& cgFileLines);
 
 	const wchar_t* cCgShaderHelper::GetLastErrorMsg();
