@@ -10,7 +10,7 @@ public:
 	static bool Clear(const zsString& path);
 
 // Binary writes
-	static void Write(std::ofstream& o, void* data, uint32_t size);
+	static void Write(std::ofstream& o, void* data, size_t size);
 
 	template<class T>
 	static void Write(std::ofstream& o, const T& data);
@@ -24,8 +24,10 @@ public:
 	template<class T>
 	static void Read(std::ifstream& i, T& out);
 
+// Conditional things
 	static bool isFileExits(const zsString& str);
 
+// Get infos
 	static std::list<zsString> GetLines(std::ifstream& file);
 	static int GetSize(const zsString& path);
 };

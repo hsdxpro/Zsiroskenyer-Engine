@@ -804,12 +804,12 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			uint16_t slotNameLength;
 			uint16_t slotIdx;
 			for (uint8_t j = 0; j < nTextureSlots; j++) {
-
 				// Read slot name length
 				cFileUtil::Read(binFile, slotNameLength);
 
 				// Read slot name
-				cFileUtil::Read(binFile, slotName, slotNameLength);
+				cFileUtil::Read(binFile, slotName, slotNameLength * sizeof(wchar_t));
+				slotName[slotNameLength] = '\0';
 
 				// Read slot index
 				cFileUtil::Read(binFile, slotIdx);
@@ -851,14 +851,12 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			cFileUtil::Write(binFile, byteCodes[i], byteCodeSizes[i]);
 
 			// nTextureSlots
-			cFileUtil::Write(binFile, shaderTextureSlots[i].size());
+			cFileUtil::Write(binFile, (uint8_t)shaderTextureSlots[i].size());
 
 			// each texture slots
-			for (auto p : shaderTextureSlots[i])
-			{
+			for (auto p : shaderTextureSlots[i]) {
 				// Slot name length
-				uint16_t nameLength = p.first.size();
-				cFileUtil::Write(binFile, nameLength);
+				cFileUtil::Write(binFile, (uint16_t)p.first.size());
 
 				// Slot name
 				cFileUtil::Write(binFile, p.first.c_str());
@@ -866,7 +864,6 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 				// Slot index
 				cFileUtil::Write(binFile, p.second);
 			}
-
 			binFile.close();
 		}
 	}

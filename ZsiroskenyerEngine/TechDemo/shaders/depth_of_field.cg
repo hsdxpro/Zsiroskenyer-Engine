@@ -83,10 +83,10 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	float3 posW = GetWorldPosition( In.tex0, tex2D(depthTexture, In.tex0), invViewProj);
 
 	// Distance from lens center to focus point
-	float f = distance(focusPointW, camPos); // 0.01f bias to avoid divide by zero
+	float f = distance(focusPointW, camPos); 
 
 	// Distance from lens center to object pos
-	float t = distance(posW, camPos) + 0.001f;
+	float t = distance(posW, camPos) + 0.001f; // 0.01f bias to avoid divide by zero
 
 	// Distance from lens center to "created" image
 	float k = abs(f * t / abs((t - f)));
