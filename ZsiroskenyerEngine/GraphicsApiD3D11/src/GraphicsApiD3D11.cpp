@@ -17,6 +17,7 @@
 
 #include <unordered_map>
 #include <fstream>
+#include <memory>
 // Ugly create shader last_write_time..
 //#include <boost/filesystem.hpp>
 
@@ -755,6 +756,9 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	// TODO FORCING ALWAYS GENERATE SHADERS FROM CG's 
 	bool binExistences[nDomains]; memset(binExistences, 0, nDomains * sizeof(bool));
 
+	// ALWAYS LOAD THE FUCKING BINARY PLEASE :)
+	//bool binExistences[nDomains]; memset(binExistences, 1, nDomains * sizeof(bool));
+
 	// Shader Output data
 	ID3D11InputLayout*		inputLayout = NULL;
 	ID3D11VertexShader*		vs = NULL;
@@ -768,6 +772,9 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	void* byteCodes[nDomains];		memset(byteCodes, 0, nDomains* sizeof(size_t));
 	size_t byteCodeSizes[nDomains]; memset(byteCodeSizes, 0, nDomains * sizeof(size_t));
 
+	std::vector<std::shared_ptr<char>> tmpByteCodes;
+	for (size_t i = 0; i < nDomains; i++) tmpByteCodes.push_back(std::shared_ptr<char>(new char[512000]));
+
 	for (size_t i = 0; i < nDomains; i++) {
 		// not existing entry point skip it
 		if (!existingEntries[i])
@@ -776,12 +783,13 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		// Found binary ... Read it
 		if (binExistences[i]) {
 			// TOOD READING BINARY SADERS
-			/*
+			
 			byteCodeSizes[i] = cFileUtil::GetSize(binPaths[i]);
 			std::ifstream binFile(binPaths[i].c_str(), std::ios::binary);
-			cFileUtil::ReadBinary(binFile, byteCodeHolder[i], byteCodeSizes[i]);
+			cFileUtil::ReadBinary(binFile, tmpByteCodes[i].get(), byteCodeSizes[i]);
+			
 			binFile.close();
-			byteCodes[i] = byteCodeHolder[i];*/
+			byteCodes[i] = tmpByteCodes[i].get();
 		}
 		else { // binary doesn't exists
 			
@@ -795,13 +803,15 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 				lastErrorMsg = L"Failed to compile hlsl file, something is wrong with the CG file: " + shaderPath;
 				return eGapiResult::ERROR_UNKNOWN;
 			}
-
-			shaderTextureSlots[i] = cgHelper.GetHLSLTextureSlots(binPaths[i]);
-
+			
+			// Bytecode info
 			byteCodes[i] = blobs[i]->GetBufferPointer();
 			byteCodeSizes[i] = blobs[i]->GetBufferSize();
 
-			// Write byteCode as binary file
+			// Gather samplers etc..
+			shaderTextureSlots[i] = cgHelper.GetHLSLTextureSlots(binPaths[i]);
+
+			// OverWrite file with bytecode
 			std::ofstream binFile(binPaths[i], std::ios::trunc | std::ios::binary);
 			cFileUtil::WriteBinary(binFile, byteCodes[i], byteCodeSizes[i]);
 			binFile.close();
@@ -968,11 +978,6 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 	// Create input layout
 	hr = d3ddev->CreateInputLayout(vertexDecl, nVertexAttributes, byteCodes[VS], byteCodeSizes[VS], &inputLayout);
-	if (FAILED(hr))
-	{
-		int asd = 5;
-		asd++;
-	}
 	ASSERT_MSG(hr == S_OK, L"cGraphicsApiD3D11::CreateShaderProgram -> Can't create input layout for vertexShader: " + binPaths[VS]);
 
 	// FREE UP

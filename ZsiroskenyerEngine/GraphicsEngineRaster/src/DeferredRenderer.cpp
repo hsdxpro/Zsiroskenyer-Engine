@@ -210,7 +210,7 @@ void cGraphicsEngine::cDeferredRenderer::LoadShaders() {
 		shaderSky = Create(L"shaders/sky.cg");
 
 		shaderSSAO = Create(L"shaders/ssao.cg");
-		shaderHBAO = Create(L"shaders/hbao.cg");
+		//shaderHBAO = Create(L"shaders/hbao.cg");
 	}
 	catch (...) {
 		UnloadShaders();
@@ -255,7 +255,7 @@ void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {
 	Reload(&shaderSky, L"shaders/sky.cg");
 
 	Reload(&shaderSSAO, L"shaders/ssao.cg");
-	Reload(&shaderSSAO, L"shaders/hbao.cg");
+	//Reload(&shaderSSAO, L"shaders/hbao.cg");
 }
 
 // Render the scene to composition buffer
@@ -371,6 +371,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// --- --- --- --- --AMBIENT OCCLUSION (composition pass)-- --- --- --- --- //
 	//--------------------------------------------------------------------------//
 
+	/*
 	// HBAO FUCK YEAH, I really like the small and smart constant buffer :D
 	struct
 	{
@@ -423,8 +424,9 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetTexture(L"tLinearDepth", depthBufferCopy);
 	gApi->SetPSConstantBuffer(&data, sizeof(data), 0);
 	gApi->Draw(3);
+	*/
 
-	/*
+	
 	struct _aoShaderConstants {
 		Matrix44 projMat;
 		Matrix44 invViewProj;
@@ -440,7 +442,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetTexture(L"depthTexture", depthBufferCopy);
 	gApi->SetPSConstantBuffer(&aoShaderConstants, sizeof(aoShaderConstants), 0);
 	gApi->Draw(3);
-	*/
+	
 
 	//--------------------------------------------------------------------------//
 	// --- --- --- --- --- RENDER STATES (composition pass) --- --- --- --- --- //
