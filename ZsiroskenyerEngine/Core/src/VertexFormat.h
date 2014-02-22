@@ -1,32 +1,23 @@
 ////////////////////////////////////////////////////////////////////////////////
-//	GraphicsCommon/src/VertexFormat.h
-//	2013.oct.14, Zsiroskenyer Team, Péter Kardos
+//	Zsiroskenyer Team
 ////////////////////////////////////////////////////////////////////////////////
-//	A class declaration is worth a thousand words...
+//	Vertex format stored as int64
+//	Limitations:
+//		TODO
 ////////////////////////////////////////////////////////////////////////////////
-#pragma once
 
-/* TEMPORARILY DEPRECATED 
-enum class eVertexAttribute : unsigned {
-	POSITION	= 1,
-	NORMAL		= 2,
-	TEXCOORD	= 4,
-	COLOR		= 8,
-	TANGENT		= 16,
-	BONE		= 32,
+#include <cstdint>
+
+
+enum eType {
+	INT,
+	SHORT,
+	FLOAT,
 };
 
-
-class cVertexFormat {
+class VertexFormat {
 public:
-	void SetAttribute(eVertexAttribute attrib, bool value);
-	void AddAttribute(eVertexAttribute attrib);
-	void ClearAttribute(eVertexAttribute attrib);
 
-	unsigned Get();
-
-	cVertexFormat();
 private:
-	unsigned attribs;
+	uint64_t data;
 };
-*/

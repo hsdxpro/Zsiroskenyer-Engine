@@ -115,9 +115,6 @@
     <ClInclude Include="src\IWindow.h">
       <Filter>Common\Interface</Filter>
     </ClInclude>
-    <ClInclude Include="src\VertexFormat.h">
-      <Filter>M_GraphicsEngine\Classes</Filter>
-    </ClInclude>
     <ClInclude Include="src\Transform3D.h" />
     <ClInclude Include="src\Entity.h">
       <Filter>Game</Filter>
@@ -172,6 +169,9 @@
     </ClInclude>
     <ClInclude Include="src\IGraphicsLight.h">
       <Filter>M_GraphicsEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VertexFormat.h">
+      <Filter>M_GraphicsApi</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -229,9 +229,6 @@
     </ClCompile>
     <ClCompile Include="src\IWindow.cpp">
       <Filter>Common\Interface</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VertexFormat.cpp">
-      <Filter>M_GraphicsEngine\Classes</Filter>
     </ClCompile>
     <ClCompile Include="src\Transform3D.cpp" />
     <ClCompile Include="src\Entity.cpp">

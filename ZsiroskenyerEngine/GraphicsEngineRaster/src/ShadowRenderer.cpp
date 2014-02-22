@@ -74,10 +74,12 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 					// foreach inst grp
 					for (auto& instgrp : sceneManager.GetInstanceGroups()) {
 						// set geom params
+						/*
 						static_assert(false, 
 							"\nNem lehet shadow mapet renderelni mert hasznalhatatlan a vertex format / vertex stride\n"
 							"Amig nem fixeljuk, addig sehova... ki ne kommenteld ezt, xD Jólvan nem kommentelem :)!"							
 						);
+						*/
 						gApi->SetVertexBuffer(instgrp->geom->GetVertexBuffer(), 0);
 						gApi->SetIndexBuffer(instgrp->geom->GetIndexBuffer());
 
