@@ -185,5 +185,6 @@
     <None Include="..\TechDemo\shaders\shadowmap_render_dir.cg">
       <Filter>Shadow</Filter>
     </None>
+    <None Include="..\TechDemo\shaders\hbao.cg" />
   </ItemGroup>
 </Project>
