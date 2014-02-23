@@ -30,9 +30,7 @@ void cVertexBufferD3D11::Release() {
 void cVertexBufferD3D11::SetFormat(const cVertexFormat& f) {
 	format = f;
 
-	// Calc stride..
-	auto attribs = f.Decode();
-
+	stride = f.GetSize();
 }
 
 const cVertexFormat& cVertexBufferD3D11::GetFormat() const {
