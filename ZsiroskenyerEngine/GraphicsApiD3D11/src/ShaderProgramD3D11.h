@@ -29,6 +29,7 @@ public:
 	};
 
 	cShaderProgramD3D11(
+		void* vsByteCode, size_t vsByteCodeSize,
 		ID3D11VertexShader* vs = NULL, ID3D11HullShader* hs = NULL,
 		ID3D11DomainShader* ds = NULL, ID3D11GeometryShader* gs = NULL, 
 		ID3D11PixelShader* ps = NULL);
@@ -47,19 +48,26 @@ public:
 	const std::vector<tSamplerInfo>& GetSamplerStatesVS() const;
 	const std::vector<tSamplerInfo>& GetSamplerStatesPS() const;
 
-	const ID3D11VertexShader* GetVertexShader() const;
-	const ID3D11HullShader* GetHullShader() const;
-	const ID3D11DomainShader* GetDomainShader() const;
-	const ID3D11GeometryShader* GetGeometryShader() const;
-	const ID3D11PixelShader* GetPixelShader() const;
+	const ID3D11VertexShader* GetVS() const;
+	const ID3D11HullShader* GetHS() const;
+	const ID3D11DomainShader* GetDS() const;
+	const ID3D11GeometryShader* GetGS() const;
+	const ID3D11PixelShader* GetPS() const;
+
+	size_t GetVSByteCodeSize() const;
+	const void* const GetVSByteCode() const;
 
 protected:
 	// In Sequence of the Dx pipeline :) 
 	ID3D11VertexShader*		vs;
+	void*					vsByteCode;
+	size_t					vsByteCodeSize;
+
 	ID3D11HullShader*		hs;
 	ID3D11DomainShader*		ds;
 	ID3D11GeometryShader*	gs;
 	ID3D11PixelShader*		ps;
+
 
 	// Texture name, slot idx
 	std::unordered_map<zsString, uint16_t> textureSlotsVS;

@@ -1030,12 +1030,8 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	hr = d3ddev->CreateInputLayout(vertexDecl, nVertexAttributes, byteCodes[VS], byteCodeSizes[VS], &inputLayout);
 	ASSERT_MSG(hr == S_OK, L"cGraphicsApiD3D11::CreateShaderProgram -> Can't create input layout for vertexShader: " + binPaths[VS]);
 
-	// FREE UP
-	for (size_t i = 0; i < nDomains; i++)
-		SAFE_RELEASE(blobs[i]);
-
 	// Create shader program
-	cShaderProgramD3D11* shProg = new cShaderProgramD3D11(vs, hs, ds, gs, ps);
+	cShaderProgramD3D11* shProg = new cShaderProgramD3D11(byteCodes[VS], byteCodeSizes[VS], vs, hs, ds, gs, ps);
 
 	// Set look up maps
 	shProg->SetTextureSlotsVS(shaderTextureSlots[VS]);
@@ -1043,6 +1039,10 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 	shProg->SetSamplerStatesVS(shaderSamplerStates[VS]);
 	shProg->SetSamplerStatesPS(shaderSamplerStates[PS]);
+
+	// FREE UP
+	for (size_t i = 0; i < nDomains; i++)
+		SAFE_RELEASE(blobs[i]);
 
 	// return and tell everyone dat success
 	*resource = shProg;
@@ -1309,8 +1309,8 @@ void cGraphicsApiD3D11::SetShaderProgram(IShaderProgram* shProg) {
 	const cShaderProgramD3D11* shProgD3D11 = (cShaderProgramD3D11*)shProg;
 	//d3dcon->IASetInputLayout(const_cast<ID3D11InputLayout*>(shProgD3D11->GetInputLayout()));
 #pragma warning("bullshit INPUTLAYOUT SET AT ANOTHER PLACE NEEEEEEEEED")
-	d3dcon->VSSetShader(const_cast<ID3D11VertexShader*>(shProgD3D11->GetVertexShader()), 0, 0);
-	d3dcon->PSSetShader(const_cast<ID3D11PixelShader*>(shProgD3D11->GetPixelShader()), 0, 0);
+	d3dcon->VSSetShader(const_cast<ID3D11VertexShader*>(shProgD3D11->GetVS()), 0, 0);
+	d3dcon->PSSetShader(const_cast<ID3D11PixelShader*>(shProgD3D11->GetPS()), 0, 0);
 }
 
 // Set primitive topology
@@ -1583,6 +1583,10 @@ ID3D11InputLayout* cGraphicsApiD3D11::GetInputLayout(cShaderProgramD3D11* shader
 	if (it == inputLayoutStore.end()) {
 		// create new input layout
 		ID3D11InputLayout* layout = nullptr;
+		//auto vertexAttribs = bufferFormat.Decode();
+		
+		//D3D11_INPUT_ELEMENT_DESC layoutDesc;
+		//d3ddev->CreateInputLayout(&layoutDesc, vertexAttribs.size(), shader->GetByteCode(), shader->GetByteCodeSize(), &layout);
 		//static_assert(false, "FINISH THIS CODE");
 
 		// add input layout to stuff

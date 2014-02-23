@@ -6,18 +6,21 @@
 
 #include "ShaderProgramD3D11.h"
 #include <d3d11.h>
-#include "GraphicsApiD3D11.h"
 
-#undef max
 
-cShaderProgramD3D11::cShaderProgramD3D11(	
+cShaderProgramD3D11::cShaderProgramD3D11(
+		void* vsByteCode,
+		size_t vsByteCodeSize,
 		ID3D11VertexShader*		vs /*= NULL*/,
 		ID3D11HullShader*		hs /*= NULL*/, 
 		ID3D11DomainShader*		ds /*= NULL*/,
 		ID3D11GeometryShader*	gs /*= NULL*/,
 		ID3D11PixelShader*		ps /*= NULL*/)
-:vs(vs), hs(hs), ds(ds), gs(gs), ps(ps)
+:vsByteCodeSize(vsByteCodeSize),
+ vs(vs), hs(hs), ds(ds), gs(gs), ps(ps)
 {
+	this->vsByteCode = new unsigned char[vsByteCodeSize];
+	memcpy(this->vsByteCode, vsByteCode, vsByteCodeSize );
 }
 
 cShaderProgramD3D11::~cShaderProgramD3D11() {
@@ -26,6 +29,8 @@ cShaderProgramD3D11::~cShaderProgramD3D11() {
 	if (ds) ds->Release();
 	if (gs) gs->Release();
 	if (ps) ps->Release();
+
+	delete[] vsByteCode;
 }
 
 void cShaderProgramD3D11::Release() {
@@ -66,22 +71,30 @@ const std::vector<cShaderProgramD3D11::tSamplerInfo>& cShaderProgramD3D11::GetSa
 	return samplerStatesPS;
 }
 
-const ID3D11VertexShader* cShaderProgramD3D11::GetVertexShader() const {
+const ID3D11VertexShader* cShaderProgramD3D11::GetVS() const {
 	return vs;
 }
 
-const ID3D11HullShader* cShaderProgramD3D11::GetHullShader() const {
+const ID3D11HullShader* cShaderProgramD3D11::GetHS() const {
 	return hs;
 }
 
-const ID3D11DomainShader* cShaderProgramD3D11::GetDomainShader() const {
+const ID3D11DomainShader* cShaderProgramD3D11::GetDS() const {
 	return ds;
 }
 
-const ID3D11GeometryShader* cShaderProgramD3D11::GetGeometryShader() const {
+const ID3D11GeometryShader* cShaderProgramD3D11::GetGS() const {
 	return gs;
 }
 
-const ID3D11PixelShader* cShaderProgramD3D11::GetPixelShader() const {
+const ID3D11PixelShader* cShaderProgramD3D11::GetPS() const {
 	return ps;
+}
+
+size_t cShaderProgramD3D11::GetVSByteCodeSize() const {
+	return vsByteCodeSize;
+}
+
+const void* const cShaderProgramD3D11::GetVSByteCode() const {
+	return vsByteCode;
 }
