@@ -78,7 +78,7 @@ public:
 		return v;
 	}
 	// Size of vertex structure
-	inline size_t Size() {
+	inline size_t Size() const {
 		VertexAttrib attrib;
 		size_t size = 0;
 		for (int i = 0; i < 8; i++) {

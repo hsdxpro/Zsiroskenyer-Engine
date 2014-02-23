@@ -18,6 +18,7 @@
 #include <unordered_map>
 #include <fstream>
 #include <memory>
+#include <memory>
 // Ugly create shader last_write_time..
 //#include <boost/filesystem.hpp>
 
@@ -56,6 +57,8 @@ D3D11_COMPARISON_FUNC ConvertToNativeCompFunc(eComparisonFunc compFunc);
 D3D11_STENCIL_OP ConvertToNativeStencilOp(eStencilOp stencilOp);
 D3D11_DEPTH_STENCIL_DESC ConvertToNativeDepthStencil(const tDepthStencilDesc& depthStencil);
 D3D11_SAMPLER_DESC ConvertToNativeSampler(const tSamplerDesc& sDesc);
+
+std::vector<D3D11_INPUT_ELEMENT_DESC> ConvertToNativeVertexFormat(cVertexFormat format);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constructor, Destructor
@@ -1308,7 +1311,7 @@ void cGraphicsApiD3D11::SetShaderProgram(IShaderProgram* shProg) {
 	activeShaderProg = (cShaderProgramD3D11*)shProg;
 	const cShaderProgramD3D11* shProgD3D11 = (cShaderProgramD3D11*)shProg;
 	//d3dcon->IASetInputLayout(const_cast<ID3D11InputLayout*>(shProgD3D11->GetInputLayout()));
-#pragma warning("bullshit INPUTLAYOUT SET AT ANOTHER PLACE NEEEEEEEEED")
+#pragma message("bullshit INPUTLAYOUT SET AT ANOTHER PLACE NEEEEEEEEED")
 	d3dcon->VSSetShader(const_cast<ID3D11VertexShader*>(shProgD3D11->GetVS()), 0, 0);
 	d3dcon->PSSetShader(const_cast<ID3D11PixelShader*>(shProgD3D11->GetPS()), 0, 0);
 }
@@ -1583,17 +1586,18 @@ ID3D11InputLayout* cGraphicsApiD3D11::GetInputLayout(cShaderProgramD3D11* shader
 	if (it == inputLayoutStore.end()) {
 		// create new input layout
 		ID3D11InputLayout* layout = nullptr;
-		//auto vertexAttribs = bufferFormat.Decode();
+
+		auto vertexAttribs = bufferFormat.Decode();
 		
-		//D3D11_INPUT_ELEMENT_DESC layoutDesc;
-		//d3ddev->CreateInputLayout(&layoutDesc, vertexAttribs.size(), shader->GetByteCode(), shader->GetByteCodeSize(), &layout);
-		//static_assert(false, "FINISH THIS CODE");
+		D3D11_INPUT_ELEMENT_DESC layoutDesc;
+		d3ddev->CreateInputLayout(&layoutDesc, vertexAttribs.size(), shader->GetVSByteCode(), shader->GetVSByteCodeSize(), &layout);
 
 		// add input layout to stuff
 		if (layout == nullptr) {
 			return nullptr;
 		}
 		inputLayoutStore.insert(InputLayoutMapT::value_type(key, layout));
+		return layout;
 	}
 	else {
 		return it->second;
@@ -1605,6 +1609,63 @@ ID3D11InputLayout* cGraphicsApiD3D11::GetInputLayout(cShaderProgramD3D11* shader
 // Convert stuff to native format
 #include <unordered_map>
 
+// vertex decl
+std::vector<D3D11_INPUT_ELEMENT_DESC> ConvertToNativeVertexFormat(cVertexFormat format) {
+	auto elems = format.Decode();
+	std::vector<D3D11_INPUT_ELEMENT_DESC> ret;
+
+	unsigned pos = 0, color = 0, normal = 0, tex = 0;
+
+	for (auto& v : elems) {
+		D3D11_INPUT_ELEMENT_DESC desc;
+
+		// semantic and semantic index
+		switch (v.semantic) {
+			case cVertexFormat::POSITION:
+				desc.SemanticName =  "POSITION";
+				desc.SemanticIndex = pos;
+				pos++;
+				break;
+			case cVertexFormat::NORMAL:
+				desc.SemanticName = "NORMAL";
+				desc.SemanticIndex = normal;
+				normal++;
+				break;
+			case cVertexFormat::TEXCOORD:
+				desc.SemanticName = "TEXCOORD";
+				desc.SemanticIndex = tex;
+				tex++;
+				break;
+			// default is color
+			default:
+				desc.SemanticName = "COLOR";
+				desc.SemanticIndex = color;
+				color++;
+				break;
+		}
+
+		desc.InputSlot = 0;
+		desc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+		desc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+		desc.InstanceDataStepRate = 0;
+
+		// format
+		desc.Format = [&]() ->DXGI_FORMAT {
+			return DXGI_FORMAT_R8G8B8A8_SINT;
+			if (v.bitsPerComponent == cVertexFormat::_8_BIT) {
+				
+			}
+#pragma message("faszom majd holnap hajnalban szoftlabon megírom")
+
+		}();
+
+		
+		ret.push_back(desc);
+	}
+	return ret;
+}
+
+// bind
 unsigned ConvertToNativeBind(unsigned flags) {
 	unsigned ret = 0;
 	ret |= ((flags&(unsigned)eBind::CONSTANT_BUFFER) != 0 ? D3D11_BIND_CONSTANT_BUFFER : 0);
@@ -1617,6 +1678,7 @@ unsigned ConvertToNativeBind(unsigned flags) {
 	return ret;
 }
 
+// usage
 D3D11_USAGE ConvertToNativeUsage(eUsage usage) {
 	static const std::unordered_map<eUsage, D3D11_USAGE> lookupTable = {
 		{ eUsage::DEFAULT, D3D11_USAGE_DEFAULT },
@@ -1629,6 +1691,7 @@ D3D11_USAGE ConvertToNativeUsage(eUsage usage) {
 	return it->second;
 }
 
+// format
 DXGI_FORMAT ConvertToNativeFormat(eFormat fmt) {
 	static const std::unordered_map<eFormat, DXGI_FORMAT> lookupTable = {
 		{ eFormat::UNKNOWN, DXGI_FORMAT_UNKNOWN },
