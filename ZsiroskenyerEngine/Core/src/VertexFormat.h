@@ -6,6 +6,9 @@
 //		TODO
 ////////////////////////////////////////////////////////////////////////////////
 
+#pragma once
+
+
 #include <cstdint>
 #include <stdexcept>
 #include <vector>
@@ -28,9 +31,9 @@ public:
 		TEXCOORD = 3,
 	};
 	enum eBits : uint32_t {
-		_8_BIT	= 1,
-		_16_BIT	= 2,
-		_32_BIT	= 3,
+		_8_BIT = 1,
+		_16_BIT = 2,
+		_32_BIT = 3,
 	};
 
 	// Vertex attrib struct, uncompressed
@@ -74,6 +77,19 @@ public:
 			v.push_back(attrib);
 		}
 		return v;
+	}
+	// Size of vertex structure
+	inline size_t Size() {
+		VertexAttrib attrib;
+		size_t size = 0;
+		for (int i = 0; i < 8; i++) {
+			uint8_t aUint = uint8_t(data >> (i * 8));
+			if (aUint == 0)
+				break;
+			DecodeAttrib(aUint, attrib.type, attrib.semantic, attrib.nComponents, attrib.bitsPerComponent);
+			size += (1 << (size_t(attrib.bitsPerComponent) - 1))*attrib.nComponents;
+		}
+		return size;
 	}
 
 	// Raw data
