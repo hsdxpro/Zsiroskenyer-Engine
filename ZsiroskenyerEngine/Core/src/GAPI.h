@@ -22,3 +22,5 @@
 #include "IShaderProgram.h"
 
 #include "PipelineState.h"
+
+#include "VertexFormat.h"

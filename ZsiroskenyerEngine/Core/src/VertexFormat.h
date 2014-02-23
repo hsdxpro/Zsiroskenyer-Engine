@@ -13,6 +13,8 @@
 
 class VertexFormat {
 public:
+	VertexFormat() : data(0) {}
+
 	// Enumerations
 	enum eType : uint32_t {
 		INT = 1,
@@ -55,7 +57,7 @@ public:
 				data |= (aUint << (8 * i));
 			}
 		}
-		catch (std::exception& e) {
+		catch (std::exception&) {
 			data = 0;
 			throw;
 		}
@@ -65,7 +67,7 @@ public:
 		VertexAttrib attrib;
 		std::vector<VertexAttrib> v;
 		for (int i = 0; i < 8; i++) {
-			uint8_t aUint = data >> (i * 8);
+			uint8_t aUint = uint8_t(data >> (i * 8));
 			if (aUint == 0)
 				break;
 			DecodeAttrib(aUint, attrib.type, attrib.semantic, attrib.nComponents, attrib.bitsPerComponent);

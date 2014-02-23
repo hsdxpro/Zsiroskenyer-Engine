@@ -148,4 +148,15 @@ protected:
 	std::vector<tDepthStencilInfo> depthStencilStates;
 	std::vector<tBlendInfo> blendStates;
 	std::vector<tSamplerInfo> samplerStates;
+
+	// input layout lazy creation
+	struct ILHasher {
+		size_t operator()(std::pair<VertexFormat, VertexFormat> obj){
+			return std::hash<int64_t>()(obj.first.Raw() ^ obj.second.Raw());
+		}
+	};
+	using InputLayoutMapT = std::unordered_map<std::pair<VertexFormat, VertexFormat>, ID3D11InputLayout*, ILHasher>;
+	InputLayoutMapT inputLayoutStore;
+
+	ID3D11InputLayout* GetInputLayout(cShaderProgramD3D11* shader, VertexFormat bufferFormat);
 };

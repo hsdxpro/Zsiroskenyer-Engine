@@ -1559,6 +1559,7 @@ eGapiResult cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
 	return r;
 }
 
+
 ////////////////////////////////////////////////////////////////////////////////
 // Misc
 const wchar_t* cGraphicsApiD3D11::GetLastErrorMsg() const {
@@ -1570,6 +1571,33 @@ const wchar_t* cGraphicsApiD3D11::GetLastErrorMsg() const {
 // Internal helper functions
 
 
+////////////////////////////////////////
+// Create input layouts
+ID3D11InputLayout* cGraphicsApiD3D11::GetInputLayout(cShaderProgramD3D11* shader, VertexFormat bufferFormat) {
+	VertexFormat shaderFormat;
+	static_assert(false, "ADD VERTEX FORMAT AND BYTECODE TO SHADERPROGRAM");
+
+	std::pair<VertexFormat, VertexFormat> key(shaderFormat, bufferFormat);
+
+	auto it = inputLayoutStore.find(key);
+	if (it == inputLayoutStore.end()) {
+		// create new input layout
+		ID3D11InputLayout* layout = nullptr;
+		static_assert(false, "FINISH THIS CODE");
+
+		// add input layout to stuff
+		if (layout == nullptr) {
+			return nullptr;
+		}
+		inputLayoutStore.insert(InputLayoutMapT::value_type(key, layout));
+	}
+	else {
+		return it->second;
+	}
+}
+
+
+////////////////////////////////////////
 // Convert stuff to native format
 #include <unordered_map>
 

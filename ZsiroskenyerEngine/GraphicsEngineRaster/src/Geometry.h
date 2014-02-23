@@ -20,11 +20,9 @@ public:
 		size_t id, indexOffset, indexCount;
 	};
 
-	cGeometry(IVertexBuffer *VB, IIndexBuffer *IB, std::vector<tMatGroup>* mg = NULL);
+	cGeometry(IVertexBuffer *VB, IIndexBuffer *IB, std::vector<tMatGroup>* mg);
 	~cGeometry();
-
-	void SetMatGroups(std::vector<tMatGroup>& g);
-
+	
 	const IIndexBuffer* GetIndexBuffer() const;
 	const IVertexBuffer* GetVertexBuffer() const;
 	const std::vector<tMatGroup>& GetMatGroups() const;
