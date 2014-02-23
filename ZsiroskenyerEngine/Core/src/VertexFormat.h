@@ -80,6 +80,15 @@ public:
 	inline uint64_t Raw() {
 		return data;
 	}
+
+	// Compare
+	inline bool operator==(const cVertexFormat& other) const {
+		return other.data == data;
+	}
+	inline bool operator!=(const cVertexFormat& other) const {
+		return other.data != data;
+	}
+
 private:
 	// Encode/Decode to/from 8 bits
 	inline void DecodeAttrib(uint8_t attrib, eType& type, eSemantic& semantic, uint32_t& nComponents, eBits& bitsPerComponent) {
