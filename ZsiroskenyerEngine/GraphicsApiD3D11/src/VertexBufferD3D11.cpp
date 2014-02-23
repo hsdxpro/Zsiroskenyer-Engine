@@ -38,3 +38,11 @@ eUsage cVertexBufferD3D11::GetUsage() const {
 ID3D11Buffer* cVertexBufferD3D11::GetBufferPointer() const {
 	return buffer;
 }
+
+
+void cVertexBufferD3D11::SetFormat(cVertexFormat format) {
+	vertexFormat = format;
+}
+cVertexFormat cVertexBufferD3D11::GetFormat() const {
+	return vertexFormat;
+}
