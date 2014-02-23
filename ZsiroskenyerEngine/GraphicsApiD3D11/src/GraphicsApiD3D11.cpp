@@ -1573,11 +1573,11 @@ const wchar_t* cGraphicsApiD3D11::GetLastErrorMsg() const {
 
 ////////////////////////////////////////
 // Create input layouts
-ID3D11InputLayout* cGraphicsApiD3D11::GetInputLayout(cShaderProgramD3D11* shader, VertexFormat bufferFormat) {
-	VertexFormat shaderFormat;
+ID3D11InputLayout* cGraphicsApiD3D11::GetInputLayout(cShaderProgramD3D11* shader, cVertexFormat bufferFormat) {
+	cVertexFormat shaderFormat;
 	static_assert(false, "ADD VERTEX FORMAT AND BYTECODE TO SHADERPROGRAM");
 
-	std::pair<VertexFormat, VertexFormat> key(shaderFormat, bufferFormat);
+	std::pair<cVertexFormat, cVertexFormat> key(shaderFormat, bufferFormat);
 
 	auto it = inputLayoutStore.find(key);
 	if (it == inputLayoutStore.end()) {

@@ -151,12 +151,12 @@ protected:
 
 	// input layout lazy creation
 	struct ILHasher {
-		size_t operator()(std::pair<VertexFormat, VertexFormat> obj){
+		size_t operator()(std::pair<cVertexFormat, cVertexFormat> obj){
 			return std::hash<int64_t>()(obj.first.Raw() ^ obj.second.Raw());
 		}
 	};
-	using InputLayoutMapT = std::unordered_map<std::pair<VertexFormat, VertexFormat>, ID3D11InputLayout*, ILHasher>;
+	using InputLayoutMapT = std::unordered_map<std::pair<cVertexFormat, cVertexFormat>, ID3D11InputLayout*, ILHasher>;
 	InputLayoutMapT inputLayoutStore;
 
-	ID3D11InputLayout* GetInputLayout(cShaderProgramD3D11* shader, VertexFormat bufferFormat);
+	ID3D11InputLayout* GetInputLayout(cShaderProgramD3D11* shader, cVertexFormat bufferFormat);
 };

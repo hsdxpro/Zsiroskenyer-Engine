@@ -11,9 +11,9 @@
 #include <vector>
 
 
-class VertexFormat {
+class cVertexFormat {
 public:
-	VertexFormat() : data(0) {}
+	cVertexFormat() : data(0) {}
 
 	// Enumerations
 	enum eType : uint32_t {

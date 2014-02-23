@@ -29,7 +29,7 @@ public:
 	};
 
 	cShaderProgramD3D11(cGraphicsApiD3D11* parent,
-		size_t vertexFormatSize, 
+		size_t cVertexFormatSize, 
 		ID3D11InputLayout* inputLayout = NULL,
 		ID3D11VertexShader* vs = NULL, ID3D11HullShader* hs = NULL,
 		ID3D11DomainShader* ds = NULL, ID3D11GeometryShader* gs = NULL, 
@@ -56,7 +56,7 @@ public:
 	const ID3D11PixelShader* GetPixelShader() const;
 	const ID3D11InputLayout* GetInputLayout() const;
 
-	uint16_t GetVertexFormatSize() const override;
+	uint16_t GetcVertexFormatSize() const override;
 	
 private:
 	// parent
@@ -64,7 +64,7 @@ private:
 
 	// input layout
 	ID3D11InputLayout* inputLayout;
-	uint16_t vertexFormatSize;
+	uint16_t cVertexFormatSize;
 
 	// In Sequence of the Dx pipeline :) 
 	ID3D11VertexShader*		vs;
