@@ -18,16 +18,21 @@ public:
 	~cVertexBufferD3D11();
 	void Release() override;
 
-	size_t GetSize() const override;
-	eUsage GetUsage() const override;
+	void SetFormat(const cVertexFormat& format) override;
+
+	const cVertexFormat& GetFormat() const override;
+	size_t		  GetStride() const override;
+	eUsage		  GetUsage() const override;
+	size_t		  GetSize() const override;
+
 	ID3D11Buffer* GetBufferPointer() const;
 
-	void SetFormat(cVertexFormat format) override;
-	cVertexFormat GetFormat() const override;
 public:
 	ID3D11Buffer* const buffer;
-private:
-	cVertexFormat vertexFormat;
+
+protected:
+	cVertexFormat format;
 	size_t size;
+	size_t stride;
 	eUsage usage;
 };

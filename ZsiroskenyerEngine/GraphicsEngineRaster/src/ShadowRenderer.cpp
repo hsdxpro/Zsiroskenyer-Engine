@@ -80,7 +80,7 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 							"Amig nem fixeljuk, addig sehova... ki ne kommenteld ezt, xD Jólvan nem kommentelem :)!"							
 						);
 						*/
-						gApi->SetVertexBuffer(instgrp->geom->GetVertexBuffer(), 0);
+						gApi->SetVertexBuffer(instgrp->geom->GetVertexBuffer());
 						gApi->SetIndexBuffer(instgrp->geom->GetIndexBuffer());
 
 						// render objects

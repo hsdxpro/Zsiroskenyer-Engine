@@ -5,6 +5,7 @@
 //	Limitations:
 //		TODO
 ////////////////////////////////////////////////////////////////////////////////
+#pragma once
 
 #pragma once
 
@@ -66,7 +67,7 @@ public:
 		}
 	}
 	// Decode vertex decl to array
-	inline std::vector<VertexAttrib> Decode() {
+	inline std::vector<VertexAttrib> Decode() const {
 		VertexAttrib attrib;
 		std::vector<VertexAttrib> v;
 		for (int i = 0; i < 8; i++) {
@@ -107,7 +108,7 @@ public:
 
 private:
 	// Encode/Decode to/from 8 bits
-	inline void DecodeAttrib(uint8_t attrib, eType& type, eSemantic& semantic, uint32_t& nComponents, eBits& bitsPerComponent) {
+	inline void DecodeAttrib(uint8_t attrib, eType& type, eSemantic& semantic, uint32_t& nComponents, eBits& bitsPerComponent) const {
 		type = eType((attrib >> 6) & 3);
 		semantic = eSemantic((attrib >> 4) & 3);
 		nComponents = ((attrib >> 2) & 3) + 1;
