@@ -14,6 +14,5 @@
 
 class IShaderProgram {
 public:
-	virtual uint16_t GetcVertexFormatSize() const = 0;
 	virtual void Release() = 0;
 };

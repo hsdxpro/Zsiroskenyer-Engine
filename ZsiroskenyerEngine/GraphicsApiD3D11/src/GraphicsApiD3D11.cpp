@@ -1035,7 +1035,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		SAFE_RELEASE(blobs[i]);
 
 	// Create shader program
-	cShaderProgramD3D11* shProg = new cShaderProgramD3D11(this, alignedByteOffset, inputLayout, vs, hs, ds, gs, ps);
+	cShaderProgramD3D11* shProg = new cShaderProgramD3D11(vs, hs, ds, gs, ps);
 
 	// Set look up maps
 	shProg->SetTextureSlotsVS(shaderTextureSlots[VS]);
@@ -1307,7 +1307,8 @@ void cGraphicsApiD3D11::SetShaderProgram(IShaderProgram* shProg) {
 
 	activeShaderProg = (cShaderProgramD3D11*)shProg;
 	const cShaderProgramD3D11* shProgD3D11 = (cShaderProgramD3D11*)shProg;
-	d3dcon->IASetInputLayout(const_cast<ID3D11InputLayout*>(shProgD3D11->GetInputLayout()));
+	//d3dcon->IASetInputLayout(const_cast<ID3D11InputLayout*>(shProgD3D11->GetInputLayout()));
+#pragma warning("bullshit INPUTLAYOUT SET AT ANOTHER PLACE NEEEEEEEEED")
 	d3dcon->VSSetShader(const_cast<ID3D11VertexShader*>(shProgD3D11->GetVertexShader()), 0, 0);
 	d3dcon->PSSetShader(const_cast<ID3D11PixelShader*>(shProgD3D11->GetPixelShader()), 0, 0);
 }
@@ -1575,7 +1576,6 @@ const wchar_t* cGraphicsApiD3D11::GetLastErrorMsg() const {
 // Create input layouts
 ID3D11InputLayout* cGraphicsApiD3D11::GetInputLayout(cShaderProgramD3D11* shader, cVertexFormat bufferFormat) {
 	cVertexFormat shaderFormat;
-	static_assert(false, "ADD VERTEX FORMAT AND BYTECODE TO SHADERPROGRAM");
 
 	std::pair<cVertexFormat, cVertexFormat> key(shaderFormat, bufferFormat);
 
@@ -1583,7 +1583,7 @@ ID3D11InputLayout* cGraphicsApiD3D11::GetInputLayout(cShaderProgramD3D11* shader
 	if (it == inputLayoutStore.end()) {
 		// create new input layout
 		ID3D11InputLayout* layout = nullptr;
-		static_assert(false, "FINISH THIS CODE");
+		//static_assert(false, "FINISH THIS CODE");
 
 		// add input layout to stuff
 		if (layout == nullptr) {

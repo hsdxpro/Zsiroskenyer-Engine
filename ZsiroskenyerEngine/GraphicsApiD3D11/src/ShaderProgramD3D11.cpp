@@ -10,14 +10,13 @@
 
 #undef max
 
-cShaderProgramD3D11::cShaderProgramD3D11(cGraphicsApiD3D11* parent,
-	size_t cVertexFormatSize,
-	ID3D11InputLayout* inputLayout /*= NULL*/,
-	ID3D11VertexShader* vs /*= NULL*/,
-	ID3D11HullShader* hs /*= NULL*/, ID3D11DomainShader* ds /*= NULL*/,
-	ID3D11GeometryShader* gs /*= NULL*/,
-	ID3D11PixelShader* ps /*= NULL*/)
-	: parent(parent), cVertexFormatSize(cVertexFormatSize), vs(vs), hs(hs), ds(ds), gs(gs), ps(ps), inputLayout(inputLayout) 
+cShaderProgramD3D11::cShaderProgramD3D11(	
+		ID3D11VertexShader*		vs /*= NULL*/,
+		ID3D11HullShader*		hs /*= NULL*/, 
+		ID3D11DomainShader*		ds /*= NULL*/,
+		ID3D11GeometryShader*	gs /*= NULL*/,
+		ID3D11PixelShader*		ps /*= NULL*/)
+:vs(vs), hs(hs), ds(ds), gs(gs), ps(ps)
 {
 }
 
@@ -85,12 +84,4 @@ const ID3D11GeometryShader* cShaderProgramD3D11::GetGeometryShader() const {
 
 const ID3D11PixelShader* cShaderProgramD3D11::GetPixelShader() const {
 	return ps;
-}
-
-const ID3D11InputLayout* cShaderProgramD3D11::GetInputLayout() const {
-	return inputLayout;
-}
-
-uint16_t cShaderProgramD3D11::GetcVertexFormatSize() const {
-	return cVertexFormatSize;
 }

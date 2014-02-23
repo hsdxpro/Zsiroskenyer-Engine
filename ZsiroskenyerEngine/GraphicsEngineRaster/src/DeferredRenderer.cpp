@@ -307,7 +307,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		// Set Geometry
 		const IIndexBuffer* ib = (*group->geom).GetIndexBuffer();
 		gApi->SetIndexBuffer(ib);
-		gApi->SetVertexBuffer((*(group->geom)).GetVertexBuffer(), shaderGBuffer->GetcVertexFormatSize());
+#pragma warning("ERROR? VERTEX STRIDE FAIL")
+		gApi->SetVertexBuffer((*(group->geom)).GetVertexBuffer(), 999999999999999999);
 		
 		// Foreach: Entity per-poly material group
 		for (auto& matGroup : geom.GetMatGroups()) {

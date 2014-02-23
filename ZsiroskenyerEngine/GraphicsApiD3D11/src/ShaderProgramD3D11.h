@@ -28,9 +28,7 @@ public:
 		tSamplerInfo(uint16_t gApiSamplerIdx, uint16_t slotIdx) :gApiSamplerIdx(gApiSamplerIdx), slotIdx(slotIdx){}
 	};
 
-	cShaderProgramD3D11(cGraphicsApiD3D11* parent,
-		size_t cVertexFormatSize, 
-		ID3D11InputLayout* inputLayout = NULL,
+	cShaderProgramD3D11(
 		ID3D11VertexShader* vs = NULL, ID3D11HullShader* hs = NULL,
 		ID3D11DomainShader* ds = NULL, ID3D11GeometryShader* gs = NULL, 
 		ID3D11PixelShader* ps = NULL);
@@ -54,18 +52,8 @@ public:
 	const ID3D11DomainShader* GetDomainShader() const;
 	const ID3D11GeometryShader* GetGeometryShader() const;
 	const ID3D11PixelShader* GetPixelShader() const;
-	const ID3D11InputLayout* GetInputLayout() const;
 
-	uint16_t GetcVertexFormatSize() const override;
-	
-private:
-	// parent
-	cGraphicsApiD3D11* parent;
-
-	// input layout
-	ID3D11InputLayout* inputLayout;
-	uint16_t cVertexFormatSize;
-
+protected:
 	// In Sequence of the Dx pipeline :) 
 	ID3D11VertexShader*		vs;
 	ID3D11HullShader*		hs;
