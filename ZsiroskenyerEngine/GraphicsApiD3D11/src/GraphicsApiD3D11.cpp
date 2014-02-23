@@ -1245,18 +1245,18 @@ void cGraphicsApiD3D11::DrawInstancedIndexed(size_t nIndicesPerInstance, size_t 
 //	Pipeline state
 
 // Set indexed poly-mesh buffers
-void cGraphicsApiD3D11::SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) {
-	ASSERT(vertexBuffer != NULL);
+void cGraphicsApiD3D11::SetVertexBuffer(const IVertexBuffer* vb) {
+	ASSERT(vb != NULL);
 
-	const UINT strides = vertexStride;
+	const UINT strides = vb->GetStride();
 	const UINT offset = 0;
-	ID3D11Buffer* vertices = ((cVertexBufferD3D11*)vertexBuffer)->GetBufferPointer();
+	ID3D11Buffer* vertices = ((cVertexBufferD3D11*)vb)->GetBufferPointer();
 	d3dcon->IASetVertexBuffers(0, 1, &vertices, &strides, &offset);
 }
-void cGraphicsApiD3D11::SetIndexBuffer(const IIndexBuffer* indexBuffer) {
-	ASSERT(indexBuffer != NULL);
+void cGraphicsApiD3D11::SetIndexBuffer(const IIndexBuffer* ib) {
+	ASSERT(ib != NULL);
 
-	d3dcon->IASetIndexBuffer(((cIndexBufferD3D11*)indexBuffer)->GetBufferPointer(), DXGI_FORMAT_R32_UINT, 0);
+	d3dcon->IASetIndexBuffer(((cIndexBufferD3D11*)ib)->GetBufferPointer(), DXGI_FORMAT_R32_UINT, 0);
 }
 
 // Set instance data for instanced rendering

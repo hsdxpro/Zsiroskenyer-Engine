@@ -15,7 +15,7 @@ void cRenderer::RenderLines(const Matrix44& viewProj, const Vec3* lines, size_t 
 	// Create, set VertexBuffer for lines
 	IVertexBuffer* linesBuffer;
 	gApi->CreateVertexBuffer(&linesBuffer, nLines * 2 * sizeof(Vec3), eUsage::IMMUTABLE, (void*)lines);
-	gApi->SetVertexBuffer(linesBuffer, sizeof(Vec3));
+	gApi->SetVertexBuffer(linesBuffer);
 
 	// Set camera constants
 	gApi->SetVSConstantBuffer(&viewProj, sizeof(Matrix44), 0);

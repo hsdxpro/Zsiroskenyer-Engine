@@ -303,12 +303,12 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	for (auto& group : parent.sceneManager->GetInstanceGroups()) {
 		cGeometry& geom = *group->geom.get();
 		cMaterial& mtl = *group->mtl.get();
-
+		
 		// Set Geometry
-		const IIndexBuffer* ib = (*group->geom).GetIndexBuffer();
-		gApi->SetIndexBuffer(ib);
-#pragma warning("ERROR? VERTEX STRIDE FAIL")
-		gApi->SetVertexBuffer((*(group->geom)).GetVertexBuffer(), 999999999999999999);
+		//const IIndexBuffer* ib = geom.GetIndexBuffer();
+		gApi->SetIndexBuffer(geom.GetIndexBuffer());
+
+		gApi->SetVertexBuffer(geom.GetVertexBuffer());
 		
 		// Foreach: Entity per-poly material group
 		for (auto& matGroup : geom.GetMatGroups()) {
@@ -628,7 +628,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetTexture(L"gBuffer2", gBuffer[2]);
 	gApi->SetTexture(L"depthBuffer", depthBufferCopy);
 
-	gApi->SetVertexBuffer(vbPoint, 4 * 2 * sizeof(float));
+	gApi->SetVertexBuffer(vbPoint);
 	gApi->SetIndexBuffer(ibPoint);
 
 	for (auto light : pointLights) {
@@ -656,7 +656,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetTexture(L"gBuffer2", gBuffer[2]);
 	gApi->SetTexture(L"depthBuffer", depthBufferCopy);
 
-	gApi->SetVertexBuffer(vbSpot, 4 * 2 * sizeof(float));
+	gApi->SetVertexBuffer(vbSpot);
 	gApi->SetIndexBuffer(ibSpot);
 
 	for (auto light : spotLights) {

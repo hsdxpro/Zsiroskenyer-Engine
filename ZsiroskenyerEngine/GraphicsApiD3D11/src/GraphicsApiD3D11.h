@@ -72,8 +72,8 @@ public:
 	eGapiResult SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget = NULL) override;
 	eGapiResult SetBackBufferSize(unsigned width, unsigned height) override;
 
-	void SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) override;
-	void SetIndexBuffer(const IIndexBuffer* indexBuffer) override;
+	void SetVertexBuffer(const IVertexBuffer* vb) override;
+	void SetIndexBuffer(const IIndexBuffer* vb) override;
 	void SetInstanceData(/*whatever*/) override;
 	eGapiResult SetTexture(const ITexture2D* t, size_t slotIdx) override;
 	eGapiResult SetTexture(const wchar_t* varName, const ITexture2D* t) override;

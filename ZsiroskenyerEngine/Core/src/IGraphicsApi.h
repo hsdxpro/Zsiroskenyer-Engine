@@ -61,8 +61,8 @@ public:
 	virtual eGapiResult SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget = NULL) = 0;
 	virtual eGapiResult SetBackBufferSize(unsigned width, unsigned height) = 0;
 
-	virtual void SetVertexBuffer(const IVertexBuffer* vertexBuffer, size_t vertexStride) = 0;
-	virtual void SetIndexBuffer(const IIndexBuffer* indexBuffer) = 0;
+	virtual void SetVertexBuffer(const IVertexBuffer* vb) = 0;
+	virtual void SetIndexBuffer(const IIndexBuffer* ib) = 0;
 	virtual void SetInstanceData(/*whatever*/) = 0;
 	virtual eGapiResult SetVSConstantBuffer(const void* data, size_t size, size_t slotIdx) = 0;
 	virtual eGapiResult SetPSConstantBuffer(const void* data, size_t size, size_t slotIdx) = 0;
