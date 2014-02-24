@@ -21,7 +21,7 @@ sampler2D normalTex = {
 struct VS_IN {
 	float3 posL 	: POSITION;
 	float3 normalL 	: NORMAL;
-	float3 tangentL : TANGENT;
+	float3 tangentL : COLOR0;
 	float2 tex0 	: TEXCOORD0;
 };
 

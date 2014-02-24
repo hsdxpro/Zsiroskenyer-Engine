@@ -64,7 +64,14 @@ std::vector<D3D11_INPUT_ELEMENT_DESC> ConvertToNativeVertexFormat(cVertexFormat 
 // Constructor, Destructor
 
 cGraphicsApiD3D11::cGraphicsApiD3D11()
-: d3ddev(NULL), d3dcon(NULL), d3dsc(NULL), defaultRenderTarget(NULL), activeShaderProg(NULL) {
+: 
+d3ddev(NULL),
+d3dcon(NULL),
+d3dsc(NULL),
+defaultRenderTarget(NULL),
+activeShaderProg(NULL),
+activeVertexBuffer(NULL)
+{
 	// Create d3ddevice, d3dcontext
 	auto r = CreateDevice();
 	if (r != eGapiResult::OK) {
@@ -1608,6 +1615,10 @@ ID3D11InputLayout* cGraphicsApiD3D11::GetInputLayout(cShaderProgramD3D11* shader
 
 // Set said input layout
 void cGraphicsApiD3D11::AutoSetInputLayout(cShaderProgramD3D11* shader, cVertexBufferD3D11* buffer) {
+	if (buffer == nullptr || shader == nullptr) {
+		return;
+	}
+
 	auto bufferFormat = buffer->GetFormat();
 
 	auto inputLayout = GetInputLayout(shader, bufferFormat);
