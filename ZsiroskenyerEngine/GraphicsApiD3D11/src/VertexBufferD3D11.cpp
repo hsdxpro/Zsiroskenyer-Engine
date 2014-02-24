@@ -9,8 +9,9 @@
 #include "VertexBufferD3D11.h"
 #include <d3d11.h>
 
-cVertexBufferD3D11::cVertexBufferD3D11(ID3D11Buffer* buffer, size_t size, eUsage usage)
-:buffer(buffer), usage(usage), size(size) {		
+cVertexBufferD3D11::cVertexBufferD3D11(ID3D11Buffer* buffer, eUsage usage, cVertexFormat f, size_t size)
+:buffer(buffer), usage(usage), size(size), stride(0) {
+	SetFormat(f);
 }
 
 cVertexBufferD3D11::~cVertexBufferD3D11() {
@@ -21,13 +22,12 @@ void cVertexBufferD3D11::Release() {
 	delete this;
 }
 
-void cVertexBufferD3D11::SetFormat(const cVertexFormat& f) {
+void cVertexBufferD3D11::SetFormat(cVertexFormat f) {
 	format = f;
-
 	stride = f.Size();
 }
 
-const cVertexFormat& cVertexBufferD3D11::GetFormat() const {
+cVertexFormat cVertexBufferD3D11::GetFormat() const {
 	return format;
 }
 

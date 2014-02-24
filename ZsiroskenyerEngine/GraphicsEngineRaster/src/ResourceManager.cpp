@@ -51,7 +51,7 @@ cGeometryRef cResourceManager::GetGeometry(const zsString& filePath) {
 
 		// create vb
 		IVertexBuffer *VB;
-		gApi->CreateVertexBuffer(&VB, d.nVertices * d.vertexStride, eUsage::IMMUTABLE, d.vertices);
+		gApi->CreateVertexBuffer(&VB, eUsage::IMMUTABLE, d.vertexFormat, d.nVertices * d.vertexFormat.Size(), d.vertices);
 		// vertex format gányolmány
 		cVertexFormat::VertexAttrib attr;
 		std::vector<cVertexFormat::VertexAttrib> vertexDecl;
@@ -84,7 +84,7 @@ cGeometryRef cResourceManager::GetGeometry(const zsString& filePath) {
 
 		// create ib
 		IIndexBuffer *IB;
-		gApi->CreateIndexBuffer(&IB, d.nIndices * d.indexStride, eUsage::IMMUTABLE, d.indices);
+		gApi->CreateIndexBuffer(&IB, eUsage::IMMUTABLE, d.nIndices * d.indexStride, d.indices);
 
 		// create mtl groups
 		std::vector<cGeometry::tMatGroup> matGroup;

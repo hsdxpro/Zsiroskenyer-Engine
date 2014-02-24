@@ -114,7 +114,7 @@ IPhysicsEntity* cPhysicsEngineBullet::CreateRigidEntity(const zsString& physicsG
 
 			btVector3* vertices = new btVector3[d.nVertices];
 			for (size_t i = 0; i < d.nVertices; i++) {
-				memcpy(vertices[i], (unsigned char*)d.vertices + i * d.vertexStride, sizeof(Vec3));
+				memcpy(vertices[i], (unsigned char*)d.vertices + i * d.vertexFormat.Size(), sizeof(Vec3));
 			}
 
 			//Bullet Tároló feltöltése, általunk kigyüjtött adatokkal
@@ -126,7 +126,7 @@ IPhysicsEntity* cPhysicsEngineBullet::CreateRigidEntity(const zsString& physicsG
 			colShape = new btBvhTriangleMeshShape(VBIB, true);
 			
 		} else { // Dynamic object
-			colShape = new btConvexHullShape((btScalar*)d.vertices, d.nVertices, d.vertexStride);
+			colShape = new btConvexHullShape((btScalar*)d.vertices, d.nVertices, d.vertexFormat.Size());
 		}
 
 		collisionShapes[physicsGeom] = colShape;
@@ -167,7 +167,7 @@ IPhysicsEntity* cPhysicsEngineBullet::CreateSoftEntity(const zsString& physicsGe
 
 	//Vec3* vertices = new Vec3[d.nVertices];
 	for (size_t i = 0; i < d.nVertices; i++)
-		memcpy(&vertices[i * 3], (unsigned char*)d.vertices + i * d.vertexStride, sizeof(btScalar) * 3);
+		memcpy(&vertices[i * 3], (unsigned char*)d.vertices + i * d.vertexFormat.Size(), sizeof(btScalar) * 3);
 	
 	// Create soft body from geometry
 	btSoftBody* body = btSoftBodyHelpers::CreateFromTriMesh(softBodyWorldInfo, vertices, &indices[0][0], d.nIndices / 3);

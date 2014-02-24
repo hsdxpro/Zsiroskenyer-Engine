@@ -343,11 +343,21 @@ cGeometry* _cGeometryBuilder::Create() {
 		std::vector<tMatGroup> mg;
 
 		eGapiResult r;
-		r = gApi->CreateIndexBuffer(&ib, nIndices*sizeof(uint32_t), eUsage::DEFAULT, indices);
+		r = gApi->CreateIndexBuffer(&ib, eUsage::DEFAULT, nIndices * sizeof(uint32_t), indices);
 		if (r!=eGapiResult::OK) {
 			throw std::runtime_error("failed to create index buffer");
 		}
-		r = gApi->CreateVertexBuffer(&vb, nBytesVertices, eUsage::DEFAULT, vertices);
+		cVertexFormat f;
+#pragma warning("PEEEEEEEEEEEEEEETER DO IT DO ITTT NEED FORMATTEEE")
+#pragma warning("PEEEEEEEEEEEEEEETER DO IT DO ITTT NEED FORMATTEEE")
+#pragma warning("PEEEEEEEEEEEEEEETER DO IT DO ITTT NEED FORMATTEEE")
+#pragma warning("PEEEEEEEEEEEEEEETER DO IT DO ITTT NEED FORMATTEEE")
+#pragma warning("PEEEEEEEEEEEEEEETER DO IT DO ITTT NEED FORMATTEEE")
+#pragma warning("PEEEEEEEEEEEEEEETER DO IT DO ITTT NEED FORMATTEEE")
+#pragma warning("PEEEEEEEEEEEEEEETER DO IT DO ITTT NEED FORMATTEEE")
+#pragma warning("PEEEEEEEEEEEEEEETER DO IT DO ITTT NEED FORMATTEEE")
+#pragma warning("PEEEEEEEEEEEEEEETER DO IT DO ITTT NEED FORMATTEEE")
+		r = gApi->CreateVertexBuffer(&vb, eUsage::DEFAULT, f, nBytesVertices, vertices);
 		if (r != eGapiResult::OK) {
 			throw std::runtime_error("failed to create vertex buffer");
 		}

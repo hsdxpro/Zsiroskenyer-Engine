@@ -6,17 +6,19 @@
 
 #include "ShaderProgramD3D11.h"
 #include <d3d11.h>
+#include "..\..\Core\src\VertexFormat.h"
 
 
 cShaderProgramD3D11::cShaderProgramD3D11(
 		void* vsByteCode,
 		size_t vsByteCodeSize,
+		cVertexFormat vsInputFormat,
 		ID3D11VertexShader*		vs /*= NULL*/,
 		ID3D11HullShader*		hs /*= NULL*/, 
 		ID3D11DomainShader*		ds /*= NULL*/,
 		ID3D11GeometryShader*	gs /*= NULL*/,
 		ID3D11PixelShader*		ps /*= NULL*/)
-:vsByteCodeSize(vsByteCodeSize),
+:vsByteCodeSize(vsByteCodeSize), vsInputFormat(vsInputFormat),
  vs(vs), hs(hs), ds(ds), gs(gs), ps(ps)
 {
 	this->vsByteCode = new unsigned char[vsByteCodeSize];
@@ -99,12 +101,6 @@ const void* const cShaderProgramD3D11::GetVSByteCode() const {
 	return vsByteCode;
 }
 
-cVertexFormat cShaderProgramD3D11::GetInputVertexFormat() const {
-#pragma message("RICSI EZT A FOST IMPLEMENTALD PLZ!")
-#pragma message("RICSI EZT A FOST IMPLEMENTALD PLZ!")
-#pragma message("RICSI EZT A FOST IMPLEMENTALD PLZ!")
-#pragma message("RICSI EZT A FOST IMPLEMENTALD PLZ!")
-#pragma message("RICSI EZT A FOST IMPLEMENTALD PLZ!")
-#pragma message("ASSZEM EZ ELEG FELTUNO :DDD")
-	return cVertexFormat();
+cVertexFormat cShaderProgramD3D11::GetVSInputFormat() const {
+	return vsInputFormat;
 }

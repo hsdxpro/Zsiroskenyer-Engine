@@ -22,7 +22,7 @@ cGeometryBuilder::cGeometryBuilder() {
 cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& filePath) {
 	Assimp::Importer importer;
 
-	if(!cFileUtil::isFileExits(filePath)) {
+	if (!cFileUtil::isFileExits(filePath)) {
 		ILog::GetInstance()->MsgBox(L"Can't open file: " + filePath);
 		throw FileNotFoundException();
 	}
@@ -43,30 +43,63 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 
 	// count indices, vertices, matGroups
 	std::vector<tGeometryDesc::tMatGroup> matGroups;
-	for(size_t i = 0; i < nMeshes; i++) {
+	for (size_t i = 0; i < nMeshes; i++) {
 		aiMesh *mesh = meshes[i];
 
 		size_t nMeshIndices = mesh->mNumFaces * 3;
 
 		// Mat group
 		tGeometryDesc::tMatGroup g;
-			g.id = mesh->mMaterialIndex;
-			g.indexOffset = nIndex;
-			g.indexCount = nMeshIndices;
+		g.id = mesh->mMaterialIndex;
+		g.indexOffset = nIndex;
+		g.indexCount = nMeshIndices;
 		matGroups.push_back(g);
 
 		nVertices += mesh->mNumVertices;
 		nIndex += nMeshIndices;
 	}
 
-	// DEFINE VERTEX STRUCTURE HERE.... @TODO REMOVE IT OR I KILL MYSELF
+	// Define Vertex Format ...
+	cVertexFormat vertexFormat;
 	struct baseVertex {
 		Vec3 pos;
 		Vec3 normal;
 		Vec3 tangent;
 		Vec2 tex;
-		bool operator == (const baseVertex& v) {return pos == v.pos && normal == v.normal && tangent == v.tangent && tex == v.tex;}
+		bool operator == (const baseVertex& v) { return pos == v.pos && normal == v.normal && tangent == v.tangent && tex == v.tex; }
 	};
+	std::vector<cVertexFormat::VertexAttrib> attribs;
+
+	cVertexFormat::VertexAttrib a;
+	// POSITION
+		a.bitsPerComponent = cVertexFormat::_32_BIT;
+		a.nComponents = 3;
+		a.semantic = cVertexFormat::POSITION;
+		a.type = cVertexFormat::FLOAT;
+	attribs.push_back(a);
+
+	// NORMAL
+		a.bitsPerComponent = cVertexFormat::_32_BIT;
+		a.nComponents = 3;
+		a.semantic = cVertexFormat::NORMAL;
+		a.type = cVertexFormat::FLOAT;
+	attribs.push_back(a);
+
+	// TANGENT
+		a.bitsPerComponent = cVertexFormat::_32_BIT;
+		a.nComponents = 3;
+		a.semantic = cVertexFormat::TEXCOORD;
+		a.type = cVertexFormat::FLOAT;
+	attribs.push_back(a);
+
+	// TEX0
+		a.bitsPerComponent = cVertexFormat::_32_BIT;
+		a.nComponents = 2;
+		a.semantic = cVertexFormat::TEXCOORD;
+		a.type = cVertexFormat::FLOAT;
+	attribs.push_back(a);
+
+	vertexFormat.Create({ a });
 
 	// Geometry read up
 	baseVertex *vertices= new baseVertex[nVertices];
@@ -128,7 +161,8 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 	tGeometryDesc geomDesc;
 		geomDesc.vertices = vertices;
 		geomDesc.nVertices = nVertices;
-		geomDesc.vertexStride = sizeof(baseVertex);
+		//geomDesc.vertexStride = sizeof(baseVertex); // DEPRECATED !!!!!
+		geomDesc.vertexFormat = vertexFormat;
 
 		//geomDesc.indices = reorderedIndices;
 		geomDesc.indices = indices;

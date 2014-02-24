@@ -454,7 +454,7 @@ void cGraphicsApiD3D11::ApplySamplerStates() {
 //	Manage graphics resources
 
 // Create index and vertex buffes for indexed poly-meshes
-eGapiResult	cGraphicsApiD3D11::CreateVertexBuffer(IVertexBuffer** resource, size_t size, eUsage usage, void* data/*= NULL*/) {
+eGapiResult	cGraphicsApiD3D11::CreateVertexBuffer(IVertexBuffer** resource, eUsage usage, cVertexFormat format, size_t size, void* data/*= NULL*/) {
 	ID3D11Buffer* buffer = NULL;
 
 	D3D11_BUFFER_DESC desc;
@@ -477,7 +477,7 @@ eGapiResult	cGraphicsApiD3D11::CreateVertexBuffer(IVertexBuffer** resource, size
 	HRESULT hr = d3ddev->CreateBuffer(&desc, &resData, &buffer);
 	switch (hr) {
 	case S_OK:
-		*resource = new cVertexBufferD3D11(buffer, desc.ByteWidth, usage);
+		*resource = new cVertexBufferD3D11(buffer, usage, format, desc.ByteWidth);
 		return eGapiResult::OK;
 	case E_OUTOFMEMORY:
 		return eGapiResult::ERROR_OUT_OF_MEMORY;
@@ -486,7 +486,7 @@ eGapiResult	cGraphicsApiD3D11::CreateVertexBuffer(IVertexBuffer** resource, size
 	}
 }
 
-eGapiResult	cGraphicsApiD3D11::CreateIndexBuffer(IIndexBuffer** resource, size_t size, eUsage usage, void* data/*= NULL*/) {
+eGapiResult	cGraphicsApiD3D11::CreateIndexBuffer(IIndexBuffer** resource, eUsage usage, size_t size, void* data/*= NULL*/) {
 	ID3D11Buffer* buffer = NULL;
 
 	D3D11_BUFFER_DESC desc;
@@ -983,11 +983,10 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		iter++;
 	}
 
-	// inputLayout descriptor (vertex Declaration)
-	D3D11_INPUT_ELEMENT_DESC *vertexDecl = new D3D11_INPUT_ELEMENT_DESC[nVertexAttributes];
-	size_t attribIdx = 0;
-	size_t alignedByteOffset = 0;
-
+	// (inputLayout)  Vertex shader input format
+	std::vector<cVertexFormat::VertexAttrib> attribs;
+	cVertexFormat::VertexAttrib tmpAttrib;
+	uint16_t attribIdx = 0;
 	iter = vsInStructLines.begin();
 	while (iter != vsInStructLines.end()) {
 		// not empty line... Parse Vertex Declaration
@@ -999,49 +998,54 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			cStrUtil::GetNumberFromEnd(semanticNames[attribIdx], semanticIndex);
 			cStrUtil::CutNumberFromEnd(semanticNames[attribIdx]);
 
-			// Gather format and size
-			DXGI_FORMAT format;
-			size_t byteSize;
+			if (strcmp(semanticNames[attribIdx], "POSITION") == 0)
+				tmpAttrib.semantic = cVertexFormat::POSITION;
+			else if (strcmp(semanticNames[attribIdx], "NORMAL") == 0)
+				tmpAttrib.semantic = cVertexFormat::NORMAL;
+			else if (strcmp(semanticNames[attribIdx], "COLOR") == 0)
+				tmpAttrib.semantic = cVertexFormat::COLOR;
+			else if (strcmp(semanticNames[attribIdx], "TEXCOORD") == 0)
+				tmpAttrib.semantic = cVertexFormat::TEXCOORD;
+			else
+				ASSERT_MSG(false, L"Cg file parsing : " + shaderPath + L", Failed to match shader semantic name with our cVertexFormat class");
+
+			
 			if (iter->find(L"float4") != std::wstring::npos) {
-				format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-				byteSize = 16;
+				tmpAttrib.bitsPerComponent = cVertexFormat::_32_BIT;
+				tmpAttrib.nComponents = 4;
+				tmpAttrib.type = cVertexFormat::FLOAT;
 			}
 			else if (iter->find(L"float3") != std::wstring::npos) {
-				format = DXGI_FORMAT_R32G32B32_FLOAT;
-				byteSize = 12;
+				tmpAttrib.bitsPerComponent = cVertexFormat::_32_BIT;
+				tmpAttrib.nComponents = 3;
+				tmpAttrib.type = cVertexFormat::FLOAT;
 			}
 			else if (iter->find(L"float2") != std::wstring::npos) {
-				format = DXGI_FORMAT_R32G32_FLOAT;
-				byteSize = 8;
+				tmpAttrib.bitsPerComponent = cVertexFormat::_32_BIT;
+				tmpAttrib.nComponents = 2;
+				tmpAttrib.type = cVertexFormat::FLOAT;
 			}
 			else if (iter->find(L"float") != std::wstring::npos) {
-				format = DXGI_FORMAT_R32_FLOAT;
-				byteSize = 4;
+				tmpAttrib.bitsPerComponent = cVertexFormat::_32_BIT;
+				tmpAttrib.nComponents = 1;
+				tmpAttrib.type = cVertexFormat::FLOAT; 
 			}
 			else
-				ASSERT_MSG(false, L"Cg file parsing : " + shaderPath + L", can't match Input Vertex FORMAT");
+				ASSERT_MSG(false, L"Cg file parsing : " + shaderPath + L", Failed to determine vertex shader input format type (float1, 2, 3, 4) supported lol");
 
-
-			vertexDecl[attribIdx].SemanticName = semanticNames[attribIdx];
-			vertexDecl[attribIdx].Format = format;
-			vertexDecl[attribIdx].AlignedByteOffset = alignedByteOffset;
-			vertexDecl[attribIdx].InputSlot = 0;
-			vertexDecl[attribIdx].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-			vertexDecl[attribIdx].InstanceDataStepRate = 0;
-			vertexDecl[attribIdx].SemanticIndex = (semanticIndex[0] == '\0') ? 0 : atoi(semanticIndex);
-
-			alignedByteOffset += byteSize;
-			attribIdx++;
+			attribs.push_back(tmpAttrib);
 		}
+
+		attribIdx++;
 		iter++;
 	}
 
-	// Create input layout
-	hr = d3ddev->CreateInputLayout(vertexDecl, nVertexAttributes, byteCodes[VS], byteCodeSizes[VS], &inputLayout);
-	ASSERT_MSG(hr == S_OK, L"cGraphicsApiD3D11::CreateShaderProgram -> Can't create input layout for vertexShader: " + binPaths[VS]);
+	// Vertex Shader input format
+	cVertexFormat vsInputFormat;
+	vsInputFormat.Create(attribs);
 
 	// Create shader program
-	cShaderProgramD3D11* shProg = new cShaderProgramD3D11(byteCodes[VS], byteCodeSizes[VS], vs, hs, ds, gs, ps);
+	cShaderProgramD3D11* shProg = new cShaderProgramD3D11(byteCodes[VS], byteCodeSizes[VS], vsInputFormat, vs, hs, ds, gs, ps);
 
 	// Set look up maps
 	shProg->SetTextureSlotsVS(shaderTextureSlots[VS]);
@@ -1588,7 +1592,7 @@ const wchar_t* cGraphicsApiD3D11::GetLastErrorMsg() const {
 ////////////////////////////////////////
 // Create input layouts
 ID3D11InputLayout* cGraphicsApiD3D11::GetInputLayout(cShaderProgramD3D11* shader, cVertexFormat bufferFormat) {
-	cVertexFormat shaderFormat = shader->GetInputVertexFormat();
+	cVertexFormat shaderFormat = shader->GetVSInputFormat();
 
 	std::pair<cVertexFormat, cVertexFormat> key(shaderFormat, bufferFormat);
 
@@ -1670,7 +1674,7 @@ std::vector<D3D11_INPUT_ELEMENT_DESC> ConvertToNativeVertexFormat(cVertexFormat 
 		}
 
 		desc.InputSlot = 0;
-		desc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+		desc.AlignedByteOffset = 0;
 		desc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 		desc.InstanceDataStepRate = 0;
 

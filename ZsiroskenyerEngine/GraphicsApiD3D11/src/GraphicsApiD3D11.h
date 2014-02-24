@@ -42,8 +42,8 @@ public:
 	void Release() override;
 
 	// --- resources --- //
-	eGapiResult	CreateVertexBuffer(IVertexBuffer** resource, size_t size, eUsage usage, void* data = NULL) override;
-	eGapiResult	CreateIndexBuffer(IIndexBuffer** resource, size_t size, eUsage usage, void* data = NULL) override;
+	eGapiResult	CreateVertexBuffer(IVertexBuffer** resource, eUsage usage, cVertexFormat format, size_t size, void* data = NULL) override;
+	eGapiResult	CreateIndexBuffer(IIndexBuffer** resource, eUsage usage, size_t size, void* data = NULL) override;
 	eGapiResult CreateTexture(ITexture2D** resource, const wchar_t* filePath) override;
 	eGapiResult CreateTexture(ITexture2D** resource, ITexture2D::tDesc desc, void* data = NULL) override;
 	eGapiResult CreateShaderProgram(IShaderProgram** resource, const wchar_t* shaderPath) override;

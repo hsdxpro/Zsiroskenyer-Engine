@@ -14,13 +14,13 @@ struct ID3D11Buffer;
 
 class cVertexBufferD3D11 : public IVertexBuffer {
 public:
-	cVertexBufferD3D11(ID3D11Buffer* buffer, size_t size, eUsage usage);
+	cVertexBufferD3D11(ID3D11Buffer* buffer, eUsage usage, cVertexFormat f, size_t size);
 	~cVertexBufferD3D11();
 	void Release() override;
 
-	void SetFormat(const cVertexFormat& format) override;
+	void SetFormat(cVertexFormat f) override;
 
-	const cVertexFormat& GetFormat() const override;
+	cVertexFormat GetFormat() const override;
 	size_t		  GetStride() const override;
 	eUsage		  GetUsage() const override;
 	size_t		  GetSize() const override;

@@ -74,15 +74,23 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 	}
 
 	// Create light volume buffers
+	cVertexFormat f;
+	cVertexFormat::VertexAttrib a;
+		a.bitsPerComponent = cVertexFormat::_32_BIT;
+		a.nComponents = 3;
+		a.semantic = cVertexFormat::POSITION;
+		a.type = cVertexFormat::FLOAT;
+	f.Create({ a });
+
 	eGapiResult gr;
 	size_t size = sizeof(vbDataLightPoint);
-	gr = gApi->CreateVertexBuffer(&vbPoint, sizeof(vbDataLightPoint), eUsage::IMMUTABLE, vbDataLightPoint);
+	gr = gApi->CreateVertexBuffer(&vbPoint, eUsage::IMMUTABLE, f, sizeof(vbDataLightPoint), vbDataLightPoint);
 	if (gr != eGapiResult::OK) { Cleanup(); throw std::runtime_error("failed to create light volume buffers"); }
-	gr = gApi->CreateIndexBuffer(&ibPoint, sizeof(ibDataLightPoint), eUsage::IMMUTABLE, ibDataLightPoint);
+	gr = gApi->CreateIndexBuffer(&ibPoint, eUsage::IMMUTABLE, sizeof(ibDataLightPoint), ibDataLightPoint);
 	if (gr != eGapiResult::OK) { Cleanup(); throw std::runtime_error("failed to create light volume buffers"); }
-	gr = gApi->CreateVertexBuffer(&vbSpot, sizeof(vbDataLightSpot), eUsage::IMMUTABLE, vbDataLightSpot);
+	gr = gApi->CreateVertexBuffer(&vbSpot, eUsage::IMMUTABLE, f, sizeof(vbDataLightSpot), vbDataLightSpot);
 	if (gr != eGapiResult::OK) { Cleanup(); throw std::runtime_error("failed to create light volume buffers"); }
-	gr = gApi->CreateIndexBuffer(&ibSpot, sizeof(ibDataLightSpot), eUsage::IMMUTABLE, ibDataLightSpot);
+	gr = gApi->CreateIndexBuffer(&ibSpot, eUsage::IMMUTABLE, sizeof(ibDataLightSpot), ibDataLightSpot);
 	if (gr != eGapiResult::OK) { Cleanup(); throw std::runtime_error("failed to create light volume buffers"); }
 }
 

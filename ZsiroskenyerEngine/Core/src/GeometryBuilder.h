@@ -7,6 +7,7 @@
 #pragma once
 
 #include "../../Core/src/zsString.h"
+#include "VertexFormat.h"
 
 class cGeometryBuilder {
 public:
@@ -22,7 +23,7 @@ public:
 		size_t nVertices;
 
 		size_t indexStride;
-		size_t vertexStride;
+		cVertexFormat vertexFormat;
 
 		std::vector<tMatGroup> matGroups;
 	};

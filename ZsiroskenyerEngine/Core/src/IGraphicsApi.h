@@ -13,6 +13,7 @@
 
 #include <climits>
 #include <cstdint>
+#include "VertexFormat.h"
 
 
 class IVertexBuffer;
@@ -30,8 +31,8 @@ public:
 	virtual void Release() = 0;
 
 	// --- resources --- //
-	virtual eGapiResult	CreateVertexBuffer(IVertexBuffer** resource, size_t size, eUsage usage, void* data = NULL) = 0;
-	virtual eGapiResult	CreateIndexBuffer(IIndexBuffer** resource, size_t size, eUsage usage, void* data = NULL) = 0;
+	virtual eGapiResult	CreateVertexBuffer(IVertexBuffer** resource, eUsage usage, cVertexFormat format, size_t size, void* data = NULL) = 0;
+	virtual eGapiResult	CreateIndexBuffer(IIndexBuffer** resource, eUsage usage, size_t size, void* data = NULL) = 0;
 	virtual eGapiResult CreateTexture(ITexture2D** resource, const wchar_t* filePath) = 0;
 	virtual eGapiResult CreateTexture(ITexture2D** resource, ITexture2D::tDesc desc, void* data = NULL) = 0;
 	virtual eGapiResult CreateShaderProgram(IShaderProgram** resource, const wchar_t* shaderPath) = 0;
