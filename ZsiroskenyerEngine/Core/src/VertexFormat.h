@@ -15,7 +15,6 @@
 
 class cVertexFormat {
 public:
-	cVertexFormat() : data(0) {}
 
 	// Enumerations
 	enum eType : uint32_t {
@@ -41,7 +40,15 @@ public:
 		eSemantic semantic;
 		uint32_t nComponents;
 		eBits bitsPerComponent;
+
+#pragma warning("PETIIII IMPLEMENT IN .CPP")
+		unsigned GetByteSize(){ return -1; };
 	};
+
+
+	cVertexFormat(VertexAttrib* attribs, uint32_t nAttribs) : data(0) { Create(attribs, nAttribs);  }
+	cVertexFormat(std::vector<VertexAttrib> attribs) : data(0) { Create(attribs); }
+	cVertexFormat() : data(0) {}
 
 	// Create vertex decl
 	inline void Create(std::vector<VertexAttrib> attribs) {
@@ -78,7 +85,7 @@ public:
 		return v;
 	}
 	// Size of vertex structure
-	inline size_t Size() const {
+	inline size_t GetByteSize() const {
 		VertexAttrib attrib;
 		size_t size = 0;
 		for (int i = 0; i < 8; i++) {

@@ -24,7 +24,7 @@ void cVertexBufferD3D11::Release() {
 
 void cVertexBufferD3D11::SetFormat(cVertexFormat f) {
 	format = f;
-	stride = f.Size();
+	stride = f.GetByteSize();
 }
 
 cVertexFormat cVertexBufferD3D11::GetFormat() const {

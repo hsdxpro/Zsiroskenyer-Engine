@@ -51,7 +51,7 @@ cGeometryRef cResourceManager::GetGeometry(const zsString& filePath) {
 
 		// create vb
 		IVertexBuffer *VB;
-		gApi->CreateVertexBuffer(&VB, eUsage::IMMUTABLE, d.vertexFormat, d.nVertices * d.vertexFormat.Size(), d.vertices);
+		gApi->CreateVertexBuffer(&VB, eUsage::IMMUTABLE, d.vertexFormat, d.nVertices * d.vertexFormat.GetByteSize(), d.vertices);
 		// vertex format gányolmány
 		cVertexFormat::VertexAttrib attr;
 		std::vector<cVertexFormat::VertexAttrib> vertexDecl;

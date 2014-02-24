@@ -60,7 +60,6 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 	}
 
 	// Define Vertex Format ...
-	cVertexFormat vertexFormat;
 	struct baseVertex {
 		Vec3 pos;
 		Vec3 normal;
@@ -99,7 +98,8 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 		a.type = cVertexFormat::FLOAT;
 	attribs.push_back(a);
 
-	vertexFormat.Create({ a });
+	// The vertex format !!!
+	cVertexFormat vertexFormat({ a });
 
 	// Geometry read up
 	baseVertex *vertices= new baseVertex[nVertices];

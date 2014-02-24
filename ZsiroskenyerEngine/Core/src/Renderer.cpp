@@ -14,13 +14,12 @@ void cRenderer::RenderLines(const Matrix44& viewProj, const Vec3* lines, size_t 
 	return;
 	
 	// Create, set VertexBuffer for lines
-	cVertexFormat f;
 	cVertexFormat::VertexAttrib a;
 		a.bitsPerComponent = cVertexFormat::_32_BIT;
 		a.nComponents = 3;
 		a.semantic = cVertexFormat::POSITION;
 		a.type = cVertexFormat::FLOAT;
-	f.Create({ a });
+		cVertexFormat f({ a });
 
 	IVertexBuffer* linesBuffer;
 	gApi->CreateVertexBuffer(&linesBuffer, eUsage::IMMUTABLE, f, nLines * 2 * sizeof(Vec3), (void*)lines);

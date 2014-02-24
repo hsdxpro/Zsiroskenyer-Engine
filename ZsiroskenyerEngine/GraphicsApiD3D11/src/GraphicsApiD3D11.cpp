@@ -1645,6 +1645,7 @@ std::vector<D3D11_INPUT_ELEMENT_DESC> ConvertToNativeVertexFormat(cVertexFormat 
 
 	unsigned pos = 0, color = 0, normal = 0, tex = 0;
 
+	unsigned alignedByteoffset = 0;
 	for (auto& v : elems) {
 		D3D11_INPUT_ELEMENT_DESC desc;
 
@@ -1674,9 +1675,11 @@ std::vector<D3D11_INPUT_ELEMENT_DESC> ConvertToNativeVertexFormat(cVertexFormat 
 		}
 
 		desc.InputSlot = 0;
-		desc.AlignedByteOffset = 0;
+		desc.AlignedByteOffset = alignedByteoffset;
 		desc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 		desc.InstanceDataStepRate = 0;
+
+		alignedByteoffset += v.GetByteSize();
 
 		// format
 		desc.Format = [&]() ->DXGI_FORMAT {
