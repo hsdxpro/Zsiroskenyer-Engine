@@ -26,6 +26,7 @@ class IShaderProgram;
 class IGraphicsApi;
 class cTexture2DD3D11;
 class cShaderProgramD3D11;
+class cVertexBufferD3D11;
 
 // DLL accessor
 extern "C"
@@ -114,8 +115,9 @@ protected:
 
 // inner TMP
 
-	// Shader program stuff
+	// Draw state stuff
 	cShaderProgramD3D11* activeShaderProg;
+	cVertexBufferD3D11* activeVertexBuffer;
 
 	// Viewports and RTs
 	D3D11_VIEWPORT activeViewports[16];
@@ -158,5 +160,6 @@ protected:
 	using InputLayoutMapT = std::unordered_map<std::pair<cVertexFormat, cVertexFormat>, ID3D11InputLayout*, ILHasher>;
 	InputLayoutMapT inputLayoutStore;
 
+	void AutoSetInputLayout(cShaderProgramD3D11* shader, cVertexBufferD3D11* buffer);
 	ID3D11InputLayout* GetInputLayout(cShaderProgramD3D11* shader, cVertexFormat bufferFormat);
 };

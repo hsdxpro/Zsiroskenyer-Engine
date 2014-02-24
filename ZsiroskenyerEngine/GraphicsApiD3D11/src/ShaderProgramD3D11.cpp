@@ -98,3 +98,13 @@ size_t cShaderProgramD3D11::GetVSByteCodeSize() const {
 const void* const cShaderProgramD3D11::GetVSByteCode() const {
 	return vsByteCode;
 }
+
+cVertexFormat cShaderProgramD3D11::GetInputVertexFormat() const {
+#pragma message("RICSI EZT A FOST IMPLEMENTALD PLZ!")
+#pragma message("RICSI EZT A FOST IMPLEMENTALD PLZ!")
+#pragma message("RICSI EZT A FOST IMPLEMENTALD PLZ!")
+#pragma message("RICSI EZT A FOST IMPLEMENTALD PLZ!")
+#pragma message("RICSI EZT A FOST IMPLEMENTALD PLZ!")
+#pragma message("ASSZEM EZ ELEG FELTUNO :DDD")
+	return cVertexFormat();
+}

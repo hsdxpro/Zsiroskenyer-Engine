@@ -5,7 +5,8 @@
 //	IShaderProgram implementation
 #pragma once
 
-#include "../../Core/src/IShaderProgram.h"	
+#include "../../Core/src/IShaderProgram.h"
+#include "../../Core/src/VertexFormat.h"
 #include "../../Core/src/common.h"
 #include <unordered_map>
 
@@ -20,7 +21,7 @@ class cGraphicsApiD3D11;
 class cShaderProgramD3D11 : public IShaderProgram {
 	friend class cGraphicsApiD3D11;
 public:
-
+	// sampler info
 	struct tSamplerInfo {
 		uint16_t gApiSamplerIdx;
 		uint16_t slotIdx;
@@ -28,6 +29,7 @@ public:
 		tSamplerInfo(uint16_t gApiSamplerIdx, uint16_t slotIdx) :gApiSamplerIdx(gApiSamplerIdx), slotIdx(slotIdx){}
 	};
 
+	// ctor/dtor/release
 	cShaderProgramD3D11(
 		void* vsByteCode, size_t vsByteCodeSize,
 		ID3D11VertexShader* vs = NULL, ID3D11HullShader* hs = NULL,
@@ -36,6 +38,7 @@ public:
 	~cShaderProgramD3D11();
 	void Release() override;
 
+	// internal bullshit
 	void SetTextureSlotsVS(const std::unordered_map<zsString, uint16_t>& texSlotsVS);
 	void SetTextureSlotsPS(const std::unordered_map<zsString, uint16_t>& texSlotsPS);
 
@@ -54,8 +57,12 @@ public:
 	const ID3D11GeometryShader* GetGS() const;
 	const ID3D11PixelShader* GetPS() const;
 
+	// byte codes
 	size_t GetVSByteCodeSize() const;
 	const void* const GetVSByteCode() const;
+
+	// format
+	cVertexFormat GetInputVertexFormat() const;
 
 protected:
 	// In Sequence of the Dx pipeline :) 
@@ -76,4 +83,7 @@ protected:
 	// Sampler slot look up
 	std::vector<tSamplerInfo> samplerStatesVS;
 	std::vector<tSamplerInfo> samplerStatesPS;
+
+	// vertex format
+	cVertexFormat format;
 };

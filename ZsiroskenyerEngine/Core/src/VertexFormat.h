@@ -123,6 +123,10 @@ private:
 			throw std::invalid_argument("use enum for type, don\'t hack");
 		if (type == eType::FLOAT && bitsPerComponent == eBits::_8_BIT)
 			throw std::invalid_argument("float cannot be used with 8 bits");
+		if (type == eType::NORM && bitsPerComponent == eBits::_32_BIT)
+			throw std::invalid_argument("normalized int cannot be used with 3 bits");
+		if (bitsPerComponent != _32_BIT && nComponents == 3)
+			throw std::invalid_argument("only 32 bits supported with 3 components");
 
 		uint8_t ret = 0;
 		ret |= (uint8_t(type) << 6);

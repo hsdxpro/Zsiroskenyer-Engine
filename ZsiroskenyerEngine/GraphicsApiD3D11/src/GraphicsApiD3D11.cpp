@@ -1250,11 +1250,13 @@ void cGraphicsApiD3D11::DrawInstancedIndexed(size_t nIndicesPerInstance, size_t 
 // Set indexed poly-mesh buffers
 void cGraphicsApiD3D11::SetVertexBuffer(const IVertexBuffer* vb) {
 	ASSERT(vb != NULL);
+	activeVertexBuffer = (cVertexBufferD3D11*)vb;
 
 	const UINT strides = vb->GetStride();
 	const UINT offset = 0;
 	ID3D11Buffer* vertices = ((cVertexBufferD3D11*)vb)->GetBufferPointer();
 	d3dcon->IASetVertexBuffers(0, 1, &vertices, &strides, &offset);
+	AutoSetInputLayout(activeShaderProg, activeVertexBuffer);
 }
 void cGraphicsApiD3D11::SetIndexBuffer(const IIndexBuffer* ib) {
 	ASSERT(ib != NULL);
@@ -1310,8 +1312,9 @@ void cGraphicsApiD3D11::SetShaderProgram(IShaderProgram* shProg) {
 
 	activeShaderProg = (cShaderProgramD3D11*)shProg;
 	const cShaderProgramD3D11* shProgD3D11 = (cShaderProgramD3D11*)shProg;
-	//d3dcon->IASetInputLayout(const_cast<ID3D11InputLayout*>(shProgD3D11->GetInputLayout()));
-#pragma message("bullshit INPUTLAYOUT SET AT ANOTHER PLACE NEEEEEEEEED")
+
+	AutoSetInputLayout(activeShaderProg, activeVertexBuffer);
+
 	d3dcon->VSSetShader(const_cast<ID3D11VertexShader*>(shProgD3D11->GetVS()), 0, 0);
 	d3dcon->PSSetShader(const_cast<ID3D11PixelShader*>(shProgD3D11->GetPS()), 0, 0);
 }
@@ -1578,7 +1581,7 @@ const wchar_t* cGraphicsApiD3D11::GetLastErrorMsg() const {
 ////////////////////////////////////////
 // Create input layouts
 ID3D11InputLayout* cGraphicsApiD3D11::GetInputLayout(cShaderProgramD3D11* shader, cVertexFormat bufferFormat) {
-	cVertexFormat shaderFormat;
+	cVertexFormat shaderFormat = shader->GetInputVertexFormat();
 
 	std::pair<cVertexFormat, cVertexFormat> key(shaderFormat, bufferFormat);
 
@@ -1587,10 +1590,9 @@ ID3D11InputLayout* cGraphicsApiD3D11::GetInputLayout(cShaderProgramD3D11* shader
 		// create new input layout
 		ID3D11InputLayout* layout = nullptr;
 
-		auto vertexAttribs = bufferFormat.Decode();
-		
-		D3D11_INPUT_ELEMENT_DESC layoutDesc;
-		d3ddev->CreateInputLayout(&layoutDesc, vertexAttribs.size(), shader->GetVSByteCode(), shader->GetVSByteCodeSize(), &layout);
+		auto vertexDesc = ConvertToNativeVertexFormat(bufferFormat);
+
+		d3ddev->CreateInputLayout(vertexDesc.data(), vertexDesc.size(), shader->GetVSByteCode(), shader->GetVSByteCodeSize(), &layout);
 
 		// add input layout to stuff
 		if (layout == nullptr) {
@@ -1604,6 +1606,18 @@ ID3D11InputLayout* cGraphicsApiD3D11::GetInputLayout(cShaderProgramD3D11* shader
 	}
 }
 
+// Set said input layout
+void cGraphicsApiD3D11::AutoSetInputLayout(cShaderProgramD3D11* shader, cVertexBufferD3D11* buffer) {
+	auto bufferFormat = buffer->GetFormat();
+
+	auto inputLayout = GetInputLayout(shader, bufferFormat);
+	if (inputLayout) {
+		d3dcon->IASetInputLayout(inputLayout);
+	}
+	else {
+#pragma message("WATTAFAKK LESZ MOST???")
+	}
+}
 
 ////////////////////////////////////////
 // Convert stuff to native format
@@ -1651,14 +1665,82 @@ std::vector<D3D11_INPUT_ELEMENT_DESC> ConvertToNativeVertexFormat(cVertexFormat 
 
 		// format
 		desc.Format = [&]() ->DXGI_FORMAT {
-			return DXGI_FORMAT_R8G8B8A8_SINT;
-			if (v.bitsPerComponent == cVertexFormat::_8_BIT) {
-				
+			if (v.nComponents == 1) {
+				if (v.bitsPerComponent == cVertexFormat::_8_BIT) {
+					if (v.type == cVertexFormat::INT)
+						return DXGI_FORMAT_R8_SINT;
+					else if (v.type == cVertexFormat::NORM)
+						return DXGI_FORMAT_R8_SNORM;
+				}
+				if (v.bitsPerComponent == cVertexFormat::_16_BIT) {
+					if (v.type == cVertexFormat::INT)
+						return DXGI_FORMAT_R16_SINT;
+					else if (v.type == cVertexFormat::NORM)
+						return DXGI_FORMAT_R16_SNORM;
+					else if (v.type == cVertexFormat::FLOAT)
+						return DXGI_FORMAT_R16_FLOAT;
+				}
+				if (v.bitsPerComponent == cVertexFormat::_32_BIT) {
+					if (v.type == cVertexFormat::INT)
+						return DXGI_FORMAT_R32_SINT;
+					else if (v.type == cVertexFormat::FLOAT)
+						return DXGI_FORMAT_R32_FLOAT;
+				}
 			}
-#pragma message("faszom majd holnap hajnalban szoftlabon megírom")
-
+			else if (v.nComponents == 2) {
+				if (v.bitsPerComponent == cVertexFormat::_8_BIT) {
+					if (v.type == cVertexFormat::INT)
+						return DXGI_FORMAT_R8G8_SINT;
+					else if (v.type == cVertexFormat::NORM)
+						return DXGI_FORMAT_R8G8_SNORM;
+				}
+				if (v.bitsPerComponent == cVertexFormat::_16_BIT) {
+					if (v.type == cVertexFormat::INT)
+						return DXGI_FORMAT_R16G16_SINT;
+					else if (v.type == cVertexFormat::NORM)
+						return DXGI_FORMAT_R16G16_SNORM;
+					else if (v.type == cVertexFormat::FLOAT)
+						return DXGI_FORMAT_R16G16_FLOAT;
+				}
+				if (v.bitsPerComponent == cVertexFormat::_32_BIT) {
+					if (v.type == cVertexFormat::INT)
+						return DXGI_FORMAT_R32G32_SINT;
+					else if (v.type == cVertexFormat::FLOAT)
+						return DXGI_FORMAT_R32G32_FLOAT;
+				}
+			}
+			else if (v.nComponents == 3) {
+				if (v.bitsPerComponent == cVertexFormat::_32_BIT) {
+					if (v.type == cVertexFormat::INT)
+						return DXGI_FORMAT_R32G32B32_SINT;
+					else if (v.type == cVertexFormat::FLOAT)
+						return DXGI_FORMAT_R32G32B32_FLOAT;
+				}
+			}
+			else if (v.nComponents == 4) {
+				if (v.bitsPerComponent == cVertexFormat::_8_BIT) {
+					if (v.type == cVertexFormat::INT)
+						return DXGI_FORMAT_R8G8B8A8_SINT;
+					else if (v.type == cVertexFormat::NORM)
+						return DXGI_FORMAT_R8G8B8A8_SNORM;
+				}
+				if (v.bitsPerComponent == cVertexFormat::_16_BIT) {
+					if (v.type == cVertexFormat::INT)
+						return DXGI_FORMAT_R16G16B16A16_SINT;
+					else if (v.type == cVertexFormat::NORM)
+						return DXGI_FORMAT_R16G16B16A16_SNORM;
+					else if (v.type == cVertexFormat::FLOAT)
+						return DXGI_FORMAT_R16G16B16A16_FLOAT;
+				}
+				if (v.bitsPerComponent == cVertexFormat::_32_BIT) {
+					if (v.type == cVertexFormat::INT)
+						return DXGI_FORMAT_R32G32B32A32_SINT;
+					else if (v.type == cVertexFormat::FLOAT)
+						return DXGI_FORMAT_R32G32B32A32_FLOAT;
+				}
+			}
+			return DXGI_FORMAT_UNKNOWN;
 		}();
-
 		
 		ret.push_back(desc);
 	}
