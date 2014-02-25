@@ -984,8 +984,8 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	}
 
 	// (inputLayout)  Vertex shader input format
-	std::vector<cVertexFormat::VertexAttrib> attribs;
-	cVertexFormat::VertexAttrib tmpAttrib;
+	std::vector<cVertexFormat::Attribute> attribs;
+	cVertexFormat::Attribute tmpAttrib;
 	uint16_t attribIdx = 0;
 	iter = vsInStructLines.begin();
 	while (iter != vsInStructLines.end()) {

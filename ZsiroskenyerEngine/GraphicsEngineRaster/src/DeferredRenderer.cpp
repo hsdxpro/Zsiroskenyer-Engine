@@ -75,7 +75,7 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 
 	// Create light volume buffers
 	cVertexFormat f;
-	cVertexFormat::VertexAttrib a;
+	cVertexFormat::Attribute a;
 		a.bitsPerComponent = cVertexFormat::_32_BIT;
 		a.nComponents = 3;
 		a.semantic = cVertexFormat::POSITION;

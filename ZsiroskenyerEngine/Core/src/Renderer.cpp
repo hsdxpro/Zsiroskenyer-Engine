@@ -14,7 +14,7 @@ void cRenderer::RenderLines(const Matrix44& viewProj, const Vec3* lines, size_t 
 	return;
 	
 	// Create, set VertexBuffer for lines
-	cVertexFormat::VertexAttrib a;
+	cVertexFormat::Attribute a;
 		a.bitsPerComponent = cVertexFormat::_32_BIT;
 		a.nComponents = 3;
 		a.semantic = cVertexFormat::POSITION;

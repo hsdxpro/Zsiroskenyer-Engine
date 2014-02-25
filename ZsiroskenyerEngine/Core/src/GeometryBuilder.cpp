@@ -67,9 +67,9 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 		Vec2 tex;
 		bool operator == (const baseVertex& v) { return pos == v.pos && normal == v.normal && tangent == v.tangent && tex == v.tex; }
 	};
-	std::vector<cVertexFormat::VertexAttrib> attribs;
+	std::vector<cVertexFormat::Attribute> attribs;
 
-	cVertexFormat::VertexAttrib a;
+	cVertexFormat::Attribute a;
 	// POSITION
 		a.bitsPerComponent = cVertexFormat::_32_BIT;
 		a.nComponents = 3;
@@ -99,7 +99,7 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 	attribs.push_back(a);
 
 	// The vertex format !!!
-	cVertexFormat vertexFormat({ a });
+	cVertexFormat vertexFormat(attribs);
 
 	// Geometry read up
 	baseVertex *vertices= new baseVertex[nVertices];

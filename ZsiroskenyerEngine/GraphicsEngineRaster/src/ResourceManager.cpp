@@ -53,8 +53,8 @@ cGeometryRef cResourceManager::GetGeometry(const zsString& filePath) {
 		IVertexBuffer *VB;
 		gApi->CreateVertexBuffer(&VB, eUsage::IMMUTABLE, d.vertexFormat, d.nVertices * d.vertexFormat.GetByteSize(), d.vertices);
 		// vertex format gányolmány
-		cVertexFormat::VertexAttrib attr;
-		std::vector<cVertexFormat::VertexAttrib> vertexDecl;
+		cVertexFormat::Attribute attr;
+		std::vector<cVertexFormat::Attribute> vertexDecl;
 		// all float
 		attr.type = cVertexFormat::FLOAT;
 		attr.bitsPerComponent = cVertexFormat::_32_BIT;

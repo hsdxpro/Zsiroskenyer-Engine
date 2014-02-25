@@ -35,26 +35,27 @@ public:
 	};
 
 	// Vertex attrib struct, uncompressed
-	struct VertexAttrib {
+	struct Attribute {
 		eType type;
 		eSemantic semantic;
 		uint32_t nComponents;
 		eBits bitsPerComponent;
 
-#pragma warning("PETIIII IMPLEMENT IN .CPP")
-		unsigned GetByteSize(){ return -1; };
+		unsigned GetByteSize(){ 
+			return (1 << (size_t(bitsPerComponent) - 1))*nComponents;
+		};
 	};
 
 
-	cVertexFormat(VertexAttrib* attribs, uint32_t nAttribs) : data(0) { Create(attribs, nAttribs);  }
-	cVertexFormat(std::vector<VertexAttrib> attribs) : data(0) { Create(attribs); }
+	cVertexFormat(Attribute* attribs, uint32_t nAttribs) : data(0) { Create(attribs, nAttribs);  }
+	cVertexFormat(std::vector<Attribute> attribs) : data(0) { Create(attribs); }
 	cVertexFormat() : data(0) {}
 
 	// Create vertex decl
-	inline void Create(std::vector<VertexAttrib> attribs) {
+	inline void Create(std::vector<Attribute> attribs) {
 		Create(attribs.data(), attribs.size());
 	}
-	inline void Create(VertexAttrib* attribs, uint32_t nAttribs) {
+	inline void Create(Attribute* attribs, uint32_t nAttribs) {
 		data = 0;
 		if (nAttribs > 8) {
 			throw std::invalid_argument("8 attributes at maximum");
@@ -72,9 +73,9 @@ public:
 		}
 	}
 	// Decode vertex decl to array
-	inline std::vector<VertexAttrib> Decode() const {
-		VertexAttrib attrib;
-		std::vector<VertexAttrib> v;
+	inline std::vector<Attribute> Decode() const {
+		Attribute attrib;
+		std::vector<Attribute> v;
 		for (int i = 0; i < 8; i++) {
 			uint8_t aUint = uint8_t(data >> (i * 8));
 			if (aUint == 0)
@@ -86,14 +87,14 @@ public:
 	}
 	// Size of vertex structure
 	inline size_t GetByteSize() const {
-		VertexAttrib attrib;
+		Attribute attrib;
 		size_t size = 0;
 		for (int i = 0; i < 8; i++) {
 			uint8_t aUint = uint8_t(data >> (i * 8));
 			if (aUint == 0)
 				break;
 			DecodeAttrib(aUint, attrib.type, attrib.semantic, attrib.nComponents, attrib.bitsPerComponent);
-			size += (1 << (size_t(attrib.bitsPerComponent) - 1))*attrib.nComponents;
+			size += attrib.GetByteSize();
 		}
 		return size;
 	}
