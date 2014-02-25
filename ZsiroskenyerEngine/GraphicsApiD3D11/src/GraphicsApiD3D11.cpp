@@ -1606,11 +1606,13 @@ ID3D11InputLayout* cGraphicsApiD3D11::GetInputLayout(cShaderProgramD3D11* shader
 		d3ddev->CreateInputLayout(vertexDesc.data(), vertexDesc.size(), shader->GetVSByteCode(), shader->GetVSByteCodeSize(), &layout);
 
 		// add input layout to stuff
-		if (layout == nullptr) {
+		if (!layout) {
 			return nullptr;
 		}
-		inputLayoutStore.insert(InputLayoutMapT::value_type(key, layout));
-		return layout;
+		else {
+			inputLayoutStore.insert(InputLayoutMapT::value_type(key, layout));
+			return layout;
+		}
 	}
 	else {
 		return it->second;

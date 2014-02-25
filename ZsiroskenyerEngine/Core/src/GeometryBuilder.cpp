@@ -87,7 +87,7 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 	// TANGENT
 		a.bitsPerComponent = cVertexFormat::_32_BIT;
 		a.nComponents = 3;
-		a.semantic = cVertexFormat::TEXCOORD;
+		a.semantic = cVertexFormat::COLOR;
 		a.type = cVertexFormat::FLOAT;
 	attribs.push_back(a);
 
