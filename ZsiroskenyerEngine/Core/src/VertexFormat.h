@@ -41,21 +41,21 @@ public:
 		uint32_t nComponents;
 		eBits bitsPerComponent;
 
-		unsigned GetByteSize(){ 
+		inline unsigned GetByteSize(){ 
 			return (1 << (size_t(bitsPerComponent) - 1))*nComponents;
 		};
 	};
 
 
-	cVertexFormat(Attribute* attribs, uint32_t nAttribs) : data(0) { Create(attribs, nAttribs);  }
-	cVertexFormat(std::vector<Attribute> attribs) : data(0) { Create(attribs); }
+	cVertexFormat(const Attribute* attribs, uint32_t nAttribs) : data(0) { Create(attribs, nAttribs);  }
+	cVertexFormat(const std::vector<Attribute>& attribs) : data(0) { Create(attribs); }
 	cVertexFormat() : data(0) {}
 
 	// Create vertex decl
-	inline void Create(std::vector<Attribute> attribs) {
+	inline void Create(const std::vector<Attribute>& attribs) {
 		Create(attribs.data(), attribs.size());
 	}
-	inline void Create(Attribute* attribs, uint32_t nAttribs) {
+	inline void Create(const Attribute* attribs, uint32_t nAttribs = 1) {
 		data = 0;
 		if (nAttribs > 8) {
 			throw std::invalid_argument("8 attributes at maximum");
