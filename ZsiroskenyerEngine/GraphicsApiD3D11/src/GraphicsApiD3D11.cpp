@@ -1594,6 +1594,10 @@ const wchar_t* cGraphicsApiD3D11::GetLastErrorMsg() const {
 ID3D11InputLayout* cGraphicsApiD3D11::GetInputLayout(cShaderProgramD3D11* shader, cVertexFormat bufferFormat) {
 	cVertexFormat shaderFormat = shader->GetVSInputFormat();
 
+	if (!shaderFormat.IsSubsetOf(bufferFormat)) {
+		return nullptr;
+	}
+
 	std::pair<cVertexFormat, cVertexFormat> key(shaderFormat, bufferFormat);
 
 	auto it = inputLayoutStore.find(key);
@@ -1632,7 +1636,7 @@ void cGraphicsApiD3D11::AutoSetInputLayout(cShaderProgramD3D11* shader, cVertexB
 		d3dcon->IASetInputLayout(inputLayout);
 	}
 	else {
-#pragma message("WATTAFAKK LESZ MOST???")
+		d3dcon->IASetInputLayout(nullptr);
 	}
 }
 
