@@ -36,17 +36,17 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 // pixel shader
 float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	float4 sum = float4(0,0,0,0);
-	float4 sample;
+	float4 s;
+	
 	float scSum;
 	for (float i=-0.1; i<=0.1; i+=0.0015625f) {
-		sample = tex2D(textureInput, float2(clamp(In.tex0.x+i, 0.0, 1.0), In.tex0.y));
+		s = tex2D(textureInput, float2(In.tex0.x + i, In.tex0.y));
 		float x = 3.0f/0.1f * i;
 		float weight = (1.0f/(2.506628274631) * pow(2.7182818f, -x*x * 0.5f));
 		scSum += weight;
-		sum += sample * weight;
+		sum += s * weight;
 	}
 	sum /= scSum;
-	//sum.a = 1.0f;
 
 	return sum;
 }

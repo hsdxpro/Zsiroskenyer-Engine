@@ -112,6 +112,35 @@ public:
 		return other.data != data;
 	}
 
+	// Compatibility check
+	inline bool IsSubsetOf(const cVertexFormat& other) const {
+		uint8_t d[8];
+		uint8_t od[8];
+		for (int i = 0; i < 8; i++) {
+			d[i] = uint8_t(data >> (8 * i));
+			od[i] = uint8_t(other.data >> (8 * i));
+		}
+		bool knockOut[8] = {true, true, true, true, true, true, true, true};
+		int i = 0;
+		// for each attrib
+		while (d[i] != 0) {
+			// look for a pair
+			bool match = false;
+			for (int j = 0; j < 8; j++) {
+				if (d[i] == od[j] && knockOut[j]) {
+					match = true;
+					knockOut[j] = false;
+					break;
+				}
+			}
+			if (!match) {
+				return false;
+			}
+			++i;
+		}
+		return true;
+	}
+
 private:
 	// Encode/Decode to/from 8 bits
 	inline void DecodeAttrib(uint8_t attrib, eType& type, eSemantic& semantic, uint32_t& nComponents, eBits& bitsPerComponent) const {
@@ -146,4 +175,5 @@ private:
 
 	// 8x8 bit representation of at max 8 attribs
 	uint64_t data;
+	
 };

@@ -29,20 +29,39 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 	return Out;
 }
 
+
+static const float sampleOffsets[15] = {
+	-1,
+	-0.75039364419653,
+	-0.57886277661113,
+	-0.44016934867329,
+	-0.3189988043669,
+	-0.20796827325758,
+	-0.10268070065391,
+	0,
+	0.10268070065391,
+	0.20796827325758,
+	0.3189988043669,
+	0.44016934867329,
+	0.57886277661113,
+	0.75039364419653,
+	1,
+};
+
 // pixel shader
 float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	float4 sum = float4(0,0,0,0);
-	float4 sample;
+	float4 s;
+	
 	float scSum = 0.0f;
 	for (float i=-0.1; i<=0.1; i+=0.002f) {
-		sample = tex2D(textureInput, float2(In.tex0.x, clamp(In.tex0.y+i, 0.0, 1.0)));
+		s = tex2D(textureInput, float2(In.tex0.x, clamp(In.tex0.y+i, 0.0, 1.0)));
 		float x = 3.0f/0.1f * i;
 		float weight = (1.0f/(2.506628274631) * pow(2.7182818f, -x*x * 0.5f));
 		scSum += weight;
-		sum += sample * weight;
+		sum += s * weight;
 	}
 	sum /= scSum;
-	//sum.a = 1.0f;
 
 	return sum;
 }
