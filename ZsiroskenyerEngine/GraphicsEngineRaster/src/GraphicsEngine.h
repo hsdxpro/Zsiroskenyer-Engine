@@ -68,7 +68,7 @@ private:
 	cGraphicsEngine& parent;
 	cCamera camera;
 
-	// temporary per-scene renderer data
+	// Used by friend classes (Hdr, motionBlur)
 	float luminanceAdaptation;
 	Matrix44 lastCameraMatrix;
 };
@@ -80,6 +80,7 @@ class cGraphicsEngine : public IGraphicsEngine {
 	friend class cGraphicsScene;
 	class cDeferredRenderer;
 	class cHDRProcessor;
+	class cPostProcessor;
 public:
 	// lifecycle (creation, destruction)
 	cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config);
@@ -88,32 +89,40 @@ public:
 	cGraphicsEngine& operator=(const cGraphicsEngine&) = delete;
 	void Release() override;
 
-	// utlity & settings
-	eGraphicsResult SetConfig(tGraphicsConfig config) override;
-	eGraphicsResult Resize(unsigned width, unsigned height) override;
-	eGraphicsResult ReloadShaders() override;
-	const char* GetLastErrorMessage() override;
-	
-	// scene management
-	IGraphicsScene*	CreateScene(tRenderState state = tRenderState()) override;
-	void			DeleteScene(const IGraphicsScene* scene) override;
-
-	IGeometryBuilder* CreateCustomGeometry() override;
-
 	// rendering pipeline
 	eGraphicsResult Update(float elapsed = 0.0f) override;
 
-	// sub-component accessors
+	eGraphicsResult Resize(unsigned width, unsigned height) override;
+	eGraphicsResult ReloadShaders() override;
+	
+	// scene & geom management
+	IGeometryBuilder* CreateCustomGeometry() override;
+	IGraphicsScene*	  CreateScene(tRenderState state = tRenderState()) override;
+
+	void DeleteScene(const IGraphicsScene* scene) override;
+
+	// Configurate graphics engine
+	eGraphicsResult SetConfig(tGraphicsConfig config) override;
+
+	const char* GetLastErrorMessage() override;
 	cResourceManager*	GetResourceManager();
 	IGraphicsApi*		GetGraphicsApi() override;
+
 private:
-	// rendering functions
 	void RenderScene(cGraphicsScene& scene, ITexture2D* target, float elapsed);
 	void RenderForward();
 	void RenderDeferred();
+
+	void LoadShaders();
+	void UnloadShaders();
+
+	void ReloadBuffers();
+
+private:
 	// render states
 	static const tDepthStencilDesc depthStencilDefault;
 	static const tBlendDesc blendDefault;
+
 	// rendering stuff
 	cSceneManager* sceneManager; // temporary storage for current scene state (copied from cScene)
 	cCamera* camera;
@@ -127,19 +136,16 @@ private:
 
 	// sub-compnents: rendering & graphical
 	IGraphicsApi* gApi;
+	cDeferredRenderer* deferredRenderer;
+	cHDRProcessor* hdrProcessor;
+	cPostProcessor* postProcessor;
+
 	cResourceManager* resourceManager;
 	std::set<cGraphicsScene*> graphicsScenes;
 	std::deque<cGraphicsScene*> graphicsSceneOrder;
-	cDeferredRenderer* deferredRenderer;
-	cHDRProcessor* hdrProcessor;
 	
 	// shaders
-	void LoadShaders();
-	void UnloadShaders();
 	IShaderProgram* shaderScreenCopy;
-	
-	// buffers
-	void ReloadBuffers();
 
 	// misc
 	std::string lastErrorMessage;
@@ -160,11 +166,13 @@ private:
 		cDeferredRenderer& operator=(const cDeferredRenderer&) = delete;
 
 		void RenderComposition();
+		void ReloadShaders();
 
 		eGraphicsResult Resize(unsigned width, unsigned height);
-		ITexture2D* GetCompositionBuffer();
 
-		void ReloadShaders();
+		ITexture2D* GetCompositionBuffer();
+		ITexture2D* GetDepthBuffer();
+
 	private:
 		void LoadShaders();
 		void UnloadShaders();
@@ -204,10 +212,12 @@ private:
 		~cPostProcessor();
 		cPostProcessor& operator=(const cPostProcessor&) = delete;
 
+		void Update(float deltaT);
+
 		//eGraphicsResult Resize(unsigned width, unsigned height);
 
-		//void SetTarget(ITexture2D* target);
-		//void SetSource(ITexture2D* source);
+		//void SetTarget(ITexture2D* tex);
+		//void SetSource(ITexture2D* tex);
 	private:
 		//void LoadShaders();
 		//void UnloadShaders();
@@ -224,11 +234,13 @@ private:
 	public:
 		cHDRProcessor(cGraphicsEngine& parent);
 		~cHDRProcessor();
-		eGraphicsResult SetSource(ITexture2D* srcTexture, unsigned sourceWidth, unsigned sourceHeight);
-		void SetDestination(ITexture2D* dest);
-		void Update(float elapsedSec = -1.0f);
 
+		void Update(float elapsedSec = -1.0f);
 		void ReloadShaders();
+
+		void SetDestination(ITexture2D* dest);
+		eGraphicsResult SetSource(ITexture2D* t);
+
 	private:
 		void LoadShaders();
 		void UnloadShaders();
@@ -256,8 +268,8 @@ private:
 		~cShadowRenderer();
 
 		void RenderShadowMaps(cSceneManager& sceneManager);
-
 		void ReloadShaders();
+
 	private:
 		void LoadShaders();
 		void UnloadShaders();

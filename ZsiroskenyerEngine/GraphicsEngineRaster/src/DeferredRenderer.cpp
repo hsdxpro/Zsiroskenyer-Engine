@@ -703,57 +703,6 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// Set back render state to default
 	gApi->SetDepthStencilState(depthStencilDefault, 0x00);
 	gApi->SetBlendState(blendDefault);
-
-
-	//-------------------------------------------------------------------------//
-	// --- --- --- --- --- --- --- MOTION BLUR --- --- --- --- --- --- --- --- //
-	//-------------------------------------------------------------------------//
-	gApi->SetRenderTargets(1, &DOFInput, NULL);
-
-	gApi->SetShaderProgram(shaderMotionBlur);
-
-	struct buffStruct
-	{
-		Matrix44 invViewProj;
-		Matrix44 prevViewProj;
-	} shaderConstants2;
-
-	shaderConstants2.invViewProj = invViewProjMat;
-	shaderConstants2.prevViewProj = prevView * projMat;
-
-	gApi->SetPSConstantBuffer(&shaderConstants2, sizeof(shaderConstants2), 0);
-
-	gApi->SetTexture(L"textureInput",compositionBuffer);
-	gApi->SetTexture(L"depthTexture", depthBufferCopy);
-
-	// asd new
-	prevView = viewMat;
-
-	// Draw triangle, hardware will quadify them automatically :)
-	gApi->Draw(3);
-
-	//----------------------------------------------------------------------------//
-	// --- --- --- --- --- --- --- DEPTH OF FIELD --- --- --- --- --- --- --- --- //
-	//----------------------------------------------------------------------------//
-	gApi->SetRenderTargets(1, &compositionBuffer, NULL);
-	gApi->SetShaderProgram(shaderDof);
-
-	struct tDofConstants
-	{
-		Matrix44 invViewProj;
-		Vec3 camPos; float _pad;
-	} dofConstants;
-
-	dofConstants.invViewProj = invViewProjMat;
-	dofConstants.camPos = cam->GetPos();
-
-	gApi->SetPSConstantBuffer(&dofConstants, sizeof(dofConstants), 0);
-
-	gApi->SetTexture(L"inputTexture",DOFInput);
-	gApi->SetTexture(L"depthTexture", depthBufferCopy);
-
-	// Draw triangle, hardware will quadify them automatically :)
-	gApi->Draw(3);
 }
 
 // Access to composition buffer for further processing like post-process & whatever
@@ -761,7 +710,9 @@ ITexture2D* cGraphicsEngine::cDeferredRenderer::GetCompositionBuffer() {
 	return compositionBuffer;
 }
 
-
+ITexture2D* cGraphicsEngine::cDeferredRenderer::GetDepthBuffer() {
+	return depthBuffer;
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////

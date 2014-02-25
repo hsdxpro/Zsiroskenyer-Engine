@@ -125,7 +125,19 @@ void cGraphicsEngine::cHDRProcessor::ReloadShaders() {
 //	Methods
 
 //	Set HDR range float buffer
-eGraphicsResult cGraphicsEngine::cHDRProcessor::SetSource(ITexture2D* srcTexture, unsigned sourceWidth, unsigned sourceHeight) {
+eGraphicsResult cGraphicsEngine::cHDRProcessor::SetSource(ITexture2D* t) {
+	assert(t != NULL);
+
+	unsigned sourceWidth = t->GetWidth();
+	unsigned sourceHeight = t->GetHeight();
+
+	assert( sourceWidth  != 0 );
+	assert( sourceHeight != 0 );
+
+	// Good job no need of generating downsampled buffers and etc.
+	if (t == source && this->sourceWidth == sourceWidth && this->sourceHeight == sourceHeight)
+		return eGraphicsResult::OK;
+
 	// backup old buffers
 	auto blurBuffer_ = blurBuffer;
 	auto downSampled_ = downSampled;
@@ -136,15 +148,14 @@ eGraphicsResult cGraphicsEngine::cHDRProcessor::SetSource(ITexture2D* srcTexture
 	// set internal vars
 	this->sourceWidth = sourceWidth;
 	this->sourceHeight = sourceHeight;
-	this->source = srcTexture;
-	assert(srcTexture != NULL);
+	this->source = t;
 
 	// create downsampled buffers
 	ITexture2D::tDesc desc;
 	desc.bind = (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE;
 	desc.format = eFormat::R16G16B16A16_FLOAT;
-	desc.width = sourceWidth / 2;
-	desc.height = sourceHeight / 2;
+	desc.width = std::max(1u, sourceWidth / 2);
+	desc.height = std::max(1u, sourceHeight / 2);
 	auto r1 = parent.gApi->CreateTexture(&downSampled, desc);
 	auto r2 = parent.gApi->CreateTexture(&blurBuffer, desc);
 	// check results

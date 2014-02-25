@@ -14,8 +14,9 @@ sampler2D depthTexture = {
 	AddressV = CLAMP,
 };
 
-float4x4 invViewProj : register(c0); // inv curr
-float4x4 prevViewProj: register(c4); // prev
+float4x4 invViewProj	: register(c0); // inv curr
+float4x4 prevViewProj	: register(c4); // prev
+float	 deltaT			: register(c8);
 
 struct VS_IN {
 	float3 posL 	: POSITION;
@@ -48,7 +49,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	float4 prevPosH = mul(posW, prevViewProj);
 	prevPosH.xyzw /= prevPosH.w;
 	
-	float2 velocity = (currPosH.xy - prevPosH.xy) / 2.0f/ 24;
+	float2 velocity = (currPosH.xy - prevPosH.xy) / 2.0f / deltaT;
 
 	// Get the initial color at this pixel.  
    	float4 color = tex2D(textureInput, In.tex0);

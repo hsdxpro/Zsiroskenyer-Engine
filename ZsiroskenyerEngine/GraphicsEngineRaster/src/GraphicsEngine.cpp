@@ -126,6 +126,14 @@ currentSceneBuffer(NULL)
 	catch (std::exception& e) {
 		throw std::runtime_error(std::string("failed to create hdr post-processor: ") + e.what());
 	}
+
+	// Create Post processor
+	try {
+		postProcessor = new cPostProcessor(*this);
+	}
+	catch (std::exception& e) {
+		throw std::runtime_error(std::string("failed to create hdr post-processor: ") + e.what());
+	}
 }
 
 cGraphicsEngine::~cGraphicsEngine() {
@@ -289,25 +297,22 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, ITexture2D* target, flo
 	deferredRenderer->RenderComposition();
 	
 	// --- --- post-process --- --- //
-	static ITexture2D* compBuf_Check = NULL; // TODO: Remove this or I kill myself
 	ITexture2D* composedBuffer = deferredRenderer->GetCompositionBuffer();
+
+	// General Post process
+	//postProcessor->SetInputBuffers(composedBuffer, deferredRenderer->GetDepthBuffer())
 
 	// HDR
 	if (scene.state.hdr.enabled) {
-		// update hdr source buffer as needed
-		if (composedBuffer != compBuf_Check) {
-			compBuf_Check = composedBuffer;
-			hdrProcessor->SetSource(composedBuffer, screenWidth, screenHeight);
-		}
-		hdrProcessor->adaptedLuminance = scene.luminanceAdaptation; // copy luminance value
+		hdrProcessor->SetSource(composedBuffer);
 		hdrProcessor->SetDestination(target);						// set destination
+		hdrProcessor->adaptedLuminance = scene.luminanceAdaptation; // copy luminance value
 		hdrProcessor->Update(elapsed);								// update hdr
 		scene.luminanceAdaptation = hdrProcessor->adaptedLuminance; // copy luminance value
 	}
 	else {
 		gApi->SetRenderTargets(1, &target);
 		gApi->SetShaderProgram(shaderScreenCopy);
-		//gApi->SetTexture(L"texture0", composedBuffer);
 		gApi->SetTexture(composedBuffer, 0);
 		gApi->Draw(3);
 	}
