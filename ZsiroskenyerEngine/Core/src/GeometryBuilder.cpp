@@ -30,7 +30,7 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 	// read up dae scene
 	char ansiFilePath[256];
 	cStrUtil::ToAnsi(filePath, ansiFilePath, 256);
-	const aiScene* scene = importer.ReadFile(ansiFilePath, aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_Triangulate /*| aiProcess_ImproveCacheLocality | aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes*/ | aiProcess_FlipWindingOrder);
+	const aiScene* scene = importer.ReadFile(ansiFilePath, aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_ImproveCacheLocality | aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_FlipWindingOrder);
 	if (scene == NULL) {
 		ILog::GetInstance()->MsgBox(L"Can't found 3D model: " + filePath);
 		throw FileNotFoundException();
@@ -67,8 +67,8 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 		Vec2 tex;
 		bool operator == (const baseVertex& v) { return pos == v.pos && normal == v.normal && tangent == v.tangent && tex == v.tex; }
 	};
-	std::vector<cVertexFormat::Attribute> attribs;
 
+	std::vector<cVertexFormat::Attribute> attribs;
 	cVertexFormat::Attribute a;
 	// POSITION
 		a.bitsPerComponent = cVertexFormat::_32_BIT;
@@ -161,7 +161,6 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 	tGeometryDesc geomDesc;
 		geomDesc.vertices = vertices;
 		geomDesc.nVertices = nVertices;
-		//geomDesc.vertexStride = sizeof(baseVertex); // DEPRECATED !!!!!
 		geomDesc.vertexFormat = vertexFormat;
 
 		//geomDesc.indices = reorderedIndices;

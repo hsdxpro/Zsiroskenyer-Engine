@@ -226,7 +226,6 @@ int ricsiMain() {
 	zsString basePath = L"../../Game Assets/";
 
 	ASSERT(sizeof(staticBaseNames) > 0);
-	cEntity* entities[nEntities];
 	for (size_t i = 0; i < sizeof(staticBaseNames) / sizeof(staticBaseNames[0]); i++) {
 		zsString geomPath = basePath + L"objects/" + staticBaseNames[i] + staticExtension[i];
 		auto entity = core.AddEntity(s, geomPath, geomPath, basePath + L"materials/" + staticBaseNames[i] + L".zsm", mass);

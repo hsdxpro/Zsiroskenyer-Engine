@@ -49,14 +49,14 @@ gApi(gApi)
 // move
 _cGeometryBuilder::_cGeometryBuilder(_cGeometryBuilder&& other)
 :
-vertices	(other.vertices),
-indices		(other.indices),
-matGroups	(other.matGroups),
-nBytesVertices(other.nBytesVertices),
-nIndices	(other.nIndices),
-nMatGroups	(other.nMatGroups),
+vertices		(other.vertices),
+indices			(other.indices),
+matGroups		(other.matGroups),
+nBytesVertices	(other.nBytesVertices),
+nIndices		(other.nIndices),
+nMatGroups		(other.nMatGroups),
 vertexSize		(other.vertexSize),
-gApi		(other.gApi)
+gApi			(other.gApi)
 {
 	other.vertices = nullptr;
 	other.indices = nullptr;
@@ -164,7 +164,7 @@ void _cGeometryBuilder::LoadFile(const zsString& path) {
 	// read up dae scene
 	char ansiFilePath[256];
 	cStrUtil::ToAnsi(path, ansiFilePath, 256);
-	const aiScene* scene = importer.ReadFile(ansiFilePath, aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_Triangulate /*| aiProcess_ImproveCacheLocality | aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes*/ | aiProcess_FlipWindingOrder);
+	const aiScene* scene = importer.ReadFile(ansiFilePath, aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_ImproveCacheLocality | aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_FlipWindingOrder);
 	if (scene == NULL) {
 		ILog::GetInstance()->MsgBox(L"Can't found 3D model: " + path);
 		throw FileNotFoundException();
@@ -202,8 +202,41 @@ void _cGeometryBuilder::LoadFile(const zsString& path) {
 		bool operator == (const baseVertex& v) { return pos == v.pos && normal == v.normal && tangent == v.tangent && tex == v.tex; }
 	};
 
+	std::vector<cVertexFormat::Attribute> attribs;
+
+	cVertexFormat::Attribute a;
+	// POSITION
+	a.bitsPerComponent = cVertexFormat::_32_BIT;
+	a.nComponents = 3;
+	a.semantic = cVertexFormat::POSITION;
+	a.type = cVertexFormat::FLOAT;
+	attribs.push_back(a);
+
+	// NORMAL
+	a.bitsPerComponent = cVertexFormat::_32_BIT;
+	a.nComponents = 3;
+	a.semantic = cVertexFormat::NORMAL;
+	a.type = cVertexFormat::FLOAT;
+	attribs.push_back(a);
+
+	// TANGENT
+	a.bitsPerComponent = cVertexFormat::_32_BIT;
+	a.nComponents = 3;
+	a.semantic = cVertexFormat::COLOR;
+	a.type = cVertexFormat::FLOAT;
+	attribs.push_back(a);
+
+	// TEX0
+	a.bitsPerComponent = cVertexFormat::_32_BIT;
+	a.nComponents = 2;
+	a.semantic = cVertexFormat::TEXCOORD;
+	a.type = cVertexFormat::FLOAT;
+	attribs.push_back(a);
+
+	// The vertex format !!!
+	vertexFormat.Create(attribs);
+
 	// Geometry read up
-	
 	baseVertex* verticesPtr = new baseVertex[nVertices];
 	vertices = verticesPtr;
 	indices = new uint32_t[nIndices];
@@ -319,7 +352,23 @@ bool _cGeometryBuilder::ValidateMatGroups() {
 // optimization
 
 void _cGeometryBuilder::Optimize() {
-	// muhahahahahahaha slow geometry ahhhaha
+
+	// Tipsify index reordering for less overlap rendering and  optimal post vertex cache
+	uint32_t* reorderedIndices;
+	try
+	{
+		reorderedIndices = new size_t[nIndices];
+	}
+	catch (std::exception& e)
+	{
+		assert( 0 );
+#pragma message("PETER PLEASE DO SOMETHING")
+	}
+	
+	reorderedIndices = tipsify(indices, nIndices / 3, nBytesVertices / vertexSize, 16); // vertexCache size  = 16  is ideal
+	SAFE_DELETE_ARRAY(indices);
+
+	indices = reorderedIndices;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -13,6 +13,7 @@
 #include "Geometry.h"
 
 #include <cstdint>
+#include "../../Core/src/VertexFormat.h"
 
 class IGraphicsApi;
 
@@ -76,6 +77,7 @@ private:
 
 	// memory store
 	void* vertices;
+	cVertexFormat vertexFormat;
 	uint32_t* indices;
 	tMatGroup* matGroups;
 	size_t nBytesVertices;
