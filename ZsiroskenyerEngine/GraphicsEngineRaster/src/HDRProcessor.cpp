@@ -229,9 +229,11 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	// shader constants
 	struct {
 		float avgLum;
+		float pad4, pad5, pad6;
 		float blueShift;
 		float pad1;
 		float pad2;
+		float pad3;
 	} shaderConstants;
 
 	

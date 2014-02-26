@@ -104,9 +104,9 @@ float CookTorranceSpecular(float3 N, float3 viewDir, float3 L, float roughness, 
 
 // diffuse light
 float3 DiffuseLight(float3 lightDir, float3 lightColor, float3 normal) {
-	//float c = clamp(-dot(lightDir, normal), 0.0, 1.0);
-	//return c * lightColor;
-	return float3(0,0,0);
+	float c = clamp(-dot(lightDir, normal), 0.0, 1.0);
+	return c * lightColor;
+	//return float3(0,0,0);
 }
 
 // specular light
