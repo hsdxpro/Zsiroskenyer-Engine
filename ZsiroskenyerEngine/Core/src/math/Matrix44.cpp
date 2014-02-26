@@ -429,17 +429,17 @@ Matrix44 Matrix44ViewRH(const Vec3& eye, const Vec3& target, const Vec3& up) {
 
 	// Create a 4x4 orientation matrix from the right, up, and at vectors
 	// TRANPOSE of ROT
-	Matrix44 orientation(baseRight.x, baseUp.x, baseFront.x, 0,
-		baseRight.y, baseUp.y, baseFront.y, 0,
-		baseRight.z, baseUp.z, baseFront.z, 0,
-		0, 0, 0, 1);
+	Matrix44 orientation(	baseRight.x, baseUp.x, baseFront.x, 0,
+							baseRight.y, baseUp.y, baseFront.y, 0,
+							baseRight.z, baseUp.z, baseFront.z, 0,
+							0, 0, 0, 1);
 
 	// Create a 4x4 translation matrix by negating the eye position.
 	// NEGATE POS
-	Matrix44 translation(1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		-eye.x, -eye.y, -eye.z, 1);
+	Matrix44 translation(	1,		0,		0,		0,
+							0,		1,		0,		0,
+							0,		0,		1,		0,
+							-eye.x, -eye.y, -eye.z, 1);
 
 	// Combine the orientation and translation to compute the view matrix
 	return translation * orientation;
