@@ -22,8 +22,8 @@ builder(rm.GetGraphicsApi())
 // attribs
 
 // vertex data
-void cUserGeometry::SetVertexStride(size_t size) {
-	builder.SetVertexStride(size);
+void cUserGeometry::SetVertexFormat(cVertexFormat format) {
+	builder.SetVertexFormat(format);
 }
 void cUserGeometry::InsertVertices(const void* verts, size_t bytes, size_t offset) {
 	builder.InsertVertices(verts, bytes, offset);
@@ -36,6 +36,9 @@ void* cUserGeometry::GetVertices() {
 }
 size_t cUserGeometry::GetNumVertices() {
 	return builder.GetNumVertices();
+}
+cVertexFormat cUserGeometry::GetVertexFormat() const {
+	return builder.GetVertexFormat();
 }
 // index data
 void cUserGeometry::InsertIndices(uint32_t* indices, size_t count, size_t position) {

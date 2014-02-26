@@ -40,7 +40,6 @@ matGroups(nullptr),
 nBytesVertices(0),
 nIndices(0),
 nMatGroups(0),
-vertexSize(1),
 gApi(gApi)
 {
 	return;
@@ -55,7 +54,7 @@ matGroups		(other.matGroups),
 nBytesVertices	(other.nBytesVertices),
 nIndices		(other.nIndices),
 nMatGroups		(other.nMatGroups),
-vertexSize		(other.vertexSize),
+vertexFormat	(other.vertexFormat),
 gApi			(other.gApi)
 {
 	other.vertices = nullptr;
@@ -72,7 +71,7 @@ matGroups(nullptr),
 nBytesVertices(other.nBytesVertices),
 nIndices	(other.nIndices),
 nMatGroups	(other.nMatGroups),
-vertexSize		(other.vertexSize),
+vertexFormat(other.vertexFormat),
 gApi		(other.gApi)
 {
 	InsertBuf((uint8_t**)&vertices, 0, (uint8_t*)other.vertices, nBytesVertices, 0);
@@ -91,8 +90,8 @@ _cGeometryBuilder::~_cGeometryBuilder() {
 ////////////////////////////////////////////////////////////////////////////////
 // Insert/Remove stuff
 
-void _cGeometryBuilder::SetVertexStride(size_t vertexSize) {
-	this->vertexSize = vertexSize;
+void _cGeometryBuilder::SetVertexFormat(cVertexFormat format) {
+	this->vertexFormat = format;
 }
 
 // vertex data
@@ -109,6 +108,9 @@ void* _cGeometryBuilder::GetVertices() {
 }
 size_t _cGeometryBuilder::GetNumVertices() {
 	return nBytesVertices;
+}
+cVertexFormat _cGeometryBuilder::GetVertexFormat() const {
+	return vertexFormat;
 }
 
 // index data
@@ -286,8 +288,7 @@ void _cGeometryBuilder::LoadFile(const zsString& path) {
 		vertexI += mesh->mNumVertices;
 	}
 
-	vertexSize = sizeof(baseVertex);
-	nBytesVertices = nVertices * vertexSize;
+	nBytesVertices = nVertices * sizeof(baseVertex);
 }
 
 
@@ -329,7 +330,7 @@ _cGeometryBuilder& _cGeometryBuilder::operator=(const _cGeometryBuilder& other) 
 // validation
 
 bool _cGeometryBuilder::ValidateVertices() {
-	return nBytesVertices%vertexSize == 0;
+	return nBytesVertices%vertexFormat.GetByteSize() == 0;
 }
 
 bool _cGeometryBuilder::ValidateIndices() {
@@ -337,13 +338,13 @@ bool _cGeometryBuilder::ValidateIndices() {
 	for (size_t i = 0; i < nIndices; i++) {
 		maxIndex = (maxIndex>indices[i] ? maxIndex : indices[i]);
 	}
-	return maxIndex < nBytesVertices / vertexSize;
+	return maxIndex < nBytesVertices / vertexFormat.GetByteSize();
 }
 
 bool _cGeometryBuilder::ValidateMatGroups() {
-	size_t maxIndex = 0;
+	intptr_t maxIndex = -1;
 	for (size_t i = 0; i < nMatGroups; i++) {
-		maxIndex = matGroups[i].indexCount + matGroups[i].indexOffset;
+		maxIndex = matGroups[i].indexCount - 1 + matGroups[i].indexOffset;
 	}
 	return maxIndex < nIndices;
 }
@@ -355,17 +356,9 @@ void _cGeometryBuilder::Optimize() {
 
 	// Tipsify index reordering for less overlap rendering and  optimal post vertex cache
 	uint32_t* reorderedIndices;
-	try
-	{
-		reorderedIndices = new size_t[nIndices];
-	}
-	catch (std::exception& e)
-	{
-		assert( 0 );
-#pragma message("PETER PLEASE DO SOMETHING")
-	}
+	reorderedIndices = new uint32_t[nIndices];
 	
-	reorderedIndices = tipsify(indices, nIndices / 3, nBytesVertices / vertexSize, 16); // vertexCache size  = 16  is ideal
+	reorderedIndices = tipsify(indices, nIndices / 3, nBytesVertices / vertexFormat.GetByteSize(), 16); // vertexCache size  = 16  is ideal
 	SAFE_DELETE_ARRAY(indices);
 
 	indices = reorderedIndices;
@@ -396,18 +389,9 @@ cGeometry* _cGeometryBuilder::Create() {
 		if (r!=eGapiResult::OK) {
 			throw std::runtime_error("failed to create index buffer");
 		}
-		cVertexFormat f;
-#pragma warning("PEEEEEEEEEEEEEEETER DO IT DO ITTT NEED FORMATTEEE")
-#pragma warning("PEEEEEEEEEEEEEEETER DO IT DO ITTT NEED FORMATTEEE")
-#pragma warning("PEEEEEEEEEEEEEEETER DO IT DO ITTT NEED FORMATTEEE")
-#pragma warning("PEEEEEEEEEEEEEEETER DO IT DO ITTT NEED FORMATTEEE")
-#pragma warning("PEEEEEEEEEEEEEEETER DO IT DO ITTT NEED FORMATTEEE")
-#pragma warning("PEEEEEEEEEEEEEEETER DO IT DO ITTT NEED FORMATTEEE")
-#pragma warning("PEEEEEEEEEEEEEEETER DO IT DO ITTT NEED FORMATTEEE")
-#pragma warning("PEEEEEEEEEEEEEEETER DO IT DO ITTT NEED FORMATTEEE")
-#pragma warning("PEEEEEEEEEEEEEEETER DO IT DO ITTT NEED FORMATTEEE")
-		r = gApi->CreateVertexBuffer(&vb, eUsage::DEFAULT, f, nBytesVertices, vertices);
+		r = gApi->CreateVertexBuffer(&vb, eUsage::DEFAULT, vertexFormat, nBytesVertices, vertices);
 		if (r != eGapiResult::OK) {
+			ib->Release();
 			throw std::runtime_error("failed to create vertex buffer");
 		}
 

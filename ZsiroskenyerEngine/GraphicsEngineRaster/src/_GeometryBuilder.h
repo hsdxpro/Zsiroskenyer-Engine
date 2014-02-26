@@ -28,11 +28,12 @@ public:
 	~_cGeometryBuilder();
 
 	// vertex data
-	void SetVertexStride(size_t vertexSize);
+	void SetVertexFormat(cVertexFormat format);
 	void InsertVertices(const void* verts, size_t bytes, size_t offset = 0);
 	void EraseVertices(size_t offset, size_t bytes);
 	void* GetVertices();
 	size_t GetNumVertices();
+	cVertexFormat GetVertexFormat() const;
 	// index data
 	void InsertIndices(uint32_t* indices, size_t count, size_t position = 0);
 	void EraseIndices(size_t position, size_t count);
@@ -85,6 +86,5 @@ private:
 	size_t nMatGroups;
 
 	// misc
-	unsigned vertexSize;
 	IGraphicsApi* gApi;
 };

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cstdint>
+#include "../../Core/src/vertexformat.h"
 
 class IGeometryRef {
 public:
@@ -23,11 +24,12 @@ public:
 	};
 
 	// vertex data
-	virtual void SetVertexStride(size_t size) = 0;
+	virtual void SetVertexFormat(cVertexFormat format) = 0;
 	virtual void InsertVertices(const void* verts, size_t bytes, size_t offset = 0) = 0;
 	virtual void EraseVertices(size_t offset, size_t bytes) = 0;
 	virtual void* GetVertices() = 0;
 	virtual size_t GetNumVertices() = 0;
+	virtual cVertexFormat GetVertexFormat() const = 0;
 	// index data
 	virtual void InsertIndices(uint32_t* indices, size_t count, size_t position = 0) = 0;
 	virtual void EraseIndices(size_t position, size_t count) = 0;
