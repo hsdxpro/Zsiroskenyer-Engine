@@ -5,6 +5,7 @@
 //	See header "ResourceManager.h" for more information.
 ////////////////////////////////////////////////////////////////////////////////
 #include "ResourceManager.h"
+#include "_GeometryBuilder.h"
 
 // Geometry building
 #include "../../Core/src/GeometryBuilder.h"
@@ -47,6 +48,8 @@ cGeometryRef cResourceManager::GetGeometry(const zsString& filePath) {
 	// lookup if already exists
 	auto it = geometries.left.find(filePath);
 	if (it == geometries.left.end()) {
+		// MMM-KAY THIS IS BULLCRAP
+		/*
 		cGeometryBuilder::tGeometryDesc d = cGeometryBuilder::LoadGeometry(filePath);
 
 		// create vb
@@ -93,6 +96,16 @@ cGeometryRef cResourceManager::GetGeometry(const zsString& filePath) {
 
 		// allocate & construct geometry object
 		geom = new cGeometry(VB, IB, &matGroup);
+		*/
+
+		_cGeometryBuilder builder(gApi);
+		try {
+			builder.LoadFile(filePath);
+			geom = builder.Create();
+		}
+		catch (std::exception& e) {
+			return cGeometryRef(this, nullptr);
+		}
 
 		// insert into database
 		geometries.insert(GeometryMapT::value_type(filePath, geom));

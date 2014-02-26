@@ -30,11 +30,13 @@ public:
 	cUserGeometry(cResourceManager& rm);
 
 	// vertex data
-	void SetVertexStride(size_t size) override;
+	void SetVertexFormat(cVertexFormat format) override;
 	void InsertVertices(const void* verts, size_t bytes, size_t offset = 0) override;
 	void EraseVertices(size_t offset, size_t bytes) override;
 	void* GetVertices() override;
 	size_t GetNumVertices() override;
+	cVertexFormat GetVertexFormat() const override;
+
 	// index data
 	void InsertIndices(uint32_t* indices, size_t count, size_t position = 0) override;
 	void EraseIndices(size_t position, size_t count) override;
@@ -54,7 +56,7 @@ public:
 
 	// submit or reset
 	IGeometryRef* Submit(const wchar_t* name) override;
-	void Reset()  override;
+	void Reset() override;
 
 	// politely ask for an error message
 	const char* YUNoWorkBitch() override;
