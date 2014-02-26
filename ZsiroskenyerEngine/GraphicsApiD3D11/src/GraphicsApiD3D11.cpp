@@ -20,7 +20,7 @@
 #include <memory>
 #include <memory>
 // Ugly create shader last_write_time..
-//#include <boost/filesystem.hpp>
+#include <boost/filesystem.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 // GraphicsApi instance creation
@@ -706,11 +706,6 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	}
 	is.close();
 
-	// TODO read last write of that shader if last_write < curr_last_write (elavult)
-	//last_write_time()
-	//boost::filesystem::last_write_time(boost::filesystem::path(shaderPath.c_str()));
-	//LINK : fatal error LNK1104: cannot open file 'libboost_filesystem-vc120-mt-sgd-1_55.lib'
-
 	zsString pathNoExt = shaderPath.substr(0, shaderPath.size() - 3);
 
 	// For array indexing convenience
@@ -763,11 +758,14 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	profileNames[PS] = L"ps_4_0";
 	cgProfiles[PS] = cCgShaderHelper::eProfileCG::PS_4_0;
 
-	// TODO FORCING ALWAYS GENERATE SHADERS FROM CG's 
-	bool binExistences[nDomains]; memset(binExistences, 0, nDomains * sizeof(bool));
-
-	// ALWAYS LOAD THE FUCKING BINARY PLEASE :)
-	//bool binExistences[nDomains]; memset(binExistences, 1, nDomains * sizeof(bool));
+	// Check binary shaders existence
+	bool binExistences[nDomains];
+	for (int i = 0; i < nDomains; i++)
+	{
+		is.open(binPaths[i]);
+		binExistences[i] = is.is_open();
+		is.close();
+	}
 
 	// Shader Output data
 	ID3D11InputLayout*		inputLayout = NULL;
@@ -782,9 +780,12 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	void* byteCodes[nDomains];			memset(byteCodes, 0, nDomains* sizeof(size_t));
 	uint32_t byteCodeSizes[nDomains];	memset(byteCodeSizes, 0, nDomains * sizeof(size_t));
 
+	// For holding tmp shader byte codes
 	std::vector<std::shared_ptr<char>> tmpByteCodes;
 	for (size_t i = 0; i < nDomains; i++) tmpByteCodes.push_back(std::shared_ptr<char>(new char[512000]));
 
+
+	// Read binary, or create bin shader for each domain (vs, hs, ds, gs, ps)
 	for (size_t i = 0; i < nDomains; i++) {
 		// not existing entry point skip it
 		if (!existingEntries[i])
@@ -794,6 +795,20 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		if (binExistences[i]) {
 			
 			std::ifstream binFile(binPaths[i].c_str(), std::ios::binary);
+
+			int64_t cgFileLastWrite = boost::filesystem::last_write_time(boost::filesystem::path(shaderPath.c_str()));
+
+			int64_t cgFileSavedLastWrite;
+			cFileUtil::Read(binFile, cgFileSavedLastWrite);
+
+			// Binary file is not up to date, need recompiling
+			if (cgFileSavedLastWrite != cgFileLastWrite)
+			{
+				binFile.close();
+				binExistences[i] = false;
+				--i;
+				continue;
+			}
 
 			// Read shader byte code size
 			cFileUtil::Read(binFile, byteCodeSizes[i]);
@@ -853,6 +868,10 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 			// OverWrite file with
 			std::ofstream binFile(binPaths[i], std::ios::trunc | std::ios::binary);
+
+			// Cg shader last write
+			int64_t cgFileLastWrite = boost::filesystem::last_write_time(boost::filesystem::path(shaderPath.c_str()));
+			cFileUtil::Write(binFile, cgFileLastWrite);
 
 			// Shader byte code size
 			cFileUtil::Write(binFile, byteCodeSizes[i]);
