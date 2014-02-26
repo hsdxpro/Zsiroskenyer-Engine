@@ -805,6 +805,8 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			if (cgFileSavedLastWrite != cgFileLastWrite)
 			{
 				binFile.close();
+
+				// Run cycle again, force binary generation
 				binExistences[i] = false;
 				--i;
 				continue;
