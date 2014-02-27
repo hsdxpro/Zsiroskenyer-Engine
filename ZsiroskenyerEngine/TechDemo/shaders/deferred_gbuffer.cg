@@ -70,20 +70,21 @@ PS_OUT PS_MAIN(VS_OUT In) {
 		discard;
 	}
 	Out.gBuffer0.xyz = diffuseColor.xyz;
-	//Out.gBuffer0.xyz = float3(0.5f, 0.5f, 0.5f); // SPECULAR LIGHT DEBUGGING NOW
+
 //----------------------------------------------------------//
 //--------------------gBuffer1: NORMALS--------------------//
 //--------------------------------------------------------//
 
+	// Normal map normals
 	float3 n = normalize(mul(tex2D(normalTex, In.tex0).xyz * 2 - 1, In.TBN).xyz);
+
+	// OR Geometry normals
 	//float3 n = In.normalW;
 
 	// Pack normals
 	Out.gBuffer1.r = n.x;
 	Out.gBuffer1.g = 0.5f*n.y + (n.z>0.f ? 0.5f:-0.5f);
 
-	//Out.gBuffer0.xyz = float3(abs(In.normalW.x),abs(In.normalW.y),abs(In.normalW.z)) ;
-	Out.gBuffer0.xyz = float3(abs(In.tangentW.x),abs(In.tangentW.y),abs(In.tangentW.z)) ;
 //----------------------------------------------------------//
 //---------------gBuffer2: DEBUG PURPOSES------------------//
 //--------------------------------------------------------//
