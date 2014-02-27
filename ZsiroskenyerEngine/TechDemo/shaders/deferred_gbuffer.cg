@@ -81,10 +81,12 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	// Pack normals
 	Out.gBuffer1.r = n.x;
 	Out.gBuffer1.g = 0.5f*n.y + (n.z>0.f ? 0.5f:-0.5f);
-	
+
+	//Out.gBuffer0.xyz = float3(abs(In.normalW.x),abs(In.normalW.y),abs(In.normalW.z)) ;
+	Out.gBuffer0.xyz = float3(abs(In.tangentW.x),abs(In.tangentW.y),abs(In.tangentW.z)) ;
 //----------------------------------------------------------//
 //---------------gBuffer2: DEBUG PURPOSES------------------//
-//--------------------------------------------------------//	
+//--------------------------------------------------------//
 	// Buffer2 reserved for future use
 	Out.gBuffer2 = tex2D(diffuseTex, In.tex0);//float4(In.tangentW.xyz*0.5+float3(0.5,0.5,0.5),1.0f); // NOT USED YET | FOR DEBUG
 	
