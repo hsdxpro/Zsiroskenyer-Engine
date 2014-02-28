@@ -156,41 +156,41 @@ size_t _cGeometryBuilder::GetNumMatGroups() {
 void _cGeometryBuilder::LoadFile(const zsString& path) {
 	Reset();
 
-	Assimp::Importer importer;
-
+	// Check file existence
 	if (!cFileUtil::isFileExits(path)) {
 		ILog::GetInstance()->MsgBox(L"Can't open file: " + path);
 		throw FileNotFoundException();
 	}
 
-	// read up dae scene
+	// Parse 3D geom file
 	char ansiFilePath[256];
 	cStrUtil::ToAnsi(path, ansiFilePath, 256);
-	const aiScene* scene = importer.ReadFile(ansiFilePath, aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_ImproveCacheLocality | aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_FlipWindingOrder);
-	if (scene == NULL) {
-		ILog::GetInstance()->MsgBox(L"Can't found 3D model: " + path);
-		throw FileNotFoundException();
-	}
 
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile(ansiFilePath, aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_ImproveCacheLocality | aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_FlipWindingOrder);
+
+	// Parsed "scene" have meshes
 	size_t nMeshes = scene->mNumMeshes;
 	aiMesh** meshes = scene->mMeshes;
 
 	nIndices = 0;
-	nMatGroups = nMeshes;
+	nMatGroups = nMeshes; // Assimp breaks material groups into N meshes
 
 	size_t nVertices = 0;
 
-	// Count indices, vertices.  Gather material groups
+	// Get indexCount, vertexCount, Gather matGroups from meshes
 	matGroups = new tMatGroup[nMatGroups];
 	for (size_t i = 0; i < nMeshes; i++) {
 		aiMesh *mesh = meshes[i];
 
 		size_t nMeshIndices = mesh->mNumFaces * 3;
 
+		// MatGroup
 		matGroups[i].id = mesh->mMaterialIndex;
 		matGroups[i].indexOffset = nIndices;
 		matGroups[i].indexCount = nMeshIndices;
 
+		// VB, IB
 		nVertices += mesh->mNumVertices;
 		nIndices += nMeshIndices;
 	}
@@ -208,84 +208,88 @@ void _cGeometryBuilder::LoadFile(const zsString& path) {
 
 	cVertexFormat::Attribute a;
 	// POSITION
-	a.bitsPerComponent = cVertexFormat::_32_BIT;
-	a.nComponents = 3;
-	a.semantic = cVertexFormat::POSITION;
-	a.type = cVertexFormat::FLOAT;
+		a.bitsPerComponent = cVertexFormat::_32_BIT;
+		a.nComponents = 3;
+		a.semantic = cVertexFormat::POSITION;
+		a.type = cVertexFormat::FLOAT;
 	attribs.push_back(a);
 
 	// NORMAL
-	a.bitsPerComponent = cVertexFormat::_32_BIT;
-	a.nComponents = 3;
-	a.semantic = cVertexFormat::NORMAL;
-	a.type = cVertexFormat::FLOAT;
+		a.bitsPerComponent = cVertexFormat::_32_BIT;
+		a.nComponents = 3;
+		a.semantic = cVertexFormat::NORMAL;
+		a.type = cVertexFormat::FLOAT;
 	attribs.push_back(a);
 
 	// TANGENT
-	a.bitsPerComponent = cVertexFormat::_32_BIT;
-	a.nComponents = 3;
-	a.semantic = cVertexFormat::COLOR;
-	a.type = cVertexFormat::FLOAT;
+		a.bitsPerComponent = cVertexFormat::_32_BIT;
+		a.nComponents = 3;
+		a.semantic = cVertexFormat::COLOR;
+		a.type = cVertexFormat::FLOAT;
 	attribs.push_back(a);
 
 	// TEX0
-	a.bitsPerComponent = cVertexFormat::_32_BIT;
-	a.nComponents = 2;
-	a.semantic = cVertexFormat::TEXCOORD;
-	a.type = cVertexFormat::FLOAT;
+		a.bitsPerComponent = cVertexFormat::_32_BIT;
+		a.nComponents = 2;
+		a.semantic = cVertexFormat::TEXCOORD;
+		a.type = cVertexFormat::FLOAT;
 	attribs.push_back(a);
 
 	// The vertex format !!!
 	vertexFormat.Create(attribs);
 
-	// Geometry read up
-	baseVertex* verticesPtr = new baseVertex[nVertices];
-	vertices = verticesPtr;
+
+	// Copy indices, vertices from meshes
+	vertices = new baseVertex[nVertices];;
 	indices = new uint32_t[nIndices];
 
-	// Super TMP Vec3 for usage
+	// Super TMP Vec3 for usage :D
 	aiVector3D* supTmpVec;
 
-	size_t indexI = 0;
-	size_t vertexI = 0;
+	// We collect each meshes indices and vertices into a big vertices, indices buffer, so meshes have local indexes to their local vertices
+	// we have global index for containers.  GlobalIdx += localIdx
+	size_t globalIndicesIdx = 0;
+	size_t globalVertexIdx = 0;
 	size_t vertexOffset = 0;
 
+	// Each mesh
 	for (size_t i = 0; i < nMeshes; i++) {
 		aiMesh* mesh = meshes[i];
-		for (size_t j = 0; j < mesh->mNumFaces; indexI += 3, j++) {
+
+		// Each face
+		for (size_t j = 0; j < mesh->mNumFaces; globalIndicesIdx += 3, j++) {
 			aiFace& face = mesh->mFaces[j];
 
-			// For each face index
+			// Each vertex on face
 			for (size_t k = 0; k < 3; k++) {
-				if (face.mNumIndices < 3)
-					break;
 
-				unsigned vertIdx = face.mIndices[k];
+				unsigned localVertIdx = face.mIndices[k];
+
 				// Index data
-				indices[indexI + k] = vertIdx + vertexI;
+				indices[globalIndicesIdx + k] = localVertIdx + globalVertexIdx;
 
 				// Vertex Data
 				if (mesh->HasPositions()) {
-					supTmpVec = &mesh->mVertices[vertIdx];
-					verticesPtr[vertIdx + vertexI].pos = Vec3(supTmpVec->x, supTmpVec->y, supTmpVec->z);
+					supTmpVec = &mesh->mVertices[localVertIdx];
+					((baseVertex*)vertices)[localVertIdx + globalVertexIdx].pos = Vec3(supTmpVec->x, supTmpVec->y, supTmpVec->z);
 				}
 
 				if (mesh->HasNormals()) {
-					supTmpVec = &mesh->mNormals[vertIdx];
-					verticesPtr[vertIdx + vertexI].normal = Vec3(supTmpVec->x, supTmpVec->y, supTmpVec->z);
+					supTmpVec = &mesh->mNormals[localVertIdx];
+					((baseVertex*)vertices)[localVertIdx + globalVertexIdx].normal = Vec3(supTmpVec->x, supTmpVec->y, supTmpVec->z);
 				}
 
 				if (mesh->HasTangentsAndBitangents()) {
-					supTmpVec = &mesh->mTangents[vertIdx];
-					verticesPtr[vertIdx + vertexI].tangent = Vec3(supTmpVec->x, supTmpVec->y, supTmpVec->z);
+					supTmpVec = &mesh->mTangents[localVertIdx];
+					((baseVertex*)vertices)[localVertIdx + globalVertexIdx].tangent = Vec3(supTmpVec->x, supTmpVec->y, supTmpVec->z);
 				}
 
 				// @TODO not general algorithm, wee need to handle more UV channels
-				supTmpVec = &mesh->mTextureCoords[0][vertIdx];
-				verticesPtr[vertIdx + vertexI].tex = Vec2(supTmpVec->x, -supTmpVec->y); // UV flip y
+				supTmpVec = &mesh->mTextureCoords[0][localVertIdx];
+				((baseVertex*)vertices)[localVertIdx + globalVertexIdx].tex = Vec2(supTmpVec->x, -supTmpVec->y); // UV flip y
 			}
 		}
-		vertexI += mesh->mNumVertices;
+		globalVertexIdx += mesh->mNumVertices;
 	}
 
 	nBytesVertices = nVertices * sizeof(baseVertex);

@@ -22,29 +22,32 @@ cGeometryBuilder::cGeometryBuilder() {
 cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& filePath) {
 	Assimp::Importer importer;
 
+	// Check file existence
 	if (!cFileUtil::isFileExits(filePath)) {
-		ILog::GetInstance()->MsgBox(L"Can't open file: " + filePath);
+		ILog::GetInstance()->MsgBox(L"Can't load geometry file: " + filePath);
 		throw FileNotFoundException();
 	}
 
-	// read up dae scene
+	// parse 3D geom file
 	char ansiFilePath[256];
 	cStrUtil::ToAnsi(filePath, ansiFilePath, 256);
 	const aiScene* scene = importer.ReadFile(ansiFilePath, aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_ImproveCacheLocality | aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_FlipWindingOrder);
-	if (scene == NULL) {
-		ILog::GetInstance()->MsgBox(L"Can't found 3D model: " + filePath);
-		throw FileNotFoundException();
-	}
 
+	// Scene meshes
+	aiMesh** meshes = scene->mMeshes;
+	size_t nMeshes = scene->mNumMeshes;
+
+
+	// Each mesh have vertices, indices
 	size_t nVertices = 0;
 	size_t nIndex = 0;
-	size_t nMeshes = scene->mNumMeshes;
-	aiMesh** meshes = scene->mMeshes;
 
-	// count indices, vertices, matGroups
+	// Assimp library breakes material groups into meshes
 	std::vector<tGeometryDesc::tMatGroup> matGroups;
+
+	// Gather those from meshes
 	for (size_t i = 0; i < nMeshes; i++) {
-		aiMesh *mesh = meshes[i];
+		aiMesh* mesh = meshes[i];
 
 		size_t nMeshIndices = mesh->mNumFaces * 3;
 
@@ -55,6 +58,7 @@ cGeometryBuilder::tGeometryDesc cGeometryBuilder::LoadGeometry(const zsString& f
 		g.indexCount = nMeshIndices;
 		matGroups.push_back(g);
 
+		// vertex, index
 		nVertices += mesh->mNumVertices;
 		nIndex += nMeshIndices;
 	}
