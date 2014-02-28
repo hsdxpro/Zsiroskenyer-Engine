@@ -48,14 +48,15 @@ public:
 		tCgInfo() :vsExists(false), hsExists(false), dsExists(false), gsExists(false), psExists(false){}
 	};
 
-	const cCgShaderHelper::tCgInfo& LoadCgShader(const zsString& shaderPath);
+	cCgShaderHelper(const zsString& shaderPath);
 
 	bool CompileCg(const zsString& cgFilePath, const zsString& shaderOut, cCgShaderHelper::eProfileCG compileProfile);
 
 	std::unordered_map<zsString, uint16_t> GetHLSLTextureSlots(const zsString& hlslFilePath);
 
-	std::unordered_map<zsString, tSamplerDesc> GetSamplerStates(const std::list<zsString>& cgFileLines);
-	cVertexFormat GetVSInputFormat(const std::list<zsString> cgFileLines);
+	std::unordered_map<zsString, tSamplerDesc> GetSamplerStates();
+	cVertexFormat GetVSInputFormat();
+	const cCgShaderHelper::tCgInfo& GetDomainInfo();
 
 	const wchar_t* cCgShaderHelper::GetLastErrorMsg();
 protected:
@@ -69,5 +70,6 @@ protected:
 	CGpass pass; // pass in technique
 	CGprogram vs, hs, ds, gs, ps; // shader programs in pass
 
+	std::list<zsString> cgFileLines;
 	cCgShaderHelper::tCgInfo info;
 };

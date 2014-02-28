@@ -719,8 +719,9 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		PS = 4,
 	};
 	
-	cCgShaderHelper cgHelper;
-	cCgShaderHelper::tCgInfo cgInfo = cgHelper.LoadCgShader(shaderPath_);
+	cCgShaderHelper cgHelper(shaderPath_);
+	const cCgShaderHelper::tCgInfo& cgInfo = cgHelper.GetDomainInfo();
+
 	if (cgHelper.GetLastErrorMsg() != NULL) {
 		lastErrorMsg = cgHelper.GetLastErrorMsg();
 		return eGapiResult::ERROR_UNKNOWN;
@@ -943,11 +944,11 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	}
 
 	// Get Samplers from cg
-	std::ifstream cgFile(shaderPath.c_str());
-	auto cgFileLines = cFileUtil::GetLines(cgFile);
-	cgFile.close();
+	//std::ifstream cgFile(shaderPath.c_str());
+	//auto cgFileLines = cFileUtil::GetLines(cgFile);
+	//cgFile.close();
 
-	std::unordered_map<zsString, tSamplerDesc> samplerPairs = cgHelper.GetSamplerStates(cgFileLines);
+	std::unordered_map<zsString, tSamplerDesc> samplerPairs = cgHelper.GetSamplerStates();
 
 	// GapiD3D11 Create sampler if not exists
 	for (auto it = samplerPairs.begin(); it != samplerPairs.end(); it++) {
@@ -986,7 +987,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		}
 	}
 
-	cVertexFormat vsInputFormat = cgHelper.GetVSInputFormat(cgFileLines);
+	cVertexFormat vsInputFormat = cgHelper.GetVSInputFormat();
 
 	// Create shader program
 	cShaderProgramD3D11* shProg = new cShaderProgramD3D11(byteCodes[VS], byteCodeSizes[VS], vsInputFormat, vs, hs, ds, gs, ps);

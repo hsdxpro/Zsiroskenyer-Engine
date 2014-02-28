@@ -10,7 +10,9 @@
 #include <assert.h>
 
 
-const cCgShaderHelper::tCgInfo& cCgShaderHelper::LoadCgShader(const zsString& shaderPath) {
+cCgShaderHelper::cCgShaderHelper(const zsString& shaderPath) {
+	cgFileLines = cFileUtil::GetLines(shaderPath);
+
 	// Setup context, for creation
 	con = cgCreateContext();
 	cgGLRegisterStates(con);
@@ -23,21 +25,21 @@ const cCgShaderHelper::tCgInfo& cCgShaderHelper::LoadCgShader(const zsString& sh
 	effect = cgCreateEffectFromFile(con, ansiShaderPath, NULL);
 	if (effect == NULL) {
 		lastErrorMsg = cgGetLastListing(con);
-		return info;
+		return;
 	}
 
 	// Tech creation
 	tech = cgGetFirstTechnique(effect);
 	if (tech == NULL) {
 		lastErrorMsg = cgGetLastListing(con);
-		return info;
+		return;
 	}
 
 	// Pass creation
 	pass = cgGetFirstPass(tech);
 	if (pass == NULL) {
 		lastErrorMsg = cgGetLastListing(con);
-		return info;
+		return;
 	}
 
 // Read programs
@@ -65,7 +67,7 @@ const cCgShaderHelper::tCgInfo& cCgShaderHelper::LoadCgShader(const zsString& sh
 	info.gsEntryName = (gs != NULL) ? cgGetProgramString(gs, CGenum::CG_PROGRAM_ENTRY) : "";
 	info.psEntryName = (ps != NULL) ? cgGetProgramString(ps, CGenum::CG_PROGRAM_ENTRY) : "";
 
-	return info;
+	return;
 }
 
 
@@ -181,7 +183,7 @@ std::unordered_map<zsString, uint16_t> cCgShaderHelper::GetHLSLTextureSlots(cons
 	return result;
 }
 
-std::unordered_map<zsString, tSamplerDesc> cCgShaderHelper::GetSamplerStates(const std::list<zsString>& cgFileLines) {
+std::unordered_map<zsString, tSamplerDesc> cCgShaderHelper::GetSamplerStates() {
 	std::unordered_map<zsString, tSamplerDesc> result;
 
 	// Lines that contains "sampler" and "=", contains sampler states under that
@@ -290,7 +292,7 @@ const wchar_t* cCgShaderHelper::GetLastErrorMsg() {
 	return (lastErrorMsg.size() == 0 ) ? NULL : lastErrorMsg.c_str();
 }
 
-cVertexFormat cCgShaderHelper::GetVSInputFormat(const std::list<zsString> cgFileLines)
+cVertexFormat cCgShaderHelper::GetVSInputFormat()
 {
 	// Parse input Layout... from VERTEX_SHADER
 	// - 1. search for vertexShader Entry name ex:"VS_MAIN(", get return value, for example VS_OUT
@@ -369,4 +371,8 @@ cVertexFormat cCgShaderHelper::GetVSInputFormat(const std::list<zsString> cgFile
 	vsInputFormat.Create(attribs);
 
 	return vsInputFormat;
+}
+
+const cCgShaderHelper::tCgInfo& cCgShaderHelper::GetDomainInfo() {
+	return info;
 }

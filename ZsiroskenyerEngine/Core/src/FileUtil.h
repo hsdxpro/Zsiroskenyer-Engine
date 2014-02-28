@@ -29,6 +29,7 @@ public:
 
 // Get infos
 	static std::list<zsString> GetLines(std::ifstream& file);
+	static std::list<zsString> GetLines(const zsString& filePath);
 	static int GetSize(const zsString& path);
 };
 

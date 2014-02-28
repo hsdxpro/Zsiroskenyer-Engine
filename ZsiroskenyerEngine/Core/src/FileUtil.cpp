@@ -48,6 +48,13 @@ std::list<zsString> cFileUtil::GetLines(std::ifstream& file) {
 	return lines;
 }
 
+std::list<zsString> cFileUtil::GetLines(const zsString& filePath) {
+	std::ifstream is(filePath.c_str());
+	auto lines = cFileUtil::GetLines(is);
+	is.close();
+	return lines;
+}
+
 bool cFileUtil::isFileExits(const zsString& str) {
 	std::wfstream is(str.c_str(), std::ios_base::in);
 	bool isOpen = is.is_open();
