@@ -7,9 +7,10 @@
 // Windows based because of cgc.exe
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <assert.h>
 
 
-cCgShaderHelper::tCgInfo cCgShaderHelper::LoadCgShader(const zsString& shaderPath) {
+const cCgShaderHelper::tCgInfo& cCgShaderHelper::LoadCgShader(const zsString& shaderPath) {
 	// Setup context, for creation
 	con = cgCreateContext();
 	cgGLRegisterStates(con);
@@ -22,21 +23,21 @@ cCgShaderHelper::tCgInfo cCgShaderHelper::LoadCgShader(const zsString& shaderPat
 	effect = cgCreateEffectFromFile(con, ansiShaderPath, NULL);
 	if (effect == NULL) {
 		lastErrorMsg = cgGetLastListing(con);
-		return cCgShaderHelper::tCgInfo();
+		return info;
 	}
 
 	// Tech creation
 	tech = cgGetFirstTechnique(effect);
 	if (tech == NULL) {
 		lastErrorMsg = cgGetLastListing(con);
-		return cCgShaderHelper::tCgInfo();
+		return info;
 	}
 
 	// Pass creation
 	pass = cgGetFirstPass(tech);
 	if (pass == NULL) {
 		lastErrorMsg = cgGetLastListing(con);
-		return cCgShaderHelper::tCgInfo();
+		return info;
 	}
 
 // Read programs
@@ -53,17 +54,17 @@ cCgShaderHelper::tCgInfo cCgShaderHelper::LoadCgShader(const zsString& shaderPat
 
 	ds = cgGetPassProgram(pass, CGdomain::CG_TESSELLATION_EVALUATION_DOMAIN);
 
-	cCgShaderHelper::tCgInfo info; // result
-		info.vsExists = (vs != NULL) ? true : false;
-		info.hsExists = (hs != NULL) ? true : false;
-		info.dsExists = (ds != NULL) ? true : false;
-		info.gsExists = (gs != NULL) ? true : false;
-		info.psExists = (ps != NULL) ? true : false;
-		info.vsEntryName = (vs != NULL) ? cgGetProgramString(vs, CGenum::CG_PROGRAM_ENTRY) : "";
-		info.hsEntryName = (hs != NULL) ? cgGetProgramString(hs, CGenum::CG_PROGRAM_ENTRY) : "";
-		info.dsEntryName = (ds != NULL) ? cgGetProgramString(ds, CGenum::CG_PROGRAM_ENTRY) : "";
-		info.gsEntryName = (gs != NULL) ? cgGetProgramString(gs, CGenum::CG_PROGRAM_ENTRY) : "";
-		info.psEntryName = (ps != NULL) ? cgGetProgramString(ps, CGenum::CG_PROGRAM_ENTRY) : "";
+	info.vsExists = (vs != NULL) ? true : false;
+	info.hsExists = (hs != NULL) ? true : false;
+	info.dsExists = (ds != NULL) ? true : false;
+	info.gsExists = (gs != NULL) ? true : false;
+	info.psExists = (ps != NULL) ? true : false;
+	info.vsEntryName = (vs != NULL) ? cgGetProgramString(vs, CGenum::CG_PROGRAM_ENTRY) : "";
+	info.hsEntryName = (hs != NULL) ? cgGetProgramString(hs, CGenum::CG_PROGRAM_ENTRY) : "";
+	info.dsEntryName = (ds != NULL) ? cgGetProgramString(ds, CGenum::CG_PROGRAM_ENTRY) : "";
+	info.gsEntryName = (gs != NULL) ? cgGetProgramString(gs, CGenum::CG_PROGRAM_ENTRY) : "";
+	info.psEntryName = (ps != NULL) ? cgGetProgramString(ps, CGenum::CG_PROGRAM_ENTRY) : "";
+
 	return info;
 }
 
@@ -287,4 +288,85 @@ std::unordered_map<zsString, tSamplerDesc> cCgShaderHelper::GetSamplerStates(con
 
 const wchar_t* cCgShaderHelper::GetLastErrorMsg() {
 	return (lastErrorMsg.size() == 0 ) ? NULL : lastErrorMsg.c_str();
+}
+
+cVertexFormat cCgShaderHelper::GetVSInputFormat(const std::list<zsString> cgFileLines)
+{
+	// Parse input Layout... from VERTEX_SHADER
+	// - 1. search for vertexShader Entry name ex:"VS_MAIN(", get return value, for example VS_OUT
+	// - 2. search for VS_OUT, get lines under that, while line != "};"
+	// - 3. extract VERTEX DECLARATION from those lines
+
+	zsString vsInStructName = cStrUtil::GetWordAfter(cgFileLines, info.vsEntryName + L"(");
+	std::list<zsString> vsInStructLines = cStrUtil::GetLinesBetween(cgFileLines, vsInStructName, L"};");
+	//cgFile.close();
+
+	// (inputLayout)  Vertex shader input format
+	std::vector<cVertexFormat::Attribute> attribs;
+	cVertexFormat::Attribute tmpAttrib;
+	uint16_t attribIdx = 0;
+	auto it = vsInStructLines.begin();
+	while (it != vsInStructLines.end()) {
+		// not empty line... Parse Vertex Declaration
+		if (it->size() != 0) {
+			char semanticNames[10][32]; // Max 10 semantic, each 32 word length
+			char semanticIndex[3]; // 999 max
+
+			cStrUtil::GetWordBetween(*it, ':', ';', semanticNames[attribIdx]);
+			cStrUtil::GetNumberFromEnd(semanticNames[attribIdx], semanticIndex);
+			cStrUtil::CutNumberFromEnd(semanticNames[attribIdx]);
+
+			if (strcmp(semanticNames[attribIdx], "POSITION") == 0)
+				tmpAttrib.semantic = cVertexFormat::POSITION;
+			else if (strcmp(semanticNames[attribIdx], "NORMAL") == 0)
+				tmpAttrib.semantic = cVertexFormat::NORMAL;
+			else if (strcmp(semanticNames[attribIdx], "COLOR") == 0)
+				tmpAttrib.semantic = cVertexFormat::COLOR;
+			else if (strcmp(semanticNames[attribIdx], "TEXCOORD") == 0)
+				tmpAttrib.semantic = cVertexFormat::TEXCOORD;
+			else
+			{
+				lastErrorMsg = zsString("Zsiroskenyer Engine does not support that vertex shader input format semantic name :( -> ") + zsString(semanticNames[attribIdx]);
+				assert(0);
+			}
+
+
+			if (it->find(L"float4") != std::wstring::npos) {
+				tmpAttrib.bitsPerComponent = cVertexFormat::_32_BIT;
+				tmpAttrib.nComponents = 4;
+				tmpAttrib.type = cVertexFormat::FLOAT;
+			}
+			else if (it->find(L"float3") != std::wstring::npos) {
+				tmpAttrib.bitsPerComponent = cVertexFormat::_32_BIT;
+				tmpAttrib.nComponents = 3;
+				tmpAttrib.type = cVertexFormat::FLOAT;
+			}
+			else if (it->find(L"float2") != std::wstring::npos) {
+				tmpAttrib.bitsPerComponent = cVertexFormat::_32_BIT;
+				tmpAttrib.nComponents = 2;
+				tmpAttrib.type = cVertexFormat::FLOAT;
+			}
+			else if (it->find(L"float") != std::wstring::npos) {
+				tmpAttrib.bitsPerComponent = cVertexFormat::_32_BIT;
+				tmpAttrib.nComponents = 1;
+				tmpAttrib.type = cVertexFormat::FLOAT;
+			}
+			else
+			{
+				lastErrorMsg = L"Cg file parsing: Failed to determine vertex shader input attribute format type (float1, 2, 3, 4) supported lol";
+				assert(0);
+			}
+
+			attribs.push_back(tmpAttrib);
+		}
+
+		attribIdx++;
+		it++;
+	}
+
+	// Vertex Shader input format
+	cVertexFormat vsInputFormat;
+	vsInputFormat.Create(attribs);
+
+	return vsInputFormat;
 }

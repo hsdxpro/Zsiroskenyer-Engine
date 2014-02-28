@@ -697,7 +697,7 @@ HRESULT cGraphicsApiD3D11::CompileShaderFromFile(const zsString& fileName, const
 eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, const wchar_t* shaderPath_) {
 	const zsString shaderPath(shaderPath_);
 	
-	// File not exists
+	// Check file existence
 	std::ifstream is(shaderPath.c_str());
 	if (!is.is_open())
 	{
@@ -706,9 +706,11 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	}
 	is.close();
 
+	// later we generate binary into base path
 	zsString pathNoExt = shaderPath.substr(0, shaderPath.size() - 3);
 
-	// For array indexing convenience
+	// For domain arrays handling,indexing convenience
+	const size_t nDomains = 5;
 	enum eDomainIdx {
 		VS = 0,
 		DS = 1,
@@ -716,7 +718,6 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		GS = 3,
 		PS = 4,
 	};
-	const size_t nDomains = 5;
 	
 	cCgShaderHelper cgHelper;
 	cCgShaderHelper::tCgInfo cgInfo = cgHelper.LoadCgShader(shaderPath_);
@@ -944,12 +945,14 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	// Get Samplers from cg
 	std::ifstream cgFile(shaderPath.c_str());
 	auto cgFileLines = cFileUtil::GetLines(cgFile);
+	cgFile.close();
 
 	std::unordered_map<zsString, tSamplerDesc> samplerPairs = cgHelper.GetSamplerStates(cgFileLines);
 
+	// GapiD3D11 Create sampler if not exists
 	for (auto it = samplerPairs.begin(); it != samplerPairs.end(); it++) {
 		D3D11_SAMPLER_DESC sDesc = ConvertToNativeSampler(it->second);
-
+		
 		size_t i = 0;
 		for (; i < samplerStates.size(); i++) {
 			if (memcmp(&sDesc, &samplerStates[i].desc, sizeof(D3D11_SAMPLER_DESC) == 0))
@@ -971,9 +974,9 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			samplerStates.push_back(info);
 		}
 
-		// Iterate through all samplers and check whether sampler exists in that domain, if it, add to specfic sampler domain
+		// Iterate through all samplers and check whether sampler exists in that domain, if yes, add to specfic sampler domain
 		for (size_t j = 0; j < nDomains; j++) {
-			std::unordered_map<zsString, uint16_t> textureSlotsPerDomain = shaderTextureSlots[j];
+			std::unordered_map<zsString, uint16_t>& textureSlotsPerDomain = shaderTextureSlots[j];
 
 			// sampler found in domain
 			auto texIt = textureSlotsPerDomain.find(it->first);
@@ -983,87 +986,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		}
 	}
 
-	// Parse input Layout... from VERTEX_SHADER
-	// - 1. search for vertexShader Entry name ex:"VS_MAIN(", get return value, for example VS_OUT
-	// - 2. search for VS_OUT, get lines under that, while line != "};"
-	// - 3. extract VERTEX DECLARATION from those lines
-
-	zsString vsInStructName = cStrUtil::GetWordAfter(cgFileLines, entryNames[VS] + L"(");
-	std::list<zsString> vsInStructLines = cStrUtil::GetLinesBetween(cgFileLines, vsInStructName, L"};");
-	cgFile.close();
-
-	int nVertexAttributes = 0;
-
-	// Count vertexAttributes
-	auto iter = vsInStructLines.begin();
-	while (iter != vsInStructLines.end()) {
-		// not empty line... Parse Vertex Declaration
-		if (iter->size() != 0)
-			nVertexAttributes++;
-
-		iter++;
-	}
-
-	// (inputLayout)  Vertex shader input format
-	std::vector<cVertexFormat::Attribute> attribs;
-	cVertexFormat::Attribute tmpAttrib;
-	uint16_t attribIdx = 0;
-	iter = vsInStructLines.begin();
-	while (iter != vsInStructLines.end()) {
-		// not empty line... Parse Vertex Declaration
-		if (iter->size() != 0) {
-			char semanticNames[10][32]; // Max 10 semantic, each 32 word length
-			char semanticIndex[3]; // 999 max
-
-			cStrUtil::GetWordBetween(*iter, ':', ';', semanticNames[attribIdx]);
-			cStrUtil::GetNumberFromEnd(semanticNames[attribIdx], semanticIndex);
-			cStrUtil::CutNumberFromEnd(semanticNames[attribIdx]);
-
-			if (strcmp(semanticNames[attribIdx], "POSITION") == 0)
-				tmpAttrib.semantic = cVertexFormat::POSITION;
-			else if (strcmp(semanticNames[attribIdx], "NORMAL") == 0)
-				tmpAttrib.semantic = cVertexFormat::NORMAL;
-			else if (strcmp(semanticNames[attribIdx], "COLOR") == 0)
-				tmpAttrib.semantic = cVertexFormat::COLOR;
-			else if (strcmp(semanticNames[attribIdx], "TEXCOORD") == 0)
-				tmpAttrib.semantic = cVertexFormat::TEXCOORD;
-			else
-				ASSERT_MSG(false, L"Cg file parsing : " + shaderPath + L", Failed to match shader semantic name with our cVertexFormat class");
-
-			
-			if (iter->find(L"float4") != std::wstring::npos) {
-				tmpAttrib.bitsPerComponent = cVertexFormat::_32_BIT;
-				tmpAttrib.nComponents = 4;
-				tmpAttrib.type = cVertexFormat::FLOAT;
-			}
-			else if (iter->find(L"float3") != std::wstring::npos) {
-				tmpAttrib.bitsPerComponent = cVertexFormat::_32_BIT;
-				tmpAttrib.nComponents = 3;
-				tmpAttrib.type = cVertexFormat::FLOAT;
-			}
-			else if (iter->find(L"float2") != std::wstring::npos) {
-				tmpAttrib.bitsPerComponent = cVertexFormat::_32_BIT;
-				tmpAttrib.nComponents = 2;
-				tmpAttrib.type = cVertexFormat::FLOAT;
-			}
-			else if (iter->find(L"float") != std::wstring::npos) {
-				tmpAttrib.bitsPerComponent = cVertexFormat::_32_BIT;
-				tmpAttrib.nComponents = 1;
-				tmpAttrib.type = cVertexFormat::FLOAT; 
-			}
-			else
-				ASSERT_MSG(false, L"Cg file parsing : " + shaderPath + L", Failed to determine vertex shader input format type (float1, 2, 3, 4) supported lol");
-
-			attribs.push_back(tmpAttrib);
-		}
-
-		attribIdx++;
-		iter++;
-	}
-
-	// Vertex Shader input format
-	cVertexFormat vsInputFormat;
-	vsInputFormat.Create(attribs);
+	cVertexFormat vsInputFormat = cgHelper.GetVSInputFormat(cgFileLines);
 
 	// Create shader program
 	cShaderProgramD3D11* shProg = new cShaderProgramD3D11(byteCodes[VS], byteCodeSizes[VS], vsInputFormat, vs, hs, ds, gs, ps);

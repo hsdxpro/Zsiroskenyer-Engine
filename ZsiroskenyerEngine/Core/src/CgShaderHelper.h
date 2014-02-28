@@ -9,7 +9,9 @@
 #include <unordered_map>
 #include <list>
 
-// TODO cgShaderHelper only supports 1 pass 1 tech per effect per cg file
+#include "VertexFormat.h"
+
+// @TODO cgShaderHelper only supports 1 pass 1 tech per effect per cg file
 class cCgShaderHelper {
 public:
 	// Compiling profiles for cg
@@ -46,12 +48,14 @@ public:
 		tCgInfo() :vsExists(false), hsExists(false), dsExists(false), gsExists(false), psExists(false){}
 	};
 
-	cCgShaderHelper::tCgInfo LoadCgShader(const zsString& shaderPath);
+	const cCgShaderHelper::tCgInfo& LoadCgShader(const zsString& shaderPath);
 
 	bool CompileCg(const zsString& cgFilePath, const zsString& shaderOut, cCgShaderHelper::eProfileCG compileProfile);
 
 	std::unordered_map<zsString, uint16_t> GetHLSLTextureSlots(const zsString& hlslFilePath);
+
 	std::unordered_map<zsString, tSamplerDesc> GetSamplerStates(const std::list<zsString>& cgFileLines);
+	cVertexFormat GetVSInputFormat(const std::list<zsString> cgFileLines);
 
 	const wchar_t* cCgShaderHelper::GetLastErrorMsg();
 protected:
@@ -64,4 +68,6 @@ protected:
 	CGtechnique tech; // technique in effect
 	CGpass pass; // pass in technique
 	CGprogram vs, hs, ds, gs, ps; // shader programs in pass
+
+	cCgShaderHelper::tCgInfo info;
 };
