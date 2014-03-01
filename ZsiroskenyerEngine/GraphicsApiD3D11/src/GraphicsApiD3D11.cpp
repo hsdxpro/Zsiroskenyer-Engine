@@ -720,8 +720,6 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	};
 	
 	cCgShaderHelper cgHelper(shaderPath_);
-	const cCgShaderHelper::tCgInfo& cgInfo = cgHelper.GetDomainInfo();
-
 	if (cgHelper.GetLastErrorMsg() != NULL) {
 		lastErrorMsg = cgHelper.GetLastErrorMsg();
 		return eGapiResult::ERROR_UNKNOWN;
@@ -738,6 +736,9 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 	// Samppler states per domain
 	std::vector<cShaderProgramD3D11::tSamplerInfo> shaderSamplerStates[nDomains];
+
+	// Get per domain infos (vs, hs, ds, gs, ps)
+	const cCgShaderHelper::tCgInfo& cgInfo = cgHelper.GetDomainInfo();
 
 	// VertexShader entry
 	existingEntries[VS] = cgInfo.vsExists;
