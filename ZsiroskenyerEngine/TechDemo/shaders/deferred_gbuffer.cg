@@ -1,3 +1,6 @@
+#include "common.cginc"
+#include "deferred_gbuffer_material.cginc"
+
 float4x4 wvp : register(c0);
 float4x4 world : register(c4);
 float3 camPos : register(c8);
@@ -34,13 +37,10 @@ struct VS_OUT {
 	float3x3 TBN	: TEXCOORD4;
 };
 
-struct PS_OUT {
-	float4 gBuffer0 : COLOR0;
-	float4 gBuffer1 : COLOR1;
-	float4 gBuffer2 : COLOR2;
-};
 
-
+//------------------------------------------------------------------------------
+// Vertex shader
+//------------------------------------------------------------------------------
 VS_OUT VS_MAIN(VS_IN In) {
 	VS_OUT Out;
 
@@ -59,22 +59,23 @@ VS_OUT VS_MAIN(VS_IN In) {
 	return Out;
 }
 
-PS_OUT PS_MAIN(VS_OUT In) {
-	PS_OUT Out;
 
-//----------------------------------------------------------//
-//-----------------gBuffer0: DIFFUSECOLOR------------------//
-//--------------------------------------------------------//
+//------------------------------------------------------------------------------
+// Vertex shader
+//------------------------------------------------------------------------------
+GBUFFER PS_MAIN(VS_OUT In) {
+	GBUFFER Out;
+	Out = PixelShader_NormalMap(In.TBN, In.tex0);
+	return Out;
+	/*/
+	//-----------------gBuffer0: DIFFUSECOLOR------------------//
 	float4 diffuseColor = tex2D(diffuseTex, In.tex0);
 	if (diffuseColor.a < 0.5f) {
 		discard;
 	}
-	Out.gBuffer0.xyz = diffuseColor.xyz;
+	Out.diffuse.xyz = diffuseColor.xyz;
 
-//----------------------------------------------------------//
-//--------------------gBuffer1: NORMALS--------------------//
-//--------------------------------------------------------//
-
+	//--------------------gBuffer1: NORMALS--------------------//
 	// Normal map normals
 	float3 n = normalize(mul(tex2D(normalTex, In.tex0).xyz * 2 - 1, In.TBN).xyz);
 
@@ -82,16 +83,13 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	//float3 n = In.normalW;
 
 	// Pack normals
-	Out.gBuffer1.r = n.x;
-	Out.gBuffer1.g = 0.5f*n.y + (n.z>0.f ? 0.5f:-0.5f);
+	Out.normal.rg = PackNormal(n);
 
-//----------------------------------------------------------//
-//---------------gBuffer2: DEBUG PURPOSES------------------//
-//--------------------------------------------------------//
+	//---------------gBuffer2: DEBUG PURPOSES------------------//
 	// Buffer2 reserved for future use
-	Out.gBuffer2 = tex2D(diffuseTex, In.tex0);//float4(In.tangentW.xyz*0.5+float3(0.5,0.5,0.5),1.0f); // NOT USED YET | FOR DEBUG
-	
+	Out.misc = float4(0,0,0,1);
 	return Out;
+	//*/
 };
 
 technique t
