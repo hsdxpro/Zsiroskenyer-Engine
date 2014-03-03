@@ -1,9 +1,36 @@
 id 0
-diffuse 0.9 0.75 0.6 1
+diffuse 0.90980392156863 0.70980392156863 0.28235294117647 1
 specular 1 1 1 1
 emissive 0 0 0 0
 glossiness 0.5
-tdiffuse ../textures/crate.jpg
+tdiffuse
+tnormal
+tspecular
+tdisplace
+id 1
+diffuse 0.35686274509804 0.050980392156863 0.027450980392157 1
+specular 1 1 1 1
+emissive 0 0 0 0
+glossiness 0.5
+tdiffuse
+tnormal
+tspecular
+tdisplace
+id 2
+diffuse 0.2 0.094117647058824 0.050980392156863 1
+specular 1 1 1 1
+emissive 0 0 0 0
+glossiness 0.5
+tdiffuse
+tnormal
+tspecular
+tdisplace
+id 3
+diffuse 0.15294117647059 0.93725490196078 0.94509803921569 1
+specular 1 1 1 1
+emissive 0 0 0 0
+glossiness 0.5
+tdiffuse
 tnormal
 tspecular
 tdisplace

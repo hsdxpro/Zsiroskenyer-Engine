@@ -365,7 +365,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 			}
 			else {
 				// basic parameters
-				mtlConstants.diffuseColor = Vec3(1.0f, 0.0f, 0.0f);
+				mtlConstants.diffuseColor = Vec3(1.0f, 0.0f, 1.0f);
 				mtlConstants.glossiness = 0.0f;
 				mtlConstants.specularLevel = 0.0f;
 
