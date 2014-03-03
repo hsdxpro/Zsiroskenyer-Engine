@@ -17,33 +17,34 @@ bool cFileUtil::Clear(const zsString& path) {
 }
 
 void cFileUtil::ReplaceIncludeDirectives(const zsString& filePath, std::list<zsString>& fileLines_out) {
-	fileLines_out = cFileUtil::GetLines(filePath);
 
-	zsString basePath = cStrUtil::CutDirectory(filePath);
+	std::list<zsString> includedFileList;
+	ReplaceIncludeDirectivesRecursively(filePath, fileLines_out, includedFileList);
+}
 
-	bool foundIncludes = true;
-	auto it = fileLines_out.begin();
-	while (foundIncludes && it != fileLines_out.end()) {
+void cFileUtil::ReplaceIncludeDirectivesRecursively(const zsString& filePath, std::list<zsString>& fileLines_out, std::list<zsString>& includedFileList_out) {
+	auto fileLines = cFileUtil::GetLines(filePath);
+
+	auto basePath = cStrUtil::GetDirectory(filePath);
+
+	for each(zsString s in fileLines) {
 		// Search for "#include" in that line
-		int chIdx = cStrUtil::Find(*it, L"#include");
+		int chIdx = cStrUtil::Find(s, L"#include");
 
-		if (chIdx >= 0)
-		{
+		// reach line that has "#include"
+		if (chIdx >= 0) {
 			// Included file
-			zsString fileName = cStrUtil::Between((*it).c_str() + chIdx, '"', '"');
+			zsString filePath = cStrUtil::Between(s.c_str() + chIdx, '"', '"');
 
-			// Get file's lines
-			auto includedLines = cFileUtil::GetLines(basePath + fileName);
-			for each(auto str in includedLines) {
-				it = fileLines_out.insert(it, str);
+			auto it = std::find(includedFileList_out.begin(), includedFileList_out.end(), filePath);
+			if (it == includedFileList_out.end()) {
+				includedFileList_out.push_back(filePath);
+				ReplaceIncludeDirectivesRecursively(basePath + filePath, fileLines_out, includedFileList_out);
 			}
-
-			// Delete #include "blabla" from list
-			it = fileLines_out.erase(it);
-			//it--;
 		}
-
-		it++;
+		else {
+			fileLines_out.push_back(s);
+		}
 	}
 }
 
