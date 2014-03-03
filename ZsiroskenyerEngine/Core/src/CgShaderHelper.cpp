@@ -13,8 +13,7 @@
 cCgShaderHelper::cCgShaderHelper(const zsString& shaderPath) {
 	memset(shaderPrograms, 0, sizeof(CGprogram)* NDOMAINS);
 
-	cgFileLines = cFileUtil::GetLines(shaderPath);
-	//cFileUtil::ReplaceIncludeDirectives(shaderPath, cgFileLines);
+	cFileUtil::ReplaceIncludeDirectives(shaderPath, cgFileLines);
 
 	// Setup context, for creation
 	con = cgCreateContext();

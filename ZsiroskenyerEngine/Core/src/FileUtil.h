@@ -33,6 +33,10 @@ public:
 	static std::list<zsString> GetLines(std::ifstream& file);
 	static std::list<zsString> GetLines(const zsString& filePath);
 	static int GetSize(const zsString& path);
+
+protected:
+	// pass empty list to last parameter
+	static void ReplaceIncludeDirectivesRecursively(const zsString& filePath, std::list<zsString>& fileLines_out, std::list<zsString>& includedFileList_out);
 };
 
 template<class T>
