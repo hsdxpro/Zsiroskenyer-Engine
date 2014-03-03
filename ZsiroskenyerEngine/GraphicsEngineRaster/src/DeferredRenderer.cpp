@@ -326,11 +326,11 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 				float specularLevel;
 
 				// texture properties
-				bool hasDiffuseMap;
-				bool hasNormalMap;
-				bool hasGlossinessMap;
-				bool hasSpecLevelMap;
-				bool useCutout;
+				int32_t hasDiffuseMap;
+				int32_t hasNormalMap;
+				int32_t hasGlossinessMap;
+				int32_t hasSpecLevelMap;
+				int32_t useCutout;
 			} mtlConstants;
 
 			auto nSubMtl = mtl.GetNSubMaterials();
@@ -365,7 +365,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 			}
 			else {
 				// basic parameters
-				mtlConstants.diffuseColor = Vec3(1.0f, 0.0f, 0.0f);
+				mtlConstants.diffuseColor = Vec3(1.0f, 0.0f, 1.0f);
 				mtlConstants.glossiness = 0.0f;
 				mtlConstants.specularLevel = 0.0f;
 
@@ -376,7 +376,6 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 				mtlConstants.hasSpecLevelMap = false;
 				mtlConstants.useCutout = false;
 			}
-			mtlConstants.hasDiffuseMap = false;
 
 			gApi->SetVSConstantBuffer(&mtlConstants, sizeof(mtlConstants), 20);
 			gApi->SetPSConstantBuffer(&mtlConstants, sizeof(mtlConstants), 20);

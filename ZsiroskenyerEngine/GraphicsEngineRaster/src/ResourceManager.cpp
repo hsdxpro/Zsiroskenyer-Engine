@@ -48,56 +48,6 @@ cGeometryRef cResourceManager::GetGeometry(const zsString& filePath) {
 	// lookup if already exists
 	auto it = geometries.left.find(filePath);
 	if (it == geometries.left.end()) {
-		// MMM-KAY THIS IS BULLCRAP
-		/*
-		cGeometryBuilder::tGeometryDesc d = cGeometryBuilder::LoadGeometry(filePath);
-
-		// create vb
-		IVertexBuffer *VB;
-		gApi->CreateVertexBuffer(&VB, eUsage::IMMUTABLE, d.vertexFormat, d.nVertices * d.vertexFormat.GetByteSize(), d.vertices);
-		// vertex format gányolmány
-		cVertexFormat::Attribute attr;
-		std::vector<cVertexFormat::Attribute> vertexDecl;
-		// all float
-		attr.type = cVertexFormat::FLOAT;
-		attr.bitsPerComponent = cVertexFormat::_32_BIT;
-		// pos
-		attr.nComponents = 3;
-		attr.semantic = cVertexFormat::POSITION;
-		vertexDecl.push_back(attr);
-		// norm
-		attr.nComponents = 3;
-		attr.semantic = cVertexFormat::NORMAL;
-		vertexDecl.push_back(attr);
-		// tangent
-		attr.nComponents = 3;
-		attr.semantic = cVertexFormat::COLOR;
-		vertexDecl.push_back(attr);
-		// texcoord
-		attr.nComponents = 2;
-		attr.semantic = cVertexFormat::TEXCOORD;
-		vertexDecl.push_back(attr);
-		cVertexFormat format;
-		try {
-			format.Create(vertexDecl);
-		}
-		catch (std::exception& e) {
-			std::cerr << "failed to create vertex decl: " <<  e.what() << std::endl;
-		}
-
-		// create ib
-		IIndexBuffer *IB;
-		gApi->CreateIndexBuffer(&IB, eUsage::IMMUTABLE, d.nIndices * d.indexStride, d.indices);
-
-		// create mtl groups
-		std::vector<cGeometry::tMatGroup> matGroup;
-		for (cGeometryBuilder::tGeometryDesc::tMatGroup& e : d.matGroups)
-			matGroup.push_back({ e.id, e.indexOffset, e.indexCount });
-
-		// allocate & construct geometry object
-		geom = new cGeometry(VB, IB, &matGroup);
-		*/
-
 		_cGeometryBuilder builder(gApi);
 		try {
 			builder.LoadFile(filePath);
