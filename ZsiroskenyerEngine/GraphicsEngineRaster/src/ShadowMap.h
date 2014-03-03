@@ -46,6 +46,7 @@ public:
 
 	// Map type
 	struct tMap {
+		tMap() : texture(nullptr) {}
 		ITexture2D* texture;
 		mutable Matrix44 viewMat;
 		mutable Matrix44 projMat;

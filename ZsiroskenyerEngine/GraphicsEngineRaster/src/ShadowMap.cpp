@@ -42,7 +42,7 @@ void cShadowMapDir::Init(IGraphicsApi* gApi, unsigned resolution, eFormat readFo
 
 	ITexture2D::tDesc desc;
 	desc.arraySize = 1;
-	desc.bind = (int)eBind::DEPTH_STENCIL || (int)eBind::SHADER_RESOURCE;
+	desc.bind = (int)eBind::DEPTH_STENCIL | (int)eBind::SHADER_RESOURCE;
 	desc.format = readFormat;
 	desc.depthFormat = depthFormat;
 	desc.width = desc.height = resolution;
@@ -59,17 +59,19 @@ void cShadowMapDir::Init(IGraphicsApi* gApi, unsigned resolution, eFormat readFo
 }
 bool cShadowMapDir::IsValid(IGraphicsApi* gApi, unsigned resolution, eFormat readFormat, eFormat depthFormat, int cascades) {
 	return (
-	this->cascades == cascades &&
-	this->depthFormat == depthFormat &&
-	this->readFormat == readFormat &&
-	this->resolution == resolution &&
-	this->gApi == gApi
+		this->cascades == cascades &&
+		this->depthFormat == depthFormat &&
+		this->readFormat == readFormat &&
+		this->resolution == resolution &&
+		this->gApi == gApi &&
+		operator bool()
 	);
 }
 void cShadowMapDir::Clear() {
 	for (auto& v : maps) {
 		SAFE_RELEASE(v.texture);
 	}
+	maps.clear();
 }
 
 cShadowMapDir::operator bool() {

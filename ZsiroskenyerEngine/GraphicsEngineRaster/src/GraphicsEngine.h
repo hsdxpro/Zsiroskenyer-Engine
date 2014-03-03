@@ -81,6 +81,7 @@ class cGraphicsEngine : public IGraphicsEngine {
 	class cDeferredRenderer;
 	class cHDRProcessor;
 	class cPostProcessor;
+	class cShadowRenderer;
 public:
 	// lifecycle (creation, destruction)
 	cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config);
@@ -118,7 +119,6 @@ private:
 
 	void ReloadBuffers();
 
-private:
 	// render states
 	static const tDepthStencilDesc depthStencilDefault;
 	static const tBlendDesc blendDefault;
@@ -139,6 +139,7 @@ private:
 	cDeferredRenderer* deferredRenderer;
 	cHDRProcessor* hdrProcessor;
 	cPostProcessor* postProcessor;
+	cShadowRenderer* shadowRenderer;
 
 	cResourceManager* resourceManager;
 	std::set<cGraphicsScene*> graphicsScenes;

@@ -76,7 +76,8 @@ screenHeight(screenHeight),
 deferredRenderer(NULL),
 hdrProcessor(NULL),
 shaderScreenCopy(NULL),
-currentSceneBuffer(NULL)
+currentSceneBuffer(NULL),
+shadowRenderer(NULL)
 {
 	// Create graphics api
 	switch (config.rasterEngine.gxApi) {
@@ -133,6 +134,14 @@ currentSceneBuffer(NULL)
 	}
 	catch (std::exception& e) {
 		throw std::runtime_error(std::string("failed to create hdr post-processor: ") + e.what());
+	}
+
+	// Create shadow renderer
+	try {
+		shadowRenderer = new cShadowRenderer(*this);
+	}
+	catch (std::exception& e) {
+		throw std::runtime_error(std::string("failed to create shadow renderer: ") + e.what());
 	}
 }
 
@@ -291,6 +300,9 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, ITexture2D* target, flo
 	sceneManager = &scene.sceneManager;
 	this->elapsed = elapsed;
 	lastCameraMatrix = &scene.lastCameraMatrix;
+
+	// --- --- render shadow map --- --- //
+	shadowRenderer->RenderShadowMaps(scene.sceneManager);
 
 	// --- --- composition w/ deferred --- --- //
 	ASSERT(deferredRenderer);

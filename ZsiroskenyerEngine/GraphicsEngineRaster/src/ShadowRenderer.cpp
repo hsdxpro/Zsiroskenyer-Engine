@@ -8,6 +8,7 @@
 
 #include "GraphicsEngine.h"
 #include "SceneManager.h"
+#include "GraphicsEntity.h"
 #include "../../Core/src/GAPI.h"
 #include <stdexcept>
 
@@ -57,35 +58,38 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 				// get map for type
 				auto& shm = *(cShadowMapDir*)&shadowMap;
 				// init map if not compatible with currently inited
-				if (!shm.IsValid(gApi, 512, eFormat::R16_UNORM, eFormat::D16_UNORM, 1)) {
-					shm.Init(gApi, 512, eFormat::R16_UNORM, eFormat::D16_UNORM, 1);
+				try {
+					if (!shm.IsValid(gApi, 512, eFormat::R16_UNORM, eFormat::D16_UNORM, 1)) {
+						shm.Init(gApi, 512, eFormat::R16_UNORM, eFormat::D16_UNORM, 1);
+					}
+				}
+				catch (std::exception& e) {
+					std::cerr << e.what() << std::endl;
+					break; // breaks switch case label
 				}
 
 				// foreach cascade
 				for (size_t i = 0; i < shm.GetMaps().size(); i++) {
 					// compute transforms
 					auto& map = shm.GetMaps()[i];
-					shm.Transform(map.projMat, map.viewMat, light.direction, parent.camera->GetViewMatrix(), parent.camera->GetProjMatrix());
+					bool isGoodTransform = shm.Transform(map.projMat, map.viewMat, light.direction, parent.camera->GetViewMatrix(), parent.camera->GetProjMatrix());
+					if (!isGoodTransform)
+						continue;
 
 					// setup render
-					gApi->SetRenderTargets(1, NULL, map.texture);
+					gApi->SetRenderTargets(0, NULL, map.texture);
 					gApi->SetShaderProgram(shaderDirectional);
 
 					// foreach inst grp
 					for (auto& instgrp : sceneManager.GetInstanceGroups()) {
 						// set geom params
-						/*
-						static_assert(false, 
-							"\nNem lehet shadow mapet renderelni mert hasznalhatatlan a vertex format / vertex stride\n"
-							"Amig nem fixeljuk, addig sehova... ki ne kommenteld ezt, xD Jólvan nem kommentelem :)!"							
-						);
-						*/
 						gApi->SetVertexBuffer(instgrp->geom->GetVertexBuffer());
 						gApi->SetIndexBuffer(instgrp->geom->GetIndexBuffer());
 
 						// render objects
-						for (auto& obj : instgrp->entities) {
-
+						for (auto& entity : instgrp->entities) {
+							Matrix44 matWorld = entity->GetWorldMatrix();
+							Matrix44 worldViewProj = matWorld * map.viewMat * map.projMat;
 						}
 					}
 				}
@@ -105,15 +109,29 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Deal with them shada'z
+// Deal with the shaders
 void cGraphicsEngine::cShadowRenderer::ReloadShaders() {
-
+	auto Reload = [this](IShaderProgram** prog, const wchar_t* name)->void {
+		IShaderProgram* tmp = SafeLoadShader(gApi, name); // it throws on error!
+		(*prog)->Release();
+		*prog = tmp;
+	};
+	Reload(&shaderDirectional, L"shaders/shadowmap_render_dir.cg");
 }
 
 void cGraphicsEngine::cShadowRenderer::LoadShaders() {
-
+	auto Create = [this](const wchar_t* shader)->IShaderProgram* {
+		return SafeLoadShader(gApi, shader);
+	};
+	try {
+		shaderDirectional = Create(L"shaders/shadowmap_render_dir.cg");
+	}
+	catch (...) {
+		UnloadShaders();
+		throw;
+	}
 }
 
 void cGraphicsEngine::cShadowRenderer::UnloadShaders() {
-
+	SAFE_RELEASE(shaderDirectional);
 }
