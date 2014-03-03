@@ -725,12 +725,12 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	binPaths[cCgShaderHelper::PS] = pathNoExt + L"_ps.bin";
 
 	tShaderByteCodeInfo byteCodes[cCgShaderHelper::NDOMAINS];
-	std::unordered_map<zsString, tSamplerDesc> cgSamplerPairs; // Cg parsed samplers
-
 	std::vector<cShaderProgramD3D11::tSamplerInfo> shaderSamplerStates[cCgShaderHelper::NDOMAINS];
 	std::unordered_map<zsString, uint16_t> shaderTextureSlots[cCgShaderHelper::NDOMAINS];
-
 	cVertexFormat inputLayoutFormat;
+
+	// Cg parsed samplers
+	std::unordered_map<zsString, tSamplerDesc> cgSamplerPairs;
 
 	// Need cg recompile
 	if (recompileCg) {
@@ -757,11 +757,11 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			zsString dxProfile;
 			cCgShaderHelper::eProfileCG cgProfile;
 			switch (i) {
-			case cCgShaderHelper::VS: cgProfile = cCgShaderHelper::eProfileCG::VS_4_0; dxProfile = "vs_4_0"; break;
-			case cCgShaderHelper::HS: cgProfile = cCgShaderHelper::eProfileCG::HS_4_0; dxProfile = "hs_4_0"; break;
-			case cCgShaderHelper::DS: cgProfile = cCgShaderHelper::eProfileCG::DS_4_0; dxProfile = "ds_4_0"; break;
-			case cCgShaderHelper::GS: cgProfile = cCgShaderHelper::eProfileCG::GS_4_0; dxProfile = "gs_4_0"; break;
-			case cCgShaderHelper::PS: cgProfile = cCgShaderHelper::eProfileCG::PS_4_0; dxProfile = "ps_4_0"; break;
+			case cCgShaderHelper::VS : cgProfile = cCgShaderHelper::eProfileCG::VS_4_0; dxProfile = "vs_4_0"; break;
+			case cCgShaderHelper::HS : cgProfile = cCgShaderHelper::eProfileCG::HS_4_0; dxProfile = "hs_4_0"; break;
+			case cCgShaderHelper::DS : cgProfile = cCgShaderHelper::eProfileCG::DS_4_0; dxProfile = "ds_4_0"; break;
+			case cCgShaderHelper::GS : cgProfile = cCgShaderHelper::eProfileCG::GS_4_0; dxProfile = "gs_4_0"; break;
+			case cCgShaderHelper::PS : cgProfile = cCgShaderHelper::eProfileCG::PS_4_0; dxProfile = "ps_4_0"; break;
 			default: assert(0);
 			}
 
@@ -782,7 +782,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			memcpy(byteCodes[i].byteCode.get(), blobs[i]->GetBufferPointer(), byteCodes[i].byteCodeSize);
 			SAFE_RELEASE(blobs[i]);
 
-			// Texture slots 
+			// Save texture slots 
 			shaderTextureSlots[i] = cgHelper.GetHLSLTextureSlots(binPaths[i]);
 		}
 	}
@@ -873,7 +873,6 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			info.state = state;
 			samplerStates.push_back(info);
 		}
-
 
 		// Match cg texture slots with dx domain texture slots
 		for (size_t j = 0; j < cCgShaderHelper::NDOMAINS; j++) {
@@ -1354,11 +1353,8 @@ void cGraphicsApiD3D11::ClearTexture(ITexture2D* t, unsigned clearFlag /*= 0*/, 
 
 // Present
 void cGraphicsApiD3D11::Present() {
-	if (d3dsc){
-		d3dsc->Present(0, 0);
-	}
+	d3dsc->Present(0, 0);
 }
-
 
 // Draw functions
 void cGraphicsApiD3D11::Draw(size_t nVertices, size_t idxStartVertex /*= 0*/) {
