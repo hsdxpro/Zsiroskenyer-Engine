@@ -5,17 +5,19 @@
 
 #include "common.cginc"
 
-// basic parameters
-static const float4 diffuseColor = float4(1,1,1,1);
-static const float glossiness = 0.5f;
-static const float specularLevel = 0.2f;
+struct {
+	// basic parameters
+	float3 diffuseColor;
+	float glossiness;
+	float specularLevel;
 
-// texture properties
-static const bool hasDiffuseMap = false;
-static const bool hasNormalMap = false;
-static const bool hasGlossinessMap = false;
-static const bool hasSpecLevelMap = false;
-static const bool useCutout = false;
+	// texture properties
+	bool hasDiffuseMap;
+	bool hasNormalMap;
+	bool hasGlossinessMap;
+	bool hasSpecLevelMap;
+	bool useCutout;
+} c : register(c20);
 
 // texture maps
 sampler2D diffuseMap = {
@@ -60,27 +62,27 @@ GBUFFER PixelShader_Simple (
 )
 {
 	// fill basic from shader const
-	float3 diffuse = diffuseColor;
-	float gloss = glossiness;
-	float specLvl = specularLevel;
+	float3 diffuse = c.diffuseColor;
+	float gloss = c.glossiness;
+	float specLvl = c.specularLevel;
 
 	// fill textures
 	float4 mapSample;
 
 	// diffuse & cutout
-	if (hasDiffuseMap) {
+	if (c.hasDiffuseMap) {
 		mapSample = tex2D(diffuseMap, texCoord);
-		if (useCutout && mapSample.a < 0.5f)
+		if (c.useCutout && mapSample.a < 0.5f)
 			discard;
 		diffuse *= mapSample.rgb;
 	}
 
 	// specular
-	if (hasGlossinessMap) {
+	if (c.hasGlossinessMap) {
 		float value = tex2D(glossinessMap, texCoord);
 		gloss *= value;
 	}
-	if (hasSpecLevelMap) {
+	if (c.hasSpecLevelMap) {
 		float value = tex2D(specLevelMap, texCoord);
 		specLvl *= value;
 	}

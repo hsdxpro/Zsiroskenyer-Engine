@@ -313,23 +313,73 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		cMaterial& mtl = *group->mtl.get();
 		
 		// Set Geometry
-		//const IIndexBuffer* ib = geom.GetIndexBuffer();
 		gApi->SetIndexBuffer(geom.GetIndexBuffer());
-
 		gApi->SetVertexBuffer(geom.GetVertexBuffer());
 		
 		// Foreach: Entity per-poly material group
 		for (auto& matGroup : geom.GetMatGroups()) {
 			// Set material
-			auto submtl = mtl[matGroup.id % mtl.GetNSubMaterials()];
-			ITexture2D* diffuse = submtl.textureDiffuse.get();
-			ITexture2D* normal = submtl.textureNormal.get();
-			ITexture2D* specular = submtl.textureSpecular.get();
-			ITexture2D* displace = submtl.textureDisplace.get();
+			struct {
+				// basic parameters
+				Vec3 diffuseColor;
+				float glossiness;
+				float specularLevel;
 
-			if (diffuse) gApi->SetTexture(L"diffuseTex", diffuse);
-			if (normal)  gApi->SetTexture(L"normalTex", normal);
+				// texture properties
+				bool hasDiffuseMap;
+				bool hasNormalMap;
+				bool hasGlossinessMap;
+				bool hasSpecLevelMap;
+				bool useCutout;
+			} mtlConstants;
 
+			auto nSubMtl = mtl.GetNSubMaterials();
+			if (nSubMtl > 0) {
+				auto submtl = mtl[matGroup.id % mtl.GetNSubMaterials()];
+
+				// deal with textures
+				ITexture2D* diffuse = submtl.textureDiffuse.get();
+				ITexture2D* normal = submtl.textureNormal.get();
+				ITexture2D* specular = submtl.textureSpecular.get();
+
+				mtlConstants.hasDiffuseMap = (diffuse != nullptr);
+				if (diffuse) {
+					gApi->SetTexture(L"diffuseMap", diffuse);
+				}
+				mtlConstants.hasNormalMap = (normal != nullptr);
+				if (normal) {
+					gApi->SetTexture(L"normalMap", normal);
+				}
+				mtlConstants.hasSpecLevelMap = (specular != nullptr);
+				if (specular) {
+					gApi->SetTexture(L"specLevelMap", specular);
+				}
+				// unused
+				mtlConstants.hasGlossinessMap = false;
+				mtlConstants.useCutout = true;				
+
+				// deal with basic params
+				mtlConstants.diffuseColor = submtl.diffuse;
+				mtlConstants.glossiness = submtl.glossiness;
+				mtlConstants.specularLevel = 0.3f;
+			}
+			else {
+				// basic parameters
+				mtlConstants.diffuseColor = Vec3(1.0f, 0.0f, 0.0f);
+				mtlConstants.glossiness = 0.0f;
+				mtlConstants.specularLevel = 0.0f;
+
+				// texture properties
+				mtlConstants.hasDiffuseMap = false;
+				mtlConstants.hasNormalMap = false;
+				mtlConstants.hasGlossinessMap = false;
+				mtlConstants.hasSpecLevelMap = false;
+				mtlConstants.useCutout = false;
+			}
+			mtlConstants.hasDiffuseMap = false;
+
+			gApi->SetVSConstantBuffer(&mtlConstants, sizeof(mtlConstants), 20);
+			gApi->SetPSConstantBuffer(&mtlConstants, sizeof(mtlConstants), 20);
 
 			// Foreach: Entity -> Draw this group
 			for (auto& entity : group->entities) {

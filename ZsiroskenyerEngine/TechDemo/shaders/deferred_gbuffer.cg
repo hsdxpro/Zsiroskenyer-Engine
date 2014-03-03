@@ -1,26 +1,18 @@
 #include "common.cginc"
 #include "deferred_gbuffer_material.cginc"
 
+
+//------------------------------------------------------------------------------
+//	Shader constants
+//------------------------------------------------------------------------------
 float4x4 wvp : register(c0);
 float4x4 world : register(c4);
 float3 camPos : register(c8);
 
-sampler2D diffuseTex = {
-	MipFilter = LINEAR,
-    	MinFilter = LINEAR,
-    	MagFilter = LINEAR,
-	AddressU = WRAP,
-	AddressV = WRAP,
-};
 
-sampler2D normalTex = {
-	MipFilter = LINEAR,
-    	MinFilter = LINEAR,
-    	MagFilter = LINEAR,
-	AddressU = WRAP,
-	AddressV = WRAP,
-};
-
+//------------------------------------------------------------------------------
+// Shader in/out structures
+//------------------------------------------------------------------------------
 struct VS_IN {
 	float3 posL 	: POSITION;
 	float3 normalL 	: NORMAL;
@@ -65,35 +57,11 @@ VS_OUT VS_MAIN(VS_IN In) {
 //------------------------------------------------------------------------------
 GBUFFER PS_MAIN(VS_OUT In) {
 	GBUFFER Out;
-	if (hasNormalMap)
+	if (c.hasNormalMap)
 		Out = PixelShader_NormalMap(In.TBN, In.tex0);
 	else
 		Out = PixelShader_Simple(In.normalW, In.tex0);
 	return Out;
-	
-	/*
-	//-----------------gBuffer0: DIFFUSECOLOR------------------//
-	float4 diffuseColor = tex2D(diffuseTex, In.tex0);
-	if (diffuseColor.a < 0.5f) {
-		discard;
-	}
-	Out.diffuse.xyz = diffuseColor.xyz;
-
-	//--------------------gBuffer1: NORMALS--------------------//
-	// Normal map normals
-	float3 n = normalize(mul(tex2D(normalTex, In.tex0).xyz * 2 - 1, In.TBN).xyz);
-
-	// OR Geometry normals
-	//float3 n = In.normalW;
-
-	// Pack normals
-	Out.normal.rg = PackNormal(n);
-
-	//---------------gBuffer2: DEBUG PURPOSES------------------//
-	// Buffer2 reserved for future use
-	Out.misc = float4(0,0,0,1);
-	return Out;
-	*/
 };
 
 technique t
