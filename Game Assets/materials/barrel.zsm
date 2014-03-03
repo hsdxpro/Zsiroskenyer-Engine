@@ -4,6 +4,6 @@ specular 1 1 1 1
 emissive 0 0 0 0
 glossiness 0.5
 tdiffuse ../textures/explosive_barrel.jpg
-tnormal ../textures/default_normal.jpg
+tnormal
 tspecular
 tdisplace

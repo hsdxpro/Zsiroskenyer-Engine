@@ -4,7 +4,7 @@ specular 1 1 1 1
 emissive 0 0 0 0
 glossiness 0.5
 tdiffuse ../textures/crate.jpg
-tnormal ../textures/default_normal.jpg
+tnormal
 tspecular
 tdisplace
 id 1
@@ -13,7 +13,7 @@ specular 1 1 1 1
 emissive 0 0 0 0
 glossiness 0.5
 tdiffuse ../textures/road_tileable.jpg
-tnormal ../textures/default_normal.jpg
+tnormal
 tspecular
 tdisplace
 id 2
@@ -22,7 +22,7 @@ specular 1 1 1 1
 emissive 0 0 0 0
 glossiness 0.5
 tdiffuse ../textures/terrain_colormap.tif
-tnormal ../textures/default_normal.jpg
+tnormal
 tspecular
 tdisplace
 id 3
@@ -31,6 +31,6 @@ specular 1 1 1 1
 emissive 0 0 0 0
 glossiness 0.5
 tdiffuse ../textures/coyote_alpha.tif
-tnormal ../textures/default_normal.jpg
+tnormal
 tspecular
 tdisplace

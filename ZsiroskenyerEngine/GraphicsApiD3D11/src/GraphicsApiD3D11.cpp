@@ -737,6 +737,12 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 		// infos about cg shader
 		cCgShaderHelper cgHelper(shaderPath);
+		if (cgHelper.GetLastErrorMsg() != NULL)
+		{
+			lastErrorMsg = cgHelper.GetLastErrorMsg();
+			return eGapiResult::ERROR_UNKNOWN;
+		}
+
 		auto domainsInfo = cgHelper.GetDomainInfo();
 		cgSamplerPairs = cgHelper.GetSamplerStates();
 		inputLayoutFormat = cgHelper.GetVSInputFormat();
