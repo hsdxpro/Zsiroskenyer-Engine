@@ -11,7 +11,10 @@
 
 
 cCgShaderHelper::cCgShaderHelper(const zsString& shaderPath) {
-	cgFileLines = cFileUtil::GetLines(shaderPath);
+	memset(shaderPrograms, 0, sizeof(CGprogram)* NDOMAINS);
+
+	//cgFileLines = cFileUtil::GetLines(shaderPath);
+	cFileUtil::ReplaceIncludeDirectives(shaderPath, cgFileLines);
 
 	// Setup context, for creation
 	con = cgCreateContext();
@@ -42,31 +45,16 @@ cCgShaderHelper::cCgShaderHelper(const zsString& shaderPath) {
 		return;
 	}
 
-// Read programs
-	// VertexShader
-	vs = cgGetPassProgram(pass, CGdomain::CG_VERTEX_DOMAIN);
+	shaderPrograms[VS] = cgGetPassProgram(pass, CGdomain::CG_VERTEX_DOMAIN);
+	shaderPrograms[HS] = cgGetPassProgram(pass, CGdomain::CG_TESSELLATION_CONTROL_DOMAIN);
+	shaderPrograms[DS] = cgGetPassProgram(pass, CGdomain::CG_TESSELLATION_EVALUATION_DOMAIN);
+	shaderPrograms[GS] = cgGetPassProgram(pass, CGdomain::CG_GEOMETRY_DOMAIN);
+	shaderPrograms[PS] = cgGetPassProgram(pass, CGdomain::CG_FRAGMENT_DOMAIN);
+	
+	for (uint8_t i = 0; i < NDOMAINS; i++)
+		info.domainExists[i] = shaderPrograms[i] != NULL;
 
-	// GeometryShader
-	gs = cgGetPassProgram(pass, CGdomain::CG_GEOMETRY_DOMAIN);
-
-	// PixelShader
-	ps = cgGetPassProgram(pass, CGdomain::CG_FRAGMENT_DOMAIN);
-
-	hs = cgGetPassProgram(pass, CGdomain::CG_TESSELLATION_CONTROL_DOMAIN);
-
-	ds = cgGetPassProgram(pass, CGdomain::CG_TESSELLATION_EVALUATION_DOMAIN);
-
-	info.vsExists = (vs != NULL) ? true : false;
-	info.hsExists = (hs != NULL) ? true : false;
-	info.dsExists = (ds != NULL) ? true : false;
-	info.gsExists = (gs != NULL) ? true : false;
-	info.psExists = (ps != NULL) ? true : false;
-	info.vsEntryName = (vs != NULL) ? cgGetProgramString(vs, CGenum::CG_PROGRAM_ENTRY) : "";
-	info.hsEntryName = (hs != NULL) ? cgGetProgramString(hs, CGenum::CG_PROGRAM_ENTRY) : "";
-	info.dsEntryName = (ds != NULL) ? cgGetProgramString(ds, CGenum::CG_PROGRAM_ENTRY) : "";
-	info.gsEntryName = (gs != NULL) ? cgGetProgramString(gs, CGenum::CG_PROGRAM_ENTRY) : "";
-	info.psEntryName = (ps != NULL) ? cgGetProgramString(ps, CGenum::CG_PROGRAM_ENTRY) : "";
-
+	vsEntryName = (shaderPrograms[VS] != NULL) ? cgGetProgramString(shaderPrograms[VS], CGenum::CG_PROGRAM_ENTRY) : "";
 	return;
 }
 
@@ -300,7 +288,7 @@ cVertexFormat cCgShaderHelper::GetVSInputFormat()
 	// - 2. search for VS_OUT, get lines under that, while line != "};"
 	// - 3. extract VERTEX DECLARATION from those lines
 
-	zsString vsInStructName = cStrUtil::GetWordAfter(cgFileLines, info.vsEntryName + L"(");
+	zsString vsInStructName = cStrUtil::GetWordAfter(cgFileLines, vsEntryName + L"(");
 	std::list<zsString> vsInStructLines = cStrUtil::GetLinesBetween(cgFileLines, vsInStructName, L"};");
 	//cgFile.close();
 

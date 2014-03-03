@@ -16,6 +16,37 @@ bool cFileUtil::Clear(const zsString& path) {
 	return true;
 }
 
+void cFileUtil::ReplaceIncludeDirectives(const zsString& filePath, std::list<zsString>& fileLines_out) {
+	fileLines_out = cFileUtil::GetLines(filePath);
+
+	zsString basePath = cStrUtil::CutDirectory(filePath);
+
+	bool foundIncludes = true;
+	auto it = fileLines_out.begin();
+	while (foundIncludes && it != fileLines_out.end()) {
+		// Search for "#include" in that line
+		int chIdx = cStrUtil::Find(*it, L"#include");
+
+		if (chIdx >= 0)
+		{
+			// Included file
+			zsString fileName = cStrUtil::Between((*it).c_str() + chIdx, '"', '"');
+
+			// Get file's lines
+			auto includedLines = cFileUtil::GetLines(basePath + fileName);
+			for each(auto str in includedLines) {
+				it = fileLines_out.insert(it, str);
+			}
+
+			// Delete #include "blabla" from list
+			it = fileLines_out.erase(it);
+			//it--;
+		}
+
+		it++;
+	}
+}
+
 void cFileUtil::Write(std::ofstream& o, void* data, uint32_t size)
 {
 	o.write((const char*)data, size);

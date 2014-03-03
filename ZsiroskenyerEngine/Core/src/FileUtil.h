@@ -9,6 +9,8 @@ class cFileUtil {
 public:
 	static bool Clear(const zsString& path);
 
+	static void ReplaceIncludeDirectives(const zsString& filePath, std::list<zsString>& fileLines_out);
+
 // Binary writes
 	static void Write(std::ofstream& o, void* data, size_t size);
 

@@ -231,7 +231,7 @@ void cStrUtil::Between(zsString& strOut, const wchar_t* left, const wchar_t* rig
 
 
 	// Reach index of var:left str in c_str()
-	size_t rightIdx = leftIdx;
+	size_t rightIdx = leftIdx + 1;
 	while (str[rightIdx] != '\0') {
 		// Save left idx for BackUps
 		startIdx = rightIdx;
@@ -397,7 +397,7 @@ zsString cStrUtil::Between(const zsString& s, wchar_t left, wchar_t right) {
 		leftIdx++;
 
 	// Reach right bound
-	size_t rightIdx = leftIdx;
+	size_t rightIdx = leftIdx + 1;
 	while (str[rightIdx] != right || str[rightIdx] == '\0')
 		rightIdx++;
 
@@ -443,7 +443,7 @@ zsString cStrUtil::Between(const zsString& s, const wchar_t* left, const wchar_t
 
 
 	// Reach index of var:left str in c_str()
-	size_t rightIdx = leftIdx;
+	size_t rightIdx = leftIdx + 1;
 	while (str[rightIdx] != '\0') {
 		// Save left idx for BackUps
 		startIdx = rightIdx;
@@ -477,22 +477,20 @@ zsString cStrUtil::Between(const zsString& s, const wchar_t* left, const wchar_t
 	return  s.substr(leftIdx, rightIdx - leftIdx);
 }
 
-void cStrUtil::CutDirectory(zsString& strOut) {
-	const wchar_t *str = strOut.c_str();
-	size_t nDelimIdx = 0;
-	size_t idx = 0;
-	while (str[idx] != '\0') {
-		idx++;
+zsString cStrUtil::CutDirectory(const zsString& str) {
+	const wchar_t *s = str.c_str();
+	size_t newSize = str.size();
+	if (s != '\0') {
+		while (*s != '\0') s++; // Go back
 
-		if (str[idx] == '\\' || str[idx] == '/')
-			nDelimIdx = idx;
+		while (*s != '\\' && *s != '/') {
+			newSize--;
+			s--;
+		}
+		newSize++;
 	}
-	nDelimIdx++; // go after delim..
 
-	// Okay so we found the index of the last '\\' or '/'
-	size_t newSize = strOut.size() - nDelimIdx; // TODO size() slow solution
-
-	strOut = strOut.substr(nDelimIdx, newSize);
+	return str.substr(0, newSize);
 }
 
 void cStrUtil::CutFrontFromDelim(zsString& strOut, wchar_t ch) {
