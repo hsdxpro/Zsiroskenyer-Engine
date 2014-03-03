@@ -32,20 +32,18 @@ public:
 		PS_2_0,
 	};
 
+	// General domain indexing
+	enum eDomainIdx : uint8_t {
+		VS = 0,
+		HS = 1,
+		DS = 2,
+		GS = 3,
+		PS = 4,
+		NDOMAINS = 5,
+	};
+
 	struct tCgInfo {
-		bool vsExists;
-		bool hsExists;
-		bool dsExists;
-		bool gsExists;
-		bool psExists;
-
-		zsString vsEntryName;
-		zsString hsEntryName;
-		zsString dsEntryName;
-		zsString gsEntryName;
-		zsString psEntryName;
-
-		tCgInfo() :vsExists(false), hsExists(false), dsExists(false), gsExists(false), psExists(false){}
+		bool domainExists[NDOMAINS];
 	};
 
 	cCgShaderHelper(const zsString& shaderPath);
@@ -68,7 +66,9 @@ protected:
 	CGeffect effect; // .cg
 	CGtechnique tech; // technique in effect
 	CGpass pass; // pass in technique
-	CGprogram vs, hs, ds, gs, ps; // shader programs in pass
+	CGprogram shaderPrograms[NDOMAINS];
+
+	zsString vsEntryName;
 
 	std::list<zsString> cgFileLines;
 	cCgShaderHelper::tCgInfo info;

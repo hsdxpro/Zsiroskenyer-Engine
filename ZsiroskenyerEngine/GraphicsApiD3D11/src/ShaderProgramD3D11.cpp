@@ -21,6 +21,7 @@ cShaderProgramD3D11::cShaderProgramD3D11(
 :vsByteCodeSize(vsByteCodeSize), vsInputFormat(vsInputFormat),
  vs(vs), hs(hs), ds(ds), gs(gs), ps(ps)
 {
+	assert( vsByteCode );
 	this->vsByteCode = new unsigned char[vsByteCodeSize];
 	memcpy(this->vsByteCode, vsByteCode, vsByteCodeSize );
 }
