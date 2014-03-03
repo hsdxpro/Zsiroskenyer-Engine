@@ -172,10 +172,11 @@ Vec4 Vec4::operator * (const Matrix44& m) const {
 };
 
 Vec4& Vec4::operator *= (const Matrix44& m) {
-	x = m._11*x + m._21*y + m._31*z + m._41*w;
-	y = m._12*x + m._22*y + m._32*z + m._42*w;
-	z = m._13*x + m._23*y + m._33*z + m._43*w;
-	z = m._14*x + m._24*y + m._34*z + m._44*w;
+	float tmpX = x, tmpY = y, tmpZ = z;
+	x = m._11*tmpX + m._21*tmpY + m._31*tmpZ + m._41*w;
+	y = m._12*tmpX + m._22*tmpY + m._32*tmpZ + m._42*w;
+	z = m._13*tmpX + m._23*tmpY + m._33*tmpZ + m._43*w;
+	w = m._14*tmpX + m._24*tmpY + m._34*tmpZ + m._44*w;
 	return *this;
 }
 

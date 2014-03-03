@@ -78,6 +78,7 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 
 					// setup render
 					gApi->SetRenderTargets(0, NULL, map.texture);
+					gApi->Clear(false, true, true);
 					gApi->SetShaderProgram(shaderDirectional);
 
 					// foreach inst grp

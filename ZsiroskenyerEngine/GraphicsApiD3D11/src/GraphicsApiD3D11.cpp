@@ -786,7 +786,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			shaderTextureSlots[i] = cgHelper.GetHLSLTextureSlots(binPaths[i]);
 		}
 	}
-	
+
 
 
 	ID3D11VertexShader*	  vs = nullptr;
