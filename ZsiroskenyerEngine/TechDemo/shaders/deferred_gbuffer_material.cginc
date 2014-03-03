@@ -6,16 +6,16 @@
 #include "common.cginc"
 
 // basic parameters
-static const float4 diffuseColor = float4(1,1,1,0);
+static const float4 diffuseColor = float4(1,1,1,1);
 static const float glossiness = 0.5f;
 static const float specularLevel = 0.2f;
 
 // texture properties
-static const bool hasDiffuseMap = true;
-static const bool hasNormalMap = true;
+static const bool hasDiffuseMap = false;
+static const bool hasNormalMap = false;
 static const bool hasGlossinessMap = false;
 static const bool hasSpecLevelMap = false;
-static const bool useCutout = true;
+static const bool useCutout = false;
 
 // texture maps
 sampler2D diffuseMap = {
@@ -97,35 +97,9 @@ GBUFFER PixelShader_NormalMap (
 	float2 texCoord
 )
 {
-	// fill basic from shader const
-	float3 diffuse = diffuseColor;
-	float gloss = glossiness;
-	float specLvl = specularLevel;
-
 	// normal
-	float3 normal = 
+	float3 normal =
 		normalize(mul(tex2D(normalMap, texCoord).xyz * 2.0f - float3(1.f,1.f,1.f), TBN));
 
-	// fill textures
-	float4 mapSample;
-
-	// diffuse & cutout
-	if (hasDiffuseMap) {
-		mapSample = tex2D(diffuseMap, texCoord);
-		if (useCutout && mapSample.a < 0.5f)
-			discard;
-		diffuse *= mapSample.rgb;
-	}
-
-	// specular
-	if (hasGlossinessMap) {
-		float value = tex2D(glossinessMap, texCoord);
-		gloss *= value;
-	}
-	if (hasSpecLevelMap) {
-		float value = tex2D(specLevelMap, texCoord);
-		specLvl *= value;
-	}
-
-	return EncodeGBuffer(diffuse, normal, gloss, specLvl);
+	return PixelShader_Simple(normal, texCoord);
 }
