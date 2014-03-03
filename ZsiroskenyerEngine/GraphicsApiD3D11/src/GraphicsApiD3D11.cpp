@@ -789,11 +789,11 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	
 
 
-	ID3D11VertexShader*	  vs;
-	ID3D11HullShader*	  hs;
-	ID3D11DomainShader*   ds;
-	ID3D11GeometryShader* gs;
-	ID3D11PixelShader*	  ps;
+	ID3D11VertexShader*	  vs = nullptr;
+	ID3D11HullShader*	  hs = nullptr;
+	ID3D11DomainShader*   ds = nullptr;
+	ID3D11GeometryShader* gs = nullptr;
+	ID3D11PixelShader*	  ps = nullptr;
 
 	HRESULT hr = S_OK;
 	// Create vertex shader
