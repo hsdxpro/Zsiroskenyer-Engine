@@ -1,4 +1,41 @@
 #include "common.cginc"
+
+
+// TODO: MOVE THESE BACK TO #INCLUDE WHEN PARSER WORKS
+// texture maps
+sampler2D diffuseMap = {
+	MipFilter = LINEAR,
+    MinFilter = LINEAR,
+    MagFilter = LINEAR,
+	AddressU = WRAP,
+	AddressV = WRAP,
+};
+
+sampler2D normalMap = {
+	MipFilter = LINEAR,
+    MinFilter = LINEAR,
+   	MagFilter = LINEAR,
+	AddressU = WRAP,
+	AddressV = WRAP,
+};
+
+sampler2D glossinessMap = {
+	MipFilter = LINEAR,
+    MinFilter = LINEAR,
+    MagFilter = LINEAR,
+	AddressU = WRAP,
+	AddressV = WRAP,
+};
+
+sampler2D specLevelMap = {
+	MipFilter = LINEAR,
+    MinFilter = LINEAR,
+    MagFilter = LINEAR,
+	AddressU = WRAP,
+	AddressV = WRAP,
+};
+
+
 #include "deferred_gbuffer_material.cginc"
 
 
