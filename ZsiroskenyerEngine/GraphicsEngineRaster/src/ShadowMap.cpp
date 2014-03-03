@@ -121,7 +121,8 @@ bool cShadowMapDir::Transform(
 	for (auto& v : frustumPoints) {
 		Vec4 v4 = v;
 		v4 *= invCameraViewProj;
-		v = v4 / v4.w;
+		v4 /= v4.w;
+		v = v4;
 	}
 	// interpolate for near and far clips
 	for (int i = 0; i < 4; i++) {
@@ -137,6 +138,7 @@ bool cShadowMapDir::Transform(
 	auto cp = Cross(ld, targetLigthDir);
 	auto dp = 1.0f + Dot(ld, targetLigthDir);
 	Quat rot(cp.x, cp.y, cp.z, dp);
+	rot.Normalize();
 
 	for (auto& v : frustumPoints) {
 		v *= rot;

@@ -157,8 +157,8 @@ Vec3 Vec3::operator / (float s) const {
 Vec3& Vec3::operator *= (const Matrix44& m) {
 	float tmpX = x;
 	float tmpY = y;
-	x = m._11 * x + m._21 * y + m._31 * z + m._41;
-	y = m._12 * tmpX + m._22 * y + m._32 * z + m._42;
+	x = m._11 * tmpX + m._21 * tmpY + m._31 * z + m._41;
+	y = m._12 * tmpX + m._22 * tmpY + m._32 * z + m._42;
 	z = m._13 * tmpX + m._23 * tmpY + m._33 * z + m._43;
 	return *this;
 }
