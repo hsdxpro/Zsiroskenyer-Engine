@@ -52,7 +52,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	color.a = 1.0f;
 
 	// shadow map test
-	if (In.tex0.x < 0.5f) {
+	if (In.tex0.x < 0.9f) {
 		float shadowDepth = tex2D(shadowMap, In.tex0);
 		color = float4(shadowDepth, shadowDepth, shadowDepth, 1.0f);
 	}
