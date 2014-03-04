@@ -1548,7 +1548,17 @@ eGapiResult cGraphicsApiD3D11::SetPSConstantBuffer(const void* data, size_t size
 
 // Set (multiple) render targets
 eGapiResult cGraphicsApiD3D11::SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget /* = NULL */) {
-	for (unsigned i = 0; i < nTargets; i++) {
+
+	// Set dsv
+	ID3D11DepthStencilView* dsv = (depthStencilTarget) ? ((cTexture2DD3D11*)depthStencilTarget)->GetDSV() : NULL;
+
+	// Set RTVS
+	d3dcon->OMSetRenderTargets(nTargets, activeRTVs, dsv);
+
+
+	// If there are rtv's create viewports based on it
+	unsigned i = 0;
+	for (; i < nTargets; i++) {
 		activeRTVs[i] = ((const cTexture2DD3D11*)(renderTargets[i]))->GetRTV();
 		if (activeRTVs[i]) {
 			activeViewports[i].Width = ((const cTexture2DD3D11*)(renderTargets[i]))->GetWidth();
@@ -1560,14 +1570,21 @@ eGapiResult cGraphicsApiD3D11::SetRenderTargets(unsigned nTargets, const ITextur
 		}
 	}
 
-	// DSV
-	ID3D11DepthStencilView* dsv = (depthStencilTarget) ? ((cTexture2DD3D11*)depthStencilTarget)->GetDSV() : NULL;
+	// There is no rtv, but dsv, create viewports based on dsv
+	if (i == 0 && depthStencilTarget) {
+		const cTexture2DD3D11* tmpDsv = (const cTexture2DD3D11*)depthStencilTarget;
+		activeViewports[0].Width = tmpDsv->GetWidth();
+		activeViewports[0].Height = tmpDsv->GetHeight();
+		activeViewports[0].TopLeftX = 0;
+		activeViewports[0].TopLeftY = 0;
+		activeViewports[0].MinDepth = 0.0f;
+		activeViewports[0].MaxDepth = 1.0f;
+		nTargets = 1; // use that shit
+	}
 
 	// Set Viewports
 	d3dcon->RSSetViewports(nTargets, activeViewports);
 
-	// Set RTVS
-	d3dcon->OMSetRenderTargets(nTargets, activeRTVs, dsv);
 	return eGapiResult::OK;
 }
 
