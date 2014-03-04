@@ -1552,6 +1552,7 @@ eGapiResult cGraphicsApiD3D11::SetRenderTargets(unsigned nTargets, const ITextur
 	ID3D11DepthStencilView* dsv = (depthStencilTarget) ? ((cTexture2DD3D11*)depthStencilTarget)->GetDSV() : NULL;
 
 	// If there are rtv's create viewports based on it
+	memset(activeRTVs, 0, sizeof(ID3D11RenderTargetView*) * 16);
 	unsigned i = 0;
 	for (; i < nTargets; i++) {
 		activeRTVs[i] = ((const cTexture2DD3D11*)(renderTargets[i]))->GetRTV();
