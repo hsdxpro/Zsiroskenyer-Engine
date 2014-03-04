@@ -1552,6 +1552,7 @@ eGapiResult cGraphicsApiD3D11::SetRenderTargets(unsigned nTargets, const ITextur
 	ID3D11DepthStencilView* dsv = (depthStencilTarget) ? ((cTexture2DD3D11*)depthStencilTarget)->GetDSV() : NULL;
 
 	// If there are rtv's create viewports based on it
+	//memset(activeRTVs, 0, sizeof(ID3D11RenderTargetView*) * 16);
 	unsigned i = 0;
 	for (; i < nTargets; i++) {
 		activeRTVs[i] = ((const cTexture2DD3D11*)(renderTargets[i]))->GetRTV();
@@ -1567,9 +1568,8 @@ eGapiResult cGraphicsApiD3D11::SetRenderTargets(unsigned nTargets, const ITextur
 
 	// There is no rtv, but dsv, create viewports based on dsv
 	if (i == 0 && depthStencilTarget) {
-		const cTexture2DD3D11* tmpDsv = (const cTexture2DD3D11*)depthStencilTarget;
-		activeViewports[0].Width = tmpDsv->GetWidth();
-		activeViewports[0].Height = tmpDsv->GetHeight();
+		activeViewports[0].Width = ((const cTexture2DD3D11*)depthStencilTarget)->GetWidth();
+		activeViewports[0].Height = ((const cTexture2DD3D11*)depthStencilTarget)->GetHeight();
 		activeViewports[0].TopLeftX = 0;
 		activeViewports[0].TopLeftY = 0;
 		activeViewports[0].MinDepth = 0.0f;
