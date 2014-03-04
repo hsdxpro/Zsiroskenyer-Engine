@@ -751,7 +751,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		ID3DBlob* blobs[cCgShaderHelper::NDOMAINS];
 		for (uint8_t i = 0; i < cCgShaderHelper::NDOMAINS; i++) {
 			// If not exists leave it
-			if (!domainsInfo.domainExists[i])
+			if (!domainsInfo.domainsExist[i])
 				continue;
 
 			zsString dxProfile;

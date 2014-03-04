@@ -15,12 +15,12 @@ cCgShaderHelper::cCgShaderHelper(const zsString& shaderPath) {
 
 	cFileUtil::ReplaceIncludeDirectives(shaderPath, cgFileLines);
 
-	// Setup context, for creation
+	// Setup context, for creation (Yeah silly, but use OpenGL cg state and params) because equal with dx...
 	con = cgCreateContext();
 	cgGLRegisterStates(con);
 	cgGLSetManageTextureParameters(con, CG_TRUE);
 
-	// Effect creation
+	// Create cg effect from file (load)
 	assert(shaderPath.size() <= 256);
 	char ansiShaderPath[256];
 	cStrUtil::ToAnsi(shaderPath, ansiShaderPath, 256);
@@ -49,12 +49,17 @@ cCgShaderHelper::cCgShaderHelper(const zsString& shaderPath) {
 	shaderPrograms[DS] = cgGetPassProgram(pass, CGdomain::CG_TESSELLATION_EVALUATION_DOMAIN);
 	shaderPrograms[GS] = cgGetPassProgram(pass, CGdomain::CG_GEOMETRY_DOMAIN);
 	shaderPrograms[PS] = cgGetPassProgram(pass, CGdomain::CG_FRAGMENT_DOMAIN);
-	
-	for (uint8_t i = 0; i < NDOMAINS; i++)
-		info.domainExists[i] = shaderPrograms[i] != NULL;
 
-	vsEntryName = (shaderPrograms[VS] != NULL) ? cgGetProgramString(shaderPrograms[VS], CGenum::CG_PROGRAM_ENTRY) : "";
-	return;
+
+	// Domain infos
+	for (uint8_t i = 0; i < NDOMAINS; i++) {
+		// Domain existence
+		info.domainsExist[i] = shaderPrograms[i] != NULL;
+
+		// if exist save entry name
+		if (info.domainsExist[i]) 
+			info.domainsEntry[i] = cgGetProgramString(shaderPrograms[i], CGenum::CG_PROGRAM_ENTRY);
+	}
 }
 
 
@@ -287,7 +292,7 @@ cVertexFormat cCgShaderHelper::GetVSInputFormat()
 	// - 2. search for VS_OUT, get lines under that, while line != "};"
 	// - 3. extract VERTEX DECLARATION from those lines
 
-	zsString vsInStructName = cStrUtil::GetWordAfter(cgFileLines, vsEntryName + L"(");
+	zsString vsInStructName = cStrUtil::GetWordAfter(cgFileLines, info.domainsEntry[VS] + L"(");
 	std::list<zsString> vsInStructLines = cStrUtil::GetLinesBetween(cgFileLines, vsInStructName, L"};");
 	//cgFile.close();
 

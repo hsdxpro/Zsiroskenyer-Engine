@@ -43,7 +43,8 @@ public:
 	};
 
 	struct tCgInfo {
-		bool domainExists[NDOMAINS];
+		bool domainsExist[NDOMAINS];
+		zsString domainsEntry[NDOMAINS];
 	};
 
 	cCgShaderHelper(const zsString& shaderPath);
@@ -67,8 +68,6 @@ protected:
 	CGtechnique tech; // technique in effect
 	CGpass pass; // pass in technique
 	CGprogram shaderPrograms[NDOMAINS];
-
-	zsString vsEntryName;
 
 	std::list<zsString> cgFileLines;
 	cCgShaderHelper::tCgInfo info;
