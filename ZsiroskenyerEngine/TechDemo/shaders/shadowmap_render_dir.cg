@@ -24,7 +24,8 @@ struct VS_IN {
 
 float4 VS_MAIN(VS_IN In) : SV_POSITION {
 	float4 posW = mul(float4(In.posL, 1.0f), lightWorldViewProj);
-	posW = float4(In.posL*0.05f, 1.0f);
+	posW = float4(In.posL*0.1f, 1.0f);
+	posW.z = 0.3f;
 	return posW;
 }
 
@@ -32,12 +33,13 @@ float4 VS_MAIN(VS_IN In) : SV_POSITION {
 // Pixel shader
 //------------------------------------------------------------------------------
 
-/*
+
 // omg such pixel shader
-float4 PS_MAIN() {
-	return float4(0,0,0,1);
+float PS_MAIN() : DEPTH {
+	return 0.1f;
 }
-*/
+
+
 
 
 
@@ -47,6 +49,6 @@ technique t
 	pass p
 	{
 		VertexProgram = compile vs_4_0 VS_MAIN();
-		//FragmentProgram = compile ps_4_0 PS_MAIN();
+		FragmentProgram = compile ps_4_0 PS_MAIN();
 	}
 }

@@ -50,11 +50,7 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 	blend[0].writeMask = 0;
 	gApi->SetBlendState(blend);
 
-	tDepthStencilDesc dsState;
-	dsState.depthCompare = eComparisonFunc::LESS;
-	dsState.depthEnable = true;
-	dsState.depthWriteEnable = true;
-	dsState.stencilEnable = false;
+	tDepthStencilDesc dsState = depthStencilDefault;
 	gApi->SetDepthStencilState(dsState, 0x00);
 
 	// render lights
@@ -92,8 +88,7 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 					// setup render
 					gApi->SetShaderProgram(shaderDirectional);
 					gApi->SetRenderTargets(0, nullptr, map.texture);
-					gApi->Clear(false, true, true);
-					break;
+					gApi->ClearTexture(map.texture);
 
 					// foreach inst grp
 					for (auto& instgrp : sceneManager.GetInstanceGroups()) {
