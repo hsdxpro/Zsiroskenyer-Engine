@@ -527,28 +527,28 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetRenderTargets(1, &compositionBuffer, depthBuffer);
 
 	// Sort scene lights by type, apply validation of light params
-	std::vector<cGraphicsLight*> directionalLights;
-	std::vector<cGraphicsLight*> spotLights;
-	std::vector<cGraphicsLight*> pointLights;
+	std::vector<std::pair<cGraphicsLight, cShadowMap>*> directionalLights;
+	std::vector<std::pair<cGraphicsLight, cShadowMap>*> spotLights;
+	std::vector<std::pair<cGraphicsLight, cShadowMap>*> pointLights;
 	Vec3 ambientLight(0.0f, 0.0f, 0.0f);
 
 	auto& lightList = parent.sceneManager->GetLights();
-	for (auto light_ : lightList) {
-		auto& light = light_->first;
-		if (!light.enabled)
+	for (auto light : lightList) {
+		auto& light_ = light->first;
+		if (!light_.enabled)
 			continue;
-		switch (light.type) {
+		switch (light_.type) {
 			case cGraphicsLight::AMBIENT:
-				ambientLight += light.color;
+				ambientLight += light_.color;
 				break;
 			case cGraphicsLight::DIRECTIONAL:
-				directionalLights.push_back(&light);
+				directionalLights.push_back(light);
 				break;
 			case cGraphicsLight::POINT:
-				pointLights.push_back(&light);
+				pointLights.push_back(light);
 				break;
 			case cGraphicsLight::SPOT:
-				spotLights.push_back(&light);
+				spotLights.push_back(light);
 				break;
 			default:
 				break;
@@ -606,7 +606,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 	skyConstants.invViewProj = shaderConstants.invViewProj;
 	skyConstants.camPos = cam->GetPos();
-	skyConstants.sunDir = directionalLights.size() > 0 ? directionalLights[0]->direction : Vec3(0, 0, -1);
+	skyConstants.sunDir = directionalLights.size() > 0 ? directionalLights[0]->first.direction : Vec3(0, 0, -1);
 
 	IntensitySpectrum spectrum;
 	spectrum.BlackBody(6400);
@@ -633,7 +633,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	skyConstants.rayleighFactor = 1.0f;	
 
 	if (directionalLights.size() > 0) {
-		directionalLights[0]->color = sunColor * 1.4f;
+		directionalLights[0]->first.color = sunColor * 1.4f;
 	}
 
 
@@ -646,12 +646,20 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetTexture(L"gBuffer1", gBuffer[1]);
 	gApi->SetTexture(L"gBuffer2", gBuffer[2]);
 	gApi->SetTexture(L"depthBuffer", depthBufferCopy);
+	
 
-	for (auto light : directionalLights) {
+	for (auto light_ : directionalLights) {
+		auto& light = light_->first;
+		auto& shadowMap = (cShadowMapDir&)light_->second;
+
 		// load shader constants
-		shaderConstants.lightColor = light->color;
-		shaderConstants.lightDir = light->direction;
+		shaderConstants.lightColor = light.color;
+		shaderConstants.lightDir = light.direction;
 		gApi->SetPSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
+
+		if (shadowMap) {
+			gApi->SetTexture(L"shadowMap", shadowMap.GetMaps()[0].texture);
+		}
 
 		// draw an FSQ
 		gApi->Draw(3);
@@ -688,13 +696,14 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetVertexBuffer(vbPoint);
 	gApi->SetIndexBuffer(ibPoint);
 
-	for (auto light : pointLights) {
+	for (auto light_ : pointLights) {
+		auto& light = light_->first;
 
 		// set shader constants
-		shaderConstants.lightAtten = Vec3(light->atten0, light->atten1, light->atten2);
-		shaderConstants.lightColor = light->color;
-		shaderConstants.lightPos = light->position;
-		shaderConstants.lightRange = light->range;
+		shaderConstants.lightAtten = Vec3(light.atten0, light.atten1, light.atten2);
+		shaderConstants.lightColor = light.color;
+		shaderConstants.lightPos = light.position;
+		shaderConstants.lightRange = light.range;
 		gApi->SetVSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
 		gApi->SetPSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
 
@@ -716,16 +725,17 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetVertexBuffer(vbSpot);
 	gApi->SetIndexBuffer(ibSpot);
 
-	for (auto light : spotLights) {
+	for (auto light_ : spotLights) {
+		auto& light = light_->first;
 
 		// set shader constants
-		shaderConstants.lightAtten = Vec3(light->atten0, light->atten1, light->atten2);
-		shaderConstants.lightColor = light->color;
-		shaderConstants.lightPos = light->position;
-		shaderConstants.lightRange = light->range;
-		shaderConstants.lightAngleInner = light->smallAngle;
-		shaderConstants.lightAngleOuter = light->bigAngle;
-		shaderConstants.lightDir = light->direction;
+		shaderConstants.lightAtten = Vec3(light.atten0, light.atten1, light.atten2);
+		shaderConstants.lightColor = light.color;
+		shaderConstants.lightPos = light.position;
+		shaderConstants.lightRange = light.range;
+		shaderConstants.lightAngleInner = light.smallAngle;
+		shaderConstants.lightAngleOuter = light.bigAngle;
+		shaderConstants.lightDir = light.direction;
 
 		gApi->SetVSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
 		gApi->SetPSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);

@@ -6,6 +6,12 @@
 #include "deferred_lightpass_cmn.cginc"
 
 
+sampler2D shadowMap = {
+    MipFilter = POINT,
+    MinFilter = POINT,
+    MagFilter = POINT,
+};
+
 //------------------------------------------------------------------------------
 //	Vertex shader
 //------------------------------------------------------------------------------
@@ -44,6 +50,12 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 
 	color.rgb += diffuseTerm*diffuseColor + specTerm; // note: no light attenuation
 	color.a = 1.0f;
+
+	// shadow map test
+	if (In.tex0.x < 0.5f) {
+		float shadowDepth = tex2D(shadowMap, In.tex0);
+		color = float4(shadowDepth, shadowDepth, shadowDepth, 1.0f);
+	}
 	
 	return color;
 }

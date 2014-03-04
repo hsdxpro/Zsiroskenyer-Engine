@@ -81,7 +81,7 @@ int ricsiMain() {
 	// Create scene with camera
 	IGraphicsScene* s = gEngine->CreateScene();
 	gScene = s;
-	s->GetCamera() = cCamera(cCamera::tProjPersp(/*0.5*3.141592653589*/1.15f, 1.75f), 0.01f, 5000.0f);
+	s->GetCamera() = cCamera(cCamera::tProjPersp(/*0.5*3.141592653589*/1.15f, 1.75f), 0.1f, 200.0f);
 
 	s->GetState().hdr.enabled = false;
 

@@ -24,6 +24,7 @@ struct VS_IN {
 
 float4 VS_MAIN(VS_IN In) : SV_POSITION {
 	float4 posW = mul(float4(In.posL, 1.0f), lightWorldViewProj);
+	posW = float4(In.posL*0.05f, 1.0f);
 	return posW;
 }
 

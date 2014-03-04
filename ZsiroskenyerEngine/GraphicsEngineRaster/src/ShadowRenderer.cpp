@@ -45,6 +45,19 @@ void cGraphicsEngine::cShadowRenderer::Cleanup() {
 ////////////////////////////////////////////////////////////////////////////////
 // Render them shadowmapz
 void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneManager) {
+	// set states
+	tBlendDesc blend = blendDefault;
+	blend[0].writeMask = 0;
+	gApi->SetBlendState(blend);
+
+	tDepthStencilDesc dsState;
+	dsState.depthCompare = eComparisonFunc::LESS;
+	dsState.depthEnable = true;
+	dsState.depthWriteEnable = true;
+	dsState.stencilEnable = false;
+	gApi->SetDepthStencilState(dsState, 0x00);
+
+	// render lights
 	auto& lights = sceneManager.GetLights();
 	for (auto& v : lights) {
 		auto& light = v->first;
@@ -77,9 +90,10 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 						continue;
 
 					// setup render
-					gApi->SetRenderTargets(0, NULL, map.texture);
-					gApi->Clear(false, true, true);
 					gApi->SetShaderProgram(shaderDirectional);
+					gApi->SetRenderTargets(0, nullptr, map.texture);
+					gApi->Clear(false, true, true);
+					break;
 
 					// foreach inst grp
 					for (auto& instgrp : sceneManager.GetInstanceGroups()) {
@@ -91,6 +105,8 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 						for (auto& entity : instgrp->entities) {
 							Matrix44 matWorld = entity->GetWorldMatrix();
 							Matrix44 worldViewProj = matWorld * map.viewMat * map.projMat;
+							gApi->SetVSConstantBuffer(&worldViewProj, sizeof(worldViewProj), 0);
+							gApi->DrawIndexed(instgrp->geom->GetIndexBuffer()->GetSize() / 4);
 						}
 					}
 				}
