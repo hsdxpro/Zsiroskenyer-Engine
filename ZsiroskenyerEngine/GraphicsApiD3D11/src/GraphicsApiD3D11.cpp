@@ -1549,12 +1549,7 @@ eGapiResult cGraphicsApiD3D11::SetPSConstantBuffer(const void* data, size_t size
 // Set (multiple) render targets
 eGapiResult cGraphicsApiD3D11::SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget /* = NULL */) {
 
-	// Set dsv
 	ID3D11DepthStencilView* dsv = (depthStencilTarget) ? ((cTexture2DD3D11*)depthStencilTarget)->GetDSV() : NULL;
-
-	// Set RTVS
-	d3dcon->OMSetRenderTargets(nTargets, activeRTVs, dsv);
-
 
 	// If there are rtv's create viewports based on it
 	unsigned i = 0;
@@ -1584,6 +1579,9 @@ eGapiResult cGraphicsApiD3D11::SetRenderTargets(unsigned nTargets, const ITextur
 
 	// Set Viewports
 	d3dcon->RSSetViewports(nTargets, activeViewports);
+
+	// Set RTVS, dsv
+	d3dcon->OMSetRenderTargets(nTargets, activeRTVs, dsv);
 
 	return eGapiResult::OK;
 }
