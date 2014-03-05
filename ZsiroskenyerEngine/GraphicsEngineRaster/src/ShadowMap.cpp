@@ -125,14 +125,15 @@ bool cShadowMapDir::Transform(
 		v = v4;
 	}
 	// interpolate for near and far clips
+	/*
 	for (int i = 0; i < 4; i++) {
 		auto tmp = frustumPoints[i];
 		frustumPoints[i] = (1 - nearClip)*frustumPoints[i] + nearClip*frustumPoints[i + 4];
 		frustumPoints[i + 1] = (1 - farClip)*frustumPoints[i] + farClip*frustumPoints[i + 4];
 	}
+	*/
 
-	// ONLY DIRECTIONAL LIGHTS!
-	// rotate them pointz as if lightDir was (0,0,1)
+	// rotate them pointz as if lightDir was (0,0,-1)
 	Vec3 targetLigthDir(0, 0, 1);
 	Vec3 ld = Normalize(lightDir);
 	auto cp = Cross(ld, targetLigthDir);
@@ -159,6 +160,15 @@ bool cShadowMapDir::Transform(
 		limitMax.y = std::max(v.y, limitMax.y);
 		limitMax.z = std::max(v.z, limitMax.z);
 	}
+
+	/*
+	limitMin = {-100, -100, -100};
+	limitMax = {100, 100, 100};
+	limitMin *= 0.5f;
+	limitMax *= 0.5f;
+	*/
+	limitMin.z = limitMax.z - 1000.0f;
+
 	// check if limits have real volume or they are just 2D
 	// in the latter case, no projection exists
 	Vec3 volumeDim = limitMax - limitMin;

@@ -59,6 +59,8 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 	for (auto& v : lights) {
 		auto& light = v->first;
 		auto& shadowMap = v->second;
+		if (!light.enabled)
+			continue;
 
 		switch (light.type) {
 			case cGraphicsLight::DIRECTIONAL:{
@@ -69,8 +71,8 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 				auto& shm = *(cShadowMapDir*)&shadowMap;
 				// init map if not compatible with currently inited
 				try {
-					if (!shm.IsValid(gApi, 512, eFormat::R16_UNORM, eFormat::D16_UNORM, 1)) {
-						shm.Init(gApi, 512, eFormat::R16_UNORM, eFormat::D16_UNORM, 1);
+					if (!shm.IsValid(gApi, 8192, eFormat::R16_UNORM, eFormat::D16_UNORM, 1)) {
+						shm.Init(gApi, 8192, eFormat::R16_UNORM, eFormat::D16_UNORM, 1);
 					}
 				}
 				catch (std::exception& e) {
@@ -100,9 +102,7 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 						// render objects
 						for (auto& entity : instgrp->entities) {
 							Matrix44 matWorld = entity->GetWorldMatrix();
-							Matrix44 worldViewProj = /*matWorld **/ map.viewMat;// *map.projMat;
-							worldViewProj.PostScale(Vec3(0.01f, 0.01f, -0.01f));
-							worldViewProj.PostTranslate(Vec3(0, 0, 0.5f));
+							Matrix44 worldViewProj = matWorld * map.viewMat * map.projMat;
 							gApi->SetVSConstantBuffer(&worldViewProj, sizeof(worldViewProj), 0);
 							gApi->DrawIndexed(instgrp->geom->GetIndexBuffer()->GetSize() / 4);
 						}

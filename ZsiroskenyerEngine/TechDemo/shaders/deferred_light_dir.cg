@@ -5,12 +5,18 @@
 
 #include "deferred_lightpass_cmn.cginc"
 
-
+//------------------------------------------------------------------------------
+//	Shadow maps
+//------------------------------------------------------------------------------
 sampler2D shadowMap = {
     MipFilter = POINT,
     MinFilter = POINT,
     MagFilter = POINT,
 };
+struct {
+	float4x4 lightViewProj;
+	bool castShadows;
+} shadowConst : register(c100);
 
 //------------------------------------------------------------------------------
 //	Vertex shader
@@ -52,9 +58,54 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	color.a = 1.0f;
 
 	// shadow map test
-	if (In.tex0.x < 0.9f) {
+	/*
+	if (In.tex0.x < 0.5f) {
 		float shadowDepth = tex2D(shadowMap, In.tex0);
 		color = float4(shadowDepth, shadowDepth, shadowDepth, 1.0f);
+		return color;
+	}
+	*/
+
+	// shadow map sampling
+	float3 shadowPos = mul(float4(worldPos, 1.0f), shadowConst.lightViewProj);
+	if (-1.0f < shadowPos.x && shadowPos.x < 1.0f &&
+		-1.0f < shadowPos.y && shadowPos.y < 1.0f &&
+		 0.0f < shadowPos.z && shadowPos.z < 1.0f &&
+		 shadowConst.castShadows)
+	{
+		float2 sampleCoord = float2(shadowPos.x*0.5f+0.5f, -shadowPos.y*0.5f+0.5f);
+		/*
+		float sampleOffset = 1.0f/8192.0f;
+		const float bias = 1e-5;
+
+		float4 shadowSamples;
+		shadowSamples.r = tex2D(shadowMap, sampleCoord + float2(sampleOffset, -sampleOffset));
+		shadowSamples.g = tex2D(shadowMap, sampleCoord + float2(sampleOffset, sampleOffset));
+		shadowSamples.b = tex2D(shadowMap, sampleCoord + float2(-sampleOffset, sampleOffset));
+		shadowSamples.a = tex2D(shadowMap, sampleCoord + float2(-sampleOffset, -sampleOffset));
+		*/
+		float shadowSample = tex2D(shadowMap, float2(shadowPos.x*0.5f+0.5f, -shadowPos.y*0.5f+0.5f));
+
+		/*
+		float weight = 1.0f;
+		if (shadowSample + bias < shadowPos.z)
+			weight -= 0.2f;
+		if (shadowSamples.r + bias < shadowPos.z)
+			weight -= 0.2f;		
+		if (shadowSamples.g + bias < shadowPos.z)
+			weight -= 0.2f;		
+		if (shadowSamples.b + bias < shadowPos.z)
+			weight -= 0.2f;
+		if (shadowSamples.a + bias < shadowPos.z)
+			weight -= 0.2f;
+
+		color.rgb *= weight;
+		*/
+
+		
+		if (shadowSample+1e-5 < shadowPos.z)
+			discard;
+		
 	}
 	
 	return color;

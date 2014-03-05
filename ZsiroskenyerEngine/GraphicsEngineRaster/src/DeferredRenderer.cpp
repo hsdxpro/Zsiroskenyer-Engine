@@ -657,9 +657,20 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		shaderConstants.lightDir = light.direction;
 		gApi->SetPSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
 
+		// load shadowmap constants
+		struct {
+			Matrix44 lightViewProj;
+			uint32_t castShadows;
+		} shadowConst;
 		if (shadowMap) {
+			shadowConst.lightViewProj = shadowMap.GetMaps()[0].viewMat * shadowMap.GetMaps()[0].projMat;
+			shadowConst.castShadows = true;
 			gApi->SetTexture(L"shadowMap", shadowMap.GetMaps()[0].texture);
 		}
+		else {
+			shadowConst.castShadows = false;
+		}
+		gApi->SetPSConstantBuffer(&shadowConst, sizeof(shadowConst), 100);
 
 		// draw an FSQ
 		gApi->Draw(3);
