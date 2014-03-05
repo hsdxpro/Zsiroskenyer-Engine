@@ -188,12 +188,15 @@ Quat Quat::DirToRot(const Vec3&dir, const Vec3& up) {
 
 // convert to matrix
 Quat::operator Matrix44() {
+	/*
 	Matrix44 m(
 		1.f*-2.f*(y*y + z*z), 2.f*(x*y - z*w), 2.f*(x*z + y*w), 0.f,
 		2.f*(x*y + z*w), 1.f - 2.f*(x*x + y*y), 2.f*(y*z - x*w), 0.f,
 		2.f*(x*z - y*w), 2.f*(y*z + x*w), 1.f - 2.f*(x*x + y*y), 0.f,
 		0.f, 0.f, 0.f, 1.f
 		);
+	*/
+	Matrix44 m = Matrix44RotationQuat(*this);
 	return m;
 };
 

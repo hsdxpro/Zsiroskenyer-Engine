@@ -100,7 +100,9 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 						// render objects
 						for (auto& entity : instgrp->entities) {
 							Matrix44 matWorld = entity->GetWorldMatrix();
-							Matrix44 worldViewProj = matWorld;// *map.viewMat * map.projMat;
+							Matrix44 worldViewProj = /*matWorld **/ map.viewMat;// *map.projMat;
+							worldViewProj.PostScale(Vec3(0.01f, 0.01f, -0.01f));
+							worldViewProj.PostTranslate(Vec3(0, 0, 0.5f));
 							gApi->SetVSConstantBuffer(&worldViewProj, sizeof(worldViewProj), 0);
 							gApi->DrawIndexed(instgrp->geom->GetIndexBuffer()->GetSize() / 4);
 						}
