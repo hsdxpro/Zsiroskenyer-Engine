@@ -724,10 +724,11 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	binPaths[cCgShaderHelper::GS] = pathNoExt + L"_gs.bin";
 	binPaths[cCgShaderHelper::PS] = pathNoExt + L"_ps.bin";
 
+	/*
 	for (uint8_t i = 0; i < cCgShaderHelper::NDOMAINS; i++) {
 		is.open(binPaths[i]);
 		if (!is.is_open())
-	}
+	}*/
 
 	// Data that can be saved to binary and read up next time
 	tShaderByteCodeInfo byteCodes[cCgShaderHelper::NDOMAINS]; // Shader byte codes
