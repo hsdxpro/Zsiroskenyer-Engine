@@ -36,7 +36,7 @@ float4 VS_MAIN(VS_IN In) : SV_POSITION {
 
 // omg such pixel shader
 void PS_MAIN() {
-	return;// 0.1f;
+	return;
 }
 
 

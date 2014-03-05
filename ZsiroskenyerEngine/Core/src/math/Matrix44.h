@@ -52,7 +52,23 @@ public:
 	Matrix44& Transpose();
 	float Determinant();
 
-//---PRE TRANSFORMS---//
+	// Transformations
+	// create
+	Matrix44& RotationX(float angle);
+	Matrix44& RotationY(float angle);
+	Matrix44& RotationZ(float angle);
+	Matrix44& RotationQuat(const Quat& q);
+	Matrix44& RotationEuler(const Vec3& rot);
+	Matrix44& RotationAxisAngle(const Vec3& axis, float angle);
+
+	Matrix44& Translation(const Vec3& v);
+	Matrix44& Scaling(const Vec3& s);
+
+	Matrix44& ViewRH(const Vec3& eye, const Vec3& target, const Vec3& up);
+	Matrix44& ProjPerspective(float nearPlane, float farPlane, float fovRad, float aspectRatio);
+	Matrix44& ProjOrtographic(float nearPlane, float farPlane, float left, float right, float bottom, float top);
+
+	// pre
 	Matrix44& PreRotate(const Quat& q);
 
 	Matrix44& PreScale(float x, float y, float z);
@@ -60,8 +76,7 @@ public:
 
 	Matrix44& PreTranslate(float x, float y, float z);
 	Matrix44& PreTranslate(const Vec3& t);
-
-//---POST TRANSFORMS---//
+	// post
 	Matrix44& PostRotate(const Quat& q);
 
 	Matrix44& PostScale(float x, float y, float z);
@@ -118,17 +133,15 @@ Matrix44 Matrix44RotationAxisAngle(const Vec3& axis, float angle);
 Matrix44 Matrix44RotationQuat(const Quat&); // typecast ((Matrix44)quaternion) is possibly slower than this shit
 Matrix44 Matrix44RotationEuler(const Vec3& rot);
 Matrix44 Matrix44RotationEuler(float x, float y, float z);
+Matrix44 Matrix44RotationX(float angle);
+Matrix44 Matrix44RotationY(float angle);
+Matrix44 Matrix44RotationZ(float angle);
 
 Matrix44 Matrix44Translation(float x, float y, float z);
 Matrix44 Matrix44Translation(const Vec3& v);
 
 Matrix44 Matrix44Scaling(float x, float y, float z);
 Matrix44 Matrix44Scaling(const Vec3& v);
-
-
-Matrix44 Matrix44RotationX(float angle);
-Matrix44 Matrix44RotationY(float angle);
-Matrix44 Matrix44RotationZ(float angle);
 
 Matrix44 Matrix44ViewRH(const Vec3& eye, const Vec3& target, const Vec3& up);
 Matrix44 Matrix44ProjPerspective(float nearPlane, float farPlane, float fovRad, float aspectRatio);

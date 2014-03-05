@@ -186,7 +186,138 @@ float Matrix44::Determinant() {
 		- _14 * (_21 * (_32 * _43 - _42 * _33) - _22 * (_31 * _43 - _41 * _33) + _23 * (_31 * _42 - _32 * _41));
 }
 
-//---------------- PRE TRANSFORM -------------------//
+// Transformations
+
+// create
+Matrix44& Matrix44::RotationX(float angle) {
+	_11 = _44 = 1;
+	_21 = _24 = 0;
+	_31 = _34 = 0;
+	_41 = _42 = _43 = 0;
+
+	_22 = _33 = cos(angle);
+	_32 = _23 = sin(angle); _32 *= -1;
+
+	return *this;
+}
+Matrix44& Matrix44::RotationY(float angle) {
+	_12 = _14 = 0;
+	_21 = 0; _22 = 1; _23 = _24 = 0;
+	_32 = _34 = 0;
+	_21 = 0; _22 = _23 = 0; _24 = 1;
+
+	_11 = _33 = cos(angle);
+	_13 = _31 = sin(angle); _13 *= -1;
+
+	return *this;
+}
+Matrix44& Matrix44::RotationZ(float angle) {
+	_13 = _14 = 0;
+	_23 = _24 = 0;
+	_31 = _32 = _34 = 0;
+	_41 = _42 = _43 = 0;
+	_33 = _44 = 1;
+
+	_11 = _22 = cos(angle);
+	_21 = _12 = sin(angle); _21 *= -1;
+
+	return *this;
+}
+
+Matrix44& Matrix44::RotationQuat(const Quat& q) {
+	_11 = 1.f - 2.f*(q.y*q.y + q.z*q.z);	_12 = 2.f*(q.x*q.y + q.z*q.w);			_13 = 2.f*(q.x*q.z - q.y*q.w);			_14 = 0.f;
+	_21 = 2.f*(q.x*q.y - q.z*q.w);			_22 = 1.f - 2.f*(q.x*q.x + q.z*q.z);	_23 = 2.f*(q.y*q.z + q.x*q.w);			_24 = 0.f;
+	_31 = 2.f*(q.x*q.z + q.y*q.w);			_32 = 2.f*(q.y*q.z - q.x*q.w);			_33 = 1.f - 2.f*(q.x*q.x + q.y*q.y);	_34 = 0.f;
+	_41 = 0.f;								_42 = 0.f;								_43 = 0.f;								_44 = 1.f;
+
+	return *this;
+}
+Matrix44& Matrix44::RotationEuler(const Vec3& rot) {
+	RotationX(rot.x);
+	*this *= Matrix44RotationY(rot.y);
+	*this *= Matrix44RotationY(rot.z);
+
+	return *this;
+}
+Matrix44& Matrix44::RotationAxisAngle(const Vec3& axis, float angle) {
+	float c = cos(angle);
+	float s = sin(angle);
+	float t = 1.f - c;
+
+	_11 = t*axis.x*axis.x + c;			_12 = t*axis.x*axis.y + axis.z*s;	_13 = t*axis.x*axis.z - axis.y*s;
+	_21 = t*axis.x*axis.y - axis.z*s;	_22 = t*axis.y*axis.y + c;			_23 = t*axis.y*axis.z + axis.x*s;
+	_31 = t*axis.x*axis.z + axis.y*s;	_32 = t*axis.y*axis.z - axis.x*s;	_33 = t*axis.z*axis.z + c;
+
+	_41 = 0.f;
+	_42 = 0.f;
+	_43 = 0.f;
+	_14 = 0.f;
+	_24 = 0.f;
+	_34 = 0.f;
+	_44 = 1.f;
+
+	return *this;
+}
+
+Matrix44& Matrix44::Translation(const Vec3& v) {
+	_12 = _13 = _14 = 0.0f;
+	_21 = _23 = _24 = 0.0f;
+	_31 = _32 = _34 = 0.0f;
+
+	_11 = _22 = _33 = _44 = 1.0f;
+
+	_41 = v.x;
+	_42 = v.y;
+	_43 = v.z;
+
+	return *this;
+}
+Matrix44& Matrix44::Scaling(const Vec3& s) {
+	_12 = _13 = _14 = 0.0f;
+	_21 = _23 = _24 = 0.0f;
+	_31 = _32 = _34 = 0.0f;
+	_41 = _42 = _43 = 0.0f;
+
+	_11 = s.x;
+	_22 = s.y;
+	_33 = s.z;
+	_44 = 1.0f;
+
+	return *this;
+}
+
+Matrix44& Matrix44::ViewRH(const Vec3& eye, const Vec3& target, const Vec3& up) {
+	*this = Matrix44ViewRH(eye, target, up);
+
+	return *this;
+}
+Matrix44& Matrix44::ProjPerspective(float nearPlane, float farPlane, float fovRad, float aspectRatio) {
+	_12 = _13 = _14 = 0;
+	_21 = _23 = _24 = 0;
+	_31 = _32 = 0;
+	_41 = _42 = 0;
+
+	_11 = _22 = 1.0f / tanf(fovRad * 0.5f);
+	_11 /= aspectRatio;
+	_33 = farPlane / (farPlane - nearPlane);
+	_43 = -(farPlane * nearPlane) / (farPlane - nearPlane);
+	_34 = 1;
+	_44 = 0;
+
+	return *this;
+}
+Matrix44& Matrix44::ProjOrtographic(float nearPlane, float farPlane, float left, float right, float bottom, float top) {
+	Vec3 center = {left + right, top + bottom, nearPlane + farPlane};
+	Vec3 dim = {right - left, top - bottom, farPlane - nearPlane};
+	center /= 2.0f;
+	
+	Translation(-center);
+	*this *= Matrix44().Scaling(Vec3(1, 1, 1) / dim);
+
+	return *this;
+}
+
+// pre-concat
 Matrix44& Matrix44::PreRotate(const Quat& q) {
 	return *this = Matrix44RotationQuat(q) * *this;
 }
@@ -207,8 +338,7 @@ Matrix44& Matrix44::PreTranslate(const Vec3& t) {
 	return *this = Matrix44Translation(t) * *this;
 }
 
-
-//---------------- POST TRANSFORM -------------------//
+// post-concat
 Matrix44& Matrix44::PostRotate(const Quat& q) {
 	return *this *= Matrix44RotationQuat(q);
 }
@@ -391,33 +521,13 @@ Matrix44 Matrix44RotationZ(float angle) {
 
 Matrix44 Matrix44RotationAxisAngle(const Vec3& axis, float angle) {
 	Matrix44 m;
-
-	float c = cos(angle);
-	float s = sin(angle);
-	float t = 1.f - c;
-
-	m._11 = t*axis.x*axis.x + c;			m._12 = t*axis.x*axis.y + axis.z*s;		m._13 = t*axis.x*axis.z - axis.y*s;
-	m._21 = t*axis.x*axis.y - axis.z*s;		m._22 = t*axis.y*axis.y + c;			m._23 = t*axis.y*axis.z + axis.x*s;
-	m._31 = t*axis.x*axis.z + axis.y*s;		m._32 = t*axis.y*axis.z - axis.x*s;		m._33 = t*axis.z*axis.z + c;
-
-	// Set back temps to zero
-	/*m._41 = 0.f;
-	m._42 = 0.f;
-	m._43 = 0.f;
-	m._14 = 0.f;
-	m._24 = 0.f;
-	m._34 = 0.f;
-	m._44 = 1.f;*/
-
+	m.RotationAxisAngle(axis, angle);
 	return m;
 };
 
 Matrix44 Matrix44RotationQuat(const Quat& q) {
 	Matrix44 m;
-	m._11 = 1.f - 2.f*(q.y*q.y + q.z*q.z);		m._12 = 2.f*(q.x*q.y + q.z*q.w);		m._13 = 2.f*(q.x*q.z - q.y*q.w);		m._14 = 0.f;
-	m._21 = 2.f*(q.x*q.y - q.z*q.w);			m._22 = 1.f - 2.f*(q.x*q.x + q.z*q.z);	m._23 = 2.f*(q.y*q.z + q.x*q.w);		m._24 = 0.f;
-	m._31 = 2.f*(q.x*q.z + q.y*q.w);			m._32 = 2.f*(q.y*q.z - q.x*q.w);		m._33 = 1.f - 2.f*(q.x*q.x + q.y*q.y);	m._34 = 0.f;
-	m._41 = 0.f;								m._42 = 0.f;							m._43 = 0.f;							m._44 = 1.f;
+	m.RotationQuat(q);
 	return m;
 };
 
@@ -447,19 +557,12 @@ Matrix44 Matrix44ViewRH(const Vec3& eye, const Vec3& target, const Vec3& up) {
 
 Matrix44 Matrix44ProjPerspective(float nearPlane, float farPlane, float fovRad, float aspectRatio) {
 	Matrix44 m;
-	m._11 = m._22 = 1.0f / tanf(fovRad * 0.5f);
-	m._11 /= aspectRatio;
-	m._33 = farPlane / (farPlane - nearPlane);
-	m._43 = -(farPlane * nearPlane) / (farPlane - nearPlane);
-	m._34 = 1;
-	m._44 = 0;
+	m.ProjPerspective(nearPlane, farPlane, fovRad, aspectRatio);
 	return m;
 }
 
 Matrix44 Matrix44ProjOrtographic(float nearPlane, float farPlane, float left, float right, float bottom, float top) {
 	Matrix44 m;
-	m._11 = 2 / (right - left);
-	m._22 = 2 / (top - bottom);
-	m._33 = 2 / (farPlane - nearPlane);
+	m.ProjOrtographic(nearPlane, farPlane, left, right, bottom, top);
 	return m;
 }
