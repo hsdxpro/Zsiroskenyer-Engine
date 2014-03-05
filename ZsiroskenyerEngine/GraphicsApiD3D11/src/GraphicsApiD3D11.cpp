@@ -772,7 +772,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			zsString compMessage;
 			HRESULT hr = CompileShaderFromFile(binPaths[i], L"main", dxProfile, &compMessage, &blobs[i]);
 			if (FAILED(hr)) {
-				lastErrorMsg = L"Failed to compile hlsl file, something is wrong with the CG file: " + shaderPath;
+				lastErrorMsg = L"\n\n HLSL COMPILE FAIL : " + shaderPath + L"\n\n ErrorMsg: " + compMessage;
 				return eGapiResult::ERROR_UNKNOWN;
 			}
 

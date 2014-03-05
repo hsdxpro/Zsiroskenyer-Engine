@@ -139,11 +139,13 @@ bool cCgShaderHelper::CompileCg(const zsString& cgFilePath, const zsString& shad
 }
 
 std::unordered_map<zsString, uint16_t> cCgShaderHelper::GetHLSLTextureSlots(const zsString& hlslFilePath) {
-	std::unordered_map<zsString, uint16_t> result;
-
 	// Parse hlsl code for samplers, textures
 	std::ifstream hlslFile(hlslFilePath);
 
+	// Result
+	std::unordered_map<zsString, uint16_t> result;
+
+	// Tmp holder
 	std::unordered_map<zsString, uint16_t> textureSlotsParsed;
 
 	uint16_t texIdx = 0;
@@ -288,13 +290,13 @@ const wchar_t* cCgShaderHelper::GetLastErrorMsg() {
 cVertexFormat cCgShaderHelper::GetVSInputFormat()
 {
 	// Parse input Layout... from VERTEX_SHADER
-	// - 1. search for vertexShader Entry name ex:"VS_MAIN(", get return value, for example VS_OUT
+	// - 1. search for vertexShader Entry name ex:"VS_MAIN(", get return value, for example struct name VS_OUT, or valid params like float4
 	// - 2. search for VS_OUT, get lines under that, while line != "};"
 	// - 3. extract VERTEX DECLARATION from those lines
 
-	zsString vsInStructName = cStrUtil::GetWordAfter(cgFileLines, info.domainsEntry[VS] + L"(");
-	std::list<zsString> vsInStructLines = cStrUtil::GetLinesBetween(cgFileLines, vsInStructName, L"};");
-	//cgFile.close();
+	// TODOOOOOOOOOOOOOOOOOOOOOOO Found info.domainsEntry[VS] && Find'(' but next character is not')'
+	zsString vsEntryLine = cStrUtil::GetWordAfter(cgFileLines, info.domainsEntry[VS] + L"(");
+	std::list<zsString> vsInStructLines = cStrUtil::GetLinesBetween(cgFileLines, vsEntryLine, L"};");
 
 	// (inputLayout)  Vertex shader input format
 	std::vector<cVertexFormat::Attribute> attribs;
