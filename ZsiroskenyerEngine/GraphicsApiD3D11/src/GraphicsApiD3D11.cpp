@@ -724,18 +724,22 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	binPaths[cCgShaderHelper::GS] = pathNoExt + L"_gs.bin";
 	binPaths[cCgShaderHelper::PS] = pathNoExt + L"_ps.bin";
 
-	tShaderByteCodeInfo byteCodes[cCgShaderHelper::NDOMAINS];
-	std::vector<cShaderProgramD3D11::tSamplerInfo> shaderSamplerStates[cCgShaderHelper::NDOMAINS];
-	std::unordered_map<zsString, uint16_t> shaderTextureSlots[cCgShaderHelper::NDOMAINS];
-	cVertexFormat inputLayoutFormat;
+	/*
+	for (uint8_t i = 0; i < cCgShaderHelper::NDOMAINS; i++) {
+		is.open(binPaths[i]);
+		if (!is.is_open())
+	}*/
 
-	// Cg parsed samplers
-	std::unordered_map<zsString, tSamplerDesc> cgSamplerPairs;
+	// Data that can be saved to binary and read up next time
+	tShaderByteCodeInfo byteCodes[cCgShaderHelper::NDOMAINS]; // Shader byte codes
+	std::unordered_map<zsString, uint16_t> shaderTextureSlots[cCgShaderHelper::NDOMAINS]; // Shader Texture slots
+	cVertexFormat inputLayoutFormat; // Vertex shader input layout
+	std::unordered_map<zsString, tSamplerDesc> cgSamplerPairs; 	// Cg parsed samplers
 
 	// Need cg recompile
 	if (recompileCg) {
 
-		// infos about cg shader
+		// Parse cg file
 		cCgShaderHelper cgHelper(shaderPath);
 		if (cgHelper.GetLastErrorMsg() != NULL)
 		{
@@ -847,6 +851,8 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	}
 
 
+	std::vector<cShaderProgramD3D11::tSamplerInfo> shaderSamplerStates[cCgShaderHelper::NDOMAINS];
+
 	// Create non existing samplers in gApi
 	for each(auto pair in cgSamplerPairs) {
 		// Interpret cg sampler description as DirectX sampler Desc
@@ -885,7 +891,10 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	}
 
 	// Create shader program
-	cShaderProgramD3D11* shProg = new cShaderProgramD3D11(byteCodes[cCgShaderHelper::VS].byteCode.get(), byteCodes[cCgShaderHelper::VS].byteCodeSize, inputLayoutFormat, vs, hs, ds, gs, ps);
+	cShaderProgramD3D11* shProg = new cShaderProgramD3D11(	byteCodes[cCgShaderHelper::VS].byteCode.get(), 
+															byteCodes[cCgShaderHelper::VS].byteCodeSize, 
+															inputLayoutFormat,
+															vs, hs, ds, gs, ps);
 
 	// Set look up maps
 	shProg->SetTextureSlotsVS(shaderTextureSlots[cCgShaderHelper::VS]);
