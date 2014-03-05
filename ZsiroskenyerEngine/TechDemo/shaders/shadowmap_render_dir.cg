@@ -24,8 +24,8 @@ struct VS_IN {
 
 float4 VS_MAIN(VS_IN In) : SV_POSITION {
 	float4 posW = mul(float4(In.posL, 1.0f), lightWorldViewProj);
-	posW = float4(In.posL*0.1f, 1.0f);
-	posW.z = 0.3f;
+	posW.xyz *= 0.02f;
+	//posW = float4(In.posL*0.1f, 1.0f);
 	return posW;
 }
 
@@ -35,8 +35,8 @@ float4 VS_MAIN(VS_IN In) : SV_POSITION {
 
 
 // omg such pixel shader
-float PS_MAIN() : DEPTH {
-	return 0.1f;
+void PS_MAIN() {
+	return;// 0.1f;
 }
 
 

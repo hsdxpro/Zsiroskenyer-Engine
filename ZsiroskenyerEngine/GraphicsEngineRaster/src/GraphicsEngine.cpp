@@ -181,6 +181,7 @@ eGraphicsResult cGraphicsEngine::ReloadShaders() {
 		Reload(&shaderScreenCopy, L"shaders/screen_copy.cg");
 		deferredRenderer->ReloadShaders();
 		hdrProcessor->ReloadShaders();
+		shadowRenderer->ReloadShaders();
 		return eGraphicsResult::OK;
 	}
 	catch (std::exception& e) {
