@@ -71,8 +71,8 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 				auto& shm = *(cShadowMapDir*)&shadowMap;
 				// init map if not compatible with currently inited
 				try {
-					if (!shm.IsValid(gApi, 8192, eFormat::R16_UNORM, eFormat::D16_UNORM, 1)) {
-						shm.Init(gApi, 8192, eFormat::R16_UNORM, eFormat::D16_UNORM, 1);
+					if (!shm.IsValid(gApi, 2048, eFormat::R16_UNORM, eFormat::D16_UNORM, 1)) {
+						shm.Init(gApi, 2048, eFormat::R16_UNORM, eFormat::D16_UNORM, 1);
 					}
 				}
 				catch (std::exception& e) {
@@ -84,7 +84,7 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 				for (size_t i = 0; i < shm.GetMaps().size(); i++) {
 					// compute transforms
 					auto& map = shm.GetMaps()[i];
-					bool isGoodTransform = shm.Transform(map.projMat, map.viewMat, light.direction, parent.camera->GetViewMatrix(), parent.camera->GetProjMatrix());
+					bool isGoodTransform = shm.Transform(map.projMat, map.viewMat, light.direction, parent.camera->GetViewMatrix(), parent.camera->GetProjMatrix(), 0.0f, 1.0f);
 					if (!isGoodTransform)
 						continue;
 
