@@ -350,7 +350,7 @@ bool _cGeometryBuilder::ValidateMatGroups() {
 	for (size_t i = 0; i < nMatGroups; i++) {
 		maxIndex = matGroups[i].indexCount - 1 + matGroups[i].indexOffset;
 	}
-	return maxIndex < nIndices;
+	return (size_t)maxIndex < nIndices;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
