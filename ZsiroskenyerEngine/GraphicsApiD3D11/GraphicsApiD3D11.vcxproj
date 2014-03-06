@@ -42,8 +42,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)\..\Externals\boost_1_55_0;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\..\Externals\boost_1_55_0\lib;$(SolutionDir)\..\Externals\Dx11_SDK\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\..\Externals\Dx11_SDK\Lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Configuration)_\</OutDir>
     <IntDir>$(Configuration)_\</IntDir>
   </PropertyGroup>

@@ -52,23 +52,17 @@ public:
 	bool CompileCg(const zsString& cgFilePath, const zsString& shaderOut, cCgShaderHelper::eProfileCG compileProfile);
 
 	std::unordered_map<zsString, uint16_t> GetHLSLTextureSlots(const zsString& hlslFilePath);
-
+	const std::list<zsString>& GetIncludedFilesPaths() const;
 	std::unordered_map<zsString, tSamplerDesc> GetSamplerStates();
-	cVertexFormat GetVSInputFormat();
-	const cCgShaderHelper::tCgInfo& GetDomainInfo();
-
 	const wchar_t* cCgShaderHelper::GetLastErrorMsg();
+	const cCgShaderHelper::tCgInfo& GetDomainInfo();
+	cVertexFormat GetVSInputFormat();
+
 protected:
 	// Error handling
 	zsString lastErrorMsg;
 
-	// Cg context for effect creation, effect parts
-	CGcontext con;
-	CGeffect effect; // .cg
-	CGtechnique tech; // technique in effect
-	CGpass pass; // pass in technique
-	CGprogram shaderPrograms[NDOMAINS];
-
 	std::list<zsString> cgFileLines;
+	std::list<zsString> includedFilesPaths;
 	cCgShaderHelper::tCgInfo info;
 };

@@ -1,5 +1,7 @@
 #include "StrUtil.h"
 
+#include <cassert>
+
 void cStrUtil::ToAnsi(const zsString& str, char* dst, size_t nChars) {
 	wcstombs(dst, str.c_str(), nChars);
 }
@@ -475,6 +477,11 @@ zsString cStrUtil::Between(const zsString& s, const wchar_t* left, const wchar_t
 	//leftIdx = index of 't'
 	// rightIDx = index of 'b'
 	return  s.substr(leftIdx, rightIdx - leftIdx);
+}
+
+zsString cStrUtil::CutBack(const zsString& str, wchar_t ch) {
+	assert(str.size() != 0);
+	return str.substr(0, str.find_last_of(ch));
 }
 
 zsString cStrUtil::CutDirectory(const zsString& str) {

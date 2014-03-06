@@ -153,6 +153,7 @@
     <IncludePath>$(SolutionDir)\..\Externals\boost_1_55_0;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)$(Configuration)_\</OutDir>
     <IntDir>$(Configuration)_\</IntDir>
+    <LibraryPath>$(SolutionDir)\..\Externals\boost_1_55_0\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(SolutionDir)\..\Externals\boost_1_55_0;$(IncludePath)</IncludePath>

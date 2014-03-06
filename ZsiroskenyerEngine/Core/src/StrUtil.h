@@ -25,8 +25,11 @@ public:
 
 	static bool Begins(const zsString& str, const zsString& withThat);
 
-	static void CutNumberFromEnd(char* src);
+	static zsString CutBack(const zsString& str, wchar_t ch);
+
 	static zsString CutDirectory(const zsString& str);
+	static void CutNumberFromEnd(char* src);
+	
 	static void CutFrontFromDelim(zsString& strOut, wchar_t ch);
 
 	static void TrimBorder(std::list<zsString>& strs, const wchar_t* borderChars, size_t nChars);

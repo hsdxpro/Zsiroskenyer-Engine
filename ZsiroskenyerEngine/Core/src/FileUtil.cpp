@@ -1,10 +1,13 @@
 #include "FileUtil.h"
 #include "StrUtil.h"
 
+// WINDOWS IMPLEMENTATION
+#include <windows.h>
+
 // For determining size of a file
 #include <sys/stat.h>
-#include <windows.h>
 #include "common.h"
+#include <boost/filesystem.hpp>
 
 bool cFileUtil::Clear(const zsString& path) {
 	std::ofstream os(path.c_str(), std::ios::trunc);
@@ -16,13 +19,7 @@ bool cFileUtil::Clear(const zsString& path) {
 	return true;
 }
 
-void cFileUtil::ReplaceIncludeDirectives(const zsString& filePath, std::list<zsString>& fileLines_out) {
-
-	std::list<zsString> includedFileList;
-	ReplaceIncludeDirectivesRecursively(filePath, fileLines_out, includedFileList);
-}
-
-void cFileUtil::ReplaceIncludeDirectivesRecursively(const zsString& filePath, std::list<zsString>& fileLines_out, std::list<zsString>& includedFileList_out) {
+void cFileUtil::ReplaceIncludeDirectives(const zsString& filePath, std::list<zsString>& fileLines_out, std::list<zsString>& includedFilesPaths_out/* = std::list<zsString>()*/) {
 	auto fileLines = cFileUtil::GetLines(filePath);
 
 	auto basePath = cStrUtil::GetDirectory(filePath);
@@ -34,12 +31,13 @@ void cFileUtil::ReplaceIncludeDirectivesRecursively(const zsString& filePath, st
 		// reach line that has "#include"
 		if (chIdx >= 0) {
 			// Included file
-			zsString filePath = cStrUtil::Between(s.c_str() + chIdx, '"', '"');
+			zsString fileRelPath = cStrUtil::Between(s.c_str() + chIdx, '"', '"');
 
-			auto it = std::find(includedFileList_out.begin(), includedFileList_out.end(), filePath);
-			if (it == includedFileList_out.end()) {
-				includedFileList_out.push_back(filePath);
-				ReplaceIncludeDirectivesRecursively(basePath + filePath, fileLines_out, includedFileList_out);
+			auto it = std::find(includedFilesPaths_out.begin(), includedFilesPaths_out.end(), filePath);
+			if (it == includedFilesPaths_out.end()) {
+				zsString filePath = basePath + fileRelPath;
+				includedFilesPaths_out.push_back(filePath);
+				ReplaceIncludeDirectives(filePath, fileLines_out, includedFilesPaths_out);
 			}
 		}
 		else {
@@ -67,6 +65,10 @@ int cFileUtil::GetSize(const zsString& filePath) {
 		return results.st_size;
 	else
 		return -1;
+}
+
+uint64_t cFileUtil::GetLastWriteTime(const zsString& filePath) {
+	return boost::filesystem::last_write_time(filePath.c_str());
 }
 
 std::list<zsString> cFileUtil::GetLines(std::ifstream& file) {

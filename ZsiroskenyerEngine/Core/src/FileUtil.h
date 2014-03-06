@@ -9,7 +9,8 @@ class cFileUtil {
 public:
 	static bool Clear(const zsString& path);
 
-	static void ReplaceIncludeDirectives(const zsString& filePath, std::list<zsString>& fileLines_out);
+	// fileLines_out will be the resulted "include expanded file" string list
+	static void ReplaceIncludeDirectives(const zsString& filePath, std::list<zsString>& fileLines_out, std::list<zsString>& includedFilesPaths_out = std::list<zsString>());
 
 // Binary writes
 	static void Write(std::ofstream& o, void* data, size_t size);
@@ -33,10 +34,7 @@ public:
 	static std::list<zsString> GetLines(std::ifstream& file);
 	static std::list<zsString> GetLines(const zsString& filePath);
 	static int GetSize(const zsString& path);
-
-protected:
-	// pass empty list to last parameter
-	static void ReplaceIncludeDirectivesRecursively(const zsString& filePath, std::list<zsString>& fileLines_out, std::list<zsString>& includedFileList_out);
+	static uint64_t GetLastWriteTime(const zsString& path);
 };
 
 template<class T>

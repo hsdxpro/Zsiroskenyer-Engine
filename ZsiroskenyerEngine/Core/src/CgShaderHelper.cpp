@@ -11,12 +11,11 @@
 
 
 cCgShaderHelper::cCgShaderHelper(const zsString& shaderPath) {
-	memset(shaderPrograms, 0, sizeof(CGprogram)* NDOMAINS);
 
-	cFileUtil::ReplaceIncludeDirectives(shaderPath, cgFileLines);
+	cFileUtil::ReplaceIncludeDirectives(shaderPath, cgFileLines, includedFilesPaths);
 
 	// Setup context, for creation (Yeah silly, but use OpenGL cg state and params) because equal with dx...
-	con = cgCreateContext();
+	CGcontext con = cgCreateContext();
 	cgGLRegisterStates(con);
 	cgGLSetManageTextureParameters(con, CG_TRUE);
 
@@ -24,31 +23,32 @@ cCgShaderHelper::cCgShaderHelper(const zsString& shaderPath) {
 	assert(shaderPath.size() <= 256);
 	char ansiShaderPath[256];
 	cStrUtil::ToAnsi(shaderPath, ansiShaderPath, 256);
-	effect = cgCreateEffectFromFile(con, ansiShaderPath, NULL);
+	CGeffect effect = cgCreateEffectFromFile(con, ansiShaderPath, NULL);
 	if (effect == NULL) {
 		lastErrorMsg = cgGetLastListing(con);
 		return;
 	}
 
 	// Tech creation
-	tech = cgGetFirstTechnique(effect);
+	CGtechnique tech = cgGetFirstTechnique(effect);
 	if (tech == NULL) {
 		lastErrorMsg = cgGetLastListing(con);
 		return;
 	}
 
 	// Pass creation
-	pass = cgGetFirstPass(tech);
+	CGpass pass = cgGetFirstPass(tech);
 	if (pass == NULL) {
 		lastErrorMsg = cgGetLastListing(con);
 		return;
 	}
 
-	shaderPrograms[VS] = cgGetPassProgram(pass, CGdomain::CG_VERTEX_DOMAIN);
-	shaderPrograms[HS] = cgGetPassProgram(pass, CGdomain::CG_TESSELLATION_CONTROL_DOMAIN);
-	shaderPrograms[DS] = cgGetPassProgram(pass, CGdomain::CG_TESSELLATION_EVALUATION_DOMAIN);
-	shaderPrograms[GS] = cgGetPassProgram(pass, CGdomain::CG_GEOMETRY_DOMAIN);
-	shaderPrograms[PS] = cgGetPassProgram(pass, CGdomain::CG_FRAGMENT_DOMAIN);
+	CGprogram shaderPrograms[NDOMAINS];
+		shaderPrograms[VS] = cgGetPassProgram(pass, CGdomain::CG_VERTEX_DOMAIN);
+		shaderPrograms[HS] = cgGetPassProgram(pass, CGdomain::CG_TESSELLATION_CONTROL_DOMAIN);
+		shaderPrograms[DS] = cgGetPassProgram(pass, CGdomain::CG_TESSELLATION_EVALUATION_DOMAIN);
+		shaderPrograms[GS] = cgGetPassProgram(pass, CGdomain::CG_GEOMETRY_DOMAIN);
+		shaderPrograms[PS] = cgGetPassProgram(pass, CGdomain::CG_FRAGMENT_DOMAIN);
 
 
 	// Domain infos
@@ -61,7 +61,6 @@ cCgShaderHelper::cCgShaderHelper(const zsString& shaderPath) {
 			info.domainsEntry[i] = cgGetProgramString(shaderPrograms[i], CGenum::CG_PROGRAM_ENTRY);
 	}
 }
-
 
 bool cCgShaderHelper::CompileCg(const zsString& cgFilePath, const zsString& shaderOut, cCgShaderHelper::eProfileCG compileProfile) {
 	// Paths

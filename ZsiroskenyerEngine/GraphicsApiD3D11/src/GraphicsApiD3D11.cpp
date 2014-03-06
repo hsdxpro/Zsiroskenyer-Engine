@@ -19,8 +19,6 @@
 #include <fstream>
 #include <memory>
 #include <memory>
-// Ugly create shader last_write_time..
-#include <boost/filesystem.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 // GraphicsApi instance creation
@@ -697,25 +695,29 @@ HRESULT cGraphicsApiD3D11::CompileShaderFromFile(const zsString& fileName, const
 eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, const wchar_t* shaderPath_) {
 	const zsString shaderPath(shaderPath_);
 	
-	// Check file existence
+	// Check cg file existence
 	std::ifstream is(shaderPath.c_str());
 	if (!is.is_open())
 	{
-		lastErrorMsg = L"Shader file doesn't exists:  " + shaderPath;
+		lastErrorMsg = L"Cg Shader file doesn't exists:  " + shaderPath;
 		return eGapiResult::ERROR_FILE_NOT_FOUND;
 	}
 	is.close();
 
 	// later we generate binary into base path
-	zsString pathNoExt = shaderPath.substr(0, shaderPath.size() - 3);
+	zsString pathNoExt = cStrUtil::CutBack(shaderPath, '.');
+
+	//auto lastWriteTime = cFileUtil::GetLastWriteTime(shaderPath);
+
+	// Cg file infos
+	cCgShaderHelper cgHelper(shaderPath);
+	if (cgHelper.GetLastErrorMsg() != NULL)
+	{
+		lastErrorMsg = cgHelper.GetLastErrorMsg();
+		return eGapiResult::ERROR_UNKNOWN;
+	}
 
 	const bool recompileCg = true;
-
-	struct tShaderByteCodeInfo {
-		uint32_t byteCodeSize;
-		std::shared_ptr<char> byteCode;
-		tShaderByteCodeInfo():byteCodeSize(0){}
-	};
 
 	zsString binPaths[cCgShaderHelper::NDOMAINS];
 	binPaths[cCgShaderHelper::VS] = pathNoExt + L"_vs.bin";
@@ -724,13 +726,12 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	binPaths[cCgShaderHelper::GS] = pathNoExt + L"_gs.bin";
 	binPaths[cCgShaderHelper::PS] = pathNoExt + L"_ps.bin";
 
-	/*
-	for (uint8_t i = 0; i < cCgShaderHelper::NDOMAINS; i++) {
-		is.open(binPaths[i]);
-		if (!is.is_open())
-	}*/
-
 	// Data that can be saved to binary and read up next time
+	struct tShaderByteCodeInfo {
+		uint32_t byteCodeSize;
+		std::shared_ptr<char> byteCode;
+		tShaderByteCodeInfo():byteCodeSize(0){}
+	};
 	tShaderByteCodeInfo byteCodes[cCgShaderHelper::NDOMAINS]; // Shader byte codes
 	std::unordered_map<zsString, uint16_t> shaderTextureSlots[cCgShaderHelper::NDOMAINS]; // Shader Texture slots
 	cVertexFormat inputLayoutFormat; // Vertex shader input layout
@@ -738,14 +739,6 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 	// Need cg recompile
 	if (recompileCg) {
-
-		// Parse cg file
-		cCgShaderHelper cgHelper(shaderPath);
-		if (cgHelper.GetLastErrorMsg() != NULL)
-		{
-			lastErrorMsg = cgHelper.GetLastErrorMsg();
-			return eGapiResult::ERROR_UNKNOWN;
-		}
 
 		auto domainsInfo = cgHelper.GetDomainInfo();
 		cgSamplerPairs = cgHelper.GetSamplerStates();
@@ -986,7 +979,6 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			
 			std::ifstream binFile(binPaths[i].c_str(), std::ios::binary);
 
-			int64_t cgFileLastWrite = boost::filesystem::last_write_time(boost::filesystem::path(shaderPath.c_str()));
 
 			int64_t cgFileSavedLastWrite;
 			cFileUtil::Read(binFile, cgFileSavedLastWrite);
@@ -1072,7 +1064,6 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			std::ofstream binFile(binPaths[i], std::ios::trunc | std::ios::binary);
 
 			// - Cg shader last write
-			int64_t cgFileLastWrite = boost::filesystem::last_write_time(boost::filesystem::path(shaderPath.c_str()));
 			cFileUtil::Write(binFile, cgFileLastWrite);
 
 			// - Shader byte code size
