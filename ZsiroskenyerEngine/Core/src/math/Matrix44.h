@@ -109,9 +109,6 @@ public:
 	Matrix44 operator * (const float&) const;
 	Matrix44 operator / (const float&) const;
 
-	// Apply linear transformation
-	Vec3 operator * (const Vec3& v) const;
-
 	// Compare matrices
 	bool operator == (const Matrix44& m2) const;
 	bool operator != (const Matrix44& m2) const;

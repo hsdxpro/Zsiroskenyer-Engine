@@ -71,8 +71,8 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 				auto& shm = *(cShadowMapDir*)&shadowMap;
 				// init map if not compatible with currently inited
 				try {
-					if (!shm.IsValid(gApi, 2048, eFormat::R16_UNORM, eFormat::D16_UNORM, 1)) {
-						shm.Init(gApi, 2048, eFormat::R16_UNORM, eFormat::D16_UNORM, 1);
+					if (!shm.IsValid(gApi, 2048, eFormat::R16_UNORM, eFormat::D16_UNORM, 5)) {
+						shm.Init(gApi, 2048, eFormat::R16_UNORM, eFormat::D16_UNORM, 5);
 					}
 				}
 				catch (std::exception& e) {
@@ -85,7 +85,7 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 				std::vector<float> cascadeSplits(nCascades + 1, 0.0f);
 				cascadeSplits[0] = 1.0f;
 				for (size_t i = 1; i <= nCascades; i++) {
-					cascadeSplits[i] = cascadeSplits[i - 1] * 2.0f;
+					cascadeSplits[i] = cascadeSplits[i - 1] * 3.0f;
 				}
 				for (float& v : cascadeSplits) {
 					v -= 1.0f;

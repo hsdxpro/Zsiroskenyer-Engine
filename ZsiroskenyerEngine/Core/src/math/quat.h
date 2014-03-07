@@ -12,6 +12,8 @@ public:
 	Quat();
 	Quat(float x, float y, float z, float w);
 	Quat(const Vec3& v, float angle);
+	Quat(const Quat& rhs) = default;
+	Quat& operator=(const Quat& rhs) = default;
 
 	// quat properties and ops
 	float Lenght() const;

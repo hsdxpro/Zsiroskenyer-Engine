@@ -233,9 +233,22 @@ int ricsiMain() {
 		Quat rot = Quat::EulerAnglesToQuat(objRot[i]);
 		entity->SetRot(rot);
 	}
+
+	// add a bunch of crates
+	/*
+	for (float x = -25; x <= 25; x += 2.5) {
+		for (float y = -25; y <= 25; y += 2.5) {
+			for (float z = -25; z <= 25; z += 2.5) {
+				cEntity* tmp = core.AddEntity(s, basePath + L"objects/crate.dae", basePath + L"objects/crate.dae", basePath + L"materials/crate.zsm", 0.0f);
+				tmp->SetPos(Vec3(x, y, z));
+			}
+		}
+	}
+	*/
 	
 	cEntity* tmp = core.AddEntity(s, basePath + L"objects/multi-mat_tetraeder.dae", basePath + L"objects/multi-mat_tetraeder.dae", basePath + L"materials/multi_mat_teszt.zsm", 0.0f);
 	tmp->SetPos(Vec3(0, 0, 10));
+	tmp->SetScale(Vec3(3, 3, 3));
 
 	// Our player
 	cEntity* player = core.AddEntity(s, basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 10.0, false);
@@ -381,13 +394,23 @@ void UpdateDemo(cCamera& cam, float tDelta) {
 
 	// SUN POSITION
 	static float sunAngle = 0.0f;
-	if (GetAsyncKeyState('U'))
+	static float sunNorth = 0.0f;
+	if (GetAsyncKeyState('I'))
 		sunAngle += 15*tDelta;
-	if (GetAsyncKeyState('J'))
+	if (GetAsyncKeyState('K'))
 		sunAngle -= 15*tDelta;
+	if (GetAsyncKeyState('J'))
+		sunNorth += 30 * tDelta;
+	if (GetAsyncKeyState('L'))
+		sunNorth -= 30 * tDelta;
 	sunAngle = std::max(0.f, std::min(90.f, sunAngle));
+	if (sunNorth > 360.f)
+		sunNorth -= 360.f;
+	if (sunNorth < -360.f)
+		sunNorth += 360.f;
 	Vec3 sunDir = Vec3(0.0f, 1.0f, 0.0f).Normalize();
-	sunDir *= Quat(Vec3(1.0f, 0.0f, 0.0f), sunAngle / 180.f*ZS_PI);
+	sunDir *= Quat(Vec3(1.0f, 0.0f, 0.0f), -sunAngle / 180.f*ZS_PI);
+	sunDir *= Quat(Vec3(0.0f, 0.0f, 1.0f), sunNorth / 180.f*ZS_PI);
 	sun->SetDirection(sunDir.Normalize());
 
 	// Enable/DISABLE HDR

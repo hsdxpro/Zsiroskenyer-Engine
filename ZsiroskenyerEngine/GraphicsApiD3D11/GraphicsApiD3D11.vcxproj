@@ -50,7 +50,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)\..\Externals\boost_1_55_0;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\..\Externals\Dx11_SDK\Lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)\..\Externals\Dx11_SDK\Lib\x86;$(SolutionDir)\..\Externals\boost_1_55_0\lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Configuration)_\</OutDir>
     <IntDir>$(Configuration)_\</IntDir>
   </PropertyGroup>

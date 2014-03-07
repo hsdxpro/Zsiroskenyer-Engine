@@ -26,30 +26,27 @@ Quat::Quat(const Vec3& v, float angle) {
 }
 
 // operators
-Quat& Quat::operator *= (const Quat& q2) {
-	float w1=w, x1=x, y1=y, z1=z;
-    x =  x1 * q2.w + y1 * q2.z - z1 * q2.y + w1 * q2.x;
-    y = -x1 * q2.z + y1 * q2.w + z1 * q2.x + w1 * q2.y;
-    z =  x1 * q2.y - y1 * q2.x + z1 * q2.w + w1 * q2.z;
-    w = -x1 * q2.x - y1 * q2.y - z1 * q2.z + w1 * q2.w;
+Quat& Quat::operator *= (const Quat& rhs) {
+	float a = w*rhs.w - x*rhs.x - y*rhs.y - z*rhs.z;
+	float b = w*rhs.x + x*rhs.w + y*rhs.z - z*rhs.y;
+	float c = w*rhs.y - x*rhs.z + y*rhs.w + z*rhs.x;
+	float d = w*rhs.z + x*rhs.y - y*rhs.x + z*rhs.w;
+	w = a;
+	x = b;
+	y = c;
+	z = d;
 	return *this;
 }
 
-Quat Quat::operator * (const Quat& q2) const {
-	Quat r;
-	r.w = w*q2.w - x*q2.x - y*q2.y - z*q2.z;
-	r.x = w*q2.x + x*q2.w + y*q2.z - z*q2.y;
-	r.y = w*q2.y - x*q2.z + y*q2.w + z*q2.x;
-	r.z = w*q2.z + x*q2.y - y*q2.x + z*q2.w;
+Quat Quat::operator * (const Quat& rhs) const {
+	Quat r = *this;;
+	r *= rhs;
 	return r;
 }
 
 const Quat Quat::operator ~ () const {
-	Quat r;
-	r.w=w;
-	r.x=-x;
-	r.y=-y;
-	r.z=-z;
+	Quat r = *this;
+	r.Conjugate();
 	return r;
 }
 
@@ -80,7 +77,9 @@ Quat& Quat::Normalize() {
 }
 
 Quat& Quat::Conjugate() {
-	this->operator~();
+	x = -x;
+	y = -y;
+	z = -z;
 	return *this;
 }
 
@@ -101,7 +100,7 @@ float Dot(const Quat& q1, const Quat& q2) {
 
 // interaction with vec3
 Vec3 Quat::RotateVec3(Vec3 v, Quat q) {
-	Quat qv(0.f,v.x,v.y,v.z);
+	Quat qv(v.x, v.y, v.z, 0.f);
 
 	Quat qvr = q*qv*(~q);
 	
@@ -115,7 +114,7 @@ Vec3 Quat::RotateVec3(Vec3 v, Quat q) {
 
 Vec3 Quat::RotateVec3_2(Vec3 v, Quat q) {
 	Vec3 vr;
-	float w=q.w, x=-q.x, y=q.y, z=q.z;
+	float w=q.w, x=q.x, y=q.y, z=q.z;
 	vr.x = w*w*v.x + 2*y*w*v.z - 2*z*w*v.y + x*x*v.x + 2*y*x*v.y + 2*z*x*v.z - z*z*v.x - y*y*v.x;
 	vr.y = 2*x*y*v.x + y*y*v.y + 2*z*y*v.z + 2*w*z*v.x - z*z*v.y + w*w*v.y - 2*x*w*v.z - x*x*v.y;
 	vr.z = 2*x*z*v.x + 2*y*z*v.y + z*z*v.z - 2*w*y*v.x - y*y*v.z + 2*w*x*v.y - x*x*v.z + w*w*v.z;
