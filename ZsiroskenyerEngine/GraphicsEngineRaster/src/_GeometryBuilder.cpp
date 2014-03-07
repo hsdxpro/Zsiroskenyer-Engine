@@ -399,7 +399,7 @@ cGeometry* _cGeometryBuilder::Create() {
 			throw std::runtime_error("failed to create vertex buffer");
 		}
 
-		mg.resize(nMatGroups);
+		mg.reserve(nMatGroups);
 		for (size_t i = 0; i < nMatGroups; i++) {
 			mg.push_back(matGroups[i]);
 		}
