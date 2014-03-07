@@ -8,6 +8,7 @@
 class cFileUtil {
 public:
 	static bool Clear(const zsString& path);
+	static void Delete(const zsString& path);
 
 	// fileLines_out will be the resulted "include expanded file" string list
 	static void ReplaceIncludeDirectives(const zsString& filePath, std::list<zsString>& fileLines_out, std::list<zsString>& includedFilesPaths_out = std::list<zsString>());
