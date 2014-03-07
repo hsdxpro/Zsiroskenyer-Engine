@@ -177,6 +177,10 @@ std::unordered_map<zsString, uint16_t> cCgShaderHelper::GetHLSLTextureSlots(cons
 	return result;
 }
 
+const std::list<zsString>& cCgShaderHelper::GetIncludedFilesPaths() const {
+	return includedFilesPaths;
+}
+
 std::unordered_map<zsString, tSamplerDesc> cCgShaderHelper::GetSamplerStates() {
 	std::unordered_map<zsString, tSamplerDesc> result;
 
@@ -185,16 +189,17 @@ std::unordered_map<zsString, tSamplerDesc> cCgShaderHelper::GetSamplerStates() {
 	auto samplerLineIndices = cStrUtil::GetLinesContainingAllStr(cgFileLines, words, 2);
 
 	// For each sampler line that uses SamplerStates 
-	for (auto it = samplerLineIndices.begin(); it != samplerLineIndices.end(); it++) {
+	//for (auto it = samplerLineIndices.begin(); it != samplerLineIndices.end(); it++) {
+	for (auto lineIdx : samplerLineIndices) {
 		// Sampler Name
 		
-		const zsString& _samplerName = *std::next(cgFileLines.begin(), *it);
+		const zsString& _samplerName = *std::next(cgFileLines.begin(), lineIdx);
 		zsString samplerName = _samplerName;
 		cStrUtil::TrimBorder(samplerName, ' ');
 		cStrUtil::Between(samplerName, ' ', ' ');
 
 
-		const auto samplerStateLines = cStrUtil::GetLines(cgFileLines, *it + 1, L";");
+		const auto samplerStateLines = cStrUtil::GetLines(cgFileLines, lineIdx + 1, L";");
 
 		// TODO Noob mode : assume one state per line
 		// ex.
@@ -205,8 +210,8 @@ std::unordered_map<zsString, tSamplerDesc> cCgShaderHelper::GetSamplerStates() {
 		tSamplerDesc samplerDesc;
 
 		// For each of the above lines
-		for (auto state = samplerStateLines.begin(); state != samplerStateLines.end(); state++) {
-			const zsString& row = *std::next(cgFileLines.begin(), *state);
+		for (auto state : samplerStateLines) {
+			const zsString& row = *std::next(cgFileLines.begin(), state);
 
 			// ex. "MipFilter = POINT,", split, trim to "MipFilter", "POINT", then lower those
 			std::list<zsString> parts = cStrUtil::SplitAt(row, '=');

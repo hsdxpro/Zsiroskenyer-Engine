@@ -693,38 +693,80 @@ HRESULT cGraphicsApiD3D11::CompileShaderFromFile(const zsString& fileName, const
 }
 
 eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, const wchar_t* shaderPath_) {
+
+	// Cg file path
 	const zsString shaderPath(shaderPath_);
-	
-	// Check cg file existence
-	std::ifstream is(shaderPath.c_str());
-	if (!is.is_open())
-	{
-		lastErrorMsg = L"Cg Shader file doesn't exists:  " + shaderPath;
-		return eGapiResult::ERROR_FILE_NOT_FOUND;
+
+	// path without extension
+	const zsString shaderPathNoExt = cStrUtil::CutBack(shaderPath, '.');
+
+	// preferred Binary path
+	const zsString binShaderPath = shaderPathNoExt + L".bin";
+
+
+	// For further reading writing files..
+	std::ifstream is;
+	std::ofstream os;
+
+	// Cg file exists ?
+	is.open(shaderPath);	
+		bool cgFileExists  = is.is_open();
+
+	// Binary file exists ?
+	is.open(binShaderPath);	
+		bool binFileExists = is.is_open();
+
+
+	bool compileCg	= false;
+	bool readBin	= false;
+
+	cCgShaderHelper* cgHelper = NULL;
+	// Cg exist
+	if (cgFileExists) {
+
+		// cg helper come and help out us :), you know lot of things about the current CG file
+		cgHelper = new cCgShaderHelper(shaderPath);
+		if (cgHelper->GetLastErrorMsg() != NULL)
+		{
+			lastErrorMsg = cgHelper->GetLastErrorMsg();
+			return eGapiResult::ERROR_UNKNOWN;
+		}
+
+		// Cg and bin exists, we need recompiling?
+		if (binFileExists) {
+
+			// Read OLD sum last write from binary
+			is.open(binShaderPath, std::ios::binary);
+			uint64_t oldSumLastWriteTimes;
+			cFileUtil::Read(is, oldSumLastWriteTimes);
+
+			// CURRENT sum last write
+			auto sumLastWriteTimes = cFileUtil::GetLastWriteTime(shaderPath);
+			for (auto includedFilePath : cgHelper->GetIncludedFilesPaths()) {
+				sumLastWriteTimes += cFileUtil::GetLastWriteTime(includedFilePath);
+			}
+
+			// If they not equal, so sorry, but need recompiling shader !
+			if (oldSumLastWriteTimes != sumLastWriteTimes)
+				compileCg = true;
+			else
+				readBin = true;
+
+		} else // Just cg exist need recompile
+			compileCg = true;
+
+	// Cg not exist
+	} else {
+
+		// Just binary exists, read it
+		if (binFileExists)
+			readBin = true;
+
+		else { // we have no cg and binary fuck it
+			lastErrorMsg = L"Creating shader fail because missing .bin and cg file: " + shaderPath;
+			return eGapiResult::ERROR_UNKNOWN;
+		}
 	}
-	is.close();
-
-	// later we generate binary into base path
-	zsString pathNoExt = cStrUtil::CutBack(shaderPath, '.');
-
-	//auto lastWriteTime = cFileUtil::GetLastWriteTime(shaderPath);
-
-	// Cg file infos
-	cCgShaderHelper cgHelper(shaderPath);
-	if (cgHelper.GetLastErrorMsg() != NULL)
-	{
-		lastErrorMsg = cgHelper.GetLastErrorMsg();
-		return eGapiResult::ERROR_UNKNOWN;
-	}
-
-	const bool recompileCg = true;
-
-	zsString binPaths[cCgShaderHelper::NDOMAINS];
-	binPaths[cCgShaderHelper::VS] = pathNoExt + L"_vs.bin";
-	binPaths[cCgShaderHelper::HS] = pathNoExt + L"_hs.bin";
-	binPaths[cCgShaderHelper::DS] = pathNoExt + L"_ds.bin";
-	binPaths[cCgShaderHelper::GS] = pathNoExt + L"_gs.bin";
-	binPaths[cCgShaderHelper::PS] = pathNoExt + L"_ps.bin";
 
 	// Data that can be saved to binary and read up next time
 	struct tShaderByteCodeInfo {
@@ -737,16 +779,24 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	cVertexFormat inputLayoutFormat; // Vertex shader input layout
 	std::unordered_map<zsString, tSamplerDesc> cgSamplerPairs; 	// Cg parsed samplers
 
+	compileCg = true;
+
 	// Need cg recompile
-	if (recompileCg) {
+	if (compileCg) {
 
-		auto domainsInfo = cgHelper.GetDomainInfo();
-		cgSamplerPairs = cgHelper.GetSamplerStates();
-		inputLayoutFormat = cgHelper.GetVSInputFormat();
+		// Clear binary file
+		os.open(binShaderPath, std::ios::binary, std::ios::trunc);
 
-		// Compile each domain 
-		ID3DBlob* blobs[cCgShaderHelper::NDOMAINS];
+		auto domainsInfo  = cgHelper->GetDomainInfo();
+		cgSamplerPairs	  = cgHelper->GetSamplerStates();
+		inputLayoutFormat = cgHelper->GetVSInputFormat();
+
+		// Compile each domain if it exists
 		for (uint8_t i = 0; i < cCgShaderHelper::NDOMAINS; i++) {
+
+			// Write binary "is that fuckin domain exists?"
+			cFileUtil::Write(os, domainsInfo.domainsExist[i]);
+
 			// If not exists leave it
 			if (!domainsInfo.domainsExist[i])
 				continue;
@@ -762,28 +812,56 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			default: assert(0);
 			}
 
+			const zsString tmpBinPath = shaderPathNoExt + L"_TMP.bin";
 			// Compile CG to HLSL
-			cgHelper.CompileCg(shaderPath, binPaths[i], cgProfile);
+			cgHelper->CompileCg(shaderPath, tmpBinPath, cgProfile);
 
 			// Compile HLSL to bytecode
 			zsString compMessage;
-			HRESULT hr = CompileShaderFromFile(binPaths[i], L"main", dxProfile, &compMessage, &blobs[i]);
+			ID3DBlob* blob;
+			HRESULT hr = CompileShaderFromFile(tmpBinPath, L"main", dxProfile, &compMessage, &blob);
 			if (FAILED(hr)) {
 				lastErrorMsg = L"\n\n HLSL COMPILE FAIL : " + shaderPath + L"\n\n ErrorMsg: " + compMessage;
 				return eGapiResult::ERROR_UNKNOWN;
 			}
 
 			// Save bytecode info
-			byteCodes[i].byteCodeSize = blobs[i]->GetBufferSize();
+			byteCodes[i].byteCodeSize = blob->GetBufferSize();
 			byteCodes[i].byteCode = std::shared_ptr<char>(new char[byteCodes[i].byteCodeSize]);
-			memcpy(byteCodes[i].byteCode.get(), blobs[i]->GetBufferPointer(), byteCodes[i].byteCodeSize);
-			SAFE_RELEASE(blobs[i]);
+			memcpy(byteCodes[i].byteCode.get(), blob->GetBufferPointer(), byteCodes[i].byteCodeSize);
+			SAFE_RELEASE(blob);
 
 			// Save texture slots 
-			shaderTextureSlots[i] = cgHelper.GetHLSLTextureSlots(binPaths[i]);
+			shaderTextureSlots[i] = cgHelper->GetHLSLTextureSlots(tmpBinPath);
+
+			// Delete TMP bin
+			cFileUtil::Delete(tmpBinPath);
+
+		// Write all the datas need for reconstructing shaders from binary...
+			// Byte code size (uint32_t)
+			cFileUtil::Write(os, byteCodes[i].byteCodeSize);
+
+			// Byte code (ptr, uint32_t)
+			cFileUtil::Write(os, byteCodes[i].byteCode.get(), byteCodes[i].byteCodeSize);
+
+			// Vertex shader input layout format (uint64_t)
+			cFileUtil::Write(os, inputLayoutFormat.Raw());
+
+			
+			for (auto pair : shaderTextureSlots[i]) {
+				
+			}
+
+			// EZEK MÉG KELLENEK
+			//std::unordered_map<zsString, uint16_t> shaderTextureSlots[cCgShaderHelper::NDOMAINS]; // Shader Texture slots
+			//std::unordered_map<zsString, tSamplerDesc> cgSamplerPairs; 	// Cg parsed samplers
+			os.close();
 		}
 	}
+	SAFE_DELETE(cgHelper);
 
+	// TMP
+	cFileUtil::Delete(binShaderPath);
 
 
 	ID3D11VertexShader*	  vs = nullptr;
@@ -798,7 +876,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		auto byteCodeInfo = byteCodes[cCgShaderHelper::VS];
 		hr = d3ddev->CreateVertexShader(byteCodeInfo.byteCode.get(), byteCodeInfo.byteCodeSize, NULL, &vs);
 		if (FAILED(hr)) {
-			lastErrorMsg = L"Failed to create vertex shader from bytecode: " + binPaths[cCgShaderHelper::VS];
+			lastErrorMsg = L"Failed to create vertex shader from bytecode: " + binShaderPath;
 			return eGapiResult::ERROR_UNKNOWN;
 		}
 	}
@@ -808,7 +886,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		auto byteCodeInfo = byteCodes[cCgShaderHelper::HS];
 		hr = d3ddev->CreateHullShader(byteCodeInfo.byteCode.get(), byteCodeInfo.byteCodeSize, NULL, &hs);
 		if (FAILED(hr)) {
-			lastErrorMsg = L"Failed to create hull shader from bytecode: " + binPaths[cCgShaderHelper::HS];
+			lastErrorMsg = L"Failed to create hull shader from bytecode: " + binShaderPath;
 			return eGapiResult::ERROR_UNKNOWN;
 		}
 	}
@@ -818,7 +896,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		auto byteCodeInfo = byteCodes[cCgShaderHelper::DS];
 		hr = d3ddev->CreateDomainShader(byteCodeInfo.byteCode.get(), byteCodeInfo.byteCodeSize, NULL, &ds);
 		if (FAILED(hr)) {
-			lastErrorMsg = L"Failed to create domain shader from bytecode: " + binPaths[cCgShaderHelper::DS];
+			lastErrorMsg = L"Failed to create domain shader from bytecode: " + binShaderPath;
 			return eGapiResult::ERROR_UNKNOWN;
 		}
 	}
@@ -828,7 +906,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		auto byteCodeInfo = byteCodes[cCgShaderHelper::GS];
 		hr = d3ddev->CreateGeometryShader(byteCodeInfo.byteCode.get(), byteCodeInfo.byteCodeSize, NULL, &gs);
 		if (FAILED(hr)) {
-			lastErrorMsg = L"Failed to create geometry shader from bytecode: " + binPaths[cCgShaderHelper::GS];
+			lastErrorMsg = L"Failed to create geometry shader from bytecode: " + binShaderPath;
 			return eGapiResult::ERROR_UNKNOWN;
 		}
 	}
@@ -838,7 +916,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		auto byteCodeInfo = byteCodes[cCgShaderHelper::PS];
 		hr = d3ddev->CreatePixelShader(byteCodeInfo.byteCode.get(), byteCodeInfo.byteCodeSize, NULL, &ps);
 		if (FAILED(hr)) {
-			lastErrorMsg = L"Failed to create pixel shader from bytecode: " + binPaths[cCgShaderHelper::PS];
+			lastErrorMsg = L"Failed to create pixel shader from bytecode: " + binShaderPath;
 			return eGapiResult::ERROR_UNKNOWN;
 		}
 	}
@@ -847,7 +925,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	std::vector<cShaderProgramD3D11::tSamplerInfo> shaderSamplerStates[cCgShaderHelper::NDOMAINS];
 
 	// Create non existing samplers in gApi
-	for each(auto pair in cgSamplerPairs) {
+	for (auto pair : cgSamplerPairs) {
 		// Interpret cg sampler description as DirectX sampler Desc
 		D3D11_SAMPLER_DESC sDesc = ConvertToNativeSampler(pair.second);
 

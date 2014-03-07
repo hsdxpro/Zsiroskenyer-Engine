@@ -19,12 +19,16 @@ bool cFileUtil::Clear(const zsString& path) {
 	return true;
 }
 
+void cFileUtil::Delete(const zsString& path) {
+	boost::filesystem::remove(path.c_str());
+}
+
 void cFileUtil::ReplaceIncludeDirectives(const zsString& filePath, std::list<zsString>& fileLines_out, std::list<zsString>& includedFilesPaths_out/* = std::list<zsString>()*/) {
 	auto fileLines = cFileUtil::GetLines(filePath);
 
 	auto basePath = cStrUtil::GetDirectory(filePath);
 
-	for each(zsString s in fileLines) {
+	for (zsString s : fileLines) {
 		// Search for "#include" in that line
 		int chIdx = cStrUtil::Find(s, L"#include");
 
