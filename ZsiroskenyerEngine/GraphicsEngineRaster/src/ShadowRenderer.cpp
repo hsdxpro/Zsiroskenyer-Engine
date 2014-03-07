@@ -83,13 +83,16 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 				// generate cascade splits
 				size_t nCascades = shm.GetMaps().size();
 				std::vector<float> cascadeSplits(nCascades + 1, 0.0f);
-				cascadeSplits[0] = 1.0f;
-				for (size_t i = 1; i <= nCascades; i++) {
-					cascadeSplits[i] = cascadeSplits[i - 1] * 3.0f;
+
+				float near = parent.camera->GetNearPlane();
+				float far = parent.camera->GetFarPlane();
+
+				for (size_t i = 0; i <= nCascades; i++) {
+					cascadeSplits[i] = near*pow((far / near), float(i) / float(nCascades));
 				}
 				for (float& v : cascadeSplits) {
-					v -= 1.0f;
-					v /= cascadeSplits[nCascades];
+					v -= near;
+					v /= (far - near);
 				}
 
 				// foreach cascade

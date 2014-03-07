@@ -12,9 +12,9 @@
 #define NUM_MAX_CASCADES 12
 
 sampler2D shadowMap = {
-    MipFilter = LINEAR,
-    MinFilter = LINEAR,
-    MagFilter = LINEAR,
+	MipFilter = LINEAR,
+	MinFilter = LINEAR,
+	MagFilter = LINEAR,
 	AddressU = Wrap,
 	AddressV = Wrap,
 };
@@ -114,15 +114,15 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 		 shadowConst.castShadows)
 	{
 		float2 sampleCoord = float2(shadowPos.x*0.5f+0.5f, -shadowPos.y*0.5f+0.5f);
-		
+		/*
 		float shadowSample = tex2Dproj(shadowMap, float4(sampleCoord.x, -sampleCoord.y, shadowPos.z, 1.0f)).r;
 		color *= saturate(shadowSample);
-
-		/*
+		*/
+		
 		float shadowSample = tex2D(shadowMap, sampleCoord);
 		if (shadowSample+1e-5 < shadowPos.z)
 			discard;
-		*/
+		//*/
 	}
 	//*/
 	return color;
