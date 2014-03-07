@@ -41,7 +41,7 @@ static const float3 DEBUG_CASCADE_COLOR[NUM_MAX_CASCADES] = {
 	float3(1.0f, 0.5f, 0.2f), // orange
 };
 
-sampler2D myArray[4] = {
+sampler2D shadowMaps[4] = {
 	{MipFilter = LINEAR,},
 	{MipFilter = LINEAR,},
 	{MipFilter = LINEAR,},
@@ -114,7 +114,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	}
 	color.rgb = DEBUG_CASCADE_COLOR[cascadeIdx]*0.99f + color.rgb*0.01f;
 	//*/
-	color.r += 0.00001 * saturate(tex2D(myArray[0], float2(0,0)));
+	color.r += 0.00001 * saturate(tex2D(shadowMaps[0], float2(0,0)));
 
 	shadowPos = mul(float4(worldPos, 1.0f), shadowConst.lightViewProj[0]);
 	if (-1.0f < shadowPos.x && shadowPos.x < 1.0f &&
