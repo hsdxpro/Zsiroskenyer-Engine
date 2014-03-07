@@ -711,16 +711,20 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	// Cg file exists ?
 	is.open(shaderPath);	
 		bool cgFileExists  = is.is_open();
+	is.close();
 
 	// Binary file exists ?
 	is.open(binShaderPath);	
 		bool binFileExists = is.is_open();
+	is.close();
 
 
 	bool compileCg	= false;
 	bool readBin	= false;
 
 	cCgShaderHelper* cgHelper = NULL;
+	uint64_t sumLastWriteTimes = 0;
+
 	// Cg exist
 	if (cgFileExists) {
 
@@ -732,6 +736,12 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			return eGapiResult::ERROR_UNKNOWN;
 		}
 
+		// CURRENT sum last write
+		sumLastWriteTimes = cFileUtil::GetLastWriteTime(shaderPath);
+		for (auto includedFilePath : cgHelper->GetIncludedFilesPaths()) {
+			sumLastWriteTimes += cFileUtil::GetLastWriteTime(includedFilePath);
+		}
+
 		// Cg and bin exists, we need recompiling?
 		if (binFileExists) {
 
@@ -740,17 +750,13 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			uint64_t oldSumLastWriteTimes;
 			cFileUtil::Read(is, oldSumLastWriteTimes);
 
-			// CURRENT sum last write
-			auto sumLastWriteTimes = cFileUtil::GetLastWriteTime(shaderPath);
-			for (auto includedFilePath : cgHelper->GetIncludedFilesPaths()) {
-				sumLastWriteTimes += cFileUtil::GetLastWriteTime(includedFilePath);
-			}
-
 			// If they not equal, so sorry, but need recompiling shader !
 			if (oldSumLastWriteTimes != sumLastWriteTimes)
 				compileCg = true;
 			else
 				readBin = true;
+
+			is.close();
 
 		} else // Just cg exist need recompile
 			compileCg = true;
@@ -779,19 +785,20 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	cVertexFormat inputLayoutFormat; // Vertex shader input layout
 	std::unordered_map<zsString, tSamplerDesc> cgSamplerPairs; 	// Cg parsed samplers
 
-	compileCg = true;
-
 	// Need cg recompile
 	if (compileCg) {
-
-		// Clear binary file
-		os.open(binShaderPath, std::ios::binary, std::ios::trunc);
 
 		auto domainsInfo  = cgHelper->GetDomainInfo();
 		cgSamplerPairs	  = cgHelper->GetSamplerStates();
 		inputLayoutFormat = cgHelper->GetVSInputFormat();
 
-		// Compile each domain if it exists
+		// Clear binary file
+		os.open(binShaderPath, std::ios::binary, std::ios::trunc);
+
+		// Write cg included summed last write times :)  "last write checksum"
+		cFileUtil::Write(os, sumLastWriteTimes);
+
+		// Compile each domain if it exists, write binary...
 		for (uint8_t i = 0; i < cCgShaderHelper::NDOMAINS; i++) {
 
 			// Write binary "is that fuckin domain exists?"
@@ -813,6 +820,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			}
 
 			const zsString tmpBinPath = shaderPathNoExt + L"_TMP.bin";
+
 			// Compile CG to HLSL
 			cgHelper->CompileCg(shaderPath, tmpBinPath, cgProfile);
 
@@ -844,25 +852,100 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			// Byte code (ptr, uint32_t)
 			cFileUtil::Write(os, byteCodes[i].byteCode.get(), byteCodes[i].byteCodeSize);
 
-			// Vertex shader input layout format (uint64_t)
-			cFileUtil::Write(os, inputLayoutFormat.Raw());
+			// Vertex shader input layout format
+			cFileUtil::Write(os, inputLayoutFormat);
 
-			
-			for (auto pair : shaderTextureSlots[i]) {
+			uint8_t nTextures = shaderTextureSlots[i].size();
+			cFileUtil::Write(os, nTextures);
+
+			for (auto p : (shaderTextureSlots[i])) {
 				
-			}
+				// Slot name
+				cFileUtil::Write(os, p.first);
 
-			// EZEK MÉG KELLENEK
-			//std::unordered_map<zsString, uint16_t> shaderTextureSlots[cCgShaderHelper::NDOMAINS]; // Shader Texture slots
-			//std::unordered_map<zsString, tSamplerDesc> cgSamplerPairs; 	// Cg parsed samplers
-			os.close();
+				// Slot index
+				cFileUtil::Write(os, (uint16_t)p.second);
+			}
 		}
+
+		uint8_t nSamplers = cgSamplerPairs.size();
+		cFileUtil::Write(os, nSamplers);
+		for (auto p : cgSamplerPairs) {
+			// Sampler name
+			cFileUtil::Write(os, p.first);
+
+			// Sampler description
+			cFileUtil::Write(os, p.second);
+		}
+		os.close();
+
+	// Read binary
+	} else if(readBin) {
+
+		is.open(binShaderPath, std::ios::binary);
+
+		// Read up last write shit for nothing...
+		uint64_t sumLastWriteTimesDUMMY;
+		cFileUtil::Read(is, sumLastWriteTimesDUMMY);
+
+		// Read up domain datas
+		for (uint8_t i = 0; i < cCgShaderHelper::NDOMAINS; i++) {
+			
+			// Domain exist ?
+			bool domainExists;
+			cFileUtil::Read(is, domainExists);
+
+			if ( ! domainExists)
+				continue;
+			
+			// Byte code size (uint32_t)
+			cFileUtil::Read(is, byteCodes[i].byteCodeSize);
+
+			// Alloc for ByteCode
+			byteCodes[i].byteCode = std::shared_ptr<char>(new char[byteCodes[i].byteCodeSize]);
+
+			// Byte code
+			cFileUtil::Read(is, byteCodes[i].byteCode.get(), byteCodes[i].byteCodeSize);
+
+			// Vertex shader input layout format (uint64_t)
+			cFileUtil::Read(is, inputLayoutFormat);
+
+			uint8_t nTextures;
+			cFileUtil::Read(is, nTextures);
+
+			zsString samplerName;
+			uint16_t samplerIndex;
+			for (uint8_t j = 0; j < nTextures; j++) {
+
+				// Slot name
+				cFileUtil::Read(is, samplerName);
+
+				// Slot index
+				cFileUtil::Read(is, samplerIndex);
+
+				shaderTextureSlots[i][samplerName] = samplerIndex;
+			}
+		}
+
+		uint8_t nSamplers;
+		cFileUtil::Read(is, nSamplers);
+
+		zsString samplerName;
+		tSamplerDesc samplerDesc;
+		for (int i = 0; i < nSamplers; i++) {
+			// Sampler name
+			cFileUtil::Read(is, samplerName);
+
+			// Sampler description
+			cFileUtil::Read(is, samplerDesc);
+
+			cgSamplerPairs[samplerName] = samplerDesc;
+		}
+
+		is.close();
+
 	}
 	SAFE_DELETE(cgHelper);
-
-	// TMP
-	cFileUtil::Delete(binShaderPath);
-
 
 	ID3D11VertexShader*	  vs = nullptr;
 	ID3D11HullShader*	  hs = nullptr;
