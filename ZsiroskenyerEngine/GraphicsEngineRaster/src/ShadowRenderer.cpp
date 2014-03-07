@@ -80,11 +80,28 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 					break; // breaks switch case label
 				}
 
+				// generate cascade splits
+				size_t nCascades = shm.GetMaps().size();
+				std::vector<float> cascadeSplits(nCascades + 1, 0.0f);
+				cascadeSplits[0] = 1.0f;
+				for (size_t i = 1; i <= nCascades; i++) {
+					cascadeSplits[i] = cascadeSplits[i - 1] * 2.0f;
+				}
+				for (float& v : cascadeSplits) {
+					v -= 1.0f;
+					v /= cascadeSplits[nCascades];
+				}
+
 				// foreach cascade
-				for (size_t i = 0; i < shm.GetMaps().size(); i++) {
+				for (size_t i = 0; i < nCascades; i++) {
 					// compute transforms
 					auto& map = shm.GetMaps()[i];
-					bool isGoodTransform = shm.Transform(map.projMat, map.viewMat, light.direction, parent.camera->GetViewMatrix(), parent.camera->GetProjMatrix(), 0.0f, 1.0f);
+					bool isGoodTransform = shm.Transform(
+							map.projMat, 
+							map.viewMat, 
+							light.direction, 
+							parent.camera->GetViewMatrix(), parent.camera->GetProjMatrix(), 
+							cascadeSplits[i], cascadeSplits[i+1]);
 					if (!isGoodTransform)
 						continue;
 

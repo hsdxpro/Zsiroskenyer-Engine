@@ -75,37 +75,13 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	{
 		float2 sampleCoord = float2(shadowPos.x*0.5f+0.5f, -shadowPos.y*0.5f+0.5f);
 		/*
-		float sampleOffset = 1.0f/8192.0f;
-		const float bias = 1e-5;
-
-		float4 shadowSamples;
-		shadowSamples.r = tex2D(shadowMap, sampleCoord + float2(sampleOffset, -sampleOffset));
-		shadowSamples.g = tex2D(shadowMap, sampleCoord + float2(sampleOffset, sampleOffset));
-		shadowSamples.b = tex2D(shadowMap, sampleCoord + float2(-sampleOffset, sampleOffset));
-		shadowSamples.a = tex2D(shadowMap, sampleCoord + float2(-sampleOffset, -sampleOffset));
-		*/
-		float shadowSample = tex2D(shadowMap, float2(shadowPos.x*0.5f+0.5f, -shadowPos.y*0.5f+0.5f));
-
-		/*
-		float weight = 1.0f;
-		if (shadowSample + bias < shadowPos.z)
-			weight -= 0.2f;
-		if (shadowSamples.r + bias < shadowPos.z)
-			weight -= 0.2f;		
-		if (shadowSamples.g + bias < shadowPos.z)
-			weight -= 0.2f;		
-		if (shadowSamples.b + bias < shadowPos.z)
-			weight -= 0.2f;
-		if (shadowSamples.a + bias < shadowPos.z)
-			weight -= 0.2f;
-
-		color.rgb *= weight;
-		*/
-
-		
+		float shadowSample = tex2Dproj(shadowMap, float4(shadowPos, 1.0f)).r;
+		color *= saturate(shadowSample);
+		/*/
+		float shadowSample = tex2D(shadowMap, sampleCoord);
 		if (shadowSample+1e-5 < shadowPos.z)
 			discard;
-		
+		//*/		
 	}
 	
 	return color;
