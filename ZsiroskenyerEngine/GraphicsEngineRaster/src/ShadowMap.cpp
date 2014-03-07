@@ -163,7 +163,7 @@ bool cShadowMapDir::Transform(
 	}
 
 	limitMin.z = limitMax.z - 1000.0f;
-
+	
 	// check if limits have real volume or they are just 2D
 	// in the latter case, no projection exists
 	Vec3 volumeDim = limitMax - limitMin;

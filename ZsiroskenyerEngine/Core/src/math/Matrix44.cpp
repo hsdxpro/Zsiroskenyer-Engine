@@ -312,8 +312,10 @@ Matrix44& Matrix44::ProjOrtographic(float nearPlane, float farPlane, float left,
 	center /= 2.0f;
 	
 	Translation(-center);
-	PostScale(Vec3(1, 1, 0.5) / dim);
-	PostTranslate(Vec3(0, 0, 0.5));
+	*this *= Matrix44Scaling(Vec3(1, 1, 0.5) / dim);
+	*this *= Matrix44Translation(Vec3(0, 0, 0.5));
+	//PostScale(Vec3(1, 1, 0.5) / dim);
+	//PostTranslate(Vec3(0, 0, 0.5));
 
 	return *this;
 }

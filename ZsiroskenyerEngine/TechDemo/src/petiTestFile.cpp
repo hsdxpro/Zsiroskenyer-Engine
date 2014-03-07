@@ -7,8 +7,10 @@
 #include <map>
 #include <deque>
 #include <list>
+#include <iomanip>
 
 #include "../../Core/src/VertexFormat.h"
+#include "../../Core/src/math/math_all.h"
 
 #include <Windows.h>
 
@@ -17,40 +19,40 @@ using namespace std;
 ////////////////////////////////////////////////////////////////////////////////
 // Main
 int petiMain() {
-	cVertexFormat fmt;
-	vector<cVertexFormat::Attribute> attribs;
-	cVertexFormat::Attribute a;
+	Vec3 lightDirs[] = {
+		Vec3(1, 0, 1),
+		Vec3(1, 1, 1),
+		Vec3(0, 1, 1),
+		Vec3(0, 0, 1)
+	};
 
-	a.bitsPerComponent = cVertexFormat::_32_BIT;
-	a.nComponents = 3;
-	a.semantic = cVertexFormat::POSITION;
-	a.type = cVertexFormat::FLOAT;
+	cout << fixed;
+	cout << setprecision(3);
 
-	attribs.push_back(a);
+	Vec3 v(0, 0, 1);
+	float angle = 90.f / 180.f * 3.1415926f;
+	Vec3 axis(.883, 1.892, .784); axis.Normalize();
+	Quat q(axis, angle);
 
-	a.bitsPerComponent = cVertexFormat::_16_BIT;
-	a.nComponents = 4;
-	a.semantic = cVertexFormat::NORMAL;
-	a.type = cVertexFormat::NORM;
+	cout << "axis = " << axis << endl;
+	cout << "angle = " << angle * 180.f / 3.1415926f << endl;
+	cout << "vector " << v << " rotates to " << v*Matrix44(q) << endl;
 
-	attribs.push_back(a);
+	Quat q_c = ~q;
+	cout << "vector " << v << " rotates to " << Quat::RotateVec3_2(v,q) << endl;
+	/*
+	for (auto lightDir : lightDirs) {
+		Vec3 targetLigthDir(0, 0, 1);
+		Vec3 ld = Normalize(lightDir);
+		auto cp = Cross(ld, targetLigthDir);
+		auto dp = Dot(ld, targetLigthDir);
+		Quat rot(cp.x, cp.y, cp.z, 1.0f+dp);
+		rot.Normalize();
+		Matrix44 m = rot;
 
-	a.bitsPerComponent = cVertexFormat::_16_BIT;
-	a.nComponents = 2;
-	a.semantic = cVertexFormat::TEXCOORD;
-	a.type = cVertexFormat::NORM;
-
-	attribs.push_back(a);
-
-	try {
-		fmt.Create(attribs);
+		cout << ld << "\t" << (ld*m) << endl;
 	}
-	catch (exception& e) {
-		cout << e.what() << endl;
-	}
-
-	auto dec = fmt.Decode();
-
+	*/
 	_getch();
 
 	return 0;

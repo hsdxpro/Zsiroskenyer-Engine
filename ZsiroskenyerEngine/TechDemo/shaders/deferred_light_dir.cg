@@ -8,15 +8,38 @@
 //------------------------------------------------------------------------------
 //	Shadow maps
 //------------------------------------------------------------------------------
+
+#define NUM_MAX_CASCADES 12
+
 sampler2D shadowMap = {
     MipFilter = LINEAR,
     MinFilter = LINEAR,
     MagFilter = LINEAR,
+	AddressU = Wrap,
+	AddressV = Wrap,
 };
+
 struct {
-	float4x4 lightViewProj;
+	float4x4 lightViewProj[NUM_MAX_CASCADES];
+	int nCascades;
 	bool castShadows;
 } shadowConst : register(c100);
+
+static const float3 DEBUG_CASCADE_COLOR[NUM_MAX_CASCADES] = {
+	float3(0.2f, 1.0f, 0.2f), // green
+	float3(1.0f, 0.5f, 0.2f), // orange
+	float3(0.7f, 0.2f, 1.0f), // purple
+	float3(0.95f, 0.95f, 0.1f), // yellow
+	float3(0.2f, 0.95f, 0.95f), // cyan
+	float3(0.6f, 0.45f, 0.3f), // brown
+	float3(0.3f, 0.3f, 0.9f), // blue
+	float3(1.0f, 0.2f, 0.2f), // red
+	float3(0.5f, 0.95f, 0.15f), // greenish yellow
+	float3(0.95f, 0.2f, 0.5f), // reddish pink
+	// repeat ------------------------------------
+	float3(0.2f, 1.0f, 0.2f), // green
+	float3(1.0f, 0.5f, 0.2f), // orange
+};
 
 //------------------------------------------------------------------------------
 //	Vertex shader
@@ -66,24 +89,42 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	}
 	*/
 
-	// shadow map sampling
-	float3 shadowPos = mul(float4(worldPos, 1.0f), shadowConst.lightViewProj);
+	// shadow map
+	float3 shadowPos;
+
+	// determine wich cascade
+	/*
+	int cascadeIdx = -1;
+	for (int i=0; i<shadowConst.nCascades; i++) {
+		float3 p =  mul(float4(worldPos, 1.0f), shadowConst.lightViewProj[i]);
+		bool isInside = ((-1.0f < p.x && p.x < 1.0f) && 
+						(-1.0f < p.y && p.y < 1.0f) &&
+						(0.0f < p.z && p.z < 1.0f));
+		if (isInside && cascadeIdx==-1) {
+			cascadeIdx = i;
+			shadowPos = p;
+		}
+	}
+	color.rgb = DEBUG_CASCADE_COLOR[cascadeIdx]*0.99f + color.rgb*0.01f;
+	//*/
+	shadowPos = mul(float4(worldPos, 1.0f), shadowConst.lightViewProj[0]);
 	if (-1.0f < shadowPos.x && shadowPos.x < 1.0f &&
 		-1.0f < shadowPos.y && shadowPos.y < 1.0f &&
 		 0.0f < shadowPos.z && shadowPos.z < 1.0f &&
 		 shadowConst.castShadows)
 	{
 		float2 sampleCoord = float2(shadowPos.x*0.5f+0.5f, -shadowPos.y*0.5f+0.5f);
-		/*
-		float shadowSample = tex2Dproj(shadowMap, float4(shadowPos, 1.0f)).r;
+		
+		float shadowSample = tex2Dproj(shadowMap, float4(sampleCoord.x, -sampleCoord.y, shadowPos.z, 1.0f)).r;
 		color *= saturate(shadowSample);
-		/*/
+
+		/*
 		float shadowSample = tex2D(shadowMap, sampleCoord);
 		if (shadowSample+1e-5 < shadowPos.z)
 			discard;
-		//*/		
+		*/
 	}
-	
+	//*/
 	return color;
 }
 
