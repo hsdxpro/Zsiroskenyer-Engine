@@ -115,7 +115,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 			shadowPos = p;
 		}
 	}
-	color.rgb = DEBUG_CASCADE_COLOR[cascadeIdx]*0.99f + color.rgb*0.01f;
+	color.rgb = DEBUG_CASCADE_COLOR[cascadeIdx]*0.5f + color.rgb*0.5f;
 	//*/
 	//color.r += 0.00001 * saturate(tex2D(shadowMaps[0], float2(0,0)));
 
