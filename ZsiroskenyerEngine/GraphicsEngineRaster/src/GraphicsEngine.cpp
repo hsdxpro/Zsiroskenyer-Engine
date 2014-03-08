@@ -285,7 +285,7 @@ eGraphicsResult cGraphicsEngine::Update(float elapsed) {
 		
 		gApi->SetRenderTargetDefault();
 		gApi->SetShaderProgram(shaderScreenCopy);
-		gApi->SetTexture(L"texture0", &currentSceneBuffer);
+		gApi->SetTexture(L"texture0", currentSceneBuffer);
 		gApi->Draw(3);
 	}
 
@@ -326,7 +326,7 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, ITexture2D* target, flo
 	else {
 		gApi->SetRenderTargets(1, &target);
 		gApi->SetShaderProgram(shaderScreenCopy);
-		gApi->SetTexture(composedBuffer, 0);
+		gApi->SetTexture(0, composedBuffer);
 		gApi->Draw(3);
 	}
 }

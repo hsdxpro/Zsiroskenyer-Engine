@@ -1296,7 +1296,7 @@ void cGraphicsApiD3D11::SetInstanceData() {
 }
 
 // Set shader texture resource
-eGapiResult cGraphicsApiD3D11::SetTexture(const ITexture2D*& t, size_t slotIdx) {
+eGapiResult cGraphicsApiD3D11::SetTexture(int slotIdx, const ITexture2D* t) {
 	ASSERT(t != NULL);
 
 	const ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)t)->GetSRV();
@@ -1309,7 +1309,10 @@ eGapiResult cGraphicsApiD3D11::SetTexture(const ITexture2D*& t, size_t slotIdx) 
 }
 
 // Set shader texture resource
-eGapiResult cGraphicsApiD3D11::SetTexture(const wchar_t*& varName, const ITexture2D** t, uint8_t nTextures/* = 1*/) {
+eGapiResult cGraphicsApiD3D11::SetTexture(const wchar_t* varName, const ITexture2D* t) {
+	return SetTextureArray(varName, &t);
+}
+eGapiResult cGraphicsApiD3D11::SetTextureArray(const wchar_t* varName, const ITexture2D* const * t, uint8_t nTextures/* = 1*/) {
 	ASSERT(t != NULL);
 
 	eGapiResult r;

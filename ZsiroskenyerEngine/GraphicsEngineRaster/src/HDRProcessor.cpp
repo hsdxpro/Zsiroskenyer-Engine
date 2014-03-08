@@ -200,7 +200,7 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	// calculate average luminance
 	gApi->SetShaderProgram(shaderLumSample);
 	gApi->SetRenderTargets(1, &luminanceBuffer[0], NULL);
-	gApi->SetTexture(L"textureInput", &source);
+	gApi->SetTexture(L"textureInput", source);
 	gApi->Draw(3);
 
 	parent.gApi->SetShaderProgram(shaderLumAvg);
@@ -243,17 +243,17 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	gApi->SetRenderTargets(1, &downSampled);
 	gApi->SetShaderProgram(shaderOverbright);
 	gApi->SetPSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
-	gApi->SetTexture(L"textureInput", &source);
+	gApi->SetTexture(L"textureInput", source);
 	gApi->Draw(3);
 	
 	// now blur that bullshit
 	gApi->SetRenderTargets(1, &blurBuffer);
 	gApi->SetShaderProgram(shaderBlurHoriz);
-	gApi->SetTexture(L"textureInput", &downSampled);
+	gApi->SetTexture(L"textureInput", downSampled);
 	gApi->Draw(3);
 	gApi->SetRenderTargets(1, &downSampled);
 	gApi->SetShaderProgram(shaderBlurVert);
-	gApi->SetTexture(L"textureInput", &blurBuffer);
+	gApi->SetTexture(L"textureInput", blurBuffer);
 	gApi->Draw(3);
 	
 	// compose to destination buffer
@@ -264,8 +264,8 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	gApi->SetRenderTargets(1, &dest);
 	gApi->SetShaderProgram(shaderCompose);
 	gApi->SetPSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
-	gApi->SetTexture(L"textureInput", &source);
-	gApi->SetTexture(L"blurTexture", &downSampled);
+	gApi->SetTexture(L"textureInput", source);
+	gApi->SetTexture(L"blurTexture", downSampled);
 	gApi->Draw(3);
 
 

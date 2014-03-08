@@ -344,15 +344,15 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 				mtlConstants.hasDiffuseMap = (diffuse != nullptr);
 				if (diffuse) {
-					gApi->SetTexture(L"diffuseMap", &diffuse);
+					gApi->SetTexture(L"diffuseMap", diffuse);
 				}
 				mtlConstants.hasNormalMap = (normal != nullptr);
 				if (normal) {
-					gApi->SetTexture(L"normalMap", &normal);
+					gApi->SetTexture(L"normalMap", normal);
 				}
 				mtlConstants.hasSpecLevelMap = (specular != nullptr);
 				if (specular) {
-					gApi->SetTexture(L"specLevelMap", &specular);
+					gApi->SetTexture(L"specLevelMap", specular);
 				}
 				// unused
 				mtlConstants.hasGlossinessMap = false;
@@ -496,8 +496,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 	gApi->SetShaderProgram(shaderSSAO);
 	gApi->SetRenderTargets(1, &ambientOcclusionBuffer, NULL);
-	gApi->SetTexture(L"normalTexture", &gBuffer[1]);
-	gApi->SetTexture(L"depthTexture", &depthBufferCopy);
+	gApi->SetTexture(L"normalTexture", gBuffer[1]);
+	gApi->SetTexture(L"depthTexture", depthBufferCopy);
 	gApi->SetPSConstantBuffer(&aoShaderConstants, sizeof(aoShaderConstants), 0);
 	gApi->Draw(3);
 	
@@ -642,10 +642,10 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	//-------------------------------------------------------------------------//
 	gApi->SetShaderProgram(shaderDirectional);
 
-	gApi->SetTexture(L"gBuffer0", &gBuffer[0]);
-	gApi->SetTexture(L"gBuffer1", &gBuffer[1]);
-	gApi->SetTexture(L"gBuffer2", &gBuffer[2]);
-	gApi->SetTexture(L"depthBuffer", &depthBufferCopy);
+	gApi->SetTexture(L"gBuffer0", gBuffer[0]);
+	gApi->SetTexture(L"gBuffer1", gBuffer[1]);
+	gApi->SetTexture(L"gBuffer2", gBuffer[2]);
+	gApi->SetTexture(L"depthBuffer", depthBufferCopy);
 	
 
 	for (auto light_ : directionalLights) {
@@ -671,14 +671,16 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 			shadowConst.nCascades = maps.size();
 			shadowConst.castShadows = true;
 
+			// shadow map array
+			std::unique_ptr<ITexture2D*[]> shadowMapArray (new ITexture2D*[shadowConst.nCascades]);
 			// for each cascade set shader values
-			for (size_t i = 0; i < maps.size(); i++) {
+			for (int i = 0; i < shadowConst.nCascades; i++) {
 				shadowConst.lightViewProj[i] = shadowMap.GetMaps()[i].viewMat * shadowMap.GetMaps()[i].projMat;
-
-				// CANNOT USE MULTIPLE TEXTURES YET!
-				//gApi->SetTexture(L"shadowMap", shadowMap.GetMaps()[i].texture);
+				shadowMapArray[i] = shadowMap.GetMaps()[i].texture;
 			}
-			gApi->SetTexture(L"shadowMap", shadowMap.GetMaps()[0].texture);
+			// set shadow maps in shader
+			ITexture2D** p = shadowMapArray.get();
+			gApi->SetTextureArray(L"shadowMaps", p, shadowConst.nCascades);
 		}
 		else {
 			shadowConst.castShadows = false;
@@ -696,11 +698,11 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	//-------------------------------------------------------------------------//
 	gApi->SetShaderProgram(shaderAmbient);
 
-	gApi->SetTexture(L"gBuffer0", &gBuffer[0]);
-	gApi->SetTexture(L"gBuffer1", &gBuffer[1]);
-	gApi->SetTexture(L"gBuffer2", &gBuffer[2]);
-	gApi->SetTexture(L"depthBuffer", &depthBufferCopy);
-	gApi->SetTexture(L"ambientOcclusionTexture", &ambientOcclusionBuffer);
+	gApi->SetTexture(L"gBuffer0", gBuffer[0]);
+	gApi->SetTexture(L"gBuffer1", gBuffer[1]);
+	gApi->SetTexture(L"gBuffer2", gBuffer[2]);
+	gApi->SetTexture(L"depthBuffer", depthBufferCopy);
+	gApi->SetTexture(L"ambientOcclusionTexture", ambientOcclusionBuffer);
 
 	// load shader constants
 	shaderConstants.lightColor = ambientLight;
@@ -713,10 +715,10 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	//-------------------------------------------------------------------------//
 	gApi->SetShaderProgram(shaderPoint);
 
-	gApi->SetTexture(L"gBuffer0", &gBuffer[0]);
-	gApi->SetTexture(L"gBuffer1", &gBuffer[1]);
-	gApi->SetTexture(L"gBuffer2", &gBuffer[2]);
-	gApi->SetTexture(L"depthBuffer", &depthBufferCopy);
+	gApi->SetTexture(L"gBuffer0", gBuffer[0]);
+	gApi->SetTexture(L"gBuffer1", gBuffer[1]);
+	gApi->SetTexture(L"gBuffer2", gBuffer[2]);
+	gApi->SetTexture(L"depthBuffer", depthBufferCopy);
 
 	gApi->SetVertexBuffer(vbPoint);
 	gApi->SetIndexBuffer(ibPoint);
@@ -742,10 +744,10 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	//-------------------------------------------------------------------------//
 	gApi->SetShaderProgram(shaderSpot);
 
-	gApi->SetTexture(L"gBuffer0", &gBuffer[0]);
-	gApi->SetTexture(L"gBuffer1", &gBuffer[1]);
-	gApi->SetTexture(L"gBuffer2", &gBuffer[2]);
-	gApi->SetTexture(L"depthBuffer", &depthBufferCopy);
+	gApi->SetTexture(L"gBuffer0", gBuffer[0]);
+	gApi->SetTexture(L"gBuffer1", gBuffer[1]);
+	gApi->SetTexture(L"gBuffer2", gBuffer[2]);
+	gApi->SetTexture(L"depthBuffer", depthBufferCopy);
 
 	gApi->SetVertexBuffer(vbSpot);
 	gApi->SetIndexBuffer(ibSpot);
