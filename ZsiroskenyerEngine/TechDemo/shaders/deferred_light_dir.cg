@@ -41,24 +41,13 @@ static const float3 DEBUG_CASCADE_COLOR[NUM_MAX_CASCADES] = {
 	float3(1.0f, 0.5f, 0.2f), // orange
 };
 
-sampler2D shadowMaps[12] = {
-	{MipFilter = LINEAR, MinFilter = LINEAR, MagFilter = LINEAR, AddressU = Wrap, AddressV = Wrap,},
-	{MipFilter = LINEAR, MinFilter = LINEAR, MagFilter = LINEAR, AddressU = Wrap, AddressV = Wrap,},
-	{MipFilter = LINEAR, MinFilter = LINEAR, MagFilter = LINEAR, AddressU = Wrap, AddressV = Wrap,},
-
-	{MipFilter = LINEAR, MinFilter = LINEAR, MagFilter = LINEAR, AddressU = Wrap, AddressV = Wrap,},
-	{MipFilter = LINEAR, MinFilter = LINEAR, MagFilter = LINEAR, AddressU = Wrap, AddressV = Wrap,},
-	{MipFilter = LINEAR, MinFilter = LINEAR, MagFilter = LINEAR, AddressU = Wrap, AddressV = Wrap,},
-
-	{MipFilter = LINEAR, MinFilter = LINEAR, MagFilter = LINEAR, AddressU = Wrap, AddressV = Wrap,},
-	{MipFilter = LINEAR, MinFilter = LINEAR, MagFilter = LINEAR, AddressU = Wrap, AddressV = Wrap,},
-	{MipFilter = LINEAR, MinFilter = LINEAR, MagFilter = LINEAR, AddressU = Wrap, AddressV = Wrap,},
-
-	{MipFilter = LINEAR, MinFilter = LINEAR, MagFilter = LINEAR, AddressU = Wrap, AddressV = Wrap,},
-	{MipFilter = LINEAR, MinFilter = LINEAR, MagFilter = LINEAR, AddressU = Wrap, AddressV = Wrap,},
-	{MipFilter = LINEAR, MinFilter = LINEAR, MagFilter = LINEAR, AddressU = Wrap, AddressV = Wrap,},
+sampler2DARRAY shadowMap_Array = {
+	MipFilter = LINEAR,
+	MinFilter = LINEAR,
+	MagFilter = LINEAR,
+	AddressU = Wrap,
+	AddressV = Wrap,
 };
-
 
 //------------------------------------------------------------------------------
 //	Vertex shader
@@ -126,12 +115,9 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 		 shadowConst.castShadows)
 	{
 		float2 sampleCoord = float2(shadowPos.x*0.5f+0.5f, -shadowPos.y*0.5f+0.5f);
-		/*
-		float shadowSample = tex2Dproj(shadowMap, float4(sampleCoord.x, -sampleCoord.y, shadowPos.z, 1.0f)).r;
-		color *= saturate(shadowSample);
-		*/
 		
-		float shadowSample = tex2D(shadowMaps[0], sampleCoord);
+		float shadowSample = tex2DARRAY(shadowMap_Array, float3(sampleCoord, 0.0f));
+		//float shadowSample = tex2D(shadowMap, sampleCoord);
 		if (shadowSample+1e-5 < shadowPos.z)
 			discard;
 		//*/
