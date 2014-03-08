@@ -76,8 +76,8 @@ public:
 	void SetVertexBuffer(const IVertexBuffer* vb) override;
 	void SetIndexBuffer(const IIndexBuffer* vb) override;
 	void SetInstanceData(/*whatever*/) override;
-	eGapiResult SetTexture(const ITexture2D* t, size_t slotIdx) override;
-	eGapiResult SetTexture(const wchar_t* varName, const ITexture2D* t) override;
+	eGapiResult SetTexture(const ITexture2D*& t, size_t slotIdx) override; 
+	eGapiResult SetTexture(const wchar_t*& varName, const ITexture2D** t, uint8_t nTextures = 1) override;
 	eGapiResult SetVSConstantBuffer(const void* data, size_t size, size_t slotIdx) override;
 	eGapiResult SetPSConstantBuffer(const void* data, size_t size, size_t slotIdx) override;
 	void SetShaderProgram(IShaderProgram* shProg) override;

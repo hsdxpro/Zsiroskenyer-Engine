@@ -1037,9 +1037,29 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		// Match cg texture slots with dx domain texture slots
 		for (size_t j = 0; j < cCgShaderHelper::NDOMAINS; j++) {
 			// sampler found in domain
-			auto texIt = shaderTextureSlots[j].find(pair.first);
-			if (texIt != shaderTextureSlots[j].end()) {
-				shaderSamplerStates[j].push_back(cShaderProgramD3D11::tSamplerInfo(i, texIt->second));
+			int chPos = cStrUtil::Find(pair.first, '['); // TODO Need FindLast :)
+
+			// sampler2D[n] pattern..
+			if (chPos >= 0) {
+				zsString texName = cStrUtil::SubStrLeft(pair.first, chPos - 1);
+
+				// Found texture name in that domain
+				auto texIt = shaderTextureSlots[j].find(texName); 
+				if (texIt != shaderTextureSlots[j].end()) {
+					wchar_t chars[3];
+					uint16_t nElements;
+					cStrUtil::LastNumber(pair.first, nElements, chars, 3);
+
+					for (uint16_t k = 0; k < nElements; k++)
+						shaderSamplerStates[j].push_back(cShaderProgramD3D11::tSamplerInfo(i, texIt->second + k));
+				}
+
+			} else {
+				// Found texture name in that domain
+				auto texIt = shaderTextureSlots[j].find(pair.first);
+				if (texIt != shaderTextureSlots[j].end()) {
+					shaderSamplerStates[j].push_back(cShaderProgramD3D11::tSamplerInfo(i, texIt->second));
+				}
 			}
 		}
 	}
@@ -1276,7 +1296,7 @@ void cGraphicsApiD3D11::SetInstanceData() {
 }
 
 // Set shader texture resource
-eGapiResult cGraphicsApiD3D11::SetTexture(const ITexture2D* t, size_t slotIdx) {
+eGapiResult cGraphicsApiD3D11::SetTexture(const ITexture2D*& t, size_t slotIdx) {
 	ASSERT(t != NULL);
 
 	const ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)t)->GetSRV();
@@ -1289,28 +1309,34 @@ eGapiResult cGraphicsApiD3D11::SetTexture(const ITexture2D* t, size_t slotIdx) {
 }
 
 // Set shader texture resource
-eGapiResult cGraphicsApiD3D11::SetTexture(const wchar_t* varName, const ITexture2D* t) {
+eGapiResult cGraphicsApiD3D11::SetTexture(const wchar_t*& varName, const ITexture2D** t, uint8_t nTextures/* = 1*/) {
 	ASSERT(t != NULL);
 
-	const ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)t)->GetSRV();
-	if (srv != NULL) {
-		int slot = ((cShaderProgramD3D11*)activeShaderProg)->GetTextureSlotVS(varName);
-		if (slot < 0) {
-			slot = ((cShaderProgramD3D11*)activeShaderProg)->GetTextureSlotPS(varName);
-			if (slot < 0)
-				return eGapiResult::ERROR_INVALID_ARG;
+	eGapiResult r;
+	for (uint8_t i = 0; i < nTextures; i++) {
+		const ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)t[i])->GetSRV();
+		if (srv != NULL) {
+			int startSlot = ((cShaderProgramD3D11*)activeShaderProg)->GetTextureSlotVS(varName);
+			if (startSlot < 0) {
+				startSlot = ((cShaderProgramD3D11*)activeShaderProg)->GetTextureSlotPS(varName);
+				if (startSlot < 0)
+					return eGapiResult::ERROR_INVALID_ARG;
 
-			// PS texture found
-			d3dcon->PSSetShaderResources(slot, 1, (ID3D11ShaderResourceView**)&srv);
-			return eGapiResult::OK;
+				// PS texture found
+				d3dcon->PSSetShaderResources(startSlot + i, 1, (ID3D11ShaderResourceView**)&srv);
+				r = eGapiResult::OK;
+			}
+
+			// VS texture found
+			d3dcon->VSSetShaderResources(startSlot + i, 1, (ID3D11ShaderResourceView**)&srv);
+			r = eGapiResult::OK;
 		}
-		
-		// VS texture found
-		d3dcon->VSSetShaderResources(slot, 1, (ID3D11ShaderResourceView**)&srv);
-		return eGapiResult::OK;
-	} 
-	else
-		return eGapiResult::ERROR_INVALID_ARG;
+		else {
+			r = eGapiResult::ERROR_INVALID_ARG;
+			break;
+		}
+	}
+	return r;
 }
 
 // Set compiled-linked shader program
@@ -2071,6 +2097,7 @@ D3D11_SAMPLER_DESC ConvertToNativeSampler(const tSamplerDesc& sDesc) {
 	r.MaxLOD = 1.0f;
 	r.MipLODBias = 1;
 
+	// Simplest case, MIN MAG MIP type EQUAL
 	if (sDesc.filterMag == sDesc.filterMin && sDesc.filterMag == sDesc.filterMip) {
 		switch (sDesc.filterMag) {
 			case eFilter::POINT:		r.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;	break;
@@ -2084,7 +2111,40 @@ D3D11_SAMPLER_DESC ConvertToNativeSampler(const tSamplerDesc& sDesc) {
 				
 		}
 	} else {
-		// TODOO
+		switch (sDesc.filterMag) {
+		case eFilter::POINT:
+			switch (sDesc.filterMin) {
+			case eFilter::POINT:
+				switch (sDesc.filterMip) { // MIN POINT | MAG POINT
+				case eFilter::POINT:	r.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;			break;
+				case eFilter::LINEAR:	r.Filter = D3D11_FILTER_MIN_MAG_POINT_MIP_LINEAR;	break;
+				}
+				break;
+			case eFilter::LINEAR:
+				switch (sDesc.filterMip) { // MIN LINEAR | MAG POINT
+				case eFilter::POINT:	r.Filter = D3D11_FILTER_MIN_LINEAR_MAG_MIP_POINT;			break;
+				case eFilter::LINEAR:	r.Filter = D3D11_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR;	break;
+				}
+				break;
+			}
+			break;
+		case eFilter::LINEAR: // Filter MAG
+			switch (sDesc.filterMin) {
+			case eFilter::POINT:
+				switch (sDesc.filterMip) {// MAG LINAER | MIN POINT
+				case eFilter::POINT:	r.Filter = D3D11_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;	break;
+				case eFilter::LINEAR:	r.Filter = D3D11_FILTER_MIN_POINT_MAG_MIP_LINEAR;		break;
+				}
+				break;
+			case eFilter::LINEAR:
+				switch (sDesc.filterMip) { // MAG LINAER | MIN LINEAR
+				case eFilter::POINT:	r.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;	break;
+				case eFilter::LINEAR:	r.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;			break;
+				}
+				break;
+			}
+			break;
+		}
 	}
 	
 	return r;

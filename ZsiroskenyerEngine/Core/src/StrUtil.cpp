@@ -77,13 +77,24 @@ int cStrUtil::Find(const zsString& in, const zsString& that) {
 // returns - 1 : string not found
 // return >= 0 : index of the founded str in zsString
 int cStrUtil::Find(const zsString& str, wchar_t ch) {
-	wchar_t const* strP = str.c_str();
+	wchar_t const* s = str.c_str();
 	size_t idx = 0;
-	while (strP[idx] != '\0')
-	if (strP[idx++] == ch)
+	while (s[idx] != '\0')
+	if (s[idx++] == ch)
 		return idx;
 
 	return -1;
+}
+
+int cStrUtil::FindLeft(const zsString& str, int startPos, wchar_t ch) {
+	assert(startPos < str.size() && startPos >= 0);
+
+	wchar_t const* s = str.c_str();
+
+	while (s[startPos] != ch && startPos >= 0)
+		startPos--;
+
+	return startPos; // this will be the result, if not found it will be -1, nor 1
 }
 
 bool cStrUtil::Begins(const zsString& str, const zsString& withThat) {

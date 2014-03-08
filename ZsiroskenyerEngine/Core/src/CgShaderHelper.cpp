@@ -160,12 +160,13 @@ std::unordered_map<zsString, uint16_t> cCgShaderHelper::GetHLSLTextureSlots(cons
 
 			// TODO JESUS CHRISTS, WHY SEARCH FROM FRONT FOR '[' CHAR, "Texture" Already found, and we can get the index of it
 			int bracketIdx = cStrUtil::Find(row, '[');
-			if ( bracketIdx > 0) {
-				// And if that was array shit, collect nElements
-				//uint16_t nElements;
-				//cStrUtil::GetFirst_uint32(row, bracketIdx);
-				//textureSlotsParsed[cStrUtil::Between(row, L' ', L';')] = texIdx;
-				//texIdx += nElements;
+			if ( bracketIdx >= 0) {
+				wchar_t tmp[3];
+				uint16_t nElements;
+				cStrUtil::LastNumber(row, nElements, tmp, 3);
+				
+				textureSlotsParsed[cStrUtil::Between(row, L' ', L'[')] = texIdx;
+				texIdx += nElements;
 			} else {
 				textureSlotsParsed[cStrUtil::Between(row, L' ', L';')] = texIdx++;
 			}
@@ -174,13 +175,27 @@ std::unordered_map<zsString, uint16_t> cCgShaderHelper::GetHLSLTextureSlots(cons
 		}
 
 		// match textures, samplers
-		if (reachTextures && cStrUtil::Contains(row, L".Sample")) {
+		int chPos = cStrUtil::Find(row, L".Sample");
+		if (reachTextures && chPos >= 0) {
 			reachSampling = true;
-			// Example : _pout._color = _TMP23.Sample(_diffuseTex, _In._tex01);
-			size_t chPos = cStrUtil::Find(row, L".Sample");
-			zsString textureName = cStrUtil::SubStrLeft(row, chPos - 1, '_');
-			zsString samplerName = cStrUtil::SubStrRight(row, chPos + 9, ',', -1);
 
+			zsString textureName;
+			zsString samplerName;
+
+			// "].Sample"
+			// Found arrays of samplers...
+			if (row[chPos - 1] == ']') {
+				// Example : _pout._color = _TMP23[0].Sample(_shadowMaps[1], _In._tex01);
+				int leftBracketPos = cStrUtil::FindLeft(row, chPos, '[');
+
+				textureName = cStrUtil::SubStrLeft(row, leftBracketPos - 1, '_');
+				samplerName = cStrUtil::SubStrRight(row, chPos + 9, '[', -1);
+			}
+			else {
+				// Example : _pout._color = _TMP23.Sample(_diffuseTex, _In._tex01);
+				textureName = cStrUtil::SubStrLeft(row, chPos - 1, '_');
+				samplerName = cStrUtil::SubStrRight(row, chPos + 9, ',', -1);
+			}
 			result[samplerName] = textureSlotsParsed[textureName];
 		}
 	}
@@ -211,8 +226,8 @@ std::unordered_map<zsString, tSamplerDesc> cCgShaderHelper::GetSamplerStates() {
 		cStrUtil::Between(samplerName, ' ', ' ');
 
 		// Found array, cut "[n]" down
-		if (samplerName[samplerName.size() - 1] == ']')
-			cStrUtil::CutBack(samplerName, '[');
+		//if (samplerName[samplerName.size() - 1] == ']')
+			//cStrUtil::CutBack(samplerName, '[');
 
 		const auto samplerStateLines = cStrUtil::GetLines(cgFileLines, lineIdx + 1, L";");
 
@@ -230,8 +245,8 @@ std::unordered_map<zsString, tSamplerDesc> cCgShaderHelper::GetSamplerStates() {
 
 			// ex. "MipFilter = POINT,", split, trim to "MipFilter", "POINT", then lower those
 			std::list<zsString> parts = cStrUtil::SplitAt(row, '=');
-			const wchar_t borders[3] = { ' ', ',', '\t'};
-			cStrUtil::TrimBorder(parts, borders, 3);
+			const wchar_t borders[5] = { ' ', ',', '\t', '{', '}'};
+			cStrUtil::TrimBorder(parts, borders, 5);
 			cStrUtil::ToUpper(parts);
 
 			auto it = parts.begin();
