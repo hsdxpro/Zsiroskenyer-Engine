@@ -667,21 +667,16 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		// compute shadow map constants, if any
 		if (shadowMap) {
 			// get maps
-			auto& maps = shadowMap.GetMaps();
-			shadowConst.nCascades = maps.size();
+			auto& transforms = shadowMap.GetTransforms();
+			shadowConst.nCascades = shadowMap.GetNumCascades();
 			shadowConst.castShadows = true;
 
-			// shadow map array
-			std::unique_ptr<ITexture2D*[]> shadowMapArray (new ITexture2D*[shadowConst.nCascades]);
 			// for each cascade set shader values
 			for (int i = 0; i < shadowConst.nCascades; i++) {
-				shadowConst.lightViewProj[i] = shadowMap.GetMaps()[i].viewMat * shadowMap.GetMaps()[i].projMat;
-				shadowMapArray[i] = shadowMap.GetMaps()[i].texture;
+				shadowConst.lightViewProj[i] = transforms[i].viewMat * transforms[i].projMat;
 			}
 			// set shadow maps in shader
-			ITexture2D** p = shadowMapArray.get();
-			gApi->SetTextureArray(L"shadowMaps", p, shadowConst.nCascades);
-			gApi->SetTexture(L"shadowMap", shadowMapArray[0]);
+			gApi->SetTexture(L"shadowMap_Array", shadowMap.GetTexture());
 		}
 		else {
 			shadowConst.castShadows = false;

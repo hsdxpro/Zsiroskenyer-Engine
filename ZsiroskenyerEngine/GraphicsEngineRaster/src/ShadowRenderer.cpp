@@ -71,8 +71,8 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 				auto& shm = *(cShadowMapDir*)&shadowMap;
 				// init map if not compatible with currently inited
 				try {
-					if (!shm.IsValid(gApi, 2048, eFormat::R16_UNORM, eFormat::D16_UNORM, 5)) {
-						shm.Init(gApi, 2048, eFormat::R16_UNORM, eFormat::D16_UNORM, 5);
+					if (!shm.IsValid(gApi, 2048, eFormat::R16_UNORM, eFormat::D16_UNORM, 4)) {
+						shm.Init(gApi, 2048, eFormat::R16_UNORM, eFormat::D16_UNORM, 4);
 					}
 				}
 				catch (std::exception& e) {
@@ -81,7 +81,7 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 				}
 
 				// generate cascade splits
-				size_t nCascades = shm.GetMaps().size();
+				size_t nCascades = shm.GetNumCascades();
 				std::vector<float> cascadeSplits(nCascades + 1, 0.0f);
 
 				float near = parent.camera->GetNearPlane();
@@ -98,10 +98,10 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 				// foreach cascade
 				for (size_t i = 0; i < nCascades; i++) {
 					// compute transforms
-					auto& map = shm.GetMaps()[i];
+					auto& transform = shm.GetTransforms()[i];
 					bool isGoodTransform = shm.Transform(
-							map.projMat, 
-							map.viewMat, 
+							transform.projMat,
+							transform.viewMat,
 							light.direction, 
 							parent.camera->GetViewMatrix(), parent.camera->GetProjMatrix(), 
 							cascadeSplits[i], cascadeSplits[i+1]);
@@ -109,9 +109,10 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 						continue;
 
 					// setup render
+#pragma message("SET TEXTURE ARRAY AS RENDER TARGET!!")
 					gApi->SetShaderProgram(shaderDirectional);
-					gApi->SetRenderTargets(0, nullptr, map.texture);
-					gApi->ClearTexture(map.texture);
+					gApi->SetRenderTargets(0, nullptr, shm.GetTexture());
+					gApi->ClearTexture(shm.GetTexture());
 
 					// foreach inst grp
 					for (auto& instgrp : sceneManager.GetInstanceGroups()) {
@@ -122,7 +123,7 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 						// render objects
 						for (auto& entity : instgrp->entities) {
 							Matrix44 matWorld = entity->GetWorldMatrix();
-							Matrix44 worldViewProj = matWorld * map.viewMat * map.projMat;
+							Matrix44 worldViewProj = matWorld * transform.viewMat * transform.projMat;
 							gApi->SetVSConstantBuffer(&worldViewProj, sizeof(worldViewProj), 0);
 							gApi->DrawIndexed(instgrp->geom->GetIndexBuffer()->GetSize() / 4);
 						}

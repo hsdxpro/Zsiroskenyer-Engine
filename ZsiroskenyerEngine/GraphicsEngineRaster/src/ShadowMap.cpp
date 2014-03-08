@@ -15,8 +15,7 @@
 // Directional light
 
 // Contructor
-cShadowMapDir::cShadowMapDir() {
-
+cShadowMapDir::cShadowMapDir() : texture(nullptr) {
 }
 cShadowMapDir::cShadowMapDir(IGraphicsApi* gApi, unsigned resolution, eFormat readFormat, eFormat depthFormat, int cascades) {
 	Init(gApi, resolution, readFormat, depthFormat, cascades);
@@ -31,17 +30,19 @@ void cShadowMapDir::Init(IGraphicsApi* gApi, unsigned resolution, eFormat readFo
 
 	Clear();
 
-	// create textures and init stuff
+	// set values
 	this->cascades = cascades;
 	this->depthFormat = depthFormat;
 	this->readFormat = readFormat;
 	this->resolution = resolution;
 	this->gApi = gApi;
 
+	// create lightspace transform table
 	maps.resize(cascades);
 
+	// create texture
 	ITexture2D::tDesc desc;
-	desc.arraySize = 1;
+	desc.arraySize = cascades;
 	desc.bind = (int)eBind::DEPTH_STENCIL | (int)eBind::SHADER_RESOURCE;
 	desc.format = readFormat;
 	desc.depthFormat = depthFormat;
@@ -49,12 +50,10 @@ void cShadowMapDir::Init(IGraphicsApi* gApi, unsigned resolution, eFormat readFo
 	desc.mipLevels = 1;
 	desc.usage = eUsage::DEFAULT;
 
-	for (auto& v : maps) {
-		auto r = gApi->CreateTexture(&v.texture, desc);
-		if (r != eGapiResult::OK) {
-			Clear();
-			throw std::runtime_error("failed to create textures");
-		}
+	auto r = gApi->CreateTexture(&texture, desc);
+	if (r != eGapiResult::OK) {
+		Clear();
+		throw std::runtime_error("failed to create textures");
 	}
 }
 bool cShadowMapDir::IsValid(IGraphicsApi* gApi, unsigned resolution, eFormat readFormat, eFormat depthFormat, int cascades) {
@@ -68,14 +67,14 @@ bool cShadowMapDir::IsValid(IGraphicsApi* gApi, unsigned resolution, eFormat rea
 	);
 }
 void cShadowMapDir::Clear() {
-	for (auto& v : maps) {
-		SAFE_RELEASE(v.texture);
-	}
+	SAFE_RELEASE(texture);
+	cascades = 0;
+	resolution = 0;
 	maps.clear();
 }
 
 cShadowMapDir::operator bool() {
-	return maps.size() != 0;
+	return texture != nullptr;
 }
 
 // Get
@@ -88,7 +87,16 @@ eFormat cShadowMapDir::GetReadFormat() const {
 eFormat cShadowMapDir::GetDepthFormat() const {
 	return depthFormat;
 }
-auto cShadowMapDir::GetMaps() const -> const std::vector<tMap>& {
+int cShadowMapDir::GetNumCascades() const {
+	return cascades;
+}
+ITexture2D* cShadowMapDir::GetTexture() {
+	return texture;
+}
+const ITexture2D* cShadowMapDir::GetTexture() const {
+	return texture;
+}
+auto cShadowMapDir::GetTransforms() const -> const std::vector<tLightspace>& {
 	return maps;
 }
 

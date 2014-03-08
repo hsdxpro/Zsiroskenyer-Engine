@@ -45,9 +45,7 @@ public:
 	operator bool();
 
 	// Map type
-	struct tMap {
-		tMap() : texture(nullptr) {}
-		ITexture2D* texture;
+	struct tLightspace {
 		mutable Matrix44 viewMat;
 		mutable Matrix44 projMat;
 	};
@@ -56,7 +54,10 @@ public:
 	unsigned GetResolution() const;
 	eFormat GetReadFormat() const;
 	eFormat GetDepthFormat() const;
-	const std::vector<tMap>& GetMaps() const;
+	int GetNumCascades() const;
+	ITexture2D* GetTexture();
+	const ITexture2D* GetTexture() const;
+	const std::vector<tLightspace>& GetTransforms() const;
 
 	// Transform
 	static bool Transform(
@@ -72,7 +73,8 @@ private:
 	IGraphicsApi* gApi;
 	eFormat readFormat, depthFormat;
 	int cascades;
-	std::vector<tMap> maps;
+	std::vector<tLightspace> maps;
+	ITexture2D* texture;
 };
 
 
