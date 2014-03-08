@@ -87,15 +87,6 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	color.rgb += diffuseTerm*diffuseColor + specTerm; // note: no light attenuation
 	color.a = 1.0f;
 
-	// shadow map test
-	/*
-	if (In.tex0.x < 0.5f) {
-		float shadowDepth = tex2D(shadowMap, In.tex0);
-		color = float4(shadowDepth, shadowDepth, shadowDepth, 1.0f);
-		return color;
-	}
-	*/
-
 	// shadow map
 	float3 shadowPos;
 
@@ -114,7 +105,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	}
 	color.rgb = DEBUG_CASCADE_COLOR[cascadeIdx]*0.99f + color.rgb*0.01f;
 	//*/
-	color.r += 0.00001 * saturate(tex2D(shadowMaps[0], float2(0,0)));
+	//color.r += 0.00001 * saturate(tex2D(shadowMaps[0], float2(0,0)));
 
 	shadowPos = mul(float4(worldPos, 1.0f), shadowConst.lightViewProj[0]);
 	if (-1.0f < shadowPos.x && shadowPos.x < 1.0f &&
