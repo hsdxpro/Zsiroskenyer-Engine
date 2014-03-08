@@ -225,9 +225,6 @@ std::unordered_map<zsString, tSamplerDesc> cCgShaderHelper::GetSamplerStates() {
 		cStrUtil::TrimBorder(samplerName, ' ');
 		cStrUtil::Between(samplerName, ' ', ' ');
 
-		// Found array, cut "[n]" down
-		//if (samplerName[samplerName.size() - 1] == ']')
-			//cStrUtil::CutBack(samplerName, '[');
 
 		const auto samplerStateLines = cStrUtil::GetLines(cgFileLines, lineIdx + 1, L";");
 
@@ -242,6 +239,8 @@ std::unordered_map<zsString, tSamplerDesc> cCgShaderHelper::GetSamplerStates() {
 		// For each of the above lines
 		for (auto state : samplerStateLines) {
 			const zsString& row = *std::next(cgFileLines.begin(), state);
+			if (row.size() == 0)
+				continue;
 
 			// ex. "MipFilter = POINT,", split, trim to "MipFilter", "POINT", then lower those
 			std::list<zsString> parts = cStrUtil::SplitAt(row, '=');

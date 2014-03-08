@@ -81,7 +81,7 @@ public:
 
 template<class T>
 static void cStrUtil::LastNumber(const zsString& str, T& out, wchar_t* char_out, uint32_t nChars) {
-	assert(nChars > 1); // buffer for leaast one wchar_t + null terminator
+	assert(nChars > 1); // buffer for leaast one 0wchar_t + null terminator
 
 	// Go to back, search for digit
 	const wchar_t* s = str.c_str();
@@ -108,6 +108,12 @@ static void cStrUtil::LastNumber(const zsString& str, T& out, wchar_t* char_out,
 	if (firstDigitIdx == lastDigitIdx) {
 		char_out[0] = str.c_str()[lastDigitIdx];
 		char_out[1] = '\0'; // Terminate
+	} else {
+		uint32_t size = lastDigitIdx - firstDigitIdx + 1;
+		assert(size <= nChars);
+
+		memcpy(char_out, str.c_str() + firstDigitIdx, sizeof(wchar_t) * size);
+		char_out[size] = '\0';
 	}
 	
 	// TODO FUCK STRINGSTREAM FUCK....replace with BOOST as SOON as POSSIBLE

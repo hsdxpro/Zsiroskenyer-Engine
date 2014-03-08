@@ -669,15 +669,18 @@ std::list<size_t> cStrUtil::GetLinesContainingAllStr(const std::list<zsString>& 
 	std::list<size_t> result;
 
 	size_t idx = 0;
-	size_t thoseIdx = 0;
-	for (auto it = in.begin(); it != in.end(); it++, idx++) {
+	uint16_t i;
+
+	for (auto str : in) {
 		// if that line contains all of the "those" words, then push the string
-		for (thoseIdx = 0; thoseIdx < nThose; thoseIdx++)
-		if (! cStrUtil::Contains(*it, those[thoseIdx]))
+		for (i = 0; i < nThose; i++)
+		if (! cStrUtil::Contains(str, those[i]))
 				break;
 
-		if (thoseIdx == nThose)
+		if (i == nThose)
 			result.push_back(idx);
+
+		idx++;
 	}
 
 	return result;
