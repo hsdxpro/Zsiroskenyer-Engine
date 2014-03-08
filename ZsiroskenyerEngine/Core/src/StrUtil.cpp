@@ -484,6 +484,11 @@ zsString cStrUtil::CutBack(const zsString& str, wchar_t ch) {
 	return str.substr(0, str.find_last_of(ch));
 }
 
+void cStrUtil::CutBack(zsString& str, wchar_t ch) {
+	assert(str.size() != 0);
+	str = str.substr(0, str.find_last_of(ch));
+}
+
 zsString cStrUtil::CutDirectory(const zsString& str) {
 	const wchar_t *s = str.c_str();
 	size_t newSize = str.size();

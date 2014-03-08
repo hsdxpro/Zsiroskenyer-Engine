@@ -26,6 +26,7 @@ public:
 	static bool Begins(const zsString& str, const zsString& withThat);
 
 	static zsString CutBack(const zsString& str, wchar_t ch);
+	static void		CutBack(zsString& str, wchar_t ch);
 
 	static zsString CutDirectory(const zsString& str);
 	static void CutNumberFromEnd(char* src);

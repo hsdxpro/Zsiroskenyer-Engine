@@ -157,7 +157,19 @@ std::unordered_map<zsString, uint16_t> cCgShaderHelper::GetHLSLTextureSlots(cons
 
 		// Collect <texture names, slot numbers>
 		if (!reachSampling && cStrUtil::Begins(row, L"Texture")) {
-			textureSlotsParsed[cStrUtil::Between(row, L' ', L';')] = texIdx++;
+
+			// TODO JESUS CHRISTS, WHY SEARCH FROM FRONT FOR '[' CHAR, "Texture" Already found, and we can get the index of it
+			int bracketIdx = cStrUtil::Find(row, '[');
+			if ( bracketIdx > 0) {
+				// And if that was array shit, collect nElements
+				//uint16_t nElements;
+				//cStrUtil::GetFirst_uint32(row, bracketIdx);
+				//textureSlotsParsed[cStrUtil::Between(row, L' ', L';')] = texIdx;
+				//texIdx += nElements;
+			} else {
+				textureSlotsParsed[cStrUtil::Between(row, L' ', L';')] = texIdx++;
+			}
+
 			reachTextures = true;
 		}
 
@@ -198,6 +210,9 @@ std::unordered_map<zsString, tSamplerDesc> cCgShaderHelper::GetSamplerStates() {
 		cStrUtil::TrimBorder(samplerName, ' ');
 		cStrUtil::Between(samplerName, ' ', ' ');
 
+		// Found array, cut "[n]" down
+		if (samplerName[samplerName.size() - 1] == ']')
+			cStrUtil::CutBack(samplerName, '[');
 
 		const auto samplerStateLines = cStrUtil::GetLines(cgFileLines, lineIdx + 1, L";");
 
