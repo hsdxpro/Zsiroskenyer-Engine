@@ -681,6 +681,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 			// set shadow maps in shader
 			ITexture2D** p = shadowMapArray.get();
 			gApi->SetTextureArray(L"shadowMaps", p, shadowConst.nCascades);
+			gApi->SetTexture(L"shadowMap", shadowMapArray[0]);
 		}
 		else {
 			shadowConst.castShadows = false;

@@ -103,7 +103,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	float3 shadowPos;
 
 	// determine wich cascade
-	/*
+	
 	int cascadeIdx = -1;
 	for (int i=0; i<shadowConst.nCascades; i++) {
 		float3 p =  mul(float4(worldPos, 1.0f), shadowConst.lightViewProj[i]);
