@@ -1328,11 +1328,11 @@ eGapiResult cGraphicsApiD3D11::SetTextureArray(const wchar_t* varName, const ITe
 				// PS texture found
 				d3dcon->PSSetShaderResources(startSlot + i, 1, (ID3D11ShaderResourceView**)&srv);
 				r = eGapiResult::OK;
+			} else {
+				// VS texture found
+				d3dcon->VSSetShaderResources(startSlot + i, 1, (ID3D11ShaderResourceView**)&srv);
+				r = eGapiResult::OK;
 			}
-
-			// VS texture found
-			d3dcon->VSSetShaderResources(startSlot + i, 1, (ID3D11ShaderResourceView**)&srv);
-			r = eGapiResult::OK;
 		}
 		else {
 			r = eGapiResult::ERROR_INVALID_ARG;
