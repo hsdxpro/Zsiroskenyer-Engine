@@ -309,15 +309,17 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, ITexture2D* target, flo
 	ASSERT(deferredRenderer);
 	deferredRenderer->RenderComposition();
 	
-	// --- --- post-process --- --- //
+	//--- --- Deferred rendering result --- --- //
 	ITexture2D* composedBuffer = deferredRenderer->GetCompositionBuffer();
 
-	// General Post process
-	//postProcessor->SetInputBuffers(composedBuffer, deferredRenderer->GetDepthBuffer())
+	// TODO RICSI
+	//postProcessor->SetInputBuffers(composedBuffer, deferredRenderer->GetDepthBuffer());
+	//postProcessor->RenderComposition(elapsed);
+	ITexture2D* postProcessedTex = composedBuffer;// postProcessor->GetCompositionBuffer();
 
 	// HDR
 	if (scene.state.hdr.enabled) {
-		hdrProcessor->SetSource(composedBuffer);
+		hdrProcessor->SetSource(postProcessedTex);
 		hdrProcessor->SetDestination(target);						// set destination
 		hdrProcessor->adaptedLuminance = scene.luminanceAdaptation; // copy luminance value
 		hdrProcessor->Update(elapsed);								// update hdr
@@ -326,7 +328,7 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, ITexture2D* target, flo
 	else {
 		gApi->SetRenderTargets(1, &target);
 		gApi->SetShaderProgram(shaderScreenCopy);
-		gApi->SetTexture(0, composedBuffer);
+		gApi->SetTexture(0, postProcessedTex);
 		gApi->Draw(3);
 	}
 }
