@@ -14,7 +14,13 @@ cGraphicsEngine::cPostProcessor::cPostProcessor(cGraphicsEngine& parent)
 {
 }
 
-void cGraphicsEngine::cPostProcessor::Update(float deltaT)
+// Reload belonging shaders
+void ReloadShaders();
+
+// Resize buffers etc for that sizes
+eGraphicsResult Resize(unsigned width, unsigned height);
+
+void cGraphicsEngine::cPostProcessor::RenderComposition(float frameDeltaTime)
 {
 	/*
 	//-------------------------------------------------------------------------//
@@ -26,9 +32,9 @@ void cGraphicsEngine::cPostProcessor::Update(float deltaT)
 
 	struct s
 	{
-		Matrix44 invViewProj;
-		Matrix44 prevViewProj;
-		float	 deltaT; float _pad[3];
+	Matrix44 invViewProj;
+	Matrix44 prevViewProj;
+	float	 deltaT; float _pad[3];
 	} mbConstants;
 
 	mbConstants.invViewProj = invViewProjMat;
@@ -70,3 +76,19 @@ void cGraphicsEngine::cPostProcessor::Update(float deltaT)
 	gApi->Draw(3);
 	*/
 }
+
+
+// Need call before "RenderComposition"
+void SetInputBuffers(ITexture2D* srcColor, ITexture2D* srcDepth);
+
+
+ITexture2D* cGraphicsEngine::cPostProcessor::GetCompositionBuffer() {
+	return compositionBuffer;
+}
+
+
+////////////-- INNER FUNCTINS --//////////////////
+void LoadShaders();
+void UnloadShaders();
+void Cleanup();
+eGapiResult ReallocBuffers();

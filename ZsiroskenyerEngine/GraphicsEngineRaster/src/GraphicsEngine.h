@@ -182,7 +182,7 @@ private:
 
 		ITexture2D* gBuffer[3];
 		ITexture2D* compositionBuffer;
-		ITexture2D* DOFInput;
+		//ITexture2D* DOFInput;
 		ITexture2D* depthBuffer;
 		ITexture2D* depthBufferCopy;
 		ITexture2D* ambientOcclusionBuffer;
@@ -191,7 +191,7 @@ private:
 		IShaderProgram* shaderGBuffer;
 		IShaderProgram *shaderDirectional, *shaderPoint, *shaderSpot, *shaderAmbient, *shaderSky;
 		IShaderProgram* shaderSSAO, *shaderHBAO;
-		IShaderProgram *shaderDof, *shaderMotionBlur;
+		//IShaderProgram *shaderDof, *shaderMotionBlur;
 		cGraphicsEngine& parent;
 
 		IVertexBuffer *vbSpot, *vbPoint;
@@ -213,16 +213,34 @@ private:
 		~cPostProcessor();
 		cPostProcessor& operator=(const cPostProcessor&) = delete;
 
-		void Update(float deltaT);
+		// Reload belonging shaders
+		void ReloadShaders();
 
-		//eGraphicsResult Resize(unsigned width, unsigned height);
+		// Resize buffers etc for that sizes
+		eGraphicsResult Resize(unsigned width, unsigned height);
 
-		//void SetTarget(ITexture2D* tex);
-		//void SetSource(ITexture2D* tex);
+		// Do the post process bull shit
+		void RenderComposition(float frameDeltaTime);
+
+
+		// Need call before "RenderComposition"
+		void SetInputBuffers(ITexture2D* srcColor, ITexture2D* srcDepth);
+		
+
+		ITexture2D* GetCompositionBuffer();
+
 	private:
-		//void LoadShaders();
-		//void UnloadShaders();
-		//void Cleanup();
+		void LoadShaders();
+		void UnloadShaders();
+		void Cleanup();
+		eGapiResult ReallocBuffers();
+
+		// Resulting color texture after post process
+		ITexture2D* compositionBuffer;
+
+		// Tmp buffers for swapping between shaders input, output
+		ITexture2D* bufferA;
+		ITexture2D* bufferB;
 
 		cGraphicsEngine& parent;
 		IGraphicsApi* gApi;

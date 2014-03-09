@@ -39,14 +39,14 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 	compositionBuffer = NULL;
 	depthBuffer = NULL;
 	depthBufferCopy = NULL;
-	DOFInput = NULL;
+	//DOFInput = NULL;
 	ambientOcclusionBuffer = NULL;
 	for (auto& v : gBuffer)
 		v = NULL;
 
 	// shaders to null
 	shaderAmbient = shaderDirectional = shaderPoint = shaderSpot = NULL;
-	shaderDof = shaderMotionBlur = NULL;
+	//shaderDof = shaderMotionBlur = NULL;
 	shaderSky = NULL;
 	shaderSSAO = NULL;
 	shaderHBAO = NULL;
@@ -105,7 +105,7 @@ void cGraphicsEngine::cDeferredRenderer::Cleanup() {
 	SAFE_RELEASE(depthBuffer);
 	SAFE_RELEASE(depthBufferCopy);
 	SAFE_RELEASE(ambientOcclusionBuffer);
-	SAFE_RELEASE(DOFInput);
+	//SAFE_RELEASE(DOFInput);
 	// mesh objects
 	SAFE_RELEASE(ibPoint);
 	SAFE_RELEASE(vbPoint);
@@ -126,13 +126,14 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	for (auto& p : gBuffer) SAFE_RELEASE(p);
 	ITexture2D* gBuffer_[3] = {gBuffer[0], gBuffer[1], gBuffer[1]};
 	auto compositionBuffer_ = compositionBuffer;
-	auto DOFInput_ = DOFInput;
+	//auto DOFInput_ = DOFInput;
 	auto depthBuffer_ = depthBuffer;
 	auto depthBufferCopy_ = depthBufferCopy;
 	auto ambientOcclusionBuffer_ = ambientOcclusionBuffer;
 
 	// create new buffers
-	eGapiResult results[8];
+	const int nBuffers = 7;
+	eGapiResult results[nBuffers]; memset(&results, 0, sizeof(eGapiResult) * nBuffers); // Default everything is OK = 0
 	int idxResult = -1;
 	ITexture2D::tDesc desc;
 	desc.width = bufferWidth;
@@ -147,7 +148,7 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	// light accumulation buffer
 	desc.format = eFormat::R16G16B16A16_FLOAT;	results[++idxResult] = gApi->CreateTexture(&compositionBuffer, desc);
 	// post-processing buffers
-	desc.format = eFormat::R16G16B16A16_FLOAT;	results[++idxResult] = gApi->CreateTexture(&DOFInput, desc);
+	//desc.format = eFormat::R16G16B16A16_FLOAT;	results[++idxResult] = gApi->CreateTexture(&DOFInput, desc);
 	// ambient occlusion
 	desc.width = desc.width>=256 ? desc.width / 2 : desc.width;
 	desc.height = desc.height>=256 ? desc.height / 2 : desc.height;
@@ -166,14 +167,14 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 			// release non-working stuff
 			for (auto& p : gBuffer) SAFE_RELEASE(p);
 			SAFE_RELEASE(compositionBuffer);
-			SAFE_RELEASE(DOFInput);
+			//SAFE_RELEASE(DOFInput);
 			SAFE_RELEASE(depthBuffer);
 			SAFE_RELEASE(depthBufferCopy);
 			SAFE_RELEASE(ambientOcclusionBuffer);
 			
 			// rollback to previous
 			compositionBuffer = compositionBuffer_;
-			DOFInput = DOFInput_;
+			//DOFInput = DOFInput_;
 			depthBuffer = depthBuffer_;
 			depthBufferCopy = depthBufferCopy_;
 			ambientOcclusionBuffer = ambientOcclusionBuffer_;
@@ -191,7 +192,7 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 		SAFE_RELEASE(v);
 	SAFE_RELEASE(compositionBuffer_);
 	SAFE_RELEASE(depthBuffer_);
-	SAFE_RELEASE(DOFInput_);
+	//SAFE_RELEASE(DOFInput_);
 	SAFE_RELEASE(depthBufferCopy_);
 	SAFE_RELEASE(ambientOcclusionBuffer_);
 
@@ -212,8 +213,8 @@ void cGraphicsEngine::cDeferredRenderer::LoadShaders() {
 		shaderPoint = Create(L"shaders/deferred_light_point.cg");
 		shaderSpot = Create(L"shaders/deferred_light_spot.cg");
 
-		shaderMotionBlur = Create(L"shaders/motion_blur.cg");
-		shaderDof = Create(L"shaders/depth_of_field.cg");
+		//shaderMotionBlur = Create(L"shaders/motion_blur.cg");
+		//shaderDof = Create(L"shaders/depth_of_field.cg");
 
 		shaderSky = Create(L"shaders/sky.cg");
 
@@ -234,8 +235,8 @@ void cGraphicsEngine::cDeferredRenderer::UnloadShaders() {
 	SAFE_RELEASE(shaderPoint);
 	SAFE_RELEASE(shaderSpot);
 
-	SAFE_RELEASE(shaderMotionBlur);
-	SAFE_RELEASE(shaderDof);
+	//SAFE_RELEASE(shaderMotionBlur);
+	//SAFE_RELEASE(shaderDof);
 
 	SAFE_RELEASE(shaderSky);
 
@@ -257,8 +258,8 @@ void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {
 	Reload(&shaderPoint, L"shaders/deferred_light_point.cg");
 	Reload(&shaderSpot, L"shaders/deferred_light_spot.cg");
 
-	Reload(&shaderMotionBlur, L"shaders/motion_blur.cg");
-	Reload(&shaderDof, L"shaders/depth_of_field.cg");
+	//Reload(&shaderMotionBlur, L"shaders/motion_blur.cg");
+	//Reload(&shaderDof, L"shaders/depth_of_field.cg");
 
 	Reload(&shaderSky, L"shaders/sky.cg");
 
