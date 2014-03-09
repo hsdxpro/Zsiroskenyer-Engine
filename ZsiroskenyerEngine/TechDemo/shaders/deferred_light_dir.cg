@@ -103,13 +103,13 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 			shadowPos = p;
 		}
 	}
-	color.rgb = DEBUG_CASCADE_COLOR[cascadeIdx]*0.5f + color.rgb*0.5f;
+	//color.rgb = DEBUG_CASCADE_COLOR[cascadeIdx]*0.5f + color.rgb*0.5f; 
 	//*/
 	//color.r += 0.00001 * saturate(tex2D(shadowMaps[0], float2(0,0)));
 
 	if (shadowConst.castShadows) {
 		float2 sampleCoord = float2(shadowPos.x*0.5f+0.5f, -shadowPos.y*0.5f+0.5f);		
-		float shadowSample = tex2DARRAY(shadowMap_Array, float3(sampleCoord, (float)cascadeIdx));
+		float shadowSample = tex2DARRAY(shadowMap_Array, float3(sampleCoord,(float)cascadeIdx));
 
 		if (shadowSample+1e-5 < shadowPos.z)
 			discard;

@@ -71,8 +71,8 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 				auto& shm = *(cShadowMapDir*)&shadowMap;
 				// init map if not compatible with currently inited
 				try {
-					if (!shm.IsValid(gApi, 2048, eFormat::R16_UNORM, eFormat::D16_UNORM, 4)) {
-						shm.Init(gApi, 2048, eFormat::R16_UNORM, eFormat::D16_UNORM, 4);
+					if (!shm.IsValid(gApi, 2048, eFormat::R16_UNORM, eFormat::D16_UNORM, 6)) {
+						shm.Init(gApi, 2048, eFormat::R16_UNORM, eFormat::D16_UNORM, 6);
 					}
 				}
 				catch (std::exception& e) {

@@ -613,14 +613,17 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 		// fill ds view desc
 		memset(&dsvDesc, 0, sizeof(dsvDesc));
 		dsvDesc.Format = ConvertToNativeFormat(desc.depthFormat);
-		dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		dsvDesc.ViewDimension = (desc.arraySize > 1) ? D3D11_DSV_DIMENSION_TEXTURE2DARRAY : D3D11_DSV_DIMENSION_TEXTURE2D;
 		dsvDesc.Texture2D.MipSlice = 0;
+		dsvDesc.Texture2DArray.ArraySize = desc.arraySize;
+
 		// fill sr view desc
 		memset(&srvDesc, 0, sizeof(srvDesc));
 		srvDesc.Format = ConvertToNativeFormat(desc.format);
-		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.ViewDimension = (desc.arraySize > 1) ? D3D11_SRV_DIMENSION_TEXTURE2DARRAY : D3D11_SRV_DIMENSION_TEXTURE2D;
 		srvDesc.Texture2D.MipLevels = texDesc.MipLevels;
 		srvDesc.Texture2D.MostDetailedMip = 0;
+		srvDesc.Texture2DArray.ArraySize = desc.arraySize;
 		pSrvDesc = &srvDesc;
 
 		hr = d3ddev->CreateDepthStencilView(tex, &dsvDesc, &dsv);
