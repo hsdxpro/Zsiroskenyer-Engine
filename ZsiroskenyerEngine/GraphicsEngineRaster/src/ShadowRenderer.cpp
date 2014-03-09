@@ -111,8 +111,9 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 					// setup render
 #pragma message("SET TEXTURE ARRAY AS RENDER TARGET!!")
 					gApi->SetShaderProgram(shaderDirectional);
-					gApi->SetRenderTargets(0, nullptr, shm.GetTexture());
-					gApi->ClearTexture(shm.GetTexture());
+					ITexture2D* textureSlice = shm.GetTexture()->GetArraySlice(i);
+					gApi->SetRenderTargets(0, nullptr, textureSlice);
+					gApi->ClearTexture(textureSlice);
 
 					// foreach inst grp
 					for (auto& instgrp : sceneManager.GetInstanceGroups()) {
@@ -128,6 +129,8 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 							gApi->DrawIndexed(instgrp->geom->GetIndexBuffer()->GetSize() / 4);
 						}
 					}
+
+					textureSlice->Release();
 				}
 				break;
 			}

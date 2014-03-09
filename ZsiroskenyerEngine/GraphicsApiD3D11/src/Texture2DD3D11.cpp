@@ -16,13 +16,13 @@ cTexture2DD3D11::cTexture2DD3D11(
 	int nSubresource)
 :width(width), height(height), tex(tex), srv(srv), rtv(rtv), dsv(dsv) {
 	// set sub fucking resources
-	for (int i = 0; i < nSubresource; i++) {
+	for (int i = 0; i < nSubresource && subsrv; i++) {
 		this->subsrv.push_back(subsrv[i]);
 	}
-	for (int i = 0; i < nSubresource; i++) {
+	for (int i = 0; i < nSubresource && subrtv; i++) {
 		this->subrtv.push_back(subrtv[i]);
 	}
-	for (int i = 0; i < nSubresource; i++) {
+	for (int i = 0; i < nSubresource && subdsv; i++) {
 		this->subdsv.push_back(subdsv[i]);
 	}
 }
@@ -62,9 +62,12 @@ size_t cTexture2DD3D11::GetHeight() const {
 }
 
 cTexture2DD3D11* cTexture2DD3D11::GetArraySlice(int idx) {
-	if (!(0 <= idx && (size_t)idx < subsrv.size()))
+	auto srv_ = (0 <= idx && idx < subsrv.size()) ? subsrv[idx] : nullptr;
+	auto dsv_ = (0 <= idx && idx < subdsv.size()) ? subdsv[idx] : nullptr;
+	auto rtv_ = (0 <= idx && idx < subrtv.size()) ? subrtv[idx] : nullptr;
+	if (!(srv_ || dsv_ || rtv_))
 		return nullptr;
-	return new cTexture2DD3D11(width, height, nullptr, subsrv[idx], subrtv[idx], subdsv[idx]);
+	return new cTexture2DD3D11(width, height, nullptr, srv_, rtv_, dsv_);
 }
 const cTexture2DD3D11* cTexture2DD3D11::GetArraySlice(int idx) const {
 	if (!(0 <= idx && (size_t)idx < subsrv.size()))

@@ -660,11 +660,10 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 	}
 
 	// create sub-resource views
-	
+	std::vector<ID3D11DepthStencilView*> subdsv;
+	std::vector<ID3D11ShaderResourceView*> subsrv;
+	std::vector<ID3D11RenderTargetView*> subrtv;
 	if (desc.arraySize > 1) {
-		std::vector<ID3D11DepthStencilView> subdsv;
-		std::vector<ID3D11ShaderResourceView> subsrv;
-		std::vector<ID3D11RenderTargetView> subrtv;
 
 		dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
 		dsvDesc.Texture2DArray.MipSlice = 0;
@@ -681,8 +680,9 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 						errorCode = eGapiResult::ERROR_OUT_OF_MEMORY;
 					else
 						errorCode = eGapiResult::ERROR_UNKNOWN;
+					break;
 				}
-				break;
+				subdsv.push_back(dsv);
 			}
 			if (isRenderTarget) {
 
@@ -697,7 +697,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 		}
 	}
 	
-	*resource = new cTexture2DD3D11(desc.width, desc.height, tex, srv, rtv, dsv);
+	*resource = new cTexture2DD3D11(desc.width, desc.height, tex, srv, rtv, dsv, nullptr, nullptr, subdsv.data(), subdsv.size());
 	return eGapiResult::OK;
 }
 

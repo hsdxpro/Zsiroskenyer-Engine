@@ -91,8 +91,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	// shadow map
 	float3 shadowPos;
 
-	// determine wich cascade
-	
+	// determine wich cascade	
 	int cascadeIdx = -1;
 	for (int i=0; i<shadowConst.nCascades; i++) {
 		float3 p =  mul(float4(worldPos, 1.0f), shadowConst.lightViewProj[i]);
@@ -108,6 +107,15 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	//*/
 	//color.r += 0.00001 * saturate(tex2D(shadowMaps[0], float2(0,0)));
 
+	if (shadowConst.castShadows) {
+		float2 sampleCoord = float2(shadowPos.x*0.5f+0.5f, -shadowPos.y*0.5f+0.5f);		
+		float shadowSample = tex2DARRAY(shadowMap_Array, float3(sampleCoord, (float)cascadeIdx));
+
+		if (shadowSample+1e-5 < shadowPos.z)
+			discard;
+	}
+
+	/*
 	shadowPos = mul(float4(worldPos, 1.0f), shadowConst.lightViewProj[0]);
 	if (-1.0f < shadowPos.x && shadowPos.x < 1.0f &&
 		-1.0f < shadowPos.y && shadowPos.y < 1.0f &&
@@ -120,7 +128,6 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 		//float shadowSample = tex2D(shadowMap, sampleCoord);
 		if (shadowSample+1e-5 < shadowPos.z)
 			discard;
-		//*/
 	}
 	//*/
 	return color;

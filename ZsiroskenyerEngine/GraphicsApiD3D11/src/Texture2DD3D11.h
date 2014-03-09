@@ -30,8 +30,8 @@ public:
 	size_t GetWidth() const override;
 	size_t GetHeight() const override;
 
-	cTexture2DD3D11* GetArraySlice(int idx);
-	const cTexture2DD3D11* GetArraySlice(int idx) const;
+	cTexture2DD3D11* GetArraySlice(int idx) override;
+	const cTexture2DD3D11* GetArraySlice(int idx) const override;
 
 	ID3D11Texture2D* const Get() const;
 	ID3D11ShaderResourceView* const GetSRV() const;
