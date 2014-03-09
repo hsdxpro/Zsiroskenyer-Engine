@@ -370,7 +370,6 @@ eGapiResult cGraphicsApiD3D11::CreateViewsForBB() {
 	defaultRenderTarget = new cTexture2DD3D11(bbDesc.Width, bbDesc.Height, backBuffer, srv, rtv, dsv);
 
 	SAFE_RELEASE(depthTexture);
-	//SAFE_RELEASE(backBuffer);
 
 	return eGapiResult::OK;
 }

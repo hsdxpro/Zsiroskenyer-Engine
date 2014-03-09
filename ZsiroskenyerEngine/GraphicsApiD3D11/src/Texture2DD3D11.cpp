@@ -28,21 +28,23 @@ cTexture2DD3D11::cTexture2DD3D11(
 }
 // Destructor
 cTexture2DD3D11::~cTexture2DD3D11() {
-	// release views
-	SAFE_RELEASE(srv);
-	SAFE_RELEASE(rtv);
-	SAFE_RELEASE(dsv);
+	if (tex) {
+		// release views
+		SAFE_RELEASE(srv);
+		SAFE_RELEASE(rtv);
+		SAFE_RELEASE(dsv);
 
-	// release sub-views
-	for (auto v : subsrv)
-		SAFE_RELEASE(v);
-	for (auto v : subrtv)
-		SAFE_RELEASE(v);
-	for (auto v : subdsv)
-		SAFE_RELEASE(v);
+		// release sub-views
+		for (auto v : subsrv)
+			SAFE_RELEASE(v);
+		for (auto v : subrtv)
+			SAFE_RELEASE(v);
+		for (auto v : subdsv)
+			SAFE_RELEASE(v);
 
-	// release resource
-	SAFE_RELEASE(tex);
+		// release resource
+		SAFE_RELEASE(tex);
+	}
 }
 
 // Release
