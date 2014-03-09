@@ -661,7 +661,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 	}
 
 	// create sub-resource views
-	/*
+	
 	if (desc.arraySize > 1) {
 		std::vector<ID3D11DepthStencilView> subdsv;
 		std::vector<ID3D11ShaderResourceView> subsrv;
@@ -697,7 +697,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 			MessageBoxA(NULL, "NEM MEGY EZ A FOS", "BAZMEG", MB_OK);
 		}
 	}
-	*/
+	
 	*resource = new cTexture2DD3D11(desc.width, desc.height, tex, srv, rtv, dsv);
 	return eGapiResult::OK;
 }
