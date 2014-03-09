@@ -28,24 +28,23 @@ cTexture2DD3D11::cTexture2DD3D11(
 }
 // Destructor
 cTexture2DD3D11::~cTexture2DD3D11() {
-	if (tex) {
-		// release views
-		SAFE_RELEASE(srv);
-		SAFE_RELEASE(rtv);
-		SAFE_RELEASE(dsv);
+	// release views
+	SAFE_RELEASE(srv);
+	SAFE_RELEASE(rtv);
+	SAFE_RELEASE(dsv);
 
-		// release sub-views
-		for (auto v : subsrv)
-			SAFE_RELEASE(v);
-		for (auto v : subrtv)
-			SAFE_RELEASE(v);
-		for (auto v : subdsv)
-			SAFE_RELEASE(v);
+	// release sub-views
+	for (auto v : subsrv)
+		SAFE_RELEASE(v);
+	for (auto v : subrtv)
+		SAFE_RELEASE(v);
+	for (auto v : subdsv)
+		SAFE_RELEASE(v);
 
-		// release resource
-		SAFE_RELEASE(tex);
-	}
+	// release resource
+	SAFE_RELEASE(tex);
 }
+
 // Release
 void cTexture2DD3D11::Release() {
 	delete this;
@@ -74,7 +73,6 @@ const cTexture2DD3D11* cTexture2DD3D11::GetArraySlice(int idx) const {
 
 // Internal interface
 ID3D11Texture2D* const cTexture2DD3D11::Get() const {
-	ASSERT(tex);
 	return tex;
 }
 

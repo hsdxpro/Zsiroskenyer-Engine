@@ -370,7 +370,7 @@ eGapiResult cGraphicsApiD3D11::CreateViewsForBB() {
 	defaultRenderTarget = new cTexture2DD3D11(bbDesc.Width, bbDesc.Height, backBuffer, srv, rtv, dsv);
 
 	SAFE_RELEASE(depthTexture);
-	SAFE_RELEASE(backBuffer);
+	//SAFE_RELEASE(backBuffer);
 
 	return eGapiResult::OK;
 }
@@ -1524,6 +1524,10 @@ eGapiResult cGraphicsApiD3D11::SetRenderTargets(unsigned nTargets, const ITextur
 
 // Resize swap chain
 eGapiResult cGraphicsApiD3D11::SetBackBufferSize(unsigned width, unsigned height) {
+
+	if (defaultRenderTarget->GetWidth() == width && defaultRenderTarget->GetHeight() == height)
+		return eGapiResult::OK;
+
 	// Release default render target (BackBuffer)
 	SAFE_DELETE(defaultRenderTarget);
 
@@ -1546,6 +1550,7 @@ eGapiResult cGraphicsApiD3D11::SetBackBufferSize(unsigned width, unsigned height
 ITexture2D* cGraphicsApiD3D11::GetDefaultRenderTarget() const {
 	return defaultRenderTarget;
 }
+
 // Set backBuffer as render-target
 eGapiResult cGraphicsApiD3D11::SetRenderTargetDefault() {
 	d3dcon->RSSetViewports(1, &defaultVP);
