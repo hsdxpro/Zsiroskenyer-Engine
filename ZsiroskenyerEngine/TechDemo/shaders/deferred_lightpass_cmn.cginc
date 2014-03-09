@@ -84,21 +84,24 @@ float CookTorranceSpecular(float3 N, float3 viewDir, float3 L, float roughness, 
     //half angle vector
     float3 Ln = normalize(L);
     float3 H = normalize(Vn + Ln);
+
+    float NdotH = clamp(dot(Nn, H), 0.000001f, 1.0f);
+    float NdotL = clamp(dot(Nn, Ln), 0.000001f, 1.0f);
+    float VdotH = clamp(dot(Vn, H), 0.000001f, 1.0f);
     
-    float NdotH = dot(Nn, H);
-    float NdotL = dot(Nn, Ln);
-    float VdotH = dot(Vn, H);
-    
-    float alpha = saturate(acos(NdotH));
+    float alpha = acos(NdotH);
     
     //microfacet distribution
-    float D = gaussConstant*exp(-(alpha*alpha)/(m*m));
+	m = 0.07f;
+    float D = 100*(1/sqrt(2*3.1415926f))*exp(-(alpha*alpha)/(m*m));
     
     //geometric attenuation factor
     float G = min(1, min((2 * NdotH * NdotV / VdotH), (2 * NdotH * NdotL / VdotH)));
 
     //sum contributions
 	const float PISquare = 9.869604401f;
+	//return 1.0f / NdotV / PISquare;
+	//return G / PISquare;
 	return F * D * G / NdotV / PISquare;
 }
 
@@ -106,15 +109,20 @@ float CookTorranceSpecular(float3 N, float3 viewDir, float3 L, float roughness, 
 float3 DiffuseLight(float3 lightDir, float3 lightColor, float3 normal) {
 	float c = clamp(-dot(lightDir, normal), 0.0, 1.0);
 	return c * lightColor;
-	//return float3(0,0,0);
 }
 
 // specular light
 float3 SpecularLight(float3 lightColor, float3 surfPosToLight, float3 normal, float3 viewDir, float glossiness) {
-	float3 cook = lightColor * CookTorranceSpecular(normal, viewDir, normalize(surfPosToLight), 1 - glossiness, 1.0);
+	float coeff = CookTorranceSpecular(normal, viewDir, normalize(surfPosToLight), 1 - glossiness, 1.0);
+
 	// UBER TODO WHY DO YOU CLAMP THAT AWESOME VALUE?
+	if (coeff > 1e2) {
+		coeff = 0.0f;
+	}
+	return coeff * lightColor;
+	//return coeff * lightColor;
 	//return clamp(cook, 0, 1000000000);
-	return float3(0,0,0);
+	//return float3(0,0,0);
 }
 
 //------------------------------------------------------------------------------

@@ -240,7 +240,6 @@ private:
 
 		// Tmp buffers for swapping between shaders input, output
 		ITexture2D* bufferA;
-		ITexture2D* bufferB;
 
 		cGraphicsEngine& parent;
 		IGraphicsApi* gApi;

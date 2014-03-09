@@ -388,7 +388,7 @@ eGapiResult cGraphicsApiD3D11::CreateDefaultStates() {
 	d.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
 	d.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	d.MaxAnisotropy = 16;
-	d.MaxLOD = 0;
+	d.MaxLOD = 1;
 	d.MinLOD = 0;
 	d.MipLODBias = 0;
 
