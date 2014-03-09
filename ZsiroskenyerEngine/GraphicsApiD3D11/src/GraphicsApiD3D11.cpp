@@ -626,8 +626,6 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 
 		hr = d3ddev->CreateDepthStencilView(tex, &dsvDesc, &dsv);
 		if (FAILED(hr)) {
-			SAFE_RELEASE(rtv);
-			SAFE_RELEASE(srv);
 			SAFE_RELEASE(tex);
 			lastErrorMsg = L"failed to create depth-stencil view";
 			if (hr == E_OUTOFMEMORY)
@@ -639,6 +637,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 	if (isRenderTarget) {
 		hr = d3ddev->CreateRenderTargetView(tex, NULL, &rtv);
 		if (FAILED(hr)) {
+			SAFE_RELEASE(dsv);
 			SAFE_RELEASE(tex);
 			lastErrorMsg = L"failed to create render target view";
 			if (hr == E_OUTOFMEMORY)
@@ -651,6 +650,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 		hr = d3ddev->CreateShaderResourceView(tex, pSrvDesc, &srv);
 		if (FAILED(hr)) {
 			SAFE_RELEASE(rtv);
+			SAFE_RELEASE(dsv);
 			SAFE_RELEASE(tex);
 			lastErrorMsg = L"failed to create shader resource view";
 			if (hr == E_OUTOFMEMORY)
@@ -660,6 +660,44 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::
 		}
 	}
 
+	// create sub-resource views
+	/*
+	if (desc.arraySize > 1) {
+		std::vector<ID3D11DepthStencilView> subdsv;
+		std::vector<ID3D11ShaderResourceView> subsrv;
+		std::vector<ID3D11RenderTargetView> subrtv;
+
+		dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+		dsvDesc.Texture2DArray.MipSlice = 0;
+		dsvDesc.Texture2DArray.ArraySize = 1;
+		
+		eGapiResult errorCode = eGapiResult::OK;
+
+		for (size_t i = 0; i < desc.arraySize; i++) {
+			if (hasDepthStencil) {
+				dsvDesc.Texture2DArray.FirstArraySlice = i;
+				hr = d3ddev->CreateDepthStencilView(tex, &dsvDesc, &dsv);
+				if (FAILED(hr)) {
+					if (hr == E_OUTOFMEMORY)
+						errorCode = eGapiResult::ERROR_OUT_OF_MEMORY;
+					else
+						errorCode = eGapiResult::ERROR_UNKNOWN;
+				}
+				break;
+			}
+			if (isRenderTarget) {
+
+			}
+			if (isShaderBindable) {
+
+			}
+		}
+		if (errorCode != eGapiResult::OK) {
+			// clear all and return failure
+			MessageBoxA(NULL, "NEM MEGY EZ A FOS", "BAZMEG", MB_OK);
+		}
+	}
+	*/
 	*resource = new cTexture2DD3D11(desc.width, desc.height, tex, srv, rtv, dsv);
 	return eGapiResult::OK;
 }
