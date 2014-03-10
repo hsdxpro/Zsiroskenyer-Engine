@@ -14,13 +14,15 @@ float Luminance(float3 color) {
 // Normalize a color (luminance=1)
 float3 NormalizeLuminance(float3 color) {
 	float luminance = max(1e-20f, Luminance(color));
-	color /= luminance;
+	color *= (1.0f/luminance);
 	return color;
 }
 
 // Scale color to certain luminance
 float3 AdjustLuminance(float3 color, float luminance) {
-	return NormalizeLuminance(color)*luminance;
+	float l_default = max(1e-20f, Luminance(color));
+	color *= (luminance/l_default);
+	return color;
 }
 
 // Saturate to fit

@@ -54,14 +54,15 @@ GBUFFER EncodeGBuffer(float3 diffuse, float3 normal, float glossiness, float spe
 	o.normal = PackNormal(normal);
 	o.misc.r = glossiness;
 	o.misc.g = specLevel;
+	o.misc.b = o.misc.a = 0.0f;
 	return o;
 }
 
 void DecodeGBuffer(GBUFFER gb, out float3 diffuse, out float3 normal, out float glossiness, out float specLevel) {
 	diffuse = gb.diffuse.rgb;
 	normal = UnpackNormal(gb.normal.rg);
-	glossiness = o.misc.r;
-	specLevel = o.misc.g;
+	glossiness = gb.misc.r;
+	specLevel = gb.misc.g;
 }
 
 

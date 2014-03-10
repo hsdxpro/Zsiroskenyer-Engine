@@ -46,14 +46,14 @@ sampler2D depthBuffer = {
 };
 
 // Decode whole g-buffer
-void DecodeGBuffer(in float2 texCoord, out float3 diffuse, out float3 normal, out float3 worldPos, out float depth) {
-	float4 gb0 = tex2D(gBuffer0, texCoord); // diffuse.rgb & alpha(unused)
-	float2 gb1 = tex2D(gBuffer1, texCoord); // normal
-	float4 gb2 = tex2D(gBuffer2, texCoord); // unused
+void SampleGBuffer(in float2 texCoord, out float3 diffuse, out float3 normal, out float glossiness, out float specLevel, out float3 worldPos, out float depth) {
+	GBUFFER gb;
+	gb.diffuse = tex2D(gBuffer0, texCoord); // diffuse.rgb & alpha(unused)
+	gb.normal = tex2D(gBuffer1, texCoord); // normal
+	gb.misc = tex2D(gBuffer2, texCoord); // specular(2) / unused(2)
 	depth = tex2D(depthBuffer, texCoord); // depth
 	
-	diffuse = gb0.rgb;
-	normal = UnpackNormal(gb1);
+	DecodeGBuffer(gb, diffuse, normal, glossiness, specLevel);	
 	worldPos = GetWorldPosition(texCoord, depth, invViewProj);	
 }
 
@@ -68,11 +68,11 @@ float Fresnel(float NdotV, float fresnelBias, float fresnelPow) {
 
 float CookTorranceSpecular(float3 N, float3 viewDir, float3 L, float roughness, float IOR)
 {
-	const float gaussConstant  = 100;
+	const float gaussConstant  = 10;
 
     //the things we need:	
     // normalized normal and vector to eye
-    float3 Nn = normalize(N);
+    float3 Nn = N;
     float3 Vn = -viewDir;
     float Ktransmit;
     float m = roughness;
@@ -82,7 +82,7 @@ float CookTorranceSpecular(float3 N, float3 viewDir, float3 L, float roughness, 
     float NdotV = dot(Nn, Vn);
 
     //half angle vector
-    float3 Ln = normalize(L);
+    float3 Ln = L;
     float3 H = normalize(Vn + Ln);
 
     float NdotH = clamp(dot(Nn, H), 0.000001f, 1.0f);
@@ -92,8 +92,7 @@ float CookTorranceSpecular(float3 N, float3 viewDir, float3 L, float roughness, 
     float alpha = acos(NdotH);
     
     //microfacet distribution
-	m = 0.07f;
-    float D = 100*(1/sqrt(2*3.1415926f))*exp(-(alpha*alpha)/(m*m));
+    float D = gaussConstant*0.398942280f*exp(-(alpha*alpha)/(m*m));
     
     //geometric attenuation factor
     float G = min(1, min((2 * NdotH * NdotV / VdotH), (2 * NdotH * NdotL / VdotH)));
@@ -105,24 +104,16 @@ float CookTorranceSpecular(float3 N, float3 viewDir, float3 L, float roughness, 
 	return F * D * G / NdotV / PISquare;
 }
 
-// diffuse light
-float3 DiffuseLight(float3 lightDir, float3 lightColor, float3 normal) {
-	float c = clamp(-dot(lightDir, normal), 0.0, 1.0);
+// diffuse terv
+float DiffuseTerm(float3 lightDir, float3 normal) {
+	float c = clamp(-dot(lightDir, normal), 0.0f, 1.0f);
 	return c * lightColor;
 }
 
-// specular light
-float3 SpecularLight(float3 lightColor, float3 surfPosToLight, float3 normal, float3 viewDir, float glossiness) {
-	float coeff = CookTorranceSpecular(normal, viewDir, normalize(surfPosToLight), 1 - glossiness, 1.0);
-
-	// UBER TODO WHY DO YOU CLAMP THAT AWESOME VALUE?
-	if (coeff > 1e2) {
-		coeff = 0.0f;
-	}
-	return coeff * lightColor;
-	//return coeff * lightColor;
-	//return clamp(cook, 0, 1000000000);
-	//return float3(0,0,0);
+// specular terv
+float3 SpecularTerm(float3 lightDir, float3 normal, float3 viewDir, float glossiness) {
+	float coeff = CookTorranceSpecular(normal, viewDir, lightDir, 1.0f - glossiness, 1.6f);
+	return coeff;
 }
 
 //------------------------------------------------------------------------------

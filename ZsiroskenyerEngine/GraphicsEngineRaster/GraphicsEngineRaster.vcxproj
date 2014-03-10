@@ -47,7 +47,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\TechDemo\shaders\common_color.cginc" />
-    <None Include="..\TechDemo\shaders\deferred_compose.cg" />
     <None Include="..\TechDemo\shaders\deferred_gbuffer.cg" />
     <None Include="..\TechDemo\shaders\deferred_gbuffer_material.cginc" />
     <None Include="..\TechDemo\shaders\deferred_lightpass_cmn.cginc" />

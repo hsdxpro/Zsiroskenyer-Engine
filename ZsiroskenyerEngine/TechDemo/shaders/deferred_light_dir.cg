@@ -79,20 +79,23 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	float3 worldPos;
 	float3 diffuseColor;
 	float depth;
-	DecodeGBuffer(In.tex0, diffuseColor, normal, worldPos, depth);
+	float glossiness, specLevel;
+	SampleGBuffer(In.tex0, diffuseColor, normal, glossiness, specLevel, worldPos, depth);
 	
 	// calculate lighting terms
 	float3 viewDir = normalize(worldPos - camPos);
-	float3 diffuseTerm = DiffuseLight(lightDir, lightColor, normal);
-	float3 specTerm = SpecularLight(lightColor, -lightDir, normal, viewDir, 0.2f);
+	float diffuseTerm = DiffuseTerm(lightDir, normal);
+	float specTerm = SpecularTerm(-lightDir, normal, viewDir, glossiness) * specLevel;
 
-	color.rgb += diffuseTerm*diffuseColor + specTerm; // note: no light attenuation
+	color.rgb += lightColor*(diffuseTerm*diffuseColor + specTerm); // note: no light attenuation
 	color.a = 1.0f;
+
+
 
 	// shadow map
 	float3 shadowPos;
 
-	// determine wich cascade	
+	// determine wich cascade
 	int cascadeIdx = -1;
 	for (int i=0; i<shadowConst.nCascades; i++) {
 		float3 p =  mul(float4(worldPos, 1.0f), shadowConst.lightViewProj[i]);
@@ -106,19 +109,18 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	}
 	//color.rgb = DEBUG_CASCADE_COLOR[cascadeIdx]*0.5f + color.rgb*0.5f; 
 	
-
 	if (shadowConst.castShadows) {
 		float2 sampleCoord = float2(shadowPos.x*0.5f+0.5f, -shadowPos.y*0.5f+0.5f);
 
 		// simple
-		/*
-		float shadowSample = tex2DARRAY(shadowMap_Array, float(sampleCoord, (float)cascadeIdx));
+		//*/
+		float shadowSample = tex2DARRAY(shadowMap_Array, float3(sampleCoord, (float)cascadeIdx));
 		
 		if (shadowSample + 1e-5*exp((float)cascadeIdx) < shadowPos.z)
 			discard;
-		*/
 
 		// pcf
+		/*/
 		float u = sampleCoord.x;
 		float v = sampleCoord.y;
 		u = u * 2048.0f - 0.5f;
@@ -141,7 +143,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 			(lookup.z * u_opposite + lookup.w * u_ratio) * v_ratio;
 
 		color.rgb *= weight;
-
+		//*/
 	}
 
 	return color;

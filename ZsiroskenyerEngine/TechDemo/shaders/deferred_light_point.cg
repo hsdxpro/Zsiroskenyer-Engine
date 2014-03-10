@@ -57,13 +57,12 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	float3 worldPos;
 	float3 diffuseColor;
 	float depth;
-	DecodeGBuffer(In.tex0, diffuseColor, normal, worldPos, depth);
+	float glossiness, specLevel;
+	SampleGBuffer(In.tex0, diffuseColor, normal, glossiness, specLevel, worldPos, depth);
 	
 	// calculate lighting terms
-	float3 diffuseTerm = DiffuseLight(lightDir, lightColor, normal);
-	float3 specTerm = SpecularLight(lightColor, lightPos - worldPos, normal, normalize(worldPos-camPos), 0.2f);
-
-	color.rgb += diffuseTerm*diffuseColor + specTerm;
+	float diffuseTerm = DiffuseTerm(lightDir, normal);
+	float specTerm = SpecularTerm(lightPos - worldPos, normal, normalize(worldPos-camPos), 0.2f) * specLevel;
 
 	// calculate light attenuation
 	float dist = length(worldPos-lightPos);
@@ -71,10 +70,8 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	// calculate distance fade
 	float fade = Fade((1.0f-dist/lightRange)*3.0f);
 
-	color.rgb *= atten;
-	color.rgb *= fade;
-
-	
+	color.rgb = (atten*fade) * (diffuseTerm*diffuseColor + specTerm) * lightColor;
+		
 	color.rgb = max(color.rgb, float3(0,0,0));
 	color.a = 1.f;
 

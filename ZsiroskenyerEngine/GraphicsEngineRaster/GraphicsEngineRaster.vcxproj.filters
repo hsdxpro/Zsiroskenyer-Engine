@@ -110,9 +110,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\TechDemo\shaders\deferred_compose.cg">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="..\TechDemo\shaders\deferred_gbuffer.cg">
       <Filter>Shaders</Filter>
     </None>
