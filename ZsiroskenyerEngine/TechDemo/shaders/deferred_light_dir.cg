@@ -11,14 +11,6 @@
 
 #define NUM_MAX_CASCADES 12
 
-sampler2D shadowMap = {
-	MipFilter = LINEAR,
-	MinFilter = LINEAR,
-	MagFilter = LINEAR,
-	AddressU = Wrap,
-	AddressV = Wrap,
-};
-
 struct {
 	float4x4 lightViewProj[NUM_MAX_CASCADES];
 	int nCascades;
@@ -42,11 +34,11 @@ static const float3 DEBUG_CASCADE_COLOR[NUM_MAX_CASCADES] = {
 };
 
 sampler2DARRAY shadowMap_Array = {
-	MipFilter = LINEAR,
-	MinFilter = LINEAR,
-	MagFilter = LINEAR,
-	AddressU = Wrap,
-	AddressV = Wrap,
+	MipFilter = POINT,
+	MinFilter = POINT,
+	MagFilter = POINT,
+	AddressU = Clamp,
+	AddressV = Clamp,
 };
 
 //------------------------------------------------------------------------------
@@ -111,16 +103,39 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	
 	if (shadowConst.castShadows) {
 		float2 sampleCoord = float2(shadowPos.x*0.5f+0.5f, -shadowPos.y*0.5f+0.5f);
+		float bias = 1e-5*exp((float)cascadeIdx);
 
 		// simple
 		//*/
 		float shadowSample = tex2DARRAY(shadowMap_Array, float3(sampleCoord, (float)cascadeIdx));
+
+		// bias based on shadow map derivatives
+		/*
+		float4 slopeSample;
+		float4 slopeSample2;
+		slopeSample.x = tex2DARRAY(shadowMap_Array, float3(sampleCoord+float2(0, 1/2048.f), (float)cascadeIdx));
+		slopeSample.y = tex2DARRAY(shadowMap_Array, float3(sampleCoord+float2(0, -1/2048.f), (float)cascadeIdx));
+		slopeSample.z = tex2DARRAY(shadowMap_Array, float3(sampleCoord+float2(1/2048.f, 0), (float)cascadeIdx));
+		slopeSample.w = tex2DARRAY(shadowMap_Array, float3(sampleCoord+float2(-1/2048.f, 0), (float)cascadeIdx));
+		slopeSample.x = tex2DARRAY(shadowMap_Array, float3(sampleCoord+float2(-1/2048.f, 1/2048.f), (float)cascadeIdx));
+		slopeSample.y = tex2DARRAY(shadowMap_Array, float3(sampleCoord+float2(-1/2048.f, -1/2048.f), (float)cascadeIdx));
+		slopeSample.z = tex2DARRAY(shadowMap_Array, float3(sampleCoord+float2(1/2048.f, -1/2048.f), (float)cascadeIdx));
+		slopeSample.w = tex2DARRAY(shadowMap_Array, float3(sampleCoord+float2(1/2048.f, 1/2048.f), (float)cascadeIdx));
 		
-		if (shadowSample + 1e-5*exp((float)cascadeIdx) < shadowPos.z)
+		float slopeBias;
+		float slopeFar = max(max(max(slopeSample.z, slopeSample.w), max(slopeSample.x, slopeSample.y)),
+							 max(max(slopeSample2.z, slopeSample2.w), max(slopeSample2.x, slopeSample2.y)));
+		slopeBias = 0.5f*(slopeFar - shadowSample);
+
+		float totalBias = exp((float)cascadeIdx) * 1e-5 + slopeBias;
+		*/
+		/*
+		if (shadowSample + bias < shadowPos.z)
 			discard;
 
 		// pcf
 		/*/
+		/*
 		float u = sampleCoord.x;
 		float v = sampleCoord.y;
 		u = u * 2048.0f - 0.5f;
@@ -141,9 +156,42 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 		float weight = 
 			(lookup.x * u_opposite + lookup.y * u_ratio) * v_opposite +
 			(lookup.z * u_opposite + lookup.w * u_ratio) * v_ratio;
-
 		color.rgb *= weight;
+		*/
 		//*/
+
+		// poisson bullshit
+		const float2 offsets[16] = {
+			float2(-0.4196638f, -0.02463483f),
+			float2(-0.7678005f, -0.3304808f),
+			float2(-0.3262545f, -0.5949141f),
+			float2(0.01858935f, 0.4807127f),
+			float2(-0.5285667f, 0.667186f),
+			float2(0.1139563f, 0.05669546f),
+			float2(-0.906117f, 0.3519302f),
+			float2(0.0861346f, -0.4920678f),
+			float2(-0.0889305f, 0.941887f),
+			float2(0.8102639f, -0.5403672f),
+			float2(0.2520212f, -0.9279014f),
+			float2(0.7000272f, -0.1061493f),
+			float2(-0.1747759f, -0.9748725f),
+			float2(0.783489f, 0.5137001f),
+			float2(0.4036024f, 0.349364f),
+			float2(0.3292646f, 0.7605681f),
+		};
+		float weight = 0.0f;
+		float total = 0.0f;
+		#pragma unroll
+		for (int i = 0; i<16; i++) {
+			float2 offset = offsets[i];
+			offset /= 768.0f;
+			float lookup = (tex2DARRAY(shadowMap_Array, float3(sampleCoord+offset, (float)cascadeIdx)) + 1e-5*exp((float)cascadeIdx)) < shadowPos.z ? 0 : 1;
+			float len = length(offset);
+			total += len;
+			weight += lookup*len;
+		}
+		weight /= total;
+		color.rgb *= weight;
 	}
 
 	return color;
