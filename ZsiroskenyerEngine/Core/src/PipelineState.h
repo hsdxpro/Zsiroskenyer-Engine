@@ -158,7 +158,7 @@ enum class eAddress {
 	MIRROR,
 };
 
-struct tSamplerDesc {
+struct tSamplerStateDesc {
 	eFilter filterMip;
 	eFilter filterMin;
 	eFilter filterMag;
@@ -166,5 +166,5 @@ struct tSamplerDesc {
 	eAddress addressU;
 	eAddress addressV;
 
-	tSamplerDesc() :filterMip(eFilter::POINT), filterMin(eFilter::POINT), filterMag(eFilter::POINT), addressU(eAddress::WRAP), addressV(eAddress::WRAP){};
+	tSamplerStateDesc() :filterMip(eFilter::POINT), filterMin(eFilter::POINT), filterMag(eFilter::POINT), addressU(eAddress::WRAP), addressV(eAddress::WRAP){};
 };

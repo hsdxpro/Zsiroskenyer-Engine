@@ -135,22 +135,22 @@ protected:
 	bool psConstBufferStateChanged;
 
 	// Inner state descriptor, for avoid hashing
-	struct tDepthStencilInfo {
+	struct tDepthStencilLink {
 		D3D11_DEPTH_STENCIL_DESC desc;
 		ID3D11DepthStencilState* state;
 	};
-	struct tBlendInfo {
+	struct tBlendLink {
 		D3D11_BLEND_DESC desc;
 		ID3D11BlendState* state;
 	};
-	struct tSamplerInfo {
+	struct tSamplerLink {
 		D3D11_SAMPLER_DESC desc;
 		ID3D11SamplerState* state;
 	};
 
-	std::vector<tDepthStencilInfo> depthStencilStates;
-	std::vector<tBlendInfo> blendStates;
-	std::vector<tSamplerInfo> samplerStates;
+	std::vector<tDepthStencilLink> depthStencilStates;
+	std::vector<tBlendLink> blendStates;
+	std::vector<tSamplerLink> samplerStates;
 
 	// input layout lazy creation
 	struct ILHasher {

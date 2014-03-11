@@ -54,7 +54,7 @@ D3D11_BLEND_DESC ConvertToNativeBlend(tBlendDesc blend);
 D3D11_COMPARISON_FUNC ConvertToNativeCompFunc(eComparisonFunc compFunc);
 D3D11_STENCIL_OP ConvertToNativeStencilOp(eStencilOp stencilOp);
 D3D11_DEPTH_STENCIL_DESC ConvertToNativeDepthStencil(const tDepthStencilDesc& depthStencil);
-D3D11_SAMPLER_DESC ConvertToNativeSampler(const tSamplerDesc& sDesc);
+D3D11_SAMPLER_DESC ConvertToNativeSampler(const tSamplerStateDesc& sDesc);
 
 std::vector<D3D11_INPUT_ELEMENT_DESC> ConvertToNativeVertexFormat(cVertexFormat format);
 
@@ -437,13 +437,13 @@ void cGraphicsApiD3D11::ApplySamplerStates() {
 	// Set VertexShader samplers
 	auto vsSamplerStates = activeShaderProg->GetSamplerStatesVS();
 	for (size_t i = 0; i < vsSamplerStates.size(); i++) {
-		d3dcon->VSSetSamplers(vsSamplerStates[i].slotIdx, 1, &samplerStates[vsSamplerStates[i].gApiSamplerIdx].state);
+		d3dcon->VSSetSamplers(vsSamplerStates[i].slot, 1, &vsSamplerStates[i].state);
 	}
 
 	// Set PixelShader samplers
 	auto psSamplerStates = activeShaderProg->GetSamplerStatesPS();
 	for (size_t i = 0; i < psSamplerStates.size(); i++) {
-		d3dcon->PSSetSamplers(psSamplerStates[i].slotIdx, 1, &samplerStates[psSamplerStates[i].gApiSamplerIdx].state);
+		d3dcon->PSSetSamplers(psSamplerStates[i].slot, 1, &psSamplerStates[i].state);
 	}
 }
 
@@ -821,9 +821,12 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		tShaderByteCodeInfo():byteCodeSize(0){}
 	};
 	tShaderByteCodeInfo byteCodes[cCgShaderHelper::NDOMAINS]; // Shader byte codes
-	std::unordered_map<zsString, uint16_t> shaderTextureSlots[cCgShaderHelper::NDOMAINS]; // Shader Texture slots
-	cVertexFormat inputLayoutFormat; // Vertex shader input layout
-	std::unordered_map<zsString, tSamplerDesc> cgSamplerPairs; 	// Cg parsed samplers
+
+	std::unordered_map<zsString, uint16_t> textureSlots[cCgShaderHelper::NDOMAINS];
+	std::unordered_map<zsString, uint16_t> samplerStateSlots[cCgShaderHelper::NDOMAINS];
+
+	std::unordered_map<zsString, tSamplerStateDesc> cgSamplerPairs;	// Cg parsed samplers
+	cVertexFormat inputLayoutFormat;	// Vertex shader input layout
 
 	// Need cg recompile
 	if (compileCg) {
@@ -880,7 +883,12 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			SAFE_RELEASE(blob);
 
 			// Save texture slots 
-			shaderTextureSlots[i] = cgHelper->GetHLSLTextureSlots(tmpBinPath);
+			auto hlslDesc = cgHelper->GetHLSLDesc(tmpBinPath);
+			for (auto s : hlslDesc.samplerInfo) {
+				textureSlots[i][s.first] = s.second.textureSlot;
+				samplerStateSlots[i][s.first] = s.second.samplerStateSlot;
+			}
+			
 
 			// Delete TMP bin
 			cFileUtil::Delete(tmpBinPath);
@@ -895,15 +903,24 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			// Vertex shader input layout format
 			cFileUtil::Write(os, inputLayoutFormat);
 
-			uint8_t nTextures = shaderTextureSlots[i].size();
+		// Texture slots
+			// nTexture slots
+			uint8_t nTextures = textureSlots[i].size();
 			cFileUtil::Write(os, nTextures);
 
-			for (auto p : (shaderTextureSlots[i])) {
-				
-				// Slot name
+			// Slot name slot index
+			for (auto p : (textureSlots[i])) {
 				cFileUtil::Write(os, p.first);
+				cFileUtil::Write(os, (uint16_t)p.second);
+			}
 
-				// Slot index
+		// Sampler state slots
+			// nSamplerStates
+			uint8_t nSamplerStates = samplerStateSlots[i].size();
+			cFileUtil::Write(os, nSamplerStates);
+
+			for (auto p : (samplerStateSlots[i])) {
+				cFileUtil::Write(os, p.first);
 				cFileUtil::Write(os, (uint16_t)p.second);
 			}
 		}
@@ -950,20 +967,28 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			// Vertex shader input layout format (uint64_t)
 			cFileUtil::Read(is, inputLayoutFormat);
 
+
+			zsString textureName;
+			zsString samplerName;
+			uint16_t slot;
+
+
+			// Textures
 			uint8_t nTextures;
 			cFileUtil::Read(is, nTextures);
-
-			zsString samplerName;
-			uint16_t samplerIndex;
 			for (uint8_t j = 0; j < nTextures; j++) {
+				cFileUtil::Read(is, textureName);
+				cFileUtil::Read(is, slot);
+				textureSlots[i][textureName] = slot;
+			}
 
-				// Slot name
+			// SamplerStates
+			uint8_t nSamplerStateSlots;
+			cFileUtil::Read(is, nSamplerStateSlots);
+			for (uint8_t j = 0; j < nSamplerStateSlots; j++) {
 				cFileUtil::Read(is, samplerName);
-
-				// Slot index
-				cFileUtil::Read(is, samplerIndex);
-
-				shaderTextureSlots[i][samplerName] = samplerIndex;
+				cFileUtil::Read(is, slot);
+				samplerStateSlots[i][samplerName] = slot;
 			}
 		}
 
@@ -971,15 +996,15 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		cFileUtil::Read(is, nSamplers);
 
 		zsString samplerName;
-		tSamplerDesc samplerDesc;
+		tSamplerStateDesc desc;
 		for (int i = 0; i < nSamplers; i++) {
 			// Sampler name
 			cFileUtil::Read(is, samplerName);
 
 			// Sampler description
-			cFileUtil::Read(is, samplerDesc);
+			cFileUtil::Read(is, desc);
 
-			cgSamplerPairs[samplerName] = samplerDesc;
+			cgSamplerPairs[samplerName] = desc;
 		}
 
 		is.close();
@@ -1045,7 +1070,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	}
 
 
-	std::vector<cShaderProgramD3D11::tSamplerInfo> shaderSamplerStates[cCgShaderHelper::NDOMAINS];
+	std::vector<cShaderProgramD3D11::tSamplerState> shaderSamplerStates[cCgShaderHelper::NDOMAINS];
 
 	// Create non existing samplers in gApi
 	for (auto pair : cgSamplerPairs) {
@@ -1053,22 +1078,23 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		D3D11_SAMPLER_DESC sDesc = ConvertToNativeSampler(pair.second);
 
 		// Check if that sampler exists in gapi
-		size_t i = 0;
-		for (; i < samplerStates.size(); i++) {
-			if (memcmp(&sDesc, &samplerStates[i].desc, sizeof(D3D11_SAMPLER_DESC)) == 0)
+		ID3D11SamplerState* state = NULL;
+		for (size_t i = 0; i < samplerStates.size(); i++) {
+			if (memcmp(&sDesc, &samplerStates[i].desc, sizeof(D3D11_SAMPLER_DESC)) == 0) {
+				state = samplerStates[i].state;
 				break;
+			}
 		}
 
 		// Not found, so create, add
-		if (i == samplerStates.size()) {
-			ID3D11SamplerState* state = NULL;
+		if (state == NULL) {
 			HRESULT hr = d3ddev->CreateSamplerState(&sDesc, &state);
 			if (FAILED(hr)) {
 				lastErrorMsg = L"Can't create SamplerState";
 				return eGapiResult::ERROR_UNKNOWN;
 			}
 
-			tSamplerInfo info;
+			tSamplerLink info;
 			info.desc = sDesc;
 			info.state = state;
 			samplerStates.push_back(info);
@@ -1079,26 +1105,26 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			// sampler found in domain
 			int chPos = cStrUtil::Find(pair.first, '['); // TODO Need FindLast :)
 
-			// sampler2D[n] pattern..
+			// sampler2D[n] pattern.. TODO NEED DEPRECATION I THINK
 			if (chPos >= 0) {
 				zsString texName = cStrUtil::SubStrLeft(pair.first, chPos - 1);
 
 				// Found texture name in that domain
-				auto texIt = shaderTextureSlots[j].find(texName); 
-				if (texIt != shaderTextureSlots[j].end()) {
+				auto texIt = textureSlots[j].find(texName); 
+				if (texIt != textureSlots[j].end()) {
 					wchar_t chars[3];
 					uint16_t nElements;
 					cStrUtil::LastNumber(pair.first, nElements, chars, 3);
 
 					for (uint16_t k = 0; k < nElements; k++)
-						shaderSamplerStates[j].push_back(cShaderProgramD3D11::tSamplerInfo(i, texIt->second + k));
+						shaderSamplerStates[j].push_back(cShaderProgramD3D11::tSamplerState(state, texIt->second + k));
 				}
 
 			} else {
 				// Found texture name in that domain
-				auto texIt = shaderTextureSlots[j].find(pair.first);
-				if (texIt != shaderTextureSlots[j].end()) {
-					shaderSamplerStates[j].push_back(cShaderProgramD3D11::tSamplerInfo(i, texIt->second));
+				auto texIt = samplerStateSlots[j].find(pair.first);
+				if (texIt != samplerStateSlots[j].end()) {
+					shaderSamplerStates[j].push_back(cShaderProgramD3D11::tSamplerState(state, texIt->second));
 				}
 			}
 		}
@@ -1111,8 +1137,8 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 															vs, hs, ds, gs, ps);
 
 	// Set look up maps
-	shProg->SetTextureSlotsVS(shaderTextureSlots[cCgShaderHelper::VS]);
-	shProg->SetTextureSlotsPS(shaderTextureSlots[cCgShaderHelper::PS]);
+	shProg->SetTextureSlotsVS(textureSlots[cCgShaderHelper::VS]);
+	shProg->SetTextureSlotsPS(textureSlots[cCgShaderHelper::PS]);
 
 	shProg->SetSamplerStatesVS(shaderSamplerStates[cCgShaderHelper::VS]);
 	shProg->SetSamplerStatesPS(shaderSamplerStates[cCgShaderHelper::PS]);
@@ -1581,7 +1607,7 @@ eGapiResult cGraphicsApiD3D11::SetBlendState(tBlendDesc desc) {
 			}
 		}
 
-		tBlendInfo info;
+		tBlendLink info;
 			info.desc = bsDesc;
 			info.state = state;
 		blendStates.push_back(info);
@@ -1616,7 +1642,7 @@ eGapiResult cGraphicsApiD3D11::SetDepthStencilState(tDepthStencilDesc desc, uint
 			default: return eGapiResult::ERROR_UNKNOWN;
 			}
 		}
-		tDepthStencilInfo info;
+		tDepthStencilLink info;
 			info.desc = dsDesc;
 			info.state = state;
 		depthStencilStates.push_back(info);
@@ -2123,7 +2149,7 @@ D3D11_DEPTH_STENCIL_DESC ConvertToNativeDepthStencil(const tDepthStencilDesc& de
 	return ret;
 }
 
-D3D11_SAMPLER_DESC ConvertToNativeSampler(const tSamplerDesc& sDesc) {
+D3D11_SAMPLER_DESC ConvertToNativeSampler(const tSamplerStateDesc& sDesc) {
 	D3D11_SAMPLER_DESC r; memset(&r, 0, sizeof(r));
 
 	switch (sDesc.addressU) {
