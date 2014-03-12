@@ -182,7 +182,6 @@ private:
 
 		ITexture2D* gBuffer[3];
 		ITexture2D* compositionBuffer;
-		//ITexture2D* DOFInput;
 		ITexture2D* depthBuffer;
 		ITexture2D* depthBufferCopy;
 		ITexture2D* ambientOcclusionBuffer;
@@ -191,7 +190,6 @@ private:
 		IShaderProgram* shaderGBuffer;
 		IShaderProgram *shaderDirectional, *shaderPoint, *shaderSpot, *shaderAmbient, *shaderSky;
 		IShaderProgram* shaderSSAO, *shaderHBAO;
-		//IShaderProgram *shaderDof, *shaderMotionBlur;
 		cGraphicsEngine& parent;
 
 		IVertexBuffer *vbSpot, *vbPoint;
@@ -216,12 +214,8 @@ private:
 		// Reload belonging shaders
 		void ReloadShaders();
 
-		// Resize buffers etc for that sizes
-		eGraphicsResult Resize(unsigned width, unsigned height);
-
 		// Do the post process bull shit
-		void RenderComposition(float frameDeltaTime);
-
+		void RenderComposition(float frameDeltaTime, const cCamera& cam);
 
 		// Need call before "RenderComposition"
 		void SetInputBuffers(ITexture2D* srcColor, ITexture2D* srcDepth);
@@ -235,11 +229,19 @@ private:
 		void Cleanup();
 		eGapiResult ReallocBuffers();
 
+		IShaderProgram* shaderMotionBlur, *shaderDof;
+
 		// Resulting color texture after post process
 		ITexture2D* compositionBuffer;
 
 		// Tmp buffers for swapping between shaders input, output
 		ITexture2D* bufferA;
+
+		// Input buffer ptr
+		ITexture2D* inputColorTex,* inputDepthTex;
+
+		// Motion blur vars
+		Matrix44 prevViewMat;
 
 		cGraphicsEngine& parent;
 		IGraphicsApi* gApi;
