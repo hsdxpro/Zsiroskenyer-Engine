@@ -1695,6 +1695,37 @@ const wchar_t* cGraphicsApiD3D11::GetLastErrorMsg() const {
 	return lastErrorMsg.c_str();
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Utility
+eGapiResult cGraphicsApiD3D11::SaveTextureToFile(ITexture2D* t, ITexture2D::eImageFormat f, const char* filePath) const {
+	assert(t);
+
+	// The resource that we wan to save
+	ID3D11Resource* res;
+	ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)t)->GetSRV();
+	if ( ! srv)
+		return eGapiResult::ERROR_INVALID_ARG;
+
+	srv->GetResource(&res);
+
+	// The format
+	D3DX11_IMAGE_FILE_FORMAT format;
+	switch (f) {
+	case ITexture2D::eImageFormat::BMP:  format = D3DX11_IFF_BMP;  break;
+	case ITexture2D::eImageFormat::JPG:  format = D3DX11_IFF_JPG;  break;
+	case ITexture2D::eImageFormat::PNG:  format = D3DX11_IFF_PNG;  break;
+	case ITexture2D::eImageFormat::DDS:  format = D3DX11_IFF_DDS;  break;
+	case ITexture2D::eImageFormat::TIFF: format = D3DX11_IFF_TIFF; break;
+	case ITexture2D::eImageFormat::GIF:  format = D3DX11_IFF_GIF;  break;
+	case ITexture2D::eImageFormat::WMP:  format = D3DX11_IFF_WMP;  break;
+	}
+	HRESULT hr = D3DX11SaveTextureToFileA(d3dcon, res, format, filePath);
+
+	if (FAILED(hr))
+		return eGapiResult::ERROR_INVALID_ARG;
+
+	return eGapiResult::OK;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Internal helper functions

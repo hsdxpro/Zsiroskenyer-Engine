@@ -92,6 +92,9 @@ public:
 	ITexture2D* GetDefaultRenderTarget() const override;
 	const wchar_t* GetLastErrorMsg() const override;
 
+	// --- utility --- //
+	eGapiResult SaveTextureToFile(ITexture2D* t, ITexture2D::eImageFormat f, const char* filePath) const override;
+
 private:
 	eGapiResult CreateDevice();
 	eGapiResult CreateMostAcceptableSwapChain(size_t width, size_t height, HWND windowHandle);

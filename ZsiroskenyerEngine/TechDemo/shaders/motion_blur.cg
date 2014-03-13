@@ -1,4 +1,4 @@
-sampler2D textureInput = {
+sampler2D textureInput : register(s0) = {
 	MipFilter = LINEAR,
     	MinFilter = LINEAR,
     	MagFilter = LINEAR,
@@ -6,7 +6,7 @@ sampler2D textureInput = {
 	AddressV = CLAMP,
 };
 
-sampler2D depthTexture = {
+sampler2D depthTexture : register(s1) = {
 	MipFilter = LINEAR,
     	MinFilter = LINEAR,
     	MagFilter = LINEAR,
@@ -41,6 +41,7 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 
 PS_OUT PS_MAIN(VS_OUT In) {
 	PS_OUT Out;
+
 	// World space pos from depth (SLOW SOLUTION) TODO make faster
 	float4 currPosH = float4(In.tex0.x * 2 - 1, (1 - In.tex0.y) * 2 - 1, tex2D(depthTexture , In.tex0).r, 1.0f); // NDC space
 	float4 posW = mul(currPosH, invViewProj);
@@ -51,7 +52,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	
 	// v = s / t
 	float2 deltaMove = (currPosH.xy - prevPosH.xy);
-	float2 velocity =  deltaMove / 20000.0f / frameDeltaTime;
+	float2 velocity =  deltaMove / 2000.0f / frameDeltaTime;
 
 	// Get the initial color at this pixel.  
    	float4 color = tex2D(textureInput, In.tex0);
@@ -61,7 +62,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	for(int i = 1; i < nSamples; ++i)     
 		color += tex2D(textureInput, In.tex0 + i * velocity);
  
-	Out.color = color / nSamples;
+	Out.color = color / (nSamples + 1);
 	Out.color.a = alpha;
 	return Out;
 }

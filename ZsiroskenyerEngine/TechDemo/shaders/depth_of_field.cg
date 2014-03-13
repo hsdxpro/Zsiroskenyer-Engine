@@ -1,14 +1,14 @@
 #include "common.cginc"
 
-sampler2D inputTexture = {
+sampler2D inputTexture : register(s0) = {
 	MipFilter = LINEAR,
     	MinFilter = LINEAR,
     	MagFilter = LINEAR,
 	AddressU = CLAMP,
 	AddressV = CLAMP,
 };
-
-sampler2D depthTexture = {
+ 
+sampler2D depthTexture : register(s1) = {
 	MipFilter = LINEAR,
     	MinFilter = LINEAR,
     	MagFilter = LINEAR,
@@ -43,42 +43,6 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 PS_OUT PS_MAIN(VS_OUT In) {
 	PS_OUT Out;
 
-	/*
-	float avgRefDepth = 0;
-
-	avgRefDepth += tex2D(depthTexture, float2(0.45f, 0.45f));
-	avgRefDepth += tex2D(depthTexture, float2(0.55f, 0.55f));
-	avgRefDepth += tex2D(depthTexture, float2(0.45f, 0.55f));
-	avgRefDepth += tex2D(depthTexture, float2(0.55f, 0.45f));
-	avgRefDepth /= 4;
-
-	// Depth based component for bluring
-	float depthComponent = abs(avgRefDepth - tex2D(depthTexture, In.tex0)) * 100;
-
-	// Radial based component for bluring
-	float radialComponent = pow(abs(In.tex0 * 2 - 1),3) * 0.61;
-
-	// Bluring radius
-	float radius = min((depthComponent  + radialComponent)*2.8,2.8f);
-	//Out.color.rgb = float3(radius, radius, radius);
-	//return Out;
-
-	float4 color = tex2D(inputTexture, In.tex0);
-	float alpha = color.a;
-	int quality = 4;
-	for( int i = 0; i < quality; i++)
-	{
-		color += tex2D(inputTexture, In.tex0 + float2(1.0f / 800, 0) * i * radius);
-		color += tex2D(inputTexture, In.tex0 + float2(0, 1.0f / 800) * i * radius);
-		color += tex2D(inputTexture, In.tex0 + float2(0, -1.0f / 800) * i * radius);
-		color += tex2D(inputTexture, In.tex0 + float2(-1.0f / 800, 0) * i * radius);
-	}
-
-	Out.color = color / (quality * 4 + 1);
-	Out.color.a = alpha;
-	*/
-
-	
 	float3 focusPointW = GetWorldPosition( In.tex0, tex2D(depthTexture, float2(0.5f, 0.5f)), invViewProj);
 	float3 posW = GetWorldPosition( In.tex0, tex2D(depthTexture, In.tex0), invViewProj);
 
@@ -108,7 +72,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 
 	float4 color = tex2D(inputTexture, In.tex0);
 	float alpha = color.a;
-	int quality = 8;
+	int quality = 8; 
 	for( int i = 1; i < quality; ++i)
 	{
 		color += tex2D(inputTexture, In.tex0 + float2(  1.0f / 800	,  0		  ) * (float)i  / quality * radius);
@@ -117,7 +81,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 		color += tex2D(inputTexture, In.tex0 + float2( -1.0f / 800	,  0		  ) * (float)i  / quality * radius);
 	}
 
-	Out.color = color / ((quality - 1) * 4 + 1);
+	Out.color = color / (quality * 4 + 1);
 	Out.color.a = alpha;
 
 	return Out;

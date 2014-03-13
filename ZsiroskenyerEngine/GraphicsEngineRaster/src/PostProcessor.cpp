@@ -9,6 +9,9 @@
 
 #include "GraphicsEngine.h"
 
+// TODO REMOVE IT OR I KILL MYSELF
+#include <windows.h>
+
 cGraphicsEngine::cPostProcessor::cPostProcessor(cGraphicsEngine& parent)
 :parent(parent), gApi(parent.gApi)
 {
@@ -40,7 +43,6 @@ void cGraphicsEngine::cPostProcessor::RenderComposition(float frameDeltaTime, co
 	// --- --- --- --- --- --- --- MOTION BLUR --- --- --- --- --- --- --- --- //
 	//-------------------------------------------------------------------------//
 	gApi->SetRenderTargets(1, &bufferA, NULL);
-
 	gApi->SetShaderProgram(shaderMotionBlur);
 
 	struct s
@@ -67,7 +69,7 @@ void cGraphicsEngine::cPostProcessor::RenderComposition(float frameDeltaTime, co
 
 	// Draw triangle, hardware will quadify them automatically :)
 	gApi->Draw(3);
-
+	
 	//---------------------------------------
 	//-------------------------------------//
 	// --- --- --- --- --- --- --- DEPTH OF FIELD --- --- --- --- --- --- --- --- //
@@ -106,7 +108,7 @@ void cGraphicsEngine::cPostProcessor::SetInputBuffers(ITexture2D* srcColor, ITex
 		ITexture2D::tDesc d;
 			d.arraySize = 1;
 			d.bind = (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE;
-			d.format = eFormat::R8G8B8A8_UNORM;
+			d.format = eFormat::R16G16B16A16_FLOAT;
 			d.height = srcColor->GetHeight();
 			d.width = srcColor->GetWidth();
 			d.mipLevels = 1;
@@ -125,10 +127,9 @@ void cGraphicsEngine::cPostProcessor::SetInputBuffers(ITexture2D* srcColor, ITex
 			Cleanup();
 			throw std::runtime_error("failed to create texture buffers");
 		}
-		
-		inputColorTex = srcColor;
-		inputDepthTex = srcDepth;
 	}
+	inputColorTex = srcColor;
+	inputDepthTex = srcDepth;
 }
 
 ITexture2D* cGraphicsEngine::cPostProcessor::GetCompositionBuffer() {

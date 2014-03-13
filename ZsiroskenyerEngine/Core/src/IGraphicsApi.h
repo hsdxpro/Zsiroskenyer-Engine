@@ -81,4 +81,8 @@ public:
 	virtual eGapiResult SetWindow(IWindow *renderWindow) = 0;
 	virtual ITexture2D* GetDefaultRenderTarget() const = 0;
 	virtual const wchar_t* GetLastErrorMsg() const = 0;
+
+
+	// --- utility --- //
+	virtual eGapiResult SaveTextureToFile(ITexture2D* t, ITexture2D::eImageFormat f, const char* filePath) const = 0;
 };

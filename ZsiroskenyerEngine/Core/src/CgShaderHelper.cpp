@@ -171,14 +171,27 @@ cCgShaderHelper::tHLSLInfo cCgShaderHelper::GetHLSLDesc(const zsString& hlslFile
 				textureSlotsParsed[cStrUtil::Between(row, L' ', L'[')] = texIdx;
 				texIdx += nElements;
 			} else {
-				textureSlotsParsed[cStrUtil::Between(row, L' ', L';')] = texIdx++;
+				if (cStrUtil::Find(row, L':') >= 0) {
+					wchar_t tmp[3];
+					uint16_t slotIdx;
+					cStrUtil::LastNumber(row, slotIdx, tmp, 3);
+
+					textureSlotsParsed[cStrUtil::Between(row, L' ', L' ')] = slotIdx;
+					//texIdx++;
+				} else {
+					textureSlotsParsed[cStrUtil::Between(row, L' ', L';')] = texIdx++;
+				}
 			}
 
 			reachTextures = true;
 		}
 
 		if (!reachSampling && reachTextures && cStrUtil::Begins(row, L"SamplerState")) {
-			result.samplerInfo[cStrUtil::Between(row, L'_', L';')].samplerStateSlot = samplerStateIndex++;
+			if (cStrUtil::Find(row, L':') >= 0)
+				result.samplerInfo[cStrUtil::Between(row, L'_', L' ')].samplerStateSlot = samplerStateIndex++;
+			else
+				result.samplerInfo[cStrUtil::Between(row, L'_', L';')].samplerStateSlot = samplerStateIndex++;
+
 			reachSamplerStates = true;
 		}
 

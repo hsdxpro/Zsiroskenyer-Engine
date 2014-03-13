@@ -777,7 +777,7 @@ ITexture2D* cGraphicsEngine::cDeferredRenderer::GetCompositionBuffer() {
 }
 
 ITexture2D* cGraphicsEngine::cDeferredRenderer::GetDepthBuffer() {
-	return depthBuffer;
+	return depthBufferCopy;
 }
 
 
