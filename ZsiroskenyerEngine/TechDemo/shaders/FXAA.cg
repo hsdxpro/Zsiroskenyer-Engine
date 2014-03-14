@@ -3,10 +3,9 @@
 // 
 #define FXAA_PC 1
 #define FXAA_HLSL_4 1
-#define FXAA_QUALITY__PRESET 12
 #define FXAA_GREEN_AS_LUMA 1
 #define FXAA_EARLY_EXIT 1
-#define FXAA_DISCARD 1 // not work with FXAA_GREEN_AS_LUMA
+#define FXAA_DISCARD 0 // not work with FXAA_GREEN_AS_LUMA
 #define FXAA_FAST_PIXEL_OFFSET 0
 
 #if (FXAA_HLSL_5 == 1)
@@ -47,19 +46,18 @@
  
 sampler2D inputTexture : register(s0) = {
 	MipFilter = ANISOTROPIC,
-    	MinFilter = ANISOTROPIC,
+    	MinFilter = ANISOTROPIC, 
     	MagFilter = ANISOTROPIC,
 	AddressU = CLAMP,
 	AddressV = CLAMP,
 };
 
-float2 fxaaQualityRcpFrame 	   : register(c0);
-
+static const float2 fxaaQualityRcpFrame = float2(1.0f / 1000.0f, 1.0f / 800.0f);
 static const float  fxaaQualityEdgeThresholdMin = 0.0625;
 static const float  fxaaQualitySubpix = 0.75f;//  0.75 - default amount of filtering
 static const float  fxaaQualityEdgeThreshold = 0.166f;//  0.166 - default
 
-/*============================================================================
+/*============================================================================ 
  
                                 API PORTING
  
@@ -102,14 +100,13 @@ static const float  fxaaQualityEdgeThreshold = 0.166f;//  0.166 - default
 #endif    
  
  
-// FSQ VS SHADER
 struct VS_IN {
 	float3 posL 	: POSITION;
 	float2 tex0 	: TEXCOORD0;
 };
 
 struct VS_OUT {
-	float4 posH 	: POSITION;
+	float4 posH 	: SV_POSITION;
 	float2 tex0 	: TEXCOORD2;
 };
 
@@ -127,8 +124,8 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
  
 ============================================================================*/
 
-FxaaFloat4 PS_MAIN(FxaaFloat2 pos) : COLOR0 {
-
+FxaaFloat4 PS_MAIN(VS_OUT In) : COLOR0 {
+    FxaaFloat2 pos = In.tex0;
     FxaaFloat2 posM;
     posM.x = pos.x;
     posM.y = pos.y;
@@ -168,6 +165,7 @@ FxaaFloat4 PS_MAIN(FxaaFloat2 pos) : COLOR0 {
         FxaaFloat lumaE = FxaaLuma(FxaaTexOff( posM, FxaaInt2( 1, 0), fxaaQualityRcpFrame.xy));
         FxaaFloat lumaN = FxaaLuma(FxaaTexOff( posM, FxaaInt2( 0,-1), fxaaQualityRcpFrame.xy));
         FxaaFloat lumaW = FxaaLuma(FxaaTexOff( posM, FxaaInt2(-1, 0), fxaaQualityRcpFrame.xy));
+
     #endif
 /*--------------------------------------------------------------------------*/
     FxaaFloat maxSM = max(lumaS, lumaM);

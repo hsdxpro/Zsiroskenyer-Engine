@@ -348,27 +348,12 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, ITexture2D* target, flo
 		gApi->Draw(3);
 	}
 
-	// gBuffer0 holds LDR values, GO FXAA THIS FUCKING SHIT
+	
+	// FXAA
+	// gBuffer0 holds LDR values
 	postProcessor->SetInputFXAA(gBuffer0);
 	postProcessor->SetOutput(gApi->GetDefaultRenderTarget());
-
 	postProcessor->ProcessFXAA();
-
-	
-	//if (!GetAsyncKeyState('Z')) 
-	
-	//else
-	//{
-	//	// Copy gBuffer to BacKBuffer
-	//	ITexture2D* bb = gApi->GetDefaultRenderTarget();
-	//	gApi->SetRenderTargets(1, &bb);
-	//	gApi->SetShaderProgram(shaderScreenCopy);
-	//	gApi->SetTexture(0, gBuffer0);
-	//	gApi->Draw(3);
-	//}
-	
-
-	//gApi->SaveTextureToFile(gApi->GetDefaultRenderTarget(), ITexture2D::JPG, "D:/asd2.jpg");
 }
 
 ////////////////////////////////////////////////////////////////////////////////

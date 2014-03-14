@@ -67,11 +67,13 @@ PS_OUT PS_MAIN(VS_OUT In) {
 
 	// Bluring radius
 	float radius = CoCRadius * 2;
-	//Out.color.rgb = radius;
-	//return Out;
 
 	float4 color = tex2D(inputTexture, In.tex0);
 	float alpha = color.a;
+	//Out.color = color;
+	//Out.color.a = alpha;
+	//return Out;
+
 	int quality = 8; 
 	for( int i = 1; i < quality; ++i)
 	{

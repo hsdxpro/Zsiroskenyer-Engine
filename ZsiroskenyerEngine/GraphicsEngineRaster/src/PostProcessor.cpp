@@ -111,6 +111,8 @@ void cGraphicsEngine::cPostProcessor::ProcessFXAA() {
 
 	gApi->SetTexture(L"inputTexture", inputTexColor);
 
+	//gApi->SaveTextureToFile(inputTexColor, ITexture2D::JPG, "D:/hule.jpg");
+
 	// Draw triangle, hardware will quadify them automatically :)
 	gApi->Draw(3);
 }
@@ -172,5 +174,5 @@ void cGraphicsEngine::cPostProcessor::ReloadShaders() {
 	};
 	Reload(&shaderMotionBlur, L"shaders/motion_blur.cg");
 	Reload(&shaderDof, L"shaders/depth_of_field.cg");
-	Reload(&shaderDof, L"shaders/FXAA.cg");
+	Reload(&shaderFXAA, L"shaders/FXAA.cg");
 }

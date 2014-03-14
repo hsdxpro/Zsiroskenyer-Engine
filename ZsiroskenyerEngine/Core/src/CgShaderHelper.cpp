@@ -341,14 +341,18 @@ cVertexFormat cCgShaderHelper::GetVSInputFormat()
 	std::vector<cVertexFormat::Attribute> attribs;
 	cVertexFormat::Attribute tmpAttrib;
 	uint16_t attribIdx = 0;
-	auto it = vsInStructLines.begin();
-	while (it != vsInStructLines.end()) {
+
+	for (auto str : vsInStructLines) {
+	
+		if (cStrUtil::Find(str, ':') < 0)
+			continue;
+
 		// not empty line... Parse Vertex Declaration
-		if (it->size() != 0) {
+		if (str.size() != 0) {
 			char semanticNames[10][32]; // Max 10 semantic, each 32 word length
 			char semanticIndex[3]; // 999 max
 
-			cStrUtil::GetWordBetween(*it, ':', ';', semanticNames[attribIdx]);
+			cStrUtil::GetWordBetween(str, ':', ';', semanticNames[attribIdx]);
 			cStrUtil::GetNumberFromEnd(semanticNames[attribIdx], semanticIndex);
 			cStrUtil::CutNumberFromEnd(semanticNames[attribIdx]);
 
@@ -367,22 +371,22 @@ cVertexFormat cCgShaderHelper::GetVSInputFormat()
 			}
 
 
-			if (it->find(L"float4") != std::wstring::npos) {
+			if (cStrUtil::Find(str, L"float4") >= 0) {
 				tmpAttrib.bitsPerComponent = cVertexFormat::_32_BIT;
 				tmpAttrib.nComponents = 4;
 				tmpAttrib.type = cVertexFormat::FLOAT;
 			}
-			else if (it->find(L"float3") != std::wstring::npos) {
+			else if (cStrUtil::Find(str, L"float3") >= 0) {
 				tmpAttrib.bitsPerComponent = cVertexFormat::_32_BIT;
 				tmpAttrib.nComponents = 3;
 				tmpAttrib.type = cVertexFormat::FLOAT;
 			}
-			else if (it->find(L"float2") != std::wstring::npos) {
+			else if (cStrUtil::Find(str, L"float2") >= 0) {
 				tmpAttrib.bitsPerComponent = cVertexFormat::_32_BIT;
 				tmpAttrib.nComponents = 2;
 				tmpAttrib.type = cVertexFormat::FLOAT;
 			}
-			else if (it->find(L"float") != std::wstring::npos) {
+			else if (cStrUtil::Find(str, L"float") >= 0) {
 				tmpAttrib.bitsPerComponent = cVertexFormat::_32_BIT;
 				tmpAttrib.nComponents = 1;
 				tmpAttrib.type = cVertexFormat::FLOAT;
@@ -397,7 +401,6 @@ cVertexFormat cCgShaderHelper::GetVSInputFormat()
 		}
 
 		attribIdx++;
-		it++;
 	}
 
 	// Vertex Shader input format
