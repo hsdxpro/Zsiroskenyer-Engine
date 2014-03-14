@@ -12,23 +12,23 @@
 //
 // Please direct any bugs or questions to SDKFeedback@nvidia.com
 
-  float2 g_AOResolution;
-  float2 g_InvAOResolution;
+float2 g_AOResolution : register(c0);
+float2 g_InvAOResolution : register(c1);
 
-  float2 g_FocalLen;
- 
-  float2 g_UVToViewA;
-  float2 g_UVToViewB;
+float2 g_FocalLen : register(c2);
 
-  float g_R;
-  float g_R2;
-  float g_NegInvR2;
-  float g_MaxRadiusPixels;
+float2 g_UVToViewA : register(c3);
+float2 g_UVToViewB : register(c4);
 
-  float g_AngleBias;
-  float g_TanAngleBias;
-  float g_PowExponent;
-  float g_Strength;
+float g_R : register(c5);
+float g_R2 : register(c6);
+float g_NegInvR2 : register(c7);
+float g_MaxRadiusPixels : register(c8);
+
+float g_AngleBias : register(c9);
+float g_TanAngleBias : register(c10);
+float g_PowExponent : register(c11);
+float g_Strength : register(c12);
 
 #define M_PI 3.14159265f
 
@@ -160,7 +160,7 @@ void IntegrateDirection(inout float ao, float3 P, float2 uv, float2 deltaUV,
                          float numSteps, float tanH, float sinH)
 {
 //RICHARD
-	const int richarSteps = numSteps % 250;
+	const int richarSteps = numSteps % 50;
     for (float j = 1; j <= richarSteps; ++j)
     {
         uv += deltaUV;
@@ -293,7 +293,7 @@ float horizon_occlusion(float2 deltaUV,
 
     float sinH = tanH / sqrt(1.0f + tanH*tanH);
 
-	const int richardSteps = (int)numSteps % 250;
+	const int richardSteps = (int)numSteps % 50;
     for (float j = 1; j <= richardSteps; ++j)
     {
         uv += deltaUV;
