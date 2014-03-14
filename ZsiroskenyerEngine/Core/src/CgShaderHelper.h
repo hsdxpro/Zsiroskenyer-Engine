@@ -52,7 +52,7 @@ public:
 		uint16_t samplerStateSlot;
 	};
 
-	struct tHLSLInfo {
+	struct tHLSLDesc {
 		// < SamplerName, samplerInfo>
 		std::unordered_map<zsString, tSamplerInfo> samplerInfo;
 	};
@@ -61,7 +61,8 @@ public:
 
 	bool CompileCg(const zsString& cgFilePath, const zsString& shaderOut, cCgShaderHelper::eProfileCG compileProfile);
 
-	tHLSLInfo GetHLSLDesc(const zsString& hlslFilePath);
+	tHLSLDesc GetHLSLDesc(const zsString& hlslFilePath, const void* byteCode, size_t byteCodeSize);
+
 	const std::list<zsString>& GetIncludedFilesPaths() const;
 	std::unordered_map<zsString, tSamplerStateDesc> GetSamplerStates();
 	const wchar_t* cCgShaderHelper::GetLastErrorMsg();

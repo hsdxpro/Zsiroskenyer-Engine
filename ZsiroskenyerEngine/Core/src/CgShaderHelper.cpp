@@ -9,6 +9,8 @@
 #include <windows.h>
 #include <assert.h>
 
+#include <d3d11shader.h>
+#include <d3dcompiler.h>
 
 cCgShaderHelper::cCgShaderHelper(const zsString& shaderPath) {
 
@@ -137,70 +139,43 @@ bool cCgShaderHelper::CompileCg(const zsString& cgFilePath, const zsString& shad
 	return true;
 }
 
-cCgShaderHelper::tHLSLInfo cCgShaderHelper::GetHLSLDesc(const zsString& hlslFilePath) {
-	// Parse hlsl code for samplers, textures
-	std::ifstream hlslFile(hlslFilePath);
+cCgShaderHelper::tHLSLDesc cCgShaderHelper::GetHLSLDesc(const zsString& hlslFilePath, const void* byteCode, size_t byteCodeSize) {
 
 	// Result
-	tHLSLInfo result;
+	tHLSLDesc result;
 
-	// Tmp holder
-	std::unordered_map<zsString, uint16_t> textureSlotsParsed;
+	// Reflect HLSL Sm (4.0 - 5.0) shader
+	ID3D11ShaderReflection* reflector;
+	D3DReflect(byteCode, byteCodeSize, IID_ID3D11ShaderReflection, (void**)&reflector);
+	D3D11_SHADER_DESC shaderDesc;
+	reflector->GetDesc(&shaderDesc);
 
-	uint16_t texIdx = 0;
-	uint16_t samplerStateIndex = 0;
-	bool reachTextures		= false;
-	bool reachSamplerStates = false;
-	bool reachSampling		= false;
-	
+
+	std::unordered_map<zsString, uint16_t> textureSlots;
+
+	// Collect samplers, texture names and their slot indexing
+	for (size_t i = 0; i < shaderDesc.BoundResources; i++)
+	{
+		D3D11_SHADER_INPUT_BIND_DESC bindDesc;
+		reflector->GetResourceBindingDesc(i, &bindDesc);
+
+		switch (bindDesc.Type) {
+		case D3D_SIT_SAMPLER: result.samplerInfo[bindDesc.Name + 1].samplerStateSlot = bindDesc.BindPoint; break;
+		case D3D_SIT_TEXTURE: textureSlots[bindDesc.Name] = bindDesc.BindPoint;
+		}
+	}
+
+
+	// Parse hlsl code for samplers, textures
+	std::ifstream hlslFile(hlslFilePath);
 
 	auto lines = cFileUtil::GetLines(hlslFile);
 	for (auto it = lines.begin(); it != lines.end(); it++) {
 		const zsString& row = *it;
 
-		// Collect <texture names, slot numbers>
-		if (!reachSamplerStates && cStrUtil::Begins(row, L"Texture")) {
-
-			// TODO JESUS CHRISTS, WHY SEARCH FROM FRONT FOR '[' CHAR, "Texture" Already found, and we can get the index of it
-			int bracketIdx = cStrUtil::Find(row, '[');
-			if ( bracketIdx >= 0) {
-				wchar_t tmp[3];
-				uint16_t nElements;
-				cStrUtil::LastNumber(row, nElements, tmp, 3);
-				
-				textureSlotsParsed[cStrUtil::Between(row, L' ', L'[')] = texIdx;
-				texIdx += nElements;
-			} else {
-				if (cStrUtil::Find(row, L':') >= 0) {
-					wchar_t tmp[3];
-					uint16_t slotIdx;
-					cStrUtil::LastNumber(row, slotIdx, tmp, 3);
-
-					textureSlotsParsed[cStrUtil::Between(row, L' ', L' ')] = slotIdx;
-					//texIdx++;
-				} else {
-					textureSlotsParsed[cStrUtil::Between(row, L' ', L';')] = texIdx++;
-				}
-			}
-
-			reachTextures = true;
-		}
-
-		if (!reachSampling && reachTextures && cStrUtil::Begins(row, L"SamplerState")) {
-			if (cStrUtil::Find(row, L':') >= 0)
-				result.samplerInfo[cStrUtil::Between(row, L'_', L' ')].samplerStateSlot = samplerStateIndex++;
-			else
-				result.samplerInfo[cStrUtil::Between(row, L'_', L';')].samplerStateSlot = samplerStateIndex++;
-
-			reachSamplerStates = true;
-		}
-
-		// Collect sampler States !!!!!! NEW FEATURE
-		// match textures, samplers
+		// Match samplers with textures
 		int chPos = cStrUtil::Find(row, L".Sample");
-		if (reachSamplerStates && chPos >= 0) {
-			reachSampling = true;
-
+		if (chPos >= 0) {
 			zsString textureName;
 			zsString samplerName;
 
@@ -218,11 +193,18 @@ cCgShaderHelper::tHLSLInfo cCgShaderHelper::GetHLSLDesc(const zsString& hlslFile
 				textureName = cStrUtil::SubStrLeft(row, chPos - 1, '_');
 				samplerName = cStrUtil::SubStrRight(row, chPos + 9, ',', -1);
 			}
-			result.samplerInfo[samplerName].textureSlot = textureSlotsParsed[textureName];
+
+			auto it = textureSlots.find(textureName);
+			if (it != textureSlots.end())
+			{
+				result.samplerInfo[samplerName].textureSlot = it->second;
+			}
+			
 		}
 	}
 
 	hlslFile.close();
+
 	return result;
 }
 

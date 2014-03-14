@@ -52,13 +52,13 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	
 	// v = s / t
 	float2 deltaMove = (currPosH.xy - prevPosH.xy);
-	float2 velocity =  deltaMove / 2000.0f / frameDeltaTime;
+	float2 velocity =  deltaMove / 700.0f / frameDeltaTime;
 
 	// Get the initial color at this pixel.  
    	float4 color = tex2D(textureInput, In.tex0);
 	float alpha = color.a;
-
-	int nSamples = 8;
+	
+	int nSamples = 8;  
 	for(int i = 1; i < nSamples; ++i)     
 		color += tex2D(textureInput, In.tex0 + i * velocity);
  

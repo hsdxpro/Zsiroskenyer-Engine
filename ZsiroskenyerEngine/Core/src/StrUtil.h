@@ -25,9 +25,14 @@ public:
 
 	// returns - 1 : string not found
 	// return >= 0 : index of the founded str in zsString
-	static int Find(const zsString& str, wchar_t ch);
+	static int Find(const zsString& in, wchar_t that);
+	static int Find(const char* in, char that, char rightBound);
 
-	static int FindLeft(const zsString& str, int startPos, wchar_t ch);
+	// ... Find str in str, when reach rightBound stop search
+	static int Find(const char* in, const char* that, char rightBound);
+
+	static int FindLeft(const zsString& in, int startPos, wchar_t that);
+	static int FindLeft(const char* in, int startPos, char that, char leftBound);
 
 	static bool Begins(const zsString& str, const zsString& withThat);
 
@@ -42,9 +47,14 @@ public:
 	static void TrimBorder(std::list<zsString>& strs, const wchar_t* borderChars, size_t nChars);
 	static void TrimBorder(zsString& strOut, wchar_t borderChar);
 
+	static char const* NextLine(char const*  p);
+
 	// The function extract last T typed number like '5' from str, need tmp char buffer for that (chars_out, nChars)
 	template<class T>
 	static void LastNumber(const zsString& str, T& out, wchar_t* char_out, uint32_t nChars);
+
+	template<class T>
+	static void LastNumber(const char* str, T& out, std::vector<char>& chars_out, char rightBound);
 
 	// Gather string between left and right characters, for ex. zsString ex = _asdasd; ex.Between('-',';') returns asdasd   
 	static void Between(zsString& strOut, wchar_t left, wchar_t right);
@@ -54,10 +64,18 @@ public:
 
 	static void Between(zsString& strOut, wchar_t left, const wchar_t* rightDelims, size_t nRightDelims);
 
-	static zsString SubStrLeft(const zsString& str, size_t pos, wchar_t leftBound, size_t leftCutOffset = 0);
-	static zsString SubStrLeft(const zsString& str, size_t pos);
+	static zsString SubStrLeft(const zsString& str, size_t startPos, wchar_t leftBound, size_t leftCutOffset = 0);
+	static zsString SubStrLeft(const char* str, size_t startPos, char leftBound, size_t leftCutOffset = 0);
+	static zsString SubStrLeft(const zsString& str, size_t startPos);
+	
 
-	static zsString SubStrRight(const zsString& str, size_t pos, wchar_t rightBound, size_t rightCutOffset = 0);
+	static zsString SubStrRight(const zsString& str, size_t startPos, wchar_t rightBound, size_t rightCutOffset = 0);
+
+	template<size_t nBounds>
+	static zsString SubStrRight(const char* str, size_t startPos, char (&leftBounds)[nBounds], size_t rightCutOffset = 0) {
+		return zsString();
+	}
+
 	static zsString SubStrRight(const zsString& str, size_t pos);
 
 	// Split string into two parts at (ch) character (chleaved)
@@ -65,8 +83,11 @@ public:
 
 	// Gather string between left and right characters, for ex. zsString ex = _asdasd; ex.Between('-',';') returns asdasd   
 	static zsString Between(const zsString& s, wchar_t left, wchar_t right);  
+	static zsString Between(const char* p, char left, char right, char rightBound);
 	static zsString Between(const zsString& s, const wchar_t* left, const wchar_t* right);
 	static zsString Between(const zsString& s, wchar_t left, const wchar_t* rightDelims, size_t nRightDelims);
+
+	
 
 	static std::list<size_t> GetLines(const std::list<zsString>& strs, size_t startLineIdx, const zsString& containStr);
 	static void GetNumberFromEnd(char* src, char* buf_out);
@@ -119,5 +140,49 @@ static void cStrUtil::LastNumber(const zsString& str, T& out, wchar_t* char_out,
 	// TODO FUCK STRINGSTREAM FUCK....replace with BOOST as SOON as POSSIBLE
 	std::wstringstream ss;
 	ss << char_out;
+	ss >> out;
+}
+
+template<class T>
+static void cStrUtil::LastNumber(const char* str, T& out, std::vector<char>& chars_out, char rightBound) {
+	assert(chars_out.size() > 1); // buffer for leaast one char + null terminator
+
+	// Go to back, search for digit
+	const char* s = str;
+	while (*s != '\0')
+		*s++;
+
+	// Search for totally last digit
+	uint32_t lastDigitIdx = s - str;
+	while (!isdigit(*s)) {
+		s--;
+		lastDigitIdx--;
+	}
+
+	// Search for continuous digits
+	uint32_t firstDigitIdx = lastDigitIdx;
+
+	s--;
+	while (isdigit(*s) && s != (str - 1)) {
+		s--;
+		firstDigitIdx--;
+	}
+
+	// 1 char
+	if (firstDigitIdx == lastDigitIdx) {
+		chars_out[0] = str[lastDigitIdx];
+		chars_out[1] = '\0'; // Terminate
+	}
+	else {
+		uint32_t size = lastDigitIdx - firstDigitIdx + 1;
+		assert(size <= chars_out.size());
+
+		memcpy(chars_out.data(), str + firstDigitIdx, size);
+		chars_out[size] = '\0';
+	}
+
+	// TODO FUCK STRINGSTREAM FUCK....replace with BOOST as SOON as POSSIBLE
+	std::stringstream ss;
+	ss << chars_out.data();
 	ss >> out;
 }

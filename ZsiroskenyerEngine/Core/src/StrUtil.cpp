@@ -46,11 +46,35 @@ bool cStrUtil::Contains(const std::list<zsString>& fileLines, const zsString& th
 // return >= 0 : index of the founded str in zsString
 int cStrUtil::Find(const zsString& in, const zsString& that) {
 	return in.find(that.c_str());
-	/*
+}
+
+// returns - 1 : string not found
+// return >= 0 : index of the founded str in zsString
+int cStrUtil::Find(const zsString& in, wchar_t that) {
+	wchar_t const* s = in.c_str();
+	size_t idx = 0;
+	while (s[idx] != '\0')
+	if (s[idx++] == that)
+		return idx;
+
+	return -1;
+}
+
+int cStrUtil::Find(const char* in, char that, char rightBound) {
+	char const* s = in;
+	size_t idx = 0;
+	while (s[idx] != '\0' && s[idx] != rightBound)
+	if (s[idx++] == that)
+		return idx;
+
+	return -1;
+}
+
+int cStrUtil::Find(const char* in, const char* that, char rightBound) {
 	size_t mainIndex = 0;
-	wchar_t const* self = in.c_str();
-	wchar_t ch = '\0';
-	while ((ch = self[mainIndex]) != '\0') {
+	char const* self = in;
+	char ch = '\0';
+	while ((ch = self[mainIndex]) != '\0' && self[mainIndex] != rightBound) {
 		if (that[0] == ch) {
 			bool equal = true;
 			size_t secIndex = 0;
@@ -71,27 +95,25 @@ int cStrUtil::Find(const zsString& in, const zsString& that) {
 		mainIndex++;
 	}
 	return -1;
-	*/
 }
 
-// returns - 1 : string not found
-// return >= 0 : index of the founded str in zsString
-int cStrUtil::Find(const zsString& str, wchar_t ch) {
-	wchar_t const* s = str.c_str();
-	size_t idx = 0;
-	while (s[idx] != '\0')
-	if (s[idx++] == ch)
-		return idx;
+int cStrUtil::FindLeft(const zsString& in, int startPos, wchar_t that) {
+	assert(startPos < (int)in.size() && startPos >= 0);
 
-	return -1;
+	wchar_t const* s = in.c_str();
+
+	while (s[startPos] != that && startPos >= 0)
+		startPos--;
+
+	return startPos; // this will be the result, if not found it will be -1, nor 1
 }
 
-int cStrUtil::FindLeft(const zsString& str, int startPos, wchar_t ch) {
-	assert(startPos < str.size() && startPos >= 0);
+int cStrUtil::FindLeft(const char* in, int startPos, char that, char leftBound) {
+	assert(startPos >= 0);
 
-	wchar_t const* s = str.c_str();
+	char const* s = in;
 
-	while (s[startPos] != ch && startPos >= 0)
+	while (s[startPos] != that && startPos >= 0)
 		startPos--;
 
 	return startPos; // this will be the result, if not found it will be -1, nor 1
@@ -186,6 +208,13 @@ void cStrUtil::TrimBorder(zsString& strOut, wchar_t borderChar) {
 	while (str[rightIdx] == borderChar && rightIdx--);
 
 	strOut = strOut.substr(leftIdx, rightIdx - leftIdx + 1);
+}
+
+char const* cStrUtil::NextLine(char const* p) {
+	while (*p != '\n' && *p != '\0')
+		p++;
+	(*p != '\0') ? p++ : p;
+	return p;
 }
 
 // Gather string between left and right characters, for ex. zsString ex = _asdasd; ex.Between('-',';') returns asdasd   
@@ -304,23 +333,41 @@ void cStrUtil::Between(zsString& strOut, wchar_t left, const wchar_t* rightDelim
 	strOut = strOut.substr(leftIdx + 1, (rightIdx - 1) - leftIdx);
 }
 
-zsString cStrUtil::SubStrLeft(const zsString& str, size_t pos, wchar_t leftBound, size_t leftCutOffset /*= 0*/) {
-	wchar_t const* strP = str.c_str() + pos;
-	size_t idxLeft = pos;
+zsString cStrUtil::SubStrLeft(const zsString& str, size_t startPos, wchar_t leftBound, size_t leftCutOffset /*= 0*/) {
+	wchar_t const* strP = str.c_str() + startPos;
+	size_t idxLeft = startPos;
 	while (*strP != leftBound)
 	{
 		strP--;
 		idxLeft--;
 	}
 
-	return str.substr(idxLeft + leftCutOffset, (pos + 1) - idxLeft - leftCutOffset);
+	return str.substr(idxLeft + leftCutOffset, (startPos + 1) - idxLeft - leftCutOffset);
+}
+
+zsString cStrUtil::SubStrLeft(const char* str, size_t startPos, char leftBound, size_t leftCutOffset /*= 0*/) {
+	char const* s = str + startPos;
+	size_t idxLeft = startPos;
+	while (*s != leftBound)
+	{
+		s--;
+		idxLeft--;
+	}
+
+	// TODO CSINALD MEG MERT LASSSÚÚ
+	size_t newSize = (startPos + 1) - idxLeft - leftCutOffset;
+	char tmp[512];
+	memcpy(tmp, str + idxLeft + leftCutOffset, newSize);
+	tmp[newSize] = '\0'; // null terminate bullshit
+	return tmp;
 }
 
 zsString cStrUtil::SubStrLeft(const zsString& str, size_t pos) {
 	return str.substr(0, pos);
 }
 
-zsString cStrUtil::SubStrRight(const zsString& str, size_t pos, wchar_t rightBound, size_t rightCutOffset /*= 0*/) {
+
+zsString cStrUtil::SubStrRight(const zsString& str, size_t pos, wchar_t rightBound, size_t rightCutOffset/* = 0*/) {
 	wchar_t const* strP = str.c_str() + pos;
 	size_t idxRight = pos;
 	while (*strP != rightBound)
@@ -331,6 +378,7 @@ zsString cStrUtil::SubStrRight(const zsString& str, size_t pos, wchar_t rightBou
 
 	return str.substr(pos, (idxRight + 1) - pos + rightCutOffset);
 }
+
 
 zsString cStrUtil::SubStrRight(const zsString& str, size_t pos) {
 	size_t rightLength = 1;
@@ -406,15 +454,36 @@ zsString cStrUtil::Between(const zsString& s, wchar_t left, wchar_t right) {
 	size_t leftIdx = 0;
 
 	// Reach left bound
-	while (str[leftIdx] != left || str[leftIdx] == '\0')
+	while (str[leftIdx] != left && str[leftIdx] != '\0')
 		leftIdx++;
 
 	// Reach right bound
 	size_t rightIdx = leftIdx + 1;
-	while (str[rightIdx] != right || str[rightIdx] == '\0')
+	while (str[rightIdx] != right && str[rightIdx] != '\0')
 		rightIdx++;
 
 	return s.substr(leftIdx + 1, (rightIdx - 1) - leftIdx);
+}
+
+zsString cStrUtil::Between(const char* p, char left, char right, char rightBound) {
+	char const* str = p;
+	size_t leftIdx = 0;
+
+	// Reach left bound
+	while (str[leftIdx] != left && str[leftIdx] != '\0' && str[leftIdx] != rightBound)
+		leftIdx++;
+
+	// Reach right bound
+	size_t rightIdx = leftIdx + 1;
+	while (str[rightIdx] != right && str[rightIdx] != '\0' && str[rightIdx] != rightBound)
+		rightIdx++;
+
+	// TODO REPAIIIIR THAT SHIT PLLLLLSSSS
+	char tmp[512];
+	size_t newSize = (rightIdx - 1) - leftIdx;
+	memcpy(tmp, p + leftIdx, newSize);
+	tmp[newSize] = '\0'; // Null terminate
+	return tmp;
 }
 
 // Gather string between left and right strings, for ex. zsString ex = _asdasd; ex.Between('-',';') returns asdasd   

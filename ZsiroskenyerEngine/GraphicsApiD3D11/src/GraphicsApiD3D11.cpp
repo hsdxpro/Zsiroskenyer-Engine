@@ -882,8 +882,8 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			memcpy(byteCodes[i].byteCode.get(), blob->GetBufferPointer(), byteCodes[i].byteCodeSize);
 			SAFE_RELEASE(blob);
 
-			// Save texture slots 
-			auto hlslDesc = cgHelper->GetHLSLDesc(tmpBinPath);
+			// Save texture slots
+			auto hlslDesc = cgHelper->GetHLSLDesc(tmpBinPath, byteCodes[i].byteCode.get(), byteCodes[i].byteCodeSize);
 			for (auto s : hlslDesc.samplerInfo) {
 				textureSlots[i][s.first] = s.second.textureSlot;
 				samplerStateSlots[i][s.first] = s.second.samplerStateSlot;
@@ -895,7 +895,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 		// Write all the datas need for reconstructing shaders from binary...
 			// Byte code size (uint32_t)
-			cFileUtil::Write(os, byteCodes[i].byteCodeSize);
+ 			cFileUtil::Write(os, byteCodes[i].byteCodeSize);
 
 			// Byte code (ptr, uint32_t)
 			cFileUtil::Write(os, byteCodes[i].byteCode.get(), byteCodes[i].byteCodeSize);
