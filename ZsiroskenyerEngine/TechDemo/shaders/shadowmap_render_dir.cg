@@ -20,11 +20,16 @@ struct VS_IN {
 	float3 posL : POSITION;
 };
 
+struct VS_OUT {
+	float4 posH : SV_POSITION;
+	float3 posL : COLOR0;
+};
 
-
-float4 VS_MAIN(VS_IN In) : SV_POSITION {
-	float4 posW = mul(float4(In.posL, 1.0f), lightWorldViewProj);
-	return posW;
+VS_OUT VS_MAIN(VS_IN In) {
+	VS_OUT Out;
+	Out.posH = mul(float4(In.posL, 1.0f), lightWorldViewProj);
+	Out.posL = Out.posH.xyz / Out.posH.w;
+	return Out;
 }
 
 //------------------------------------------------------------------------------
@@ -33,8 +38,11 @@ float4 VS_MAIN(VS_IN In) : SV_POSITION {
 
 
 // omg such pixel shader
-void PS_MAIN() {
-	return;
+float PS_MAIN(float3 posL : COLOR0) : DEPTH {
+	float3 x = ddx(posL);
+	float3 y = ddy(posL);
+	float bias = length(x+y);
+	return posL.z + bias * 0.01f;
 }
 
 

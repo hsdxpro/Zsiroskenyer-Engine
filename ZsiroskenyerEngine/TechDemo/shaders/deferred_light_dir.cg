@@ -108,34 +108,14 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 		// simple
 		//*/
 		float shadowSample = tex2DARRAY(shadowMap_Array, float3(sampleCoord, (float)cascadeIdx));
-
-		// bias based on shadow map derivatives
-		/*
-		float4 slopeSample;
-		float4 slopeSample2;
-		slopeSample.x = tex2DARRAY(shadowMap_Array, float3(sampleCoord+float2(0, 1/2048.f), (float)cascadeIdx));
-		slopeSample.y = tex2DARRAY(shadowMap_Array, float3(sampleCoord+float2(0, -1/2048.f), (float)cascadeIdx));
-		slopeSample.z = tex2DARRAY(shadowMap_Array, float3(sampleCoord+float2(1/2048.f, 0), (float)cascadeIdx));
-		slopeSample.w = tex2DARRAY(shadowMap_Array, float3(sampleCoord+float2(-1/2048.f, 0), (float)cascadeIdx));
-		slopeSample.x = tex2DARRAY(shadowMap_Array, float3(sampleCoord+float2(-1/2048.f, 1/2048.f), (float)cascadeIdx));
-		slopeSample.y = tex2DARRAY(shadowMap_Array, float3(sampleCoord+float2(-1/2048.f, -1/2048.f), (float)cascadeIdx));
-		slopeSample.z = tex2DARRAY(shadowMap_Array, float3(sampleCoord+float2(1/2048.f, -1/2048.f), (float)cascadeIdx));
-		slopeSample.w = tex2DARRAY(shadowMap_Array, float3(sampleCoord+float2(1/2048.f, 1/2048.f), (float)cascadeIdx));
 		
-		float slopeBias;
-		float slopeFar = max(max(max(slopeSample.z, slopeSample.w), max(slopeSample.x, slopeSample.y)),
-							 max(max(slopeSample2.z, slopeSample2.w), max(slopeSample2.x, slopeSample2.y)));
-		slopeBias = 0.5f*(slopeFar - shadowSample);
-
-		float totalBias = exp((float)cascadeIdx) * 1e-5 + slopeBias;
-		*/
-		/*
 		if (shadowSample + bias < shadowPos.z)
 			discard;
+		
 
 		// pcf
 		/*/
-		/*
+		
 		float u = sampleCoord.x;
 		float v = sampleCoord.y;
 		u = u * 2048.0f - 0.5f;
@@ -157,9 +137,9 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 			(lookup.x * u_opposite + lookup.y * u_ratio) * v_opposite +
 			(lookup.z * u_opposite + lookup.w * u_ratio) * v_ratio;
 		color.rgb *= weight;
-		*/
 		//*/
 
+		/*/
 		// poisson bullshit
 		const float2 offsets[16] = {
 			float2(-0.4196638f, -0.02463483f),
@@ -185,6 +165,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 		for (int i = 0; i<16; i++) {
 			float2 offset = offsets[i];
 			offset /= 768.0f;
+			offset /= bias*4e4;
 			float lookup = (tex2DARRAY(shadowMap_Array, float3(sampleCoord+offset, (float)cascadeIdx)) + 1e-5*exp((float)cascadeIdx)) < shadowPos.z ? 0 : 1;
 			float len = length(offset);
 			total += len;
@@ -192,6 +173,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 		}
 		weight /= total;
 		color.rgb *= weight;
+		//*/
 	}
 
 	return color;

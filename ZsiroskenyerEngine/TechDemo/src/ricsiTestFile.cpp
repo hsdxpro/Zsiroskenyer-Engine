@@ -234,6 +234,9 @@ int ricsiMain() {
 		entity->SetRot(rot);
 	}
 
+	cEntity* heli = core.AddEntity(s, basePath + L"objects/heli.dae", basePath + L"objects/heli.dae", basePath + L"materials/demo_house.zsm", 0.0f);
+	heli->SetScale(Vec3(0.01, 0.01, 0.01));
+
 	// add a bunch of crates
 	/*
 	for (float x = -25; x <= 25; x += 2.5) {
