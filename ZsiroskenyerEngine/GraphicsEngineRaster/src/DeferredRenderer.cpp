@@ -450,14 +450,14 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	data.UVToViewB[0] = -1.0f * (1.0f / data.FocalLen[0]);
 	data.UVToViewB[1] = 1.0f * (1.0f / data.FocalLen[1]);
 
-	data.R = 0.5f; // WHOA RANDOM
+	data.R = 0.05f; // WHOA RANDOM
 	data.R2 = data.R * data.R;
 	data.NegInvR2 = -1.0f / data.R2;
 	data.MaxRadiusPixels = 0.1f * std::min(gApi->GetDefaultRenderTarget()->GetWidth(), gApi->GetDefaultRenderTarget()->GetHeight());
 	data.AngleBias = 0; // TODO LOW GEOM FAILS
 	data.TanAngleBias = tanf(data.AngleBias);
-	data.PowExponent = 1; // TODO HACKED
-	data.Strength = 3; // TODO HACKED
+	data.PowExponent = 3; // TODO HACKED
+	data.Strength = 2; // TODO HACKED
 
 	gApi->SetShaderProgram(shaderHBAO);
 	gApi->SetRenderTargets(1, &ambientOcclusionBuffer, NULL);
