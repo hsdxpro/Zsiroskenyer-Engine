@@ -23,6 +23,8 @@
 #include <iostream>
 #include <memory>
 
+// OMG WTF ? TODO
+#include <windows.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // DLL pure C interface
@@ -77,6 +79,7 @@ deferredRenderer(NULL),
 hdrProcessor(NULL),
 shaderScreenCopy(NULL),
 currentSceneBuffer(NULL),
+hdrTexture(NULL),
 shadowRenderer(NULL)
 {
 	// Create graphics api
@@ -151,6 +154,7 @@ cGraphicsEngine::~cGraphicsEngine() {
 	SAFE_RELEASE(gApi);
 	SAFE_DELETE(deferredRenderer);
 	SAFE_RELEASE(currentSceneBuffer);
+	SAFE_RELEASE(hdrTexture);
 }
 
 void cGraphicsEngine::Release() {
@@ -312,27 +316,59 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, ITexture2D* target, flo
 	deferredRenderer->RenderComposition();
 	
 	//--- --- Deferred rendering result --- --- //
-	ITexture2D* composedBuffer = deferredRenderer->GetCompositionBuffer();
+	ITexture2D* deferredComposition = deferredRenderer->GetCompositionBuffer();
 
-	postProcessor->SetInputBuffers(composedBuffer, deferredRenderer->GetDepthBuffer());
-	postProcessor->RenderComposition(elapsed, scene.GetCamera());
-	ITexture2D* postProcessedTex = postProcessor->GetCompositionBuffer();
-	//ITexture2D* postProcessedTex = composedBuffer;
+
+	// Motion blur
+	postProcessor->SetInputMB(deferredComposition, deferredRenderer->GetDepthBuffer());
+	postProcessor->SetOutput(hdrTexture);
+	postProcessor->ProcessMB(elapsed, scene.GetCamera());
+
+	// Depth of field
+	postProcessor->SetInputDOF(hdrTexture, deferredRenderer->GetDepthBuffer());
+	postProcessor->SetOutput(deferredComposition);
+	postProcessor->ProcessDOF(scene.GetCamera());
+
+
+	// Lol using GBuffer0
+	ITexture2D* gBuffer0 = deferredRenderer->GetGBuffer(0);
 
 	// HDR
 	if (scene.state.hdr.enabled) {
-		hdrProcessor->SetSource(postProcessedTex);
-		hdrProcessor->SetDestination(target);						// set destination
+		hdrProcessor->SetSource(deferredComposition);
+		hdrProcessor->SetDestination(gBuffer0);						// set destination
 		hdrProcessor->adaptedLuminance = scene.luminanceAdaptation; // copy luminance value
 		hdrProcessor->Update(elapsed);								// update hdr
 		scene.luminanceAdaptation = hdrProcessor->adaptedLuminance; // copy luminance value
 	}
 	else {
-		gApi->SetRenderTargets(1, &target);
+		gApi->SetRenderTargets(1, &gBuffer0);
 		gApi->SetShaderProgram(shaderScreenCopy);
-		gApi->SetTexture(0, postProcessedTex);
+		gApi->SetTexture(0, deferredComposition);
 		gApi->Draw(3);
 	}
+
+	// gBuffer0 holds LDR values, GO FXAA THIS FUCKING SHIT
+	postProcessor->SetInputFXAA(gBuffer0);
+	postProcessor->SetOutput(gApi->GetDefaultRenderTarget());
+
+	postProcessor->ProcessFXAA();
+
+	
+	//if (!GetAsyncKeyState('Z')) 
+	
+	//else
+	//{
+	//	// Copy gBuffer to BacKBuffer
+	//	ITexture2D* bb = gApi->GetDefaultRenderTarget();
+	//	gApi->SetRenderTargets(1, &bb);
+	//	gApi->SetShaderProgram(shaderScreenCopy);
+	//	gApi->SetTexture(0, gBuffer0);
+	//	gApi->Draw(3);
+	//}
+	
+
+	//gApi->SaveTextureToFile(gApi->GetDefaultRenderTarget(), ITexture2D::JPG, "D:/asd2.jpg");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -355,7 +391,7 @@ void cGraphicsEngine::UnloadShaders() {
 
 void cGraphicsEngine::ReloadBuffers() {
 	// backup
-	auto currentSceneBuffer_ = currentSceneBuffer;
+	auto oldBuff = currentSceneBuffer;
 
 	// try create new
 	ITexture2D::tDesc desc;
@@ -367,17 +403,34 @@ void cGraphicsEngine::ReloadBuffers() {
 	desc.usage = eUsage::DEFAULT;
 
 	desc.format = eFormat::R8G8B8A8_UNORM;
-	auto bufResult = gApi->CreateTexture(&currentSceneBuffer, desc);
+	auto errCode = gApi->CreateTexture(&currentSceneBuffer, desc);
 
-	if (bufResult != eGapiResult::OK) {
+	if (errCode != eGapiResult::OK) {
 		// failed: rollback
-		currentSceneBuffer = currentSceneBuffer_;
+		currentSceneBuffer = oldBuff;
 		// throw
 		throw std::runtime_error("scene backbuffer");
 	}
 
 	// success: release old
-	SAFE_RELEASE(currentSceneBuffer_);
+	SAFE_RELEASE(oldBuff);
+
+
+
+	// R16G16B16A16 texture, to preserve hdr values across post processes
+
+	// Back up
+	oldBuff = hdrTexture;
+
+	desc.format = eFormat::R16G16B16A16_FLOAT;
+	errCode = gApi->CreateTexture(&hdrTexture, desc);
+
+	if (errCode != eGapiResult::OK) {
+		hdrTexture = oldBuff;
+		throw std::runtime_error("global hdr texture in GraphicsEngine::ReloadBuffer");
+	}
+	
+	SAFE_RELEASE(oldBuff);
 }
 
 

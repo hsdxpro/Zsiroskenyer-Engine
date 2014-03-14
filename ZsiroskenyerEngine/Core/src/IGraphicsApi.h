@@ -34,7 +34,7 @@ public:
 	virtual eGapiResult	CreateVertexBuffer(IVertexBuffer** resource, eUsage usage, cVertexFormat format, size_t size, void* data = NULL) = 0;
 	virtual eGapiResult	CreateIndexBuffer(IIndexBuffer** resource, eUsage usage, size_t size, void* data = NULL) = 0;
 	virtual eGapiResult CreateTexture(ITexture2D** resource, const wchar_t* filePath) = 0;
-	virtual eGapiResult CreateTexture(ITexture2D** resource, ITexture2D::tDesc desc, void* data = NULL) = 0;
+	virtual eGapiResult CreateTexture(ITexture2D** resource, const ITexture2D::tDesc& desc, void* data = NULL) = 0;
 	virtual eGapiResult CreateShaderProgram(IShaderProgram** resource, const wchar_t* shaderPath) = 0;
 
 	virtual eGapiResult WriteResource(IIndexBuffer* buffer , void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) = 0;

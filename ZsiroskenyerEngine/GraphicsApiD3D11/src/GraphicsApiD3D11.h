@@ -45,7 +45,7 @@ public:
 	eGapiResult	CreateVertexBuffer(IVertexBuffer** resource, eUsage usage, cVertexFormat format, size_t size, void* data = NULL) override;
 	eGapiResult	CreateIndexBuffer(IIndexBuffer** resource, eUsage usage, size_t size, void* data = NULL) override;
 	eGapiResult CreateTexture(ITexture2D** resource, const wchar_t* filePath) override;
-	eGapiResult CreateTexture(ITexture2D** resource, ITexture2D::tDesc desc, void* data = NULL) override;
+	eGapiResult CreateTexture(ITexture2D** resource, const ITexture2D::tDesc& desc, void* data = NULL) override;
 	eGapiResult CreateShaderProgram(IShaderProgram** resource, const wchar_t* shaderPath) override;
 
 	eGapiResult WriteResource(IIndexBuffer* buffer, void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) override;

@@ -100,7 +100,10 @@ public:
 	template<class ValType>
 	zsString(ValType val) {
 		std::wstringstream ss;
-		ss << val;
+
+		if (val)
+			ss << val;
+
 		auto str = ss.str();
 		for (size_t i = 0; i < str.length(); i++)
 			zsBasicString::operator += (str[i]);

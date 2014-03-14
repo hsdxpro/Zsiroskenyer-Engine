@@ -552,7 +552,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const wchar_
 }
 
 // Create texture in memory
-eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, ITexture2D::tDesc desc, void* data /*= NULL*/) {
+eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const ITexture2D::tDesc& desc, void* data /*= NULL*/) {
 	ID3D11Texture2D* tex = NULL;
 	// Outputs
 	ID3D11RenderTargetView* rtv = NULL;

@@ -779,6 +779,10 @@ ITexture2D* cGraphicsEngine::cDeferredRenderer::GetDepthBuffer() {
 	return depthBufferCopy;
 }
 
+ITexture2D* cGraphicsEngine::cDeferredRenderer::GetGBuffer(uint8_t idx) {
+	// TODO Bullshit expectations, write array_size or utility somewhere
+	return gBuffer[idx];
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //	Public usage

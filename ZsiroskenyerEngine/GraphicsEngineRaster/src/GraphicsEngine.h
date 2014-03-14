@@ -129,6 +129,7 @@ private:
 	Matrix44* lastCameraMatrix;
 	float elapsed;
 	ITexture2D* currentSceneBuffer;
+	ITexture2D* hdrTexture; // Global hdr texture to preserve hdr values across post processes
 
 	// state
 	unsigned screenWidth, screenHeight;
@@ -173,6 +174,7 @@ private:
 
 		ITexture2D* GetCompositionBuffer();
 		ITexture2D* GetDepthBuffer();
+		ITexture2D* GetGBuffer(uint8_t idx);
 
 	private:
 		void LoadShaders();
@@ -214,14 +216,24 @@ private:
 		// Reload belonging shaders
 		void ReloadShaders();
 
-		// Do the post process bull shit
-		void RenderComposition(float frameDeltaTime, const cCamera& cam);
 
-		// Need call before "RenderComposition"
-		void SetInputBuffers(ITexture2D* srcColor, ITexture2D* srcDepth);
+		// FXAA
+		void ProcessFXAA();
+
+		// Motion Blur
+		void ProcessMB(float frameDeltaTime, const cCamera& cam);
+
+		// Dof
+		void ProcessDOF(const cCamera& cam);
+
+
+		// Set inputs
+		void SetInputMB(ITexture2D* color, ITexture2D* depth);
+		void SetInputDOF(ITexture2D* color, ITexture2D* depth);
+		void SetInputFXAA(ITexture2D* color); // If FXAA shader defines that it takes luminance from alpha channel, then pass appropriate texture please..
 		
-
-		ITexture2D* GetCompositionBuffer();
+		// Set outputs
+		void SetOutput(ITexture2D* t);
 
 	private:
 		void LoadShaders();
@@ -229,16 +241,14 @@ private:
 		void Cleanup();
 		eGapiResult ReallocBuffers();
 
-		IShaderProgram* shaderMotionBlur, *shaderDof;
+		// Shaders
+		IShaderProgram* shaderMotionBlur, *shaderDof, *shaderFXAA;
 
-		// Resulting color texture after post process
-		ITexture2D* compositionBuffer;
+		// Input textures
+		ITexture2D* inputTexColor, *inputTexDepth;
 
-		// Tmp buffers for swapping between shaders input, output
-		ITexture2D* bufferA;
-
-		// Input buffer ptr
-		ITexture2D* inputColorTex,* inputDepthTex;
+		// Output textures
+		ITexture2D* outputTexColor;
 
 		// Motion blur vars
 		Matrix44 prevViewMat;

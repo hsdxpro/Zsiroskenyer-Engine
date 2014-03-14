@@ -34,14 +34,14 @@ cCgShaderHelper::cCgShaderHelper(const zsString& shaderPath) {
 	// Tech creation
 	CGtechnique tech = cgGetFirstTechnique(effect);
 	if (tech == NULL) {
-		lastErrorMsg = cgGetLastListing(con);
+		lastErrorMsg = L"There is no Technique in shader: " + shaderPath;
 		return;
 	}
 
 	// Pass creation
 	CGpass pass = cgGetFirstPass(tech);
 	if (pass == NULL) {
-		lastErrorMsg = cgGetLastListing(con);
+		lastErrorMsg = L"There is no pass in shader: " + shaderPath;
 		return;
 	}
 
@@ -326,6 +326,8 @@ const wchar_t* cCgShaderHelper::GetLastErrorMsg() {
 
 cVertexFormat cCgShaderHelper::GetVSInputFormat()
 {
+	assert(info.domainsExist[cCgShaderHelper::VS]);
+
 	// Parse input Layout... from VERTEX_SHADER
 	// - 1. search for vertexShader Entry name ex:"VS_MAIN(", get return value, for example struct name VS_OUT, or valid params like float4
 	// - 2. search for VS_OUT, get lines under that, while line != "};"
