@@ -208,7 +208,7 @@ void cGraphicsEngine::cDeferredRenderer::LoadShaders() {
 		shaderSky = Create(L"shaders/sky.cg");
 
 		shaderSSAO = Create(L"shaders/ssao.cg");
-		//shaderHBAO = Create(L"shaders/hbao.cg");
+		shaderHBAO = Create(L"shaders/hbao.cg");
 	}
 	catch (...) {
 		UnloadShaders();
@@ -247,7 +247,7 @@ void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {
 	Reload(&shaderSky, L"shaders/sky.cg");
 
 	Reload(&shaderSSAO, L"shaders/ssao.cg");
-	//Reload(&shaderSSAO, L"shaders/hbao.cg");
+	Reload(&shaderSSAO, L"shaders/hbao.cg");
 }
 
 // Render the scene to composition buffer
@@ -413,27 +413,26 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// --- --- --- --- --AMBIENT OCCLUSION (composition pass)-- --- --- --- --- //
 	//--------------------------------------------------------------------------//
 
-	/*
 	// HBAO FUCK YEAH, I really like the small and smart constant buffer :D
 	struct
 	{
-		float AOResolution[2];
-		float InvAOResolution[2];
+		float AOResolution[2];		float _pad0[2];
+		float InvAOResolution[2];	float _pad1[2];
 
-		float FocalLen[2];
+		float FocalLen[2];			float _pad2[2];
 
-		float UVToViewA[2];
-		float UVToViewB[2];
+		float UVToViewA[2];			float _pad3[2];
+		float UVToViewB[2];			float _pad4[2];
 
-		float R;
-		float R2;
-		float NegInvR2;
-		float MaxRadiusPixels;
+		float R;					float _pad5[3];
+		float R2;					float _pad6[3];
+		float NegInvR2;				float _pad7[3];
+		float MaxRadiusPixels;		float _pad8[3];
 
-		float AngleBias;
-		float TanAngleBias;
-		float PowExponent;
-		float Strength;
+		float AngleBias;			float _pad9[3];
+		float TanAngleBias;			float _pad10[3];
+		float PowExponent;			float _pad11[3];
+		float Strength;				float _pad12[3];
 	} data;
 
 	data.AOResolution[0] = (float)ambientOcclusionBuffer->GetWidth();
@@ -451,24 +450,24 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	data.UVToViewB[0] = -1.0f * (1.0f / data.FocalLen[0]);
 	data.UVToViewB[1] = 1.0f * (1.0f / data.FocalLen[1]);
 
-	data.R = 2; // WHOA RANDOM
+	data.R = 0.05f; // WHOA RANDOM
 	data.R2 = data.R * data.R;
 	data.NegInvR2 = -1.0f / data.R2;
 	data.MaxRadiusPixels = 0.1f * std::min(gApi->GetDefaultRenderTarget()->GetWidth(), gApi->GetDefaultRenderTarget()->GetHeight());
 	data.AngleBias = 0; // TODO LOW GEOM FAILS
 	data.TanAngleBias = tanf(data.AngleBias);
-	data.PowExponent = 1; // TODO HACKED
-	data.Strength = 5; // TODO HACKED
+	data.PowExponent = 3; // TODO HACKED
+	data.Strength = 2; // TODO HACKED
 
 	gApi->SetShaderProgram(shaderHBAO);
 	gApi->SetRenderTargets(1, &ambientOcclusionBuffer, NULL);
-	//gApi->SetTexture(L"normalTexture", gBuffer[1]);
+	// Need random texture, now using gpu garbage:D
 	gApi->SetTexture(L"tLinearDepth", depthBufferCopy);
 	gApi->SetPSConstantBuffer(&data, sizeof(data), 0);
 	gApi->Draw(3);
-	*/
-
 	
+
+	/*
 	struct _aoShaderConstants {
 		Matrix44 projMat;
 		Matrix44 invViewProj;
@@ -484,7 +483,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetTexture(L"depthTexture", depthBufferCopy);
 	gApi->SetPSConstantBuffer(&aoShaderConstants, sizeof(aoShaderConstants), 0);
 	gApi->Draw(3);
-	
+	*/
 
 	//--------------------------------------------------------------------------//
 	// --- --- --- --- --- RENDER STATES (composition pass) --- --- --- --- --- //
@@ -777,7 +776,7 @@ ITexture2D* cGraphicsEngine::cDeferredRenderer::GetCompositionBuffer() {
 }
 
 ITexture2D* cGraphicsEngine::cDeferredRenderer::GetDepthBuffer() {
-	return depthBuffer;
+	return depthBufferCopy;
 }
 
 

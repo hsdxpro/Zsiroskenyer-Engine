@@ -16,17 +16,18 @@ struct ID3D11HullShader;
 struct ID3D11DomainShader;
 struct ID3D11GeometryShader;
 struct ID3D11PixelShader;
+struct ID3D11SamplerState;
 class cGraphicsApiD3D11;
 
 class cShaderProgramD3D11 : public IShaderProgram {
 	friend class cGraphicsApiD3D11;
 public:
 	// sampler info
-	struct tSamplerInfo {
-		uint16_t gApiSamplerIdx;
-		uint16_t slotIdx;
+	struct tSamplerState {
+		ID3D11SamplerState* state;
+		uint16_t slot;
 		
-		tSamplerInfo(uint16_t gApiSamplerIdx, uint16_t slotIdx) :gApiSamplerIdx(gApiSamplerIdx), slotIdx(slotIdx){}
+		tSamplerState(ID3D11SamplerState* s, uint16_t slot) :state(s), slot(slot){}
 	};
 
 	// ctor/dtor/release
@@ -38,18 +39,17 @@ public:
 	~cShaderProgramD3D11();
 	void Release() override;
 
-	// internal bullshit
 	void SetTextureSlotsVS(const std::unordered_map<zsString, uint16_t>& texSlotsVS);
 	void SetTextureSlotsPS(const std::unordered_map<zsString, uint16_t>& texSlotsPS);
 
-	void SetSamplerStatesVS(const std::vector<tSamplerInfo>& samplerStatesVS);
-	void SetSamplerStatesPS(const std::vector<tSamplerInfo>& samplerStatesPS);
+	void SetSamplerStatesVS(const std::vector<tSamplerState>& states);
+	void SetSamplerStatesPS(const std::vector<tSamplerState>& states);
 
 	int GetTextureSlotVS(const zsString& varName) const;
 	int GetTextureSlotPS(const zsString& varName) const;
 
-	const std::vector<tSamplerInfo>& GetSamplerStatesVS() const;
-	const std::vector<tSamplerInfo>& GetSamplerStatesPS() const;
+	const std::vector<tSamplerState>& GetSamplerStatesVS() const;
+	const std::vector<tSamplerState>& GetSamplerStatesPS() const;
 
 	const ID3D11VertexShader* GetVS() const;
 	const ID3D11HullShader* GetHS() const;
@@ -82,8 +82,8 @@ protected:
 	std::unordered_map<zsString, uint16_t> textureSlotsPS;
 
 	// Sampler slot look up
-	std::vector<tSamplerInfo> samplerStatesVS;
-	std::vector<tSamplerInfo> samplerStatesPS;
+	std::vector<tSamplerState> samplerStatesVS;
+	std::vector<tSamplerState> samplerStatesPS;
 
 	// vertex format
 	cVertexFormat format;

@@ -48,12 +48,12 @@ void cShaderProgramD3D11::SetTextureSlotsPS(const std::unordered_map<zsString, u
 	textureSlotsPS = texSlotsPS;
 }
 
-void cShaderProgramD3D11::SetSamplerStatesVS(const std::vector<cShaderProgramD3D11::tSamplerInfo>& samplerStatesVS) {
-	this->samplerStatesVS = samplerStatesVS;
+void cShaderProgramD3D11::SetSamplerStatesVS(const std::vector<cShaderProgramD3D11::tSamplerState>& states) {
+	samplerStatesVS = states;
 }
 
-void cShaderProgramD3D11::SetSamplerStatesPS(const std::vector<cShaderProgramD3D11::tSamplerInfo>& samplerStatesPS) {
-	this->samplerStatesPS = samplerStatesPS;
+void cShaderProgramD3D11::SetSamplerStatesPS(const std::vector<cShaderProgramD3D11::tSamplerState>& states) {
+	samplerStatesPS = states;
 }
 
 int cShaderProgramD3D11::GetTextureSlotVS(const zsString& varName) const {
@@ -66,11 +66,11 @@ int cShaderProgramD3D11::GetTextureSlotPS(const zsString& varName) const {
 	return (i != textureSlotsPS.end()) ? i->second : -1;
 }
 
-const std::vector<cShaderProgramD3D11::tSamplerInfo>& cShaderProgramD3D11::GetSamplerStatesVS() const {
+const std::vector<cShaderProgramD3D11::tSamplerState>& cShaderProgramD3D11::GetSamplerStatesVS() const {
 	return samplerStatesVS;
 }
 
-const std::vector<cShaderProgramD3D11::tSamplerInfo>& cShaderProgramD3D11::GetSamplerStatesPS() const {
+const std::vector<cShaderProgramD3D11::tSamplerState>& cShaderProgramD3D11::GetSamplerStatesPS() const {
 	return samplerStatesPS;
 }
 

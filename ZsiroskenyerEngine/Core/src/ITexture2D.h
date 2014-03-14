@@ -6,14 +6,6 @@
 
 class ITexture2D {
 public:
-	virtual void Release() = 0;
-
-	virtual size_t GetWidth() const = 0;
-	virtual size_t GetHeight() const = 0;
-
-	virtual ITexture2D* GetArraySlice(int idx) = 0;
-	virtual const ITexture2D* GetArraySlice(int idx) const = 0;
-
 	struct tDesc {
 		tDesc(unsigned width, unsigned height, eFormat format, unsigned bind, eUsage usage, unsigned mipLevels = 1, unsigned arraySize = 1, eFormat depthFormat = eFormat::UNKNOWN)
 		: width(width), height(height), format(format), bind(bind), usage(usage), mipLevels(mipLevels), arraySize(arraySize), depthFormat(depthFormat) { }
@@ -26,4 +18,22 @@ public:
 		eUsage usage;
 		eFormat depthFormat;
 	};
+
+	enum eImageFormat {
+		BMP,
+		JPG,
+		PNG,
+		DDS,
+		TIFF,
+		GIF,
+		WMP,
+	};
+
+	virtual void Release() = 0;
+
+	virtual size_t GetWidth() const = 0;
+	virtual size_t GetHeight() const = 0;
+
+	virtual ITexture2D* GetArraySlice(int idx) = 0;
+	virtual const ITexture2D* GetArraySlice(int idx) const = 0;
 };

@@ -9,6 +9,8 @@
 #include <windows.h>
 #include <assert.h>
 
+#include <d3d11shader.h>
+#include <d3dcompiler.h>
 
 cCgShaderHelper::cCgShaderHelper(const zsString& shaderPath) {
 
@@ -137,48 +139,43 @@ bool cCgShaderHelper::CompileCg(const zsString& cgFilePath, const zsString& shad
 	return true;
 }
 
-std::unordered_map<zsString, uint16_t> cCgShaderHelper::GetHLSLTextureSlots(const zsString& hlslFilePath) {
-	// Parse hlsl code for samplers, textures
-	std::ifstream hlslFile(hlslFilePath);
+cCgShaderHelper::tHLSLDesc cCgShaderHelper::GetHLSLDesc(const zsString& hlslFilePath, const void* byteCode, size_t byteCodeSize) {
 
 	// Result
-	std::unordered_map<zsString, uint16_t> result;
+	tHLSLDesc result;
 
-	// Tmp holder
-	std::unordered_map<zsString, uint16_t> textureSlotsParsed;
+	// Reflect HLSL Sm (4.0 - 5.0) shader
+	ID3D11ShaderReflection* reflector;
+	D3DReflect(byteCode, byteCodeSize, IID_ID3D11ShaderReflection, (void**)&reflector);
+	D3D11_SHADER_DESC shaderDesc;
+	reflector->GetDesc(&shaderDesc);
 
-	uint16_t texIdx = 0;
-	bool reachTextures = false;
-	bool reachSampling = false;
+
+	std::unordered_map<zsString, uint16_t> textureSlots;
+
+	// Collect samplers, texture names and their slot indexing
+	for (size_t i = 0; i < shaderDesc.BoundResources; i++)
+	{
+		D3D11_SHADER_INPUT_BIND_DESC bindDesc;
+		reflector->GetResourceBindingDesc(i, &bindDesc);
+
+		switch (bindDesc.Type) {
+		case D3D_SIT_SAMPLER: result.samplerInfo[bindDesc.Name + 1].samplerStateSlot = bindDesc.BindPoint; break;
+		case D3D_SIT_TEXTURE: textureSlots[bindDesc.Name] = bindDesc.BindPoint;
+		}
+	}
+
+
+	// Parse hlsl code for samplers, textures
+	std::ifstream hlslFile(hlslFilePath);
 
 	auto lines = cFileUtil::GetLines(hlslFile);
 	for (auto it = lines.begin(); it != lines.end(); it++) {
 		const zsString& row = *it;
 
-		// Collect <texture names, slot numbers>
-		if (!reachSampling && cStrUtil::Begins(row, L"Texture")) {
-
-			// TODO JESUS CHRISTS, WHY SEARCH FROM FRONT FOR '[' CHAR, "Texture" Already found, and we can get the index of it
-			int bracketIdx = cStrUtil::Find(row, '[');
-			if ( bracketIdx >= 0) {
-				wchar_t tmp[3];
-				uint16_t nElements;
-				cStrUtil::LastNumber(row, nElements, tmp, 3);
-				
-				textureSlotsParsed[cStrUtil::Between(row, L' ', L'[')] = texIdx;
-				texIdx += nElements;
-			} else {
-				textureSlotsParsed[cStrUtil::Between(row, L' ', L';')] = texIdx++;
-			}
-
-			reachTextures = true;
-		}
-
-		// match textures, samplers
+		// Match samplers with textures
 		int chPos = cStrUtil::Find(row, L".Sample");
-		if (reachTextures && chPos >= 0) {
-			reachSampling = true;
-
+		if (chPos >= 0) {
 			zsString textureName;
 			zsString samplerName;
 
@@ -196,11 +193,18 @@ std::unordered_map<zsString, uint16_t> cCgShaderHelper::GetHLSLTextureSlots(cons
 				textureName = cStrUtil::SubStrLeft(row, chPos - 1, '_');
 				samplerName = cStrUtil::SubStrRight(row, chPos + 9, ',', -1);
 			}
-			result[samplerName] = textureSlotsParsed[textureName];
+
+			auto it = textureSlots.find(textureName);
+			if (it != textureSlots.end())
+			{
+				result.samplerInfo[samplerName].textureSlot = it->second;
+			}
+			
 		}
 	}
 
 	hlslFile.close();
+
 	return result;
 }
 
@@ -208,8 +212,8 @@ const std::list<zsString>& cCgShaderHelper::GetIncludedFilesPaths() const {
 	return includedFilesPaths;
 }
 
-std::unordered_map<zsString, tSamplerDesc> cCgShaderHelper::GetSamplerStates() {
-	std::unordered_map<zsString, tSamplerDesc> result;
+std::unordered_map<zsString, tSamplerStateDesc> cCgShaderHelper::GetSamplerStates() {
+	std::unordered_map<zsString, tSamplerStateDesc> result;
 
 	// Lines that contains "sampler" and "=", contains sampler states under that
 	const zsString words[2] = { L"sampler", L"=" };
@@ -234,7 +238,7 @@ std::unordered_map<zsString, tSamplerDesc> cCgShaderHelper::GetSamplerStates() {
 		// MinFilter = POINT,
 		// MagFilter = POINT,
 
-		tSamplerDesc samplerDesc;
+		tSamplerStateDesc desc;
 
 		// For each of the above lines
 		for (auto state : samplerStateLines) {
@@ -254,63 +258,63 @@ std::unordered_map<zsString, tSamplerDesc> cCgShaderHelper::GetSamplerStates() {
 
 			if (left == L"MIPFILTER") {
 				if (right == L"POINT") {
-					samplerDesc.filterMip = eFilter::POINT;
+					desc.filterMip = eFilter::POINT;
 				}
 				else if (right == L"LINEAR") {
-					samplerDesc.filterMip = eFilter::LINEAR;
+					desc.filterMip = eFilter::LINEAR;
 				}
 				else if (right == L"ANISOTROPIC") {
-					samplerDesc.filterMip = eFilter::ANISOTROPIC;
+					desc.filterMip = eFilter::ANISOTROPIC;
 				}
 
 			}
 			else if (left == L"MINFILTER") {
 				if (right == L"POINT") {
-					samplerDesc.filterMin = eFilter::POINT;
+					desc.filterMin = eFilter::POINT;
 				}
 				else if (right == L"LINEAR") {
-					samplerDesc.filterMin = eFilter::LINEAR;
+					desc.filterMin = eFilter::LINEAR;
 				}
 				else if (right == L"ANISOTROPIC") {
-					samplerDesc.filterMin = eFilter::ANISOTROPIC;
+					desc.filterMin = eFilter::ANISOTROPIC;
 				}
 
 			}
 			else if (left == L"MAGFILTER") {
 				if (right == L"POINT") {
-					samplerDesc.filterMag = eFilter::POINT;
+					desc.filterMag = eFilter::POINT;
 				}
 				else if (right == L"LINEAR") {
-					samplerDesc.filterMag = eFilter::LINEAR;
+					desc.filterMag = eFilter::LINEAR;
 				}
 				else if (right == L"ANISOTROPIC") {
-					samplerDesc.filterMag = eFilter::ANISOTROPIC;
+					desc.filterMag = eFilter::ANISOTROPIC;
 				}
 			}
 			else if (left == L"ADDRESSU") {
 				if (right == L"CLAMP") {
-					samplerDesc.addressU = eAddress::CLAMP;
+					desc.addressU = eAddress::CLAMP;
 				}
 				else if (right == L"WRAP") {
-					samplerDesc.addressU = eAddress::WRAP;
+					desc.addressU = eAddress::WRAP;
 				}
 				else if (right == L"MIRROR") {
-					samplerDesc.addressU = eAddress::MIRROR;
+					desc.addressU = eAddress::MIRROR;
 				}
 			}
 			else if (left == L"ADDRESSV") {
 				if (right == L"CLAMP") {
-					samplerDesc.addressV = eAddress::CLAMP;
+					desc.addressV = eAddress::CLAMP;
 				}
 				else if (right == L"WRAP") {
-					samplerDesc.addressV = eAddress::WRAP;
+					desc.addressV = eAddress::WRAP;
 				}
 				else if (right == L"MIRROR") {
-					samplerDesc.addressV = eAddress::MIRROR;
+					desc.addressV = eAddress::MIRROR;
 				}
 			}
 		}
-		result[samplerName] = samplerDesc;
+		result[samplerName] = desc;
 	}
 	return result;
 }

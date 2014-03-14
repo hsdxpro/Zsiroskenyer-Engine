@@ -182,6 +182,8 @@ eGraphicsResult cGraphicsEngine::ReloadShaders() {
 		deferredRenderer->ReloadShaders();
 		hdrProcessor->ReloadShaders();
 		shadowRenderer->ReloadShaders();
+		postProcessor->ReloadShaders();
+
 		return eGraphicsResult::OK;
 	}
 	catch (std::exception& e) {
@@ -312,10 +314,10 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, ITexture2D* target, flo
 	//--- --- Deferred rendering result --- --- //
 	ITexture2D* composedBuffer = deferredRenderer->GetCompositionBuffer();
 
-	// TODO RICSI
-	//postProcessor->SetInputBuffers(composedBuffer, deferredRenderer->GetDepthBuffer());
-	//postProcessor->RenderComposition(elapsed);
-	ITexture2D* postProcessedTex = composedBuffer;// postProcessor->GetCompositionBuffer();
+	postProcessor->SetInputBuffers(composedBuffer, deferredRenderer->GetDepthBuffer());
+	postProcessor->RenderComposition(elapsed, scene.GetCamera());
+	ITexture2D* postProcessedTex = postProcessor->GetCompositionBuffer();
+	//ITexture2D* postProcessedTex = composedBuffer;
 
 	// HDR
 	if (scene.state.hdr.enabled) {

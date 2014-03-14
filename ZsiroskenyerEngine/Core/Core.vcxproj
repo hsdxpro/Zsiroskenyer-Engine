@@ -178,7 +178,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>$(OutDir)\CommonOS.lib;$(SolutionDir)\..\Externals\ASSIMP\lib\assimp.lib;$(SolutionDir)../Externals/Cg/lib/x32/cg.lib;$(SolutionDir)../Externals/Cg/lib/x32/cgD3D11.lib;$(SolutionDir)../Externals/Cg/lib/x32/cgGL.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)\CommonOS.lib;$(SolutionDir)\..\Externals\ASSIMP\lib\assimp.lib;$(SolutionDir)../Externals/Cg/lib/x32/cg.lib;$(SolutionDir)../Externals/Cg/lib/x32/cgD3D11.lib;$(SolutionDir)../Externals/Cg/lib/x32/cgGL.lib;$(SolutionDir)../Externals/Dx11_SDK/Lib/x86/dxguid.lib;$(SolutionDir)../Externals/Dx11_SDK/Lib/x86/d3dcompiler.lib</AdditionalDependencies>
     </Lib>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
