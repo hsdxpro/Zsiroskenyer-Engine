@@ -17,14 +17,11 @@
 
 #include "..\..\Core\src\math/Matrix44.h"
 #include "..\..\Core\src\common.h"
-
+#include "..\..\Core\src\StrUtil.h"
 #include <string>
 #include <stdexcept>
 #include <iostream>
 #include <memory>
-
-// OMG WTF ? TODO
-#include <windows.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // DLL pure C interface
@@ -443,12 +440,10 @@ auto SafeLoadShader(IGraphicsApi* gApi, const wchar_t* shader)->IShaderProgram* 
 		}
 		default: {
 					 const zsString errMsg = gApi->GetLastErrorMsg();
-					 char* s = new char[errMsg.size() + 1];
-					 s[errMsg.size()] = '\0';
-					 wcstombs(s, errMsg.c_str(), errMsg.size());
-					 std::runtime_error errThrow(s);
-					 delete[] s;
-					 throw errThrow;
+
+					 char msg[2048];
+					 cStrUtil::ToAnsi(errMsg, msg, 2048);
+					 throw std::runtime_error(msg);
 		}
 	}
 };

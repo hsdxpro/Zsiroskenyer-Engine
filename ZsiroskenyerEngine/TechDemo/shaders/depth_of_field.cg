@@ -29,9 +29,6 @@ struct VS_OUT {
 	float2 tex0 	: TEXCOORD2;
 };
 
-struct PS_OUT {
-	float4 color: COLOR0;
-};
 
 VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 	VS_OUT Out;
@@ -40,8 +37,7 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 	return Out;
 }
 
-PS_OUT PS_MAIN(VS_OUT In) {
-	PS_OUT Out;
+float4 PS_MAIN(VS_OUT In) : COLOR0 {
 
 	float3 focusPointW = GetWorldPosition( In.tex0, tex2D(depthTexture, float2(0.5f, 0.5f)), invViewProj);
 	float3 posW = GetWorldPosition( In.tex0, tex2D(depthTexture, In.tex0), invViewProj);
@@ -69,8 +65,9 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	float radius = CoCRadius * 2;
 
 	float4 color = tex2D(inputTexture, In.tex0);
+	return color;
 	float alpha = color.a;
-	//Out.color = color;
+	//Out.color = color; 
 	//Out.color.a = alpha;
 	//return Out;
 
@@ -83,10 +80,10 @@ PS_OUT PS_MAIN(VS_OUT In) {
 		color += tex2D(inputTexture, In.tex0 + float2( -1.0f / 800	,  0		  ) * (float)i  / quality * radius);
 	}
 
-	Out.color = color / (quality * 4 + 1);
-	Out.color.a = alpha;
+	float4 finalColor = color / (quality * 4 + 1);
+	finalColor.a = alpha;
 
-	return Out;
+	return finalColor;
 }
 
 technique t

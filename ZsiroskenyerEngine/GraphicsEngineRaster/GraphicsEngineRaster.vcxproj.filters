@@ -188,5 +188,6 @@
     <None Include="..\TechDemo\shaders\deferred_gbuffer_material.cginc">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\TechDemo\shaders\FXAA.cg" />
   </ItemGroup>
 </Project>

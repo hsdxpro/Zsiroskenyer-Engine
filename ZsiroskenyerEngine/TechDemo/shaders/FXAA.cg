@@ -52,7 +52,7 @@ sampler2D inputTexture : register(s0) = {
 	AddressV = CLAMP,
 };
 
-static const float2 fxaaQualityRcpFrame = float2(1.0f / 1000.0f, 1.0f / 800.0f);
+float2 fxaaQualityRcpFrame : register(c0);
 static const float  fxaaQualityEdgeThresholdMin = 0.0625;
 static const float  fxaaQualitySubpix = 0.75f;//  0.75 - default amount of filtering
 static const float  fxaaQualityEdgeThreshold = 0.166f;//  0.166 - default
