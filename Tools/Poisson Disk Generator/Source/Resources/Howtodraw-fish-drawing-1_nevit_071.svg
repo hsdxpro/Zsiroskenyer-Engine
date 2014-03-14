@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="568"
+   height="568"
+   id="svg4541"
+   sodipodi:version="0.32"
+   inkscape:version="0.47 r22583"
+   sodipodi:docname="Howtodraw-fish-drawing-1_nevit_071.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   version="1.0"
+   inkscape:export-filename="C:\Users\Fulg\Downloads\Howtodraw-fish-drawing-1_nevit_071_15.png"
+   inkscape:export-xdpi="2.3800001"
+   inkscape:export-ydpi="2.3800001">
+  <defs
+     id="defs4543">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective4549" />
+    <inkscape:perspective
+       id="perspective4592"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       sodipodi:type="inkscape:persp3d" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     gridtolerance="10000"
+     guidetolerance="10"
+     objecttolerance="10"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.67215909"
+     inkscape:cx="174.37496"
+     inkscape:cy="240.96849"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1280"
+     inkscape:window-height="962"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     showborder="true"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata4546">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-83.651858,-112.9336)">
+    <path
+       sodipodi:type="arc"
+       style="fill:#ff0000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="path4553"
+       sodipodi:cx="194.28572"
+       sodipodi:cy="360.93362"
+       sodipodi:rx="94.285713"
+       sodipodi:ry="94.285713"
+       d="m 194.28572,266.64791 a 94.285713,94.285713 0 0 1 0,188.57143 l 0,-94.28572 z"
+       sodipodi:start="4.712389"
+       sodipodi:end="7.8539816"
+       transform="matrix(1.418146,0,0,1.418146,-191.87366,-121.27292)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ff0000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="path4555"
+       sodipodi:cx="431.42856"
+       sodipodi:cy="346.64789"
+       sodipodi:rx="117.14286"
+       sodipodi:ry="117.14286"
+       d="m 548.57142,346.64789 a 117.14286,117.14286 0 1 1 -234.28572,0 117.14286,117.14286 0 1 1 234.28572,0 z"
+       transform="matrix(1.8536585,0,0,1.8536585,-365.21559,-246.77606)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="path4561"
+       sodipodi:cx="505.71429"
+       sodipodi:cy="392.36218"
+       sodipodi:rx="42.857143"
+       sodipodi:ry="42.857143"
+       d="m 548.57144,392.36218 a 42.857143,42.857143 0 1 1 -85.71429,0 42.857143,42.857143 0 1 1 85.71429,0 z"
+       transform="matrix(1.6248521,0,0,1.6248521,-323.43534,-314.65606)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="path4563"
+       sodipodi:cx="517.36261"
+       sodipodi:cy="402.59042"
+       sodipodi:rx="11.530008"
+       sodipodi:ry="11.530008"
+       d="m 528.89262,402.59042 a 11.530008,11.530008 0 1 1 -23.06002,0 11.530008,11.530008 0 1 1 23.06002,0 z"
+       transform="matrix(1.5806452,0,0,1.5806452,-299.66022,-295.06734)" />
+  </g>
+</svg>
