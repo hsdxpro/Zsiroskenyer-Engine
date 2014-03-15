@@ -47,6 +47,7 @@ struct {
 	float4x4 worldView;
 	float4x4 world;
 	float3 camPos;
+
 } transform : register(c0);
 float4x4 wvp : register(c0);
 float4x4 world : register(c4);
