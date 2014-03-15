@@ -92,6 +92,8 @@ cGeometryRef cResourceManager::AddGeometry(cGeometry* geometry, const zsString& 
 ////////////////////////////////////////////////////////////////////////////////
 //	Load/unload materials
 cMaterialRef cResourceManager::GetMaterial(const zsString& filePath) {
+	assert(cFileUtil::isFileExits(filePath));
+
 	cMaterial* mtl;
 
 	// lookup if already exists

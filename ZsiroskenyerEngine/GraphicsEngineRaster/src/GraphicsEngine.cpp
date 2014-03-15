@@ -23,6 +23,9 @@
 #include <iostream>
 #include <memory>
 
+// FUCK YOU SHADER RELOAD FAILED
+#include <windows.h>
+
 ////////////////////////////////////////////////////////////////////////////////
 // DLL pure C interface
 extern "C"
@@ -191,6 +194,7 @@ eGraphicsResult cGraphicsEngine::ReloadShaders() {
 		lastErrorMessage = "";
 		lastErrorMessage += "failed to reload shader:\n";
 		lastErrorMessage += e.what();
+		MessageBoxA(0, lastErrorMessage.c_str(), "FUCK", MB_OK);
 		return eGraphicsResult::ERROR_UNKNOWN;
 	}
 }

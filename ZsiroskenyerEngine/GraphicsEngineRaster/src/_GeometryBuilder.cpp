@@ -168,6 +168,10 @@ void _cGeometryBuilder::LoadFile(const zsString& path) {
 
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(ansiFilePath, aiProcess_GenNormals | aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_ImproveCacheLocality | aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_FlipWindingOrder);
+	if (scene == nullptr) {
+		ILog::GetInstance()->MsgBox(L"corrupted 3D file :" + path);
+		throw FileNotFoundException();
+	}
 
 	// Parsed "scene" have meshes
 	size_t nMeshes = scene->mNumMeshes;

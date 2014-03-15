@@ -1,15 +1,15 @@
 sampler2D textureInput : register(s0) = {
-	MipFilter = LINEAR,
-    	MinFilter = LINEAR,
-    	MagFilter = LINEAR,
+	MipFilter = POINT,
+    MinFilter = POINT,
+    MagFilter = POINT,
 	AddressU = CLAMP,
 	AddressV = CLAMP,
 };
 
 sampler2D depthTexture : register(s1) = {
-	MipFilter = LINEAR,
-    	MinFilter = LINEAR,
-    	MagFilter = LINEAR,
+	MipFilter = POINT,
+    MinFilter = POINT,
+    MagFilter = POINT,
 	AddressU = CLAMP,
 	AddressV = CLAMP,
 };

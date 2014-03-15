@@ -83,7 +83,7 @@ void cCore::DebugRender(IGraphicsScene* s, unsigned long renderFlags) {
 
 void cCore::Update(float deltaT) {
 	// Simulate physics world
-	physicsEngine->SimulateWorld(deltaT);
+	//physicsEngine->SimulateWorld(deltaT);
 
 	// Update Links
 	for (size_t i = 0; i < entityLinks.size(); i++)
@@ -104,7 +104,12 @@ void cCore::UpdateChildLinksRecursively(cCore::tLinkNode& n) {
 cEntity* cCore::AddEntity(IGraphicsScene* s, const zsString& graphGeomPath,const zsString& physicsGeom, const zsString& mtlPath, float mass, bool soft /*= false*/ ) {
 	// Create entity module parts
 	IGraphicsEntity* gEntity = s->CreateEntity(graphGeomPath.c_str(), mtlPath.c_str());
-	IPhysicsEntity* pEntity;
+
+
+	IPhysicsEntity* pEntity = nullptr;
+
+	/*
+	// REMOVE PHYSICS INSTANTIATE WHILE TESTING :) GEOM RELOAD SO SLOW
 
 	if (soft)
 		pEntity = physicsEngine->CreateSoftEntity(physicsGeom, mass);
@@ -120,9 +125,10 @@ cEntity* cCore::AddEntity(IGraphicsScene* s, const zsString& graphGeomPath,const
 	// Link them
 	nodeRootPhysics.childs.push_back(nodeGraphics);
 	entityLinks.push_back(nodeRootPhysics);
-	
+	*/
+
 	graphicsEntities.push_back(gEntity);
-	physicsEntities.push_back(pEntity);
+	//physicsEntities.push_back(pEntity);
 	cEntity* e = new cEntity(gEntity, pEntity);
 	return e;
 }

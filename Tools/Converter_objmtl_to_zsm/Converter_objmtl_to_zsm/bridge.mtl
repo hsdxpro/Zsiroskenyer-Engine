@@ -1,0 +1,28 @@
+# 3ds Max Wavefront OBJ Exporter v0.94b - (c)2007 guruware
+# File Created: 27.06.2008 19:10:26
+
+newmtl 01___Default
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.5882 0.5882 0.5882
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka D:\upload\Converted\Smirnoffka_Bridge\Smirnoffka_Bridge\bridge.jpg
+	map_Kd D:\upload\Converted\Smirnoffka_Bridge\Smirnoffka_Bridge\bridge.jpg
+	map_Ks D:\upload\Converted\Smirnoffka_Bridge\Smirnoffka_Bridge\bridge_spec.jpg
+	map_bump Map__2_Normal Bump.tga
+
+newmtl wire_174174174
+	Ns 32
+	d 1
+	Tr 1
+	Tf 1 1 1
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.6824 0.6824 0.6824
+	Ks 0.3500 0.3500 0.3500
