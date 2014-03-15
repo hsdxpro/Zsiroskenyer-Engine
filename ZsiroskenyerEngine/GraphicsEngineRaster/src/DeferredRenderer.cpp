@@ -33,25 +33,26 @@
 ////////////////////////////////////////////////////////////////////////////////
 //	Constructor & Destructor
 cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
-: shaderGBuffer(NULL), parent(parent), gApi(parent.gApi)
+: shaderGBuffer(nullptr), parent(parent), gApi(parent.gApi)
 {
 	// Buffers to null
-	compositionBuffer = NULL;
-	depthBuffer = NULL;
-	depthBufferCopy = NULL;
-	ambientOcclusionBuffer = NULL;
+	compositionBuffer = nullptr;
+	depthBuffer = nullptr;
+	depthBufferCopy = nullptr;
+	ambientOcclusionBuffer = nullptr;
+	randomTexture = nullptr;
 	for (auto& v : gBuffer)
-		v = NULL;
+		v = nullptr;
 
 	// shaders to null
-	shaderAmbient = shaderDirectional = shaderPoint = shaderSpot = NULL;
-	shaderSky = NULL;
-	shaderSSAO = NULL;
-	shaderHBAO = NULL;
+	shaderAmbient = shaderDirectional = shaderPoint = shaderSpot = nullptr;
+	shaderSky = nullptr;
+	shaderSSAO = nullptr;
+	shaderHBAO = nullptr;
 
 	// light volumes to null
-	ibSpot = ibPoint = NULL;
-	vbSpot = vbPoint = NULL;
+	ibSpot = ibPoint = nullptr;
+	vbSpot = vbPoint = nullptr;
 
 
 	// Set size
@@ -103,6 +104,7 @@ void cGraphicsEngine::cDeferredRenderer::Cleanup() {
 	SAFE_RELEASE(depthBuffer);
 	SAFE_RELEASE(depthBufferCopy);
 	SAFE_RELEASE(ambientOcclusionBuffer);
+	SAFE_RELEASE(randomTexture);
 
 	// mesh objects
 	SAFE_RELEASE(ibPoint);
@@ -127,9 +129,11 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	auto depthBuffer_ = depthBuffer;
 	auto depthBufferCopy_ = depthBufferCopy;
 	auto ambientOcclusionBuffer_ = ambientOcclusionBuffer;
+	auto randomTexture_ = randomTexture;
 
 	// create new buffers
-	const int nBuffers = 7;
+	const int nBuffers = 8;
+
 	eGapiResult results[nBuffers]; memset(&results, 0, sizeof(eGapiResult) * nBuffers); // Default everything is OK = 0
 	int idxResult = -1;
 	ITexture2D::tDesc desc;
@@ -149,6 +153,14 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	desc.height = desc.height>=256 ? desc.height / 2 : desc.height;
 	desc.format = eFormat::R8_UNORM;			results[++idxResult] = gApi->CreateTexture(&ambientOcclusionBuffer, desc);
 	desc.width = bufferWidth; desc.height = bufferHeight;
+
+	// Random texture for ambient occlusion
+	//desc.bind = (int)eBind::SHADER_RESOURCE;
+	//desc.width = 4;
+	//desc.height = 4;
+	//desc.format = eFormat::R16G16B16A16_SNORM;
+	//results[++idxResult] = gApi->CreateTexture(&randomTexture, desc);
+
 
 	// depth buffer and depth copy
 	desc.format = eFormat::R24_UNORM_X8_TYPELESS;	desc.depthFormat = eFormat::D24_UNORM_S8_UINT;	desc.bind = (int)eBind::DEPTH_STENCIL;
@@ -454,14 +466,16 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	data.R2 = data.R * data.R;
 	data.NegInvR2 = -1.0f / data.R2;
 	data.MaxRadiusPixels = 0.1f * std::min(gApi->GetDefaultRenderTarget()->GetWidth(), gApi->GetDefaultRenderTarget()->GetHeight());
-	data.AngleBias = 0; // TODO LOW GEOM FAILS
+	data.AngleBias = 10; // TODO LOW GEOM FAILS
 	data.TanAngleBias = tanf(data.AngleBias);
-	data.PowExponent = 3; // TODO HACKED
-	data.Strength = 2; // TODO HACKED
+	data.PowExponent = 1; // TODO HACKED
+	data.Strength = 1; // TODO HACKED
 
 	gApi->SetShaderProgram(shaderHBAO);
 	gApi->SetRenderTargets(1, &ambientOcclusionBuffer, NULL);
+
 	// Need random texture, now using gpu garbage:D
+
 	gApi->SetTexture(L"tLinearDepth", depthBufferCopy);
 	gApi->SetPSConstantBuffer(&data, sizeof(data), 0);
 	gApi->Draw(3);
