@@ -96,11 +96,26 @@ void cGraphicsEngine::cPostProcessor::ProcessDOF(const cCamera& cam) {
 	struct tDofConstants
 	{
 		Matrix44 invViewProj;
-		Vec3 camPos; float _pad;
+		Vec3 camPos;								float _pad;
+		float invRetinaRadiusProductInputTexWidth;	Vec3  _pad1;
+		float		invTexWidth;					Vec3  _pad2;
+		float		invTexHeight;					Vec3  _pad3;
+		float		MinusInvTexWidth;				Vec3  _pad4;
+		float		MinusInvTexHeight;				Vec3  _pad5;
+		float		aperture;						Vec3  _pad6;
+		float		retinaLensDist;					Vec3  _pad7;
 	} dofConstants;
 
-	dofConstants.invViewProj = Matrix44Inverse(cam.GetViewMatrix() *  cam.GetProjMatrix());
-	dofConstants.camPos = cam.GetPos();
+	dofConstants.invRetinaRadiusProductInputTexWidth = (float)inputTexColor->GetWidth() * 26.793927f; // That magic number (27.793927) normalizes a CoC that belonging to an average sized human eye and lens into [0,1]
+	dofConstants.invViewProj		= Matrix44Inverse(cam.GetViewMatrix() *  cam.GetProjMatrix());
+	dofConstants.invTexWidth		= 1.0f / inputTexColor->GetWidth();
+	dofConstants.invTexHeight		= 1.0f / inputTexColor->GetHeight();
+	dofConstants.MinusInvTexWidth	= -dofConstants.invTexWidth;
+	dofConstants.MinusInvTexHeight	= -dofConstants.invTexHeight;
+	dofConstants.retinaLensDist		= 0.011f;
+	dofConstants.aperture			= 0.022f;
+	dofConstants.camPos				= cam.GetPos();
+
 
 	gApi->SetPSConstantBuffer(&dofConstants, sizeof(dofConstants), 0);
 

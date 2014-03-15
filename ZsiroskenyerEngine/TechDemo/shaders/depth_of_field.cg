@@ -2,22 +2,30 @@
 
 sampler2D inputTexture : register(s0) = {
 	MipFilter = POINT,
-    	MinFilter = POINT,
-    	MagFilter = POINT,
+    MinFilter = POINT,
+    MagFilter = POINT,
 	AddressU = CLAMP,
 	AddressV = CLAMP,
 };
  
 sampler2D depthTexture : register(s1) = {
 	MipFilter = POINT,
-    	MinFilter = POINT,
-    	MagFilter = POINT,
+    MinFilter = POINT,
+    MagFilter = POINT,
 	AddressU = CLAMP,
 	AddressV = CLAMP,
 };
 
-float4x4 invViewProj;
-float3	 camPos;
+// TODO PACKING
+float4x4	invViewProj							 : register(c0);
+float3		camPos								 : register(c4);
+float		invRetinaRadiusProductInputTexWidth  : register(c5);
+float		invTexWidth							 : register(c6);
+float		invTexHeight						 : register(c7);
+float		MinusInvTexWidth					 : register(c8);
+float		MinusInvTexHeight					 : register(c9);
+float		aperture							 : register(c10);
+float		retinaLensDist						 : register(c11);
 
 struct VS_IN {
 	float3 posL 	: POSITION;
@@ -38,48 +46,30 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 }
 
 float4 PS_MAIN(VS_OUT In) : COLOR0 {
+	float focusedPointDist = distance(camPos, GetWorldPosition( In.tex0, tex2D(depthTexture, float2(0.5f, 0.5f)), invViewProj));
+	float focalLength = retinaLensDist * focusedPointDist / (retinaLensDist + focusedPointDist);
+	float pointDist = distance(camPos, GetWorldPosition( In.tex0, tex2D(depthTexture, In.tex0), invViewProj));
 
-	float3 focusPointW = GetWorldPosition( In.tex0, tex2D(depthTexture, float2(0.5f, 0.5f)), invViewProj);
-	float3 posW = GetWorldPosition( In.tex0, tex2D(depthTexture, In.tex0), invViewProj);
+	float CoC = abs(aperture * focalLength * (focusedPointDist - pointDist) / ( pointDist * (focusedPointDist - focalLength)));
 
-	// Distance from lens center to focus point
-	float f = distance(focusPointW, camPos); 
-
-	// Distance from lens center to object pos
-	float t = distance(posW, camPos) + 0.001f; // 0.01f bias to avoid divide by zero
-
-	// Distance from lens center to "created" image
-	float k = abs(f * t / abs((t - f)));
-
-	// Diameter of our eye
-	const float eyeDiameter = 1.02f;
-
-	// CoC radius --> Coc is ( CoCRadius * CoCRadius * PI )
-	float CoCRadius = eyeDiameter * (k - eyeDiameter) / (2 * k);
-	CoCRadius /= (eyeDiameter / 2.0f);
-	CoCRadius = (CoCRadius - 1.0f) * -1.0f;
-	
-
-
-	// Bluring radius
-	float radius = CoCRadius * 2;
+	// Interesting example : CoC * (1.0f / ~retinaRadius) * inputTextureWidth;
+	// The first product normalizes te CoC to our retine, so the result will be [0,1] then scale this by input texture width
+	float blurRadius = CoC * invRetinaRadiusProductInputTexWidth;
 
 	float4 color = tex2D(inputTexture, In.tex0);
 	float alpha = color.a;
-	//Out.color = color; 
-	//Out.color.a = alpha;
-	//return Out;
 
-	int quality = 8; 
-	for( int i = 1; i < quality; ++i)
+	float quality = 6; 
+	for( float i = 1; i < quality; i += 1.0f)
 	{
-		color += tex2D(inputTexture, In.tex0 + float2(  1.0f / 800	,  0		  ) * (float)i  / quality * radius);
-		color += tex2D(inputTexture, In.tex0 + float2(  0			,  1.0f / 800 ) * (float)i  / quality * radius);
-		color += tex2D(inputTexture, In.tex0 + float2(  0			, -1.0f / 800 ) * (float)i  / quality * radius);
-		color += tex2D(inputTexture, In.tex0 + float2( -1.0f / 800	,  0		  ) * (float)i  / quality * radius);
+		float blurAmount = i  / quality * blurRadius;
+		color += tex2D(inputTexture,  float2(  invTexWidth		,  0				 ) * blurAmount + In.tex0);
+		color += tex2D(inputTexture,  float2(  0				,  invTexHeight		 ) * blurAmount + In.tex0);
+		color += tex2D(inputTexture,  float2(  0				,  MinusInvTexHeight ) * blurAmount + In.tex0);
+		color += tex2D(inputTexture,  float2(  MinusInvTexWidth ,  0				 ) * blurAmount + In.tex0);
 	}
 
-	float4 finalColor = color / (quality * 4 + 1);
+	float4 finalColor = color * (1.0f / (quality * 4 + 1));
 	finalColor.a = alpha;
 
 	return finalColor;
