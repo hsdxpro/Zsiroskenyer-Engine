@@ -9,7 +9,7 @@
 
 // Lightness perception function: x E [0, 3]
 float EyeResponse(float luminance) {
-	return tanh((luminance-1.5f)*1.2f)*0.5f+0.5f;
+	return tanh((luminance-1.5f)*1.4f)*0.5f+0.5f;
 }
 
 // Remap lightness to LDR
@@ -23,11 +23,23 @@ float RemapLuminance(float luminance, float adaptation) {
 // Tone-mapper
 	// params in linear
 float3 ToneMap(float3 color, float adaptation) {
+	// RGB based
+	//*/
 	float inLum = Luminance(color);
 	float outLum = RemapLuminance(log10(inLum), log10(adaptation));
 	color = AdjustLuminance(color, outLum);
-	//return color; /*
-	return SaturateToFit(color);//*/
+	return SaturateToFit(color);
+	/*/
+
+	// XYZ based
+	// srgb white point: xyz = 0.9505, 1.0000, 1.0890
+	float3 xyz = RGBToXYZ(color);
+	xyz.x = RemapLuminance(log10(xyz.x / 0.9505), log10(adaptation)) * 0.9505;
+	xyz.y = RemapLuminance(log10(xyz.y), log10(adaptation));
+	xyz.z = RemapLuminance(log10(xyz.z / 1.0890), log10(adaptation)) * 1.0890;
+	color = XYZToRGB(xyz);
+	return color;
+	//*/
 }
 
 
