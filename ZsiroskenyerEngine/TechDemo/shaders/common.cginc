@@ -22,6 +22,13 @@ float3 GetWorldPosition(float2 screenCoords, float depth, float4x4 invViewProj) 
 	return posW.xyz;
 }
 
+/*
+float3 GetWorldPosition(float2 screenCoords, float linearDepth, float nearPlane, float farPlane) {
+	
+
+}
+*/
+
 // Pack/unpack normals
 float2 PackNormal(float3 n) {
 	float2 ret;

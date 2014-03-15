@@ -47,11 +47,8 @@ struct {
 	float4x4 worldView;
 	float4x4 world;
 	float3 camPos;
-
+	float near, far;
 } transform : register(c0);
-float4x4 wvp : register(c0);
-float4x4 world : register(c4);
-float3 camPos : register(c8);
 
 
 //------------------------------------------------------------------------------
@@ -69,8 +66,8 @@ struct VS_OUT {
 	float3 normalW 	: TEXCOORD0;
 	float3 tangentW	: TEXCOORD1;
 	float2 tex0 	: TEXCOORD2;
-	float3 posW 	: TEXCOORD3;
 	float3x3 TBN	: TEXCOORD4;
+	float linearDepth : COLOR0;
 };
 
 
@@ -80,15 +77,31 @@ struct VS_OUT {
 VS_OUT VS_MAIN(VS_IN In) {
 	VS_OUT Out;
 
-	Out.posW = In.posL.x * world[0].xyz + ( In.posL.y * world[1].xyz + (In.posL.z * world[2].xyz) + world[3].xyz);
+	/*
 	Out.normalW = In.normalL.x* world[0].xyz + ( In.normalL.y * world[1].xyz + (In.normalL.z * world[2].xyz));
 	Out.tangentW = In.tangentL.x* world[0].xyz + ( In.tangentL.y * world[1].xyz + (In.tangentL.z * world[2].xyz));
 	Out.posH = In.posL.x * wvp[0] + ( In.posL.y * wvp[1] + (In.posL.z * wvp[2] + wvp[3]));
+	*/
 
-	Out.posH.x /= Out.posH.w;
-	Out.posH.y /= Out.posH.w;
-	Out.posH.z /= Out.posH.w;
-	Out.posH.w = 1.0f;
+	Out.posH = 
+		In.posL.x * transform.worldViewProj[0] + (
+		In.posL.y * transform.worldViewProj[1] + (
+		In.posL.z * transform.worldViewProj[2] + 
+		transform.worldViewProj[3]));
+	Out.normalW = 
+		In.normalL.x * transform.world[0].xyz + (
+		In.normalL.y * transform.world[1].xyz + (
+		In.normalL.z * transform.world[2].xyz));
+	Out.tangentW = 
+		In.tangentL.x * transform.world[0].xyz + (
+		In.tangentL.y * transform.world[1].xyz + (
+		In.tangentL.z * transform.world[2].xyz));
+
+	float viewZ = transform.worldView[0][2] * In.posL.x + 
+				  transform.worldView[1][2] * In.posL.y + 
+				  transform.worldView[2][2] * In.posL.z + 
+				  transform.worldView[3][2];
+	Out.linearDepth = (viewZ - transform.near)/(transform.far - transform.near);
 
 	Out.tex0 = In.tex0;
 
@@ -104,12 +117,28 @@ VS_OUT VS_MAIN(VS_IN In) {
 //------------------------------------------------------------------------------
 // Vertex shader
 //------------------------------------------------------------------------------
-GBUFFER PS_MAIN(VS_OUT In) {
-	GBUFFER Out;
-	if (c.hasNormalMap)
-		Out = PixelShader_NormalMap(In.TBN, In.tex0);
-	else
-		Out = PixelShader_Simple(In.normalW, In.tex0);
+struct PS_OUT {
+	float4 gb0 : COLOR0;
+	float2 gb1 : COLOR1;
+	float4 gb2 : COLOR2;
+	//float depth : DEPTH;
+};
+PS_OUT PS_MAIN(VS_OUT In) {
+	PS_OUT Out;
+	GBUFFER gb;
+	if (mtlProperties.hasNormalMap) {
+		gb = PixelShader_NormalMap(In.TBN, In.tex0);
+		Out.gb0 = gb.diffuse;
+		Out.gb1 = gb.normal;
+		Out.gb2 = gb.misc;
+	}
+	else {
+		gb = PixelShader_Simple(In.normalW, In.tex0);
+		Out.gb0 = gb.diffuse;
+		Out.gb1 = gb.normal;
+		Out.gb2 = gb.misc;
+	}
+	//Out.depth = In.linearDepth;
 	return Out;
 };
 

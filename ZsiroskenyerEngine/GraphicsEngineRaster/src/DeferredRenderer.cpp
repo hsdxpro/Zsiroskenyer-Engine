@@ -380,20 +380,23 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 			for (auto& entity : group->entities) {
 				// Entity world matrix
 				Matrix44 worldMat = entity->GetWorldMatrix();
-				// WorldViewProj matrix
-				Matrix44 wvp = worldMat * viewProjMat;
-				// cbuffer
-				struct gBuffConstantBuff
-				{
-					Matrix44 wvp;
-					Matrix44 worldMat;
-					Vec3 camPos; float pad1;
-				} buff;
-				buff.wvp = wvp;
-				buff.worldMat = worldMat;
-				buff.camPos = cam->GetPos();
 
-				gApi->SetVSConstantBuffer(&buff, sizeof(buff), 0);
+				// cbuffer
+				struct {
+					Matrix44 worldViewProj;
+					Matrix44 worldView;
+					Matrix44 world;
+					Vec3 camPos;
+					float near, far;
+				} shaderTransform;
+				shaderTransform.worldViewProj = worldMat * viewProjMat;
+				shaderTransform.worldView = worldMat * viewMat;
+				shaderTransform.world = worldMat;
+				shaderTransform.camPos = cam->GetPos();
+				shaderTransform.near = cam->GetNearPlane();
+				shaderTransform.far = cam->GetFarPlane();
+
+				gApi->SetVSConstantBuffer(&shaderTransform, sizeof(shaderTransform), 0);
 
 				// draw
 				gApi->DrawIndexed(matGroup.indexCount, matGroup.indexOffset);
