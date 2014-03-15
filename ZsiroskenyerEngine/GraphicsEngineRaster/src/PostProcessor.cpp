@@ -56,7 +56,7 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 	{
 		Matrix44 invViewProj;
 		Matrix44 prevViewProj;
-		Vec2	 InvframeDeltaTimeDiv2DivInputRes; Vec2 pad0;// 1.0f / frameDeltaTime / 2 / renderTargetResolution 
+		Vec2	 InvframeDeltaTimeDiv2ProductInputRes; Vec2 pad0;// 1.0f / frameDeltaTime / 2 * inputTexResolution
 		Vec2	 minMaxPixelVel; Vec2 pad1;///clamp(x, -4, 4) minMax pixel velocity
 	} mbConstants;
 
@@ -64,8 +64,8 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 	Matrix44 projMat = cam.GetProjMatrix();
 	mbConstants.invViewProj = Matrix44Inverse(viewMat * projMat);
 	mbConstants.prevViewProj = lastViewMat * projMat;
-	mbConstants.InvframeDeltaTimeDiv2DivInputRes = Vec2(1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetWidth()),
-														1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetHeight()));
+	mbConstants.InvframeDeltaTimeDiv2ProductInputRes = Vec2(1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetWidth()),
+															1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetHeight()));
 
 	mbConstants.minMaxPixelVel = Vec2( -4.0f / inputTexDepth->GetWidth(),
 										4.0f / inputTexDepth->GetWidth());
