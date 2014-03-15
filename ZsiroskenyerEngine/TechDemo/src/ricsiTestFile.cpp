@@ -45,6 +45,8 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #define CAM_MOVE_SPEED 20
 
 void UpdateDemo(cCamera& cam, float tDelta);
+void LoadLevel1();
+void LoadLevel2();
 
 // a lovely light circle
 static const int sizeLightCircle = 20;
@@ -53,6 +55,8 @@ IGraphicsLight* lightCircle[sizeLightCircle];
 IGraphicsLight* sun;
 // scene
 IGraphicsScene* gScene;
+
+cCore* gCore;
 
 int ricsiMain() {
 
@@ -71,32 +75,32 @@ int ricsiMain() {
 	tGraphicsConfig gCfg;
 	gCfg.rasterEngine.gxApi = tGraphicsConfig::eGraphicsApi::D3D11; // MERT AZT AKAROK HASZNÁLNI BAZDMEG :D
 
-	cCore core(window, window->GetClientWidth(), window->GetClientHeight(), gCfg);
+	gCore = new cCore(window, window->GetClientWidth(), window->GetClientHeight(), gCfg);
 
 	// Get Modules
-	IGraphicsEngine* gEngine = core.GetGraphicsEngine();
+	IGraphicsEngine* gEngine = gCore->GetGraphicsEngine();
 	IGraphicsApi* gApi = gEngine->GetGraphicsApi(); 
 
 
 	// Create scene with camera
-	IGraphicsScene* s = gEngine->CreateScene();
-	gScene = s;
-	s->GetCamera() = cCamera(cCamera::tProjPersp(/*0.5*3.141592653589*/1.15f, 1.75f), 0.25f, 2000.0f);
+	gScene = gEngine->CreateScene();
 
-	s->GetState().hdr.enabled = false;
+	gScene->GetCamera() = cCamera(cCamera::tProjPersp(/*0.5*3.141592653589*/1.15f, 1.75f), 0.25f, 2000.0f);
+
+	gScene->GetState().hdr.enabled = false;
 
 
 	// Add some fucking lights :)
-	IGraphicsLight* sunLight = s->CreateLight();
-	IGraphicsLight* skyLight = s->CreateLight();
-	IGraphicsLight* secondSunLight = s->CreateLight();
-	IGraphicsLight* thirdSunLight = s->CreateLight();
-	IGraphicsLight* pointLight = s->CreateLight();
-	IGraphicsLight* spotLight = s->CreateLight();
+	IGraphicsLight* sunLight		= gScene->CreateLight();
+	IGraphicsLight* skyLight		= gScene->CreateLight();
+	IGraphicsLight* secondSunLight	= gScene->CreateLight();
+	IGraphicsLight* thirdSunLight	= gScene->CreateLight();
+	IGraphicsLight* pointLight		= gScene->CreateLight();
+	IGraphicsLight* spotLight		= gScene->CreateLight();
 
 
 	for (auto& light : lightCircle) {
-		light = s->CreateLight();
+		light = gScene->CreateLight();
 	}
 
 	// sunlight
@@ -178,88 +182,8 @@ int ricsiMain() {
 	}
 
 
-	const int nEntities = 9;
-	// Static terrain
-	static const zsString staticBaseNames[nEntities] = { L"coyote",
-										L"crate",
-										L"demo_cliff_fence",
-										L"demo_ground",
-										L"demo_house",
-										L"demo_road",
-										L"demo_tunnel",
-										L"fake_tunnel",
-										L"tower" };
-
-	static const zsString staticExtension[nEntities] = { L".dae",
-										L".dae",
-										L".dae",
-										L".dae",
-										L".dae",
-										L".dae",
-										L".dae",
-										L".dae",
-										L".dae",
-									};
-	static const Vec3 objPos[nEntities] = {
-		Vec3(3.72f, 30.19f, 1.54f), // coyote
-		Vec3(0, 0, 0), // crate
-		Vec3(0,0,0), // cliff
-		Vec3(0,0,0), // ground
-		Vec3(18.14f, 7.26f, 0.48f), // ház
-		Vec3(0,0,0), // road
-		Vec3(0,0,0), // tunnel
-		Vec3(6.24f, 30.18f, 3.63f), // coyote tunnel painting
-		Vec3(-20.95f, -17.15f, 8.00f), // tunnel
-	};
-	static const Vec3 objRot[nEntities] = {
-		Vec3(90.0/180.0*ZS_PI, 0, -14.892/180.0*ZS_PI),
-		Vec3(0, 0, 0),
-		Vec3(0, 0, 0),
-		Vec3(0, 0, 0),
-		Vec3(0, 0, 0),
-		Vec3(0, 0, 0),
-		Vec3(0, 0, 0),
-		Vec3(90.0/180.0*ZS_PI, 0, -6.64/180.0*ZS_PI),
-		Vec3(0, 0, 0),
-	};
-	const float mass = 0.0;
-	zsString basePath = L"../../Game Assets/";
-
-	ASSERT(sizeof(staticBaseNames) > 0);
-	for (size_t i = 0; i < sizeof(staticBaseNames) / sizeof(staticBaseNames[0]); i++) {
-		zsString geomPath = basePath + L"objects/" + staticBaseNames[i] + staticExtension[i];
-		auto entity = core.AddEntity(s, geomPath, geomPath, basePath + L"materials/" + staticBaseNames[i] + L".zsm", mass);
-		entity->SetPos(objPos[i]);
-		Quat rot = Quat::EulerAnglesToQuat(objRot[i]);
-		entity->SetRot(rot);
-	}
-
-	cEntity* heli = core.AddEntity(s, basePath + L"objects/heli.dae", basePath + L"objects/heli.dae", basePath + L"materials/demo_house.zsm", 0.0f);
-	heli->SetScale(Vec3(0.01, 0.01, 0.01));
-
-	// add a bunch of crates
-	/*
-	for (float x = -25; x <= 25; x += 2.5) {
-		for (float y = -25; y <= 25; y += 2.5) {
-			for (float z = -25; z <= 25; z += 2.5) {
-				cEntity* tmp = core.AddEntity(s, basePath + L"objects/crate.dae", basePath + L"objects/crate.dae", basePath + L"materials/crate.zsm", 0.0f);
-				tmp->SetPos(Vec3(x, y, z));
-			}
-		}
-	}
-	*/
-	
-	cEntity* tmp = core.AddEntity(s, basePath + L"objects/multi-mat_tetraeder.dae", basePath + L"objects/multi-mat_tetraeder.dae", basePath + L"materials/multi_mat_teszt.zsm", 0.0f);
-	tmp->SetPos(Vec3(0, 0, 10));
-	tmp->SetScale(Vec3(3, 3, 3));
-
-	// Our player
-	cEntity* player = core.AddEntity(s, basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 10.0, false);
-	player->SetPos(Vec3(0.3, -19, 0.35));
-
-	// Soft body test
-	//cEntity* crate =  core.AddEntity(s, basePath + L"objects/crate.dae", basePath + L"objects/crate.dae", basePath + L"materials/crate.zsm", 10.0, true);
-	//crate->SetPos(Vec3(9, 0, 40));
+	LoadLevel1();
+	//LoadLevel2();
 
 	// fps limiter
 	std::ifstream configFile;
@@ -290,7 +214,7 @@ int ricsiMain() {
 			if (msg == IWindow::eMessage::SIZE_CHANGED) {
 #pragma message("Noob solution (float)GetSystemMetrics(SM_CXSCREEN), good solution is to get maximum resolution based on gpu output (monitor)")
 				gEngine->Resize((float)GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
-				s->GetCamera().SetAspectRatio((float)GetSystemMetrics(SM_CXSCREEN) / GetSystemMetrics(SM_CYSCREEN));
+				gScene->GetCamera().SetAspectRatio((float)GetSystemMetrics(SM_CXSCREEN) / GetSystemMetrics(SM_CYSCREEN));
 			}
 		}
 
@@ -323,10 +247,10 @@ int ricsiMain() {
 		if (GetAsyncKeyState('R') && GetAsyncKeyState(VK_LCONTROL))
 			gEngine->ReloadShaders();
 
-		UpdateDemo(s->GetCamera(), deltaT);
+		UpdateDemo(gScene->GetCamera(), deltaT);
 
 		// Engine update
-		core.Update(deltaT);
+		gCore->Update(deltaT);
 
 		// Debug rendering
 		//core.DebugRender(s, (unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
@@ -336,6 +260,7 @@ int ricsiMain() {
 	}
 	
 	SAFE_DELETE(window);
+	SAFE_DELETE(gCore);
 	return 0;
 }
 
@@ -482,4 +407,95 @@ void UpdateDemo(cCamera& cam, float tDelta) {
 	frontVec = frontVec * camRotMat;
 	
 	cam.SetTarget(cam.GetPos() + frontVec);
+}
+
+void LoadLevel1() {
+	const int nEntities = 9;
+	// Static terrain
+	static const zsString staticBaseNames[nEntities] = { L"coyote",
+		L"crate",
+		L"demo_cliff_fence",
+		L"demo_ground",
+		L"demo_house",
+		L"demo_road",
+		L"demo_tunnel",
+		L"fake_tunnel",
+		L"tower" };
+
+	static const zsString staticExtension[nEntities] = { L".dae",
+		L".dae",
+		L".dae",
+		L".dae",
+		L".dae",
+		L".dae",
+		L".dae",
+		L".dae",
+		L".dae",
+	};
+	static const Vec3 objPos[nEntities] = {
+		Vec3(3.72f, 30.19f, 1.54f), // coyote
+		Vec3(0, 0, 0), // crate
+		Vec3(0, 0, 0), // cliff
+		Vec3(0, 0, 0), // ground
+		Vec3(18.14f, 7.26f, 0.48f), // ház
+		Vec3(0, 0, 0), // road
+		Vec3(0, 0, 0), // tunnel
+		Vec3(6.24f, 30.18f, 3.63f), // coyote tunnel painting
+		Vec3(-20.95f, -17.15f, 8.00f), // tunnel
+	};
+	static const Vec3 objRot[nEntities] = {
+		Vec3(90.0 / 180.0*ZS_PI, 0, -14.892 / 180.0*ZS_PI),
+		Vec3(0, 0, 0),
+		Vec3(0, 0, 0),
+		Vec3(0, 0, 0),
+		Vec3(0, 0, 0),
+		Vec3(0, 0, 0),
+		Vec3(0, 0, 0),
+		Vec3(90.0 / 180.0*ZS_PI, 0, -6.64 / 180.0*ZS_PI),
+		Vec3(0, 0, 0),
+	};
+	const float mass = 0.0;
+	zsString basePath = L"../../Game Assets/";
+
+	ASSERT(sizeof(staticBaseNames) > 0);
+	for (size_t i = 0; i < sizeof(staticBaseNames) / sizeof(staticBaseNames[0]); i++) {
+		zsString geomPath = basePath + L"objects/" + staticBaseNames[i] + staticExtension[i];
+		auto entity = gCore->AddEntity(gScene, geomPath, geomPath, basePath + L"materials/" + staticBaseNames[i] + L".zsm", mass);
+		entity->SetPos(objPos[i]);
+		Quat rot = Quat::EulerAnglesToQuat(objRot[i]);
+		entity->SetRot(rot);
+	}
+
+	cEntity* heli = gCore->AddEntity(gScene, basePath + L"objects/heli.dae", basePath + L"objects/heli.dae", basePath + L"materials/demo_house.zsm", 0.0f);
+	heli->SetScale(Vec3(0.01, 0.01, 0.01));
+
+	// add a bunch of crates
+	/*
+	for (float x = -25; x <= 25; x += 2.5) {
+	for (float y = -25; y <= 25; y += 2.5) {
+	for (float z = -25; z <= 25; z += 2.5) {
+	cEntity* tmp = core.AddEntity(s, basePath + L"objects/crate.dae", basePath + L"objects/crate.dae", basePath + L"materials/crate.zsm", 0.0f);
+	tmp->SetPos(Vec3(x, y, z));
+	}
+	}
+	}
+	*/
+
+	cEntity* tmp = gCore->AddEntity(gScene, basePath + L"objects/multi-mat_tetraeder.dae", basePath + L"objects/multi-mat_tetraeder.dae", basePath + L"materials/multi_mat_teszt.zsm", 0.0f);
+	tmp->SetPos(Vec3(0, 0, 10));
+	tmp->SetScale(Vec3(3, 3, 3));
+
+	// Our player
+	cEntity* player = gCore->AddEntity(gScene, basePath + L"objects/character.dae", basePath + L"objects/character.dae", basePath + L"materials/character.zsm", 10.0, false);
+	player->SetPos(Vec3(0.3, -19, 0.35));
+
+	// Soft body test
+	//cEntity* crate =  core.AddEntity(gScene, basePath + L"objects/crate.dae", basePath + L"objects/crate.dae", basePath + L"materials/crate.zsm", 10.0, true);
+	//crate->SetPos(Vec3(9, 0, 40));
+}
+
+void LoadLevel2() {
+	zsString basePath = L"../../Game Assets/";
+	zsString geompath = basePath + L"objects/bridge.obj";
+	gCore->AddEntity(gScene, geompath, geompath, basePath + L"materials/CODMapShipment.zsm", 0.0f);
 }
