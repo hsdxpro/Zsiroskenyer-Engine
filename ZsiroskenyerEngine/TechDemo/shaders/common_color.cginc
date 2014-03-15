@@ -42,3 +42,21 @@ float3 SaturateToFit(float3 color) {
 		return color;
 	}
 }
+
+
+// XYZ to RGB
+float3 XYZToRGB(float3 xyz) {
+	return float3(
+		dot(xyz, float3(3.2406, -1.5372, -0.4986)),
+		dot(xyz, float3(-0.9689, 1.8758, 0.0415)),
+		dot(xyz, float3(0.0557, -0.2040, 1.0570))
+	);
+}
+
+float3 RGBToXYZ(float3 rgb) {
+	return float3(
+		dot(rgb, float3(0.4124, 0.3575, 0.1805)),
+		dot(rgb, float3(0.2126, 0.7152, 0.0722)),
+		dot(rgb, float3(0.0193, 0.1192, 0.9502))
+	);
+}
