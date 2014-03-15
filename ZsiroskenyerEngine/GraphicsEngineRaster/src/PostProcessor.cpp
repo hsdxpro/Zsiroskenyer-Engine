@@ -16,8 +16,9 @@ cGraphicsEngine::cPostProcessor::cPostProcessor(cGraphicsEngine& parent)
 :parent(parent), gApi(parent.gApi)
 {
 	// Shaders
-	shaderMotionBlur = nullptr;
-	shaderDof = nullptr;
+	shaderMB = nullptr;
+	shaderMB2DVelocity = nullptr;
+	shaderDOF = nullptr;
 	shaderFXAA = nullptr;
 
 	// Input textures
@@ -25,6 +26,7 @@ cGraphicsEngine::cPostProcessor::cPostProcessor(cGraphicsEngine& parent)
 	inputTexDepth = nullptr;
 
 	outputTexColor = nullptr;
+	outputTexVelocity2D = nullptr;
 
 	// create shaders
 	try {
@@ -43,40 +45,53 @@ cGraphicsEngine::cPostProcessor::~cPostProcessor() {
 
 // Motion Blur
 void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCamera& cam) {
-	assert(outputTexColor);
 
-	gApi->SetRenderTargets(1, &outputTexColor, NULL);
-	gApi->SetShaderProgram(shaderMotionBlur);
+	//-------------------------------------------------------------------------------------//
+	// -------------------- FIRST PASS : VELOCITY 2D BUFFER FILLING -----------------------//
+	//-------------------------------------------------------------------------------------//
+	gApi->SetRenderTargets(1, &outputTexVelocity2D, NULL);
+	gApi->SetShaderProgram(shaderMB2DVelocity);
 
 	struct s
 	{
 		Matrix44 invViewProj;
 		Matrix44 prevViewProj;
-		float	 frameDeltaTime; float _pad[3];
+		Vec2	 InvframeDeltaTimeDiv2DivInputRes; Vec2 pad0;// 1.0f / frameDeltaTime / 2 / renderTargetResolution 
+		Vec2	 minMaxPixelVel; Vec2 pad1;///clamp(x, -4, 4) minMax pixel velocity
 	} mbConstants;
 
 	Matrix44 viewMat = cam.GetViewMatrix();
 	Matrix44 projMat = cam.GetProjMatrix();
 	mbConstants.invViewProj = Matrix44Inverse(viewMat * projMat);
-	mbConstants.prevViewProj = prevViewMat * projMat;
-	mbConstants.frameDeltaTime = frameDeltaTime;
+	mbConstants.prevViewProj = lastViewMat * projMat;
+	mbConstants.InvframeDeltaTimeDiv2DivInputRes = Vec2(1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetWidth()),
+														1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetHeight()));
+
+	mbConstants.minMaxPixelVel = Vec2( -4.0f / inputTexDepth->GetWidth(),
+										4.0f / inputTexDepth->GetWidth());
 
 	gApi->SetPSConstantBuffer(&mbConstants, sizeof(mbConstants), 0);
-
-	gApi->SetTexture(L"textureInput", inputTexColor);
 	gApi->SetTexture(L"depthTexture", inputTexDepth);
 
-	// asd new
-	prevViewMat = viewMat;
+	// Current cam became last
+	lastViewMat = viewMat;
 
-	// Draw triangle, hardware will quadify them automatically :)
+	gApi->Draw(3);
+
+	//-------------------------------------------------------------------------------------//
+	// -------------------SECOND PASS : USE VELOCITY BUFFER FOR BLURING--------------------//
+	//-------------------------------------------------------------------------------------//
+	gApi->SetRenderTargets(1, &outputTexColor, NULL);
+	gApi->SetShaderProgram(shaderMB);
+	gApi->SetTexture(L"velocity2DTex", outputTexVelocity2D);
+	gApi->SetTexture(L"inputTexture", inputTexColor);
 	gApi->Draw(3);
 }
 
 // Dof
 void cGraphicsEngine::cPostProcessor::ProcessDOF(const cCamera& cam) {
 	gApi->SetRenderTargets(1, &outputTexColor, NULL);
-	gApi->SetShaderProgram(shaderDof);
+	gApi->SetShaderProgram(shaderDOF);
 
 	struct tDofConstants
 	{
@@ -91,8 +106,6 @@ void cGraphicsEngine::cPostProcessor::ProcessDOF(const cCamera& cam) {
 
 	gApi->SetTexture(L"inputTexture", inputTexColor);
 	gApi->SetTexture(L"depthTexture", inputTexDepth);
-
-	// Draw triangle, hardware will quadify them automatically :)
 	gApi->Draw(3);
 }
 
@@ -108,32 +121,42 @@ void cGraphicsEngine::cPostProcessor::ProcessFXAA() {
 						0);// pad
 	
 	gApi->SetPSConstantBuffer(&invResolution, sizeof(Vec4), 0);
-
 	gApi->SetTexture(L"inputTexture", inputTexColor);
-
-	//gApi->SaveTextureToFile(inputTexColor, ITexture2D::JPG, "D:/hule.jpg");
-
-	// Draw triangle, hardware will quadify them automatically :)
 	gApi->Draw(3);
 }
 
 // Set inputs
 void cGraphicsEngine::cPostProcessor::SetInputMB(ITexture2D* color, ITexture2D* depth) {
+	assert(color); assert(depth);
 	inputTexColor = color; inputTexDepth = depth;
 }
 
 void cGraphicsEngine::cPostProcessor::SetInputDOF(ITexture2D* color, ITexture2D* depth) {
+	assert(color); assert(depth);
 	inputTexColor = color; inputTexDepth = depth;
 }
 
 // If FXAA shader defines that it takes luminance from alpha channel, then pass appropriate texture please..
 void cGraphicsEngine::cPostProcessor::SetInputFXAA(ITexture2D* color) {
+	assert(color);
 	inputTexColor = color;
 }
 
+void cGraphicsEngine::cPostProcessor::SetOutputMB(ITexture2D* color, ITexture2D* velocity2D) {
+	assert(color); assert(velocity2D);
+	outputTexColor = color;
+	outputTexVelocity2D = velocity2D;
+}
+
 // Set outputs
-void cGraphicsEngine::cPostProcessor::SetOutput(ITexture2D* t) {
-	outputTexColor = t;
+void cGraphicsEngine::cPostProcessor::SetOutputDOF(ITexture2D* color) {
+	assert(color);
+	outputTexColor = color;
+}
+
+void cGraphicsEngine::cPostProcessor::SetOutputFXAA(ITexture2D* color) {
+	assert(color);
+	outputTexColor = color;
 }
 
 // INNNNERR
@@ -148,9 +171,10 @@ void cGraphicsEngine::cPostProcessor::LoadShaders() {
 		return SafeLoadShader(gApi, shader);
 	};
 	try {
-		shaderMotionBlur = Create(L"shaders/motion_blur.cg");
-		shaderDof = Create(L"shaders/depth_of_field.cg");
-		shaderFXAA = Create(L"shaders/FXAA.cg");
+		shaderMB			= Create(L"shaders/motion_blur.cg");
+		shaderMB2DVelocity	= Create(L"shaders/motion_blur_2dvelocity.cg");
+		shaderDOF			= Create(L"shaders/depth_of_field.cg");
+		shaderFXAA			= Create(L"shaders/FXAA.cg");
 	}
 	catch (...) {
 		UnloadShaders();
@@ -160,8 +184,8 @@ void cGraphicsEngine::cPostProcessor::LoadShaders() {
 
 // unload shaders
 void cGraphicsEngine::cPostProcessor::UnloadShaders() {
-	SAFE_RELEASE(shaderMotionBlur);
-	SAFE_RELEASE(shaderDof);
+	SAFE_RELEASE(shaderMB);
+	SAFE_RELEASE(shaderDOF);
 	SAFE_RELEASE(shaderFXAA);
 }
 
@@ -172,7 +196,8 @@ void cGraphicsEngine::cPostProcessor::ReloadShaders() {
 		(*prog)->Release();
 		*prog = tmp;
 	};
-	Reload(&shaderMotionBlur, L"shaders/motion_blur.cg");
-	Reload(&shaderDof, L"shaders/depth_of_field.cg");
-	Reload(&shaderFXAA, L"shaders/FXAA.cg");
+	Reload(&shaderMB,			L"shaders/motion_blur.cg");
+	Reload(&shaderMB2DVelocity, L"shaders/motion_blur_2dvelocity.cg");
+	Reload(&shaderDOF,			L"shaders/depth_of_field.cg");
+	Reload(&shaderFXAA,			L"shaders/FXAA.cg");
 }

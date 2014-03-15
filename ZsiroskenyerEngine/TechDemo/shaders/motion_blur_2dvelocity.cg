@@ -1,0 +1,61 @@
+sampler2D depthTexture = {
+	MipFilter = POINT,
+	MinFilter = POINT,
+	MagFilter = POINT,
+	AddressU = CLAMP,
+	AddressV = CLAMP,
+};
+
+float4x4 invViewProj							: register(c0); // inv curr
+float4x4 prevViewProj							: register(c4); // prev
+float2	 InvframeDeltaTimeDiv2DivInputRes		: register(c8); // 1.0f / frameDeltaTime / 2 / inputTextureResolution
+float2	 minMaxPixelVel							: register(c9);	// like clamp(velocity, -4 / screenWidth, 4 / screenWidth);
+
+struct VS_IN {
+	float3 posL 	: POSITION;
+	float2 tex0 	: TEXCOORD0;
+};
+
+struct VS_OUT {
+	float4 posH 	: SV_POSITION;
+	float2 tex0 	: TEXCOORD0;
+};
+
+VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
+	VS_OUT Out;
+	Out.tex0 = float2( (VertexID << 1) & 2, VertexID & 2 );
+	Out.posH = float4(  Out.tex0 * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f), 0.0f, 1.0f );
+	return Out;
+}
+
+float2 PS_MAIN(VS_OUT In) : COLOR0 {
+
+	// Current frame NDC position
+	float4 currPosH = float4(In.tex0.x * 2 - 1, 1 - 2 * In.tex0.y, tex2D(depthTexture , In.tex0).r, 1.0f); // NDC space
+
+	// Ref pixel WORLD POS
+	float4 posW = mul(currPosH, invViewProj);
+	posW.xyzw /= posW.w;
+
+
+	// Previous frame NDC position
+	// x,y,w  // we not need the z component
+	float3 prevPosH = float3(	dot(posW.xyz, float3(prevViewProj[0].x, prevViewProj[1].x, prevViewProj[2].x)) + prevViewProj[3].x,
+								dot(posW.xyz, float3(prevViewProj[0].y, prevViewProj[1].y, prevViewProj[2].y)) + prevViewProj[3].y,
+								dot(posW.xyz, float3(prevViewProj[0].w, prevViewProj[1].w, prevViewProj[2].w)) + prevViewProj[3].w );
+	prevPosH.xy /= prevPosH.z; // .z now the W component !!!!
+	
+
+	// v   =             s               /       t        / magic number :)
+	// Clamp the velocity, 1.0 depth make so large velocity that ruins the motion blur sampling
+	return  clamp((currPosH.xy - prevPosH.xy) * InvframeDeltaTimeDiv2DivInputRes, minMaxPixelVel.x, minMaxPixelVel.y);
+}
+
+technique t
+{
+	pass p
+	{
+		VertexProgram = compile vs_4_0 VS_MAIN();
+		FragmentProgram = compile ps_4_0 PS_MAIN();
+	}
+}

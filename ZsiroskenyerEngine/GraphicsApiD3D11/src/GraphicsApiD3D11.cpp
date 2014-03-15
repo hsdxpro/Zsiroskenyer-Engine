@@ -1388,8 +1388,10 @@ eGapiResult cGraphicsApiD3D11::SetTextureArray(const wchar_t* varName, const ITe
 			int startSlot = ((cShaderProgramD3D11*)activeShaderProg)->GetTextureSlotVS(varName);
 			if (startSlot < 0) {
 				startSlot = ((cShaderProgramD3D11*)activeShaderProg)->GetTextureSlotPS(varName);
-				if (startSlot < 0)
+				if (startSlot < 0) {
 					return eGapiResult::ERROR_INVALID_ARG;
+					assert(0);
+				}
 
 				// PS texture found
 				d3dcon->PSSetShaderResources(startSlot + i, 1, (ID3D11ShaderResourceView**)&srv);

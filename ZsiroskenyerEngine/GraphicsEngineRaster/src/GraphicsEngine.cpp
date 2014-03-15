@@ -75,13 +75,15 @@ cGraphicsEngine::cGraphicsEngine(IWindow* targetWindow, unsigned screenWidth, un
 :
 screenWidth(screenWidth),
 screenHeight(screenHeight),
-deferredRenderer(NULL),
-hdrProcessor(NULL),
-shaderScreenCopy(NULL),
-currentSceneBuffer(NULL),
-hdrTexture(NULL),
-shadowRenderer(NULL)
+deferredRenderer(nullptr),
+hdrProcessor(nullptr),
+shaderScreenCopy(nullptr),
+currentSceneBuffer(nullptr),
+shadowRenderer(nullptr)
 {
+	for (auto& t : hdrTextures)
+		t = nullptr;
+
 	// Create graphics api
 	switch (config.rasterEngine.gxApi) {
 		case tGraphicsConfig::eGraphicsApi::D3D11:
@@ -154,7 +156,9 @@ cGraphicsEngine::~cGraphicsEngine() {
 	SAFE_RELEASE(gApi);
 	SAFE_DELETE(deferredRenderer);
 	SAFE_RELEASE(currentSceneBuffer);
-	SAFE_RELEASE(hdrTexture);
+
+	for (auto& t : hdrTextures)
+		SAFE_RELEASE(t);
 }
 
 void cGraphicsEngine::Release() {
@@ -322,12 +326,12 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, ITexture2D* target, flo
 
 	// Motion blur
 	postProcessor->SetInputMB(deferredComposition, deferredRenderer->GetDepthBuffer());
-	postProcessor->SetOutput(hdrTexture);
+	postProcessor->SetOutputMB(hdrTextures[0], hdrTextures[1]); // Color, velocityBuffer
 	postProcessor->ProcessMB(elapsed, scene.GetCamera());
 
 	// Depth of field
-	postProcessor->SetInputDOF(hdrTexture, deferredRenderer->GetDepthBuffer());
-	postProcessor->SetOutput(deferredComposition);
+	postProcessor->SetInputDOF(hdrTextures[0], deferredRenderer->GetDepthBuffer());
+	postProcessor->SetOutputDOF(deferredComposition);
 	postProcessor->ProcessDOF(scene.GetCamera());
 
 
@@ -353,7 +357,7 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, ITexture2D* target, flo
 	// FXAA
 	// gBuffer0 holds LDR values
 	postProcessor->SetInputFXAA(gBuffer0);
-	postProcessor->SetOutput(gApi->GetDefaultRenderTarget());
+	postProcessor->SetOutputFXAA(gApi->GetDefaultRenderTarget());
 	postProcessor->ProcessFXAA();
 }
 
@@ -403,20 +407,21 @@ void cGraphicsEngine::ReloadBuffers() {
 
 
 
-	// R16G16B16A16 texture, to preserve hdr values across post processes
+	// high dynamic ranged textures for post processes, to preserve hdr values across post processes
+	for (auto& t : hdrTextures) {
+		// Back up
+		oldBuff = t;
 
-	// Back up
-	oldBuff = hdrTexture;
+		desc.format = eFormat::R16G16B16A16_FLOAT;
+		errCode = gApi->CreateTexture(&t, desc);
 
-	desc.format = eFormat::R16G16B16A16_FLOAT;
-	errCode = gApi->CreateTexture(&hdrTexture, desc);
+		if (errCode != eGapiResult::OK) {
+			t = oldBuff;
+			throw std::runtime_error("global hdr textureS in GraphicsEngine::ReloadBuffer");
+		}
 
-	if (errCode != eGapiResult::OK) {
-		hdrTexture = oldBuff;
-		throw std::runtime_error("global hdr texture in GraphicsEngine::ReloadBuffer");
+		SAFE_RELEASE(oldBuff);
 	}
-	
-	SAFE_RELEASE(oldBuff);
 }
 
 

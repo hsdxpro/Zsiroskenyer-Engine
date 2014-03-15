@@ -129,7 +129,7 @@ private:
 	Matrix44* lastCameraMatrix;
 	float elapsed;
 	ITexture2D* currentSceneBuffer;
-	ITexture2D* hdrTexture; // Global hdr texture to preserve hdr values across post processes
+	std::array<ITexture2D*,2> hdrTextures; // Global hdr texture to preserve hdr values across post processes
 
 	// state
 	unsigned screenWidth, screenHeight;
@@ -233,7 +233,9 @@ private:
 		void SetInputFXAA(ITexture2D* color); // If FXAA shader defines that it takes luminance from alpha channel, then pass appropriate texture please..
 		
 		// Set outputs
-		void SetOutput(ITexture2D* t);
+		void SetOutputMB(ITexture2D* color, ITexture2D* velocity2D);
+		void SetOutputDOF(ITexture2D* color);
+		void SetOutputFXAA(ITexture2D* color);
 
 	private:
 		void LoadShaders();
@@ -242,16 +244,18 @@ private:
 		eGapiResult ReallocBuffers();
 
 		// Shaders
-		IShaderProgram* shaderMotionBlur, *shaderDof, *shaderFXAA;
+		IShaderProgram* shaderMB, *shaderMB2DVelocity,	// Motion blur shaders
+								  *shaderDOF,			// Depth of field shaders
+								  *shaderFXAA;			// FXAA shaders
 
 		// Input textures
 		ITexture2D* inputTexColor, *inputTexDepth;
 
 		// Output textures
-		ITexture2D* outputTexColor;
+		ITexture2D* outputTexColor, *outputTexVelocity2D;
 
 		// Motion blur vars
-		Matrix44 prevViewMat;
+		Matrix44 lastViewMat;
 
 		cGraphicsEngine& parent;
 		IGraphicsApi* gApi;
