@@ -42,6 +42,12 @@ sampler2D specLevelMap = {
 //------------------------------------------------------------------------------
 //	Shader constants
 //------------------------------------------------------------------------------
+struct {
+	float4x4 worldViewProj;
+	float4x4 worldView;
+	float4x4 world;
+	float3 camPos;
+} transform : register(c0);
 float4x4 wvp : register(c0);
 float4x4 world : register(c4);
 float3 camPos : register(c8);
@@ -78,12 +84,17 @@ VS_OUT VS_MAIN(VS_IN In) {
 	Out.tangentW = In.tangentL.x* world[0].xyz + ( In.tangentL.y * world[1].xyz + (In.tangentL.z * world[2].xyz));
 	Out.posH = In.posL.x * wvp[0] + ( In.posL.y * wvp[1] + (In.posL.z * wvp[2] + wvp[3]));
 
+	Out.posH.x /= Out.posH.w;
+	Out.posH.y /= Out.posH.w;
+	Out.posH.z /= Out.posH.w;
+	Out.posH.w = 1.0f;
+
 	Out.tex0 = In.tex0;
 
 	// Calculate TBN base per vertex (CHEAP) (Tangent to World space)
-		float3 N = normalize(Out.normalW);
-		float3 T = normalize(Out.tangentW - dot(Out.tangentW,N) * N);
-		float3 B = normalize(cross(N,T));
+	float3 N = normalize(Out.normalW);
+	float3 T = normalize(Out.tangentW - dot(Out.tangentW,N) * N);
+	float3 B = normalize(cross(N,T));
 	Out.TBN = float3x3(T,B,N);
 	return Out;
 }

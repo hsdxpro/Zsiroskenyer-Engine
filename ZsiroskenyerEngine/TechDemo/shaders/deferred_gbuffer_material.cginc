@@ -17,7 +17,7 @@ struct {
 	bool hasGlossinessMap;
 	bool hasSpecLevelMap;
 	bool useCutout;
-} c : register(c20);
+} mtlProperties : register(c20);
 
 
 //------------------------------------------------------------------------------
@@ -26,27 +26,27 @@ struct {
 
 GBUFFER PixelShader_Simple (float3 normal, float2 texCoord0) {
 	// fill basic from shader const
-	float3 diffuse = c.diffuseColor;
-	float gloss = c.glossiness;
-	float specLvl = c.specularLevel;
+	float3 diffuse = mtlProperties.diffuseColor;
+	float gloss = mtlProperties.glossiness;
+	float specLvl = mtlProperties.specularLevel;
 
 	// fill textures
 	float4 mapSample;
 
 	// diffuse & cutout
-	if (c.hasDiffuseMap) {
+	if (mtlProperties.hasDiffuseMap) {
 		mapSample = tex2D(diffuseMap, texCoord0);
-		if (c.useCutout && mapSample.a < 0.5f)
+		if (mtlProperties.useCutout && mapSample.a < 0.5f)
 			discard;
 		diffuse *= mapSample.rgb;
 	}
 
 	// specular
-	if (c.hasGlossinessMap) {
+	if (mtlProperties.hasGlossinessMap) {
 		float value = tex2D(glossinessMap, texCoord0);
 		gloss *= value;
 	}
-	if (c.hasSpecLevelMap) {
+	if (mtlProperties.hasSpecLevelMap) {
 		float value = tex2D(specLevelMap, texCoord0);
 		specLvl *= value;
 	}
