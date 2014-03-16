@@ -20,7 +20,7 @@ cCgShaderHelper::cCgShaderHelper(const zsString& shaderPath) {
 	CGcontext con = cgCreateContext();
 	cgGLRegisterStates(con);
 	cgGLSetManageTextureParameters(con, CG_TRUE);
-
+	
 	// Create cg effect from file (load)
 	assert(shaderPath.size() <= 256);
 	char ansiShaderPath[256];
@@ -28,6 +28,10 @@ cCgShaderHelper::cCgShaderHelper(const zsString& shaderPath) {
 	CGeffect effect = cgCreateEffectFromFile(con, ansiShaderPath, nullptr);
 	if (effect == nullptr) {
 		lastErrorMsg = cgGetLastListing(con);
+
+		// Free up
+		cgDestroyEffect(effect);
+		cgDestroyContext(con);
 		return;
 	}
 
@@ -35,6 +39,10 @@ cCgShaderHelper::cCgShaderHelper(const zsString& shaderPath) {
 	CGtechnique tech = cgGetFirstTechnique(effect);
 	if (tech == nullptr) {
 		lastErrorMsg = L"There is no Technique in shader: " + shaderPath;
+
+		// Free up
+		cgDestroyEffect(effect);
+		cgDestroyContext(con);
 		return;
 	}
 
@@ -42,6 +50,9 @@ cCgShaderHelper::cCgShaderHelper(const zsString& shaderPath) {
 	CGpass pass = cgGetFirstPass(tech);
 	if (pass == nullptr) {
 		lastErrorMsg = L"There is no pass in shader: " + shaderPath;
+		// Free up
+		cgDestroyEffect(effect);
+		cgDestroyContext(con);
 		return;
 	}
 
@@ -62,6 +73,10 @@ cCgShaderHelper::cCgShaderHelper(const zsString& shaderPath) {
 		if (info.domainsExist[i]) 
 			info.domainsEntry[i] = cgGetProgramString(shaderPrograms[i], CGenum::CG_PROGRAM_ENTRY);
 	}
+
+	// Free up
+	cgDestroyEffect(effect);
+	cgDestroyContext(con);
 }
 
 bool cCgShaderHelper::CompileCg(const zsString& cgFilePath, const zsString& shaderOut, cCgShaderHelper::eProfileCG compileProfile) {

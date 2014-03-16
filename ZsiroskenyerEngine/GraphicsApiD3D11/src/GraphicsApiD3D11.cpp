@@ -981,6 +981,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 				lastErrorMsg = L"\n\nshader: " + shaderPath + cgHelper->GetLastErrorMsg();
 				os.close();
 				cFileUtil::Delete(binShaderPath);
+				SAFE_DELETE(cgHelper);
 				return eGapiResult::ERROR_UNKNOWN;
 			}
 
@@ -992,6 +993,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 				lastErrorMsg = L"\n\n HLSL COMPILE FAIL : " + shaderPath + L"\n\n ErrorMsg: " + compMessage;
 				os.close();
 				cFileUtil::Delete(binShaderPath);
+				SAFE_DELETE(cgHelper);
 				return eGapiResult::ERROR_UNKNOWN;
 			}
 
