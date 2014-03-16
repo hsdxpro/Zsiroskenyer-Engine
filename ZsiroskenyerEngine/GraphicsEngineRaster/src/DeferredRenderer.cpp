@@ -514,7 +514,6 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetShaderProgram(shaderHBAO);
 	gApi->SetRenderTargets(1, &ambientOcclusionBuffer, nullptr);
 
-	// Need random texture, now using gpu garbage:D
 	gApi->SetTexture(L"tRandom", randomTexture);
 	gApi->SetTexture(L"tLinearDepth", depthBufferCopy);
 	gApi->SetPSConstantBuffer(&data, sizeof(data), 0);

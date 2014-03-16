@@ -218,7 +218,7 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 	avgLuminance = std::max(1e-15f, avgLuminance);
 	float logAvgLum = log10(avgLuminance);
 	float rodSensitivity = 0.04f / (0.04f + logAvgLum);
-	float speed = rodSensitivity*0.4f + (1.0f - rodSensitivity)*0.4f;
+	float speed = rodSensitivity * 0.4f + (1.0f - rodSensitivity)*0.4f;
 	float a = adaptedLuminance;
 	adaptedLuminance = adaptedLuminance + (logAvgLum - adaptedLuminance)*(1 - exp(-elapsed / speed));
 
