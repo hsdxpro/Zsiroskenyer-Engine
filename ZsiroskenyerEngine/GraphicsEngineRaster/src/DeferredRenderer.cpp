@@ -194,6 +194,10 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	results[++idxResult] = gApi->CreateTexture(&randomTexture, desc, randData);
 
 	// depth buffer and depth copy
+	desc.bind = (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE;
+	desc.width = bufferWidth;
+	desc.height = bufferHeight;
+	desc.usage = eUsage::DEFAULT;
 	desc.format = eFormat::R24_UNORM_X8_TYPELESS;	desc.depthFormat = eFormat::D24_UNORM_S8_UINT;	desc.bind = (int)eBind::DEPTH_STENCIL;
 	results[++idxResult] = gApi->CreateTexture(&depthBuffer, desc);
 	desc.bind = (int)eBind::SHADER_RESOURCE;
@@ -290,7 +294,7 @@ void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {
 	Reload(&shaderSky, L"shaders/sky.cg");
 
 	Reload(&shaderSSAO, L"shaders/ssao.cg");
-	Reload(&shaderSSAO, L"shaders/hbao.cg");
+	Reload(&shaderHBAO, L"shaders/hbao.cg");
 }
 
 // Render the scene to composition buffer
@@ -496,26 +500,26 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	data.UVToViewB[0] = -1.0f * (1.0f / data.FocalLen[0]);
 	data.UVToViewB[1] = 1.0f * (1.0f / data.FocalLen[1]);
 
-	data.R = 0.05f; // WHOA RANDOM
+	data.R = 0.20f;
 	data.R2 = data.R * data.R;
 	data.NegInvR2 = -1.0f / data.R2;
-	data.MaxRadiusPixels = 0.1f * std::min(gApi->GetDefaultRenderTarget()->GetWidth(), gApi->GetDefaultRenderTarget()->GetHeight());
-	data.AngleBias = 10; // TODO LOW GEOM FAILS
+	data.MaxRadiusPixels = 0.1f * std::min(depthBufferCopy->GetWidth(), depthBufferCopy->GetHeight());
+	data.AngleBias = 10;
 	data.TanAngleBias = tanf(data.AngleBias);
-	data.PowExponent = 1; // TODO HACKED
-	data.Strength = 1; // TODO HACKED
+	data.PowExponent = 10;
+	data.Strength = 2;
 
 	gApi->SetShaderProgram(shaderHBAO);
 	gApi->SetRenderTargets(1, &ambientOcclusionBuffer, nullptr);
 
 	// Need random texture, now using gpu garbage:D
-
+	gApi->SetTexture(L"tRandom", randomTexture);
 	gApi->SetTexture(L"tLinearDepth", depthBufferCopy);
 	gApi->SetPSConstantBuffer(&data, sizeof(data), 0);
 	gApi->Draw(3);
 	
 
-	/*
+	/* SSAO
 	struct _aoShaderConstants {
 		Matrix44 projMat;
 		Matrix44 invViewProj;
