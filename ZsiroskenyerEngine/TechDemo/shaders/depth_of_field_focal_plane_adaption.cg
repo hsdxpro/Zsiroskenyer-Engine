@@ -43,12 +43,15 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 float PS_MAIN(VS_OUT In) : COLOR0 {
 	// We adapt slowly to that
     float destFocalDist = distance(cBuffer.camPos, GetWorldPosition( float2(0.5f, 0.5f), tex2D(depthTexture, float2(0.5f, 0.5f)).r, cBuffer.invViewProj));
-	//return destFocalDist;
 
 	// The last result of adaption
 	float currFocalDist = tex2D(inputFocalPlaneTex, float2(0.5f, 0.5f)).r;
 
-	return (destFocalDist - currFocalDist) * cBuffer.frameDeltaTime + currFocalDist;
+	// So for example destination : 500, last result : 200, we need adaption...etc etc
+	if(abs(destFocalDist - currFocalDist) > 0.001)
+		return clamp(destFocalDist - currFocalDist, -1, 1) * cBuffer.frameDeltaTime * 10.2f + currFocalDist; // So slow adaption...	
+
+	return destFocalDist;
 }
 
 technique t
