@@ -17,6 +17,8 @@ float3 lightDir		 : register(c11);
 float lightRange	 : register(c12);
 float3 lightAtten	 : register(c13);
 float2 lightAngle	 : register(c14);
+float nearPlane		 : register(c15);
+float farPlane		 : register(c16);
 
 
 //------------------------------------------------------------------------------
@@ -45,16 +47,14 @@ sampler2D depthBuffer = {
     MagFilter = POINT,
 };
 
-// Decode whole g-buffer
-void SampleGBuffer(in float2 texCoord, out float3 diffuse, out float3 normal, out float glossiness, out float specLevel, out float3 worldPos, out float depth) {
+// Sample and decode whole g-buffer
+void SampleGBuffer(in float2 texCoord, out float3 diffuse, out float3 normal, out float glossiness, out float specLevel) {
 	GBUFFER gb;
 	gb.diffuse = tex2D(gBuffer0, texCoord);		// diffuse.rgb & alpha(unused)
 	gb.normal = tex2D(gBuffer1, texCoord).xy;	// packed normal
 	gb.misc = tex2D(gBuffer2, texCoord);		// specular(2) / unused(2)
-	depth = tex2D(depthBuffer, texCoord).r;		// depth
 	
-	DecodeGBuffer(gb, diffuse, normal, glossiness, specLevel);	
-	worldPos = GetWorldPosition(texCoord, depth, invViewProj);	
+	DecodeGBuffer(gb, diffuse, normal, glossiness, specLevel);
 }
 
 //------------------------------------------------------------------------------
@@ -70,7 +70,7 @@ float CookTorranceSpecular(float3 N, float3 viewDir, float3 L, float roughness, 
 {
 	const float gaussConstant  = 10;
 
-    //the things we need:	
+    // the things we need:	
     // normalized normal and vector to eye
     float3 Nn = N;
     float3 Vn = -viewDir;
