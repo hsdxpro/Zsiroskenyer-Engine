@@ -977,12 +977,21 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			// Compile CG to HLSL
 			cgHelper->CompileCg(shaderPath, tmpBinPath, cgProfile);
 
+			if (cgHelper->GetLastErrorMsg()) {
+				lastErrorMsg = L"\n\nshader: " + shaderPath + cgHelper->GetLastErrorMsg();
+				os.close();
+				cFileUtil::Delete(binShaderPath);
+				return eGapiResult::ERROR_UNKNOWN;
+			}
+
 			// Compile HLSL to bytecode
 			zsString compMessage;
 			ID3DBlob* blob;
 			HRESULT hr = CompileShaderFromFile(tmpBinPath, L"main", dxProfile, &compMessage, &blob);
 			if (FAILED(hr)) {
 				lastErrorMsg = L"\n\n HLSL COMPILE FAIL : " + shaderPath + L"\n\n ErrorMsg: " + compMessage;
+				os.close();
+				cFileUtil::Delete(binShaderPath);
 				return eGapiResult::ERROR_UNKNOWN;
 			}
 

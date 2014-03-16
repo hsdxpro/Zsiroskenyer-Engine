@@ -76,4 +76,5 @@ static void cFileUtil::Read<zsString>(std::ifstream& is, zsString& str_out) {
 	wchar_t* chars = new wchar_t[size];
 	cFileUtil::Read(is, chars, size);
 	str_out = chars;
+	delete[] chars;
 }

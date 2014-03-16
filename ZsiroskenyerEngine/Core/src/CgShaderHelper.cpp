@@ -136,6 +136,14 @@ bool cCgShaderHelper::CompileCg(const zsString& cgFilePath, const zsString& shad
 	}
 
 	WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
+
+	// CgC fail !?
+	if ( ! cFileUtil::isFileExits(shaderOut))
+	{
+		lastErrorMsg = L"\n\nThe CG Compiler don't know what the fucking hell are you doing with your shader, can't compile";
+		return false;
+	}
+
 	return true;
 }
 
