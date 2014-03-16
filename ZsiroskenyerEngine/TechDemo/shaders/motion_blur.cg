@@ -44,14 +44,13 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	float alpha = color.a;
 
 	// Sample around that pixel
-	const int blurRadius = 10;
-	const int nSamples = 8;
-	for(int i = 1; i < nSamples; ++i)     
+	const float nSamples = 8;
+	for(float i = 1; i < nSamples; ++i)     
 	{
-		color += tex2D(inputTexture, i * (1.0f / nSamples) * blurRadius * velocity + In.tex0);
+		color += tex2D(inputTexture, i * velocity + In.tex0);
 	}
  
-	float4 finalColor = color * (1.0f / (nSamples + 1));
+	float4 finalColor = color * (1.0f / nSamples);
 
 	// Assign non blurred alpha
 	finalColor.a = alpha;

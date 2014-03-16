@@ -174,7 +174,7 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	}
 
 	int randomNumberIndex = 0;
-	uint16_t *randData = new uint16_t[desc.width * desc.width * 4];
+	uint16_t randData[(4 * 4) * 4];
 	for (uint32_t i = 0; i < desc.width * desc.width* 4; i += 4)
 	{
 		assert(randomNumberIndex < 1024);
@@ -212,12 +212,14 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 			SAFE_RELEASE(depthBuffer);
 			SAFE_RELEASE(depthBufferCopy);
 			SAFE_RELEASE(ambientOcclusionBuffer);
-			
+			SAFE_RELEASE(randomTexture);
+
 			// rollback to previous
 			compositionBuffer = compositionBuffer_;
 			depthBuffer = depthBuffer_;
 			depthBufferCopy = depthBufferCopy_;
 			ambientOcclusionBuffer = ambientOcclusionBuffer_;
+			randomTexture = randomTexture_;
 			for (int j = 0; j < sizeof(gBuffer) / sizeof(gBuffer[0]); ++j) {
 				gBuffer[j] = gBuffer_[j];
 			}
@@ -234,7 +236,7 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	SAFE_RELEASE(depthBuffer_);
 	SAFE_RELEASE(depthBufferCopy_);
 	SAFE_RELEASE(ambientOcclusionBuffer_);
-
+	SAFE_RELEASE(randomTexture_);
 
 	return eGapiResult::OK;
 }

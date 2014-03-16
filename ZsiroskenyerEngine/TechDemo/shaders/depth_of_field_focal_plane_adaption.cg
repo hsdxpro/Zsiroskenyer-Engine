@@ -19,6 +19,7 @@ sampler2D inputFocalPlaneTex = {
 struct {
 	float4x4 invViewProj;
 	float3	 camPos;
+	float	 frameDeltaTime;
 } cBuffer : register(c0);		
 
 
@@ -47,11 +48,7 @@ float PS_MAIN(VS_OUT In) : COLOR0 {
 	// The last result of adaption
 	float currFocalDist = tex2D(inputFocalPlaneTex, float2(0.5f, 0.5f)).r;
 
-	// So for example destination : 500, last result : 200, we need adaption...etc etc
-	if(abs(destFocalDist - currFocalDist) > 0.1f)
-		return normalize((destFocalDist - currFocalDist )) * 0.2f + currFocalDist; // So slow adaption...	
-
-	return destFocalDist;
+	return (destFocalDist - currFocalDist) * cBuffer.frameDeltaTime + currFocalDist;
 }
 
 technique t

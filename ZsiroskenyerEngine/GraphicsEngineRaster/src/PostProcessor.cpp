@@ -102,7 +102,7 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 	gApi->Draw(3);
 }
 
-void cGraphicsEngine::cPostProcessor::ProcessDOF(const cCamera& cam) {
+void cGraphicsEngine::cPostProcessor::ProcessDOF(float frameDeltaTime, const cCamera& cam) {
 
 	// These constants shared across two DOF specific shaders...
 	// Pass1 : FocalLength adaption, only uses invViewProj, camPos
@@ -110,24 +110,26 @@ void cGraphicsEngine::cPostProcessor::ProcessDOF(const cCamera& cam) {
 	struct tDofConstants
 	{
 		Matrix44 invViewProj;
-		Vec3 camPos;								float _pad;
-		float invRetinaRadiusProductInputTexWidth;	Vec3  _pad1;
-		float		invTexWidth;					Vec3  _pad2;
-		float		invTexHeight;					Vec3  _pad3;
-		float		MinusInvTexWidth;				Vec3  _pad4;
-		float		MinusInvTexHeight;				Vec3  _pad5;
-		float		aperture;						Vec3  _pad6;
-		float		retinaLensDist;					Vec3  _pad7;
+		Vec3	 camPos;
+		float	 frameDeltaTime; // Just pass 1 use it !!!
+		float	 invRetinaRadiusProductInputTexWidth;
+		float	 invTexWidth;				
+		float	 invTexHeight;				
+		float	 minusInvTexWidth;			
+		float	 minusInvTexHeight;			
+		float	 aperture;					
+		float	 retinaLensDist;				
 	} dofConstants;
 
 	dofConstants.invRetinaRadiusProductInputTexWidth = (float)inputTexColor->GetWidth() * 26.793927f; // That magic number (27.793927) normalizes a CoC that belonging to an average sized human eye and lens into [0,1]
 	dofConstants.invViewProj = Matrix44Inverse(cam.GetViewMatrix() *  cam.GetProjMatrix());
 	dofConstants.invTexWidth = 1.0f / inputTexColor->GetWidth();
 	dofConstants.invTexHeight = 1.0f / inputTexColor->GetHeight();
-	dofConstants.MinusInvTexWidth = -dofConstants.invTexWidth;
-	dofConstants.MinusInvTexHeight = -dofConstants.invTexHeight;
-	dofConstants.retinaLensDist = 0.011f;
-	dofConstants.aperture = 0.022f;
+	dofConstants.minusInvTexWidth = -dofConstants.invTexWidth;
+	dofConstants.minusInvTexHeight = -dofConstants.invTexHeight;
+	dofConstants.frameDeltaTime = frameDeltaTime;
+	dofConstants.retinaLensDist = 0.019f;
+	dofConstants.aperture = 0.009f;
 	dofConstants.camPos = cam.GetPos();
 
 	// Set it for shaders to use

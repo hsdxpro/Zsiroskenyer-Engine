@@ -224,7 +224,7 @@ private:
 		void ProcessMB(float frameDeltaTime, const cCamera& cam);
 
 		// Dof
-		void ProcessDOF(const cCamera& cam);
+		void ProcessDOF(float frameDeltaTime, const cCamera& cam);
 
 
 		// Set inputs

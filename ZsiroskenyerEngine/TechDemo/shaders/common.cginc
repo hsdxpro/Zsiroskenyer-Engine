@@ -23,6 +23,12 @@ float3 GetWorldPosition(float2 screenCoords, float depth, float4x4 invViewProj) 
 }
 
 /*
+float3 GetWorldPosition(float3 camPos, float3 lindepth, float3 vsFarFrustumRay) {
+	return linDepth * vsFarFrustumRay + camPos;
+}
+*/
+
+/*
 float3 GetWorldPosition(float2 screenCoords, float linearDepth, float nearPlane, float farPlane) {
 	
 

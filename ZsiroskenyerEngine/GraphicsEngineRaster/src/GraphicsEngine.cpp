@@ -332,7 +332,7 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, ITexture2D* target, flo
 	// Depth of field
 	postProcessor->SetInputDOF(hdrTextures[0], deferredRenderer->GetDepthBuffer());
 	postProcessor->SetOutputDOF(deferredComposition);
-	postProcessor->ProcessDOF(scene.GetCamera());
+	postProcessor->ProcessDOF(elapsed, scene.GetCamera());
 
 
 	// Lol using GBuffer0
