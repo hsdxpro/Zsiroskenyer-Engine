@@ -4,7 +4,7 @@
 #include "StrUtil.h"
 
 cTagParser::cTagParser(const zsString& filePath)
-:fileNode(NULL) {
+:fileNode(nullptr) {
 	fileNode = new tTagData();
 
 	// parse File
@@ -43,7 +43,7 @@ cTagParser::~cTagParser() {
 }
 
 tTagData* cTagParser::GetRootNodeByIndex(size_t idx) {
-	ASSERT(fileNode != NULL);
+	ASSERT(fileNode != nullptr);
 	return fileNode->GetChildByIndex(idx);
 }
 
@@ -151,7 +151,7 @@ const zsString& tTagData::GetName() {
 }
 
 tProperty* tTagData::GetPropertyByIndex(size_t idx) {
-	if (idx < TAG_MAX_PROPERTIES) return &properties[idx]; else return NULL; 
+	if (idx < TAG_MAX_PROPERTIES) return &properties[idx]; else return nullptr; 
 }
 
 std::vector<tTagData*>& tTagData::GetChilds() {

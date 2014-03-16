@@ -88,7 +88,7 @@ VertexIndexType* tipsify(const VertexIndexType* indices, int nTriangles, int nVe
 			// Unsupported mesh
 			// vertex shared by too many triangles
 			delete[] numOccurrances;
-			return NULL;
+			return nullptr;
 		}
 
 		numOccurrances[v]++;

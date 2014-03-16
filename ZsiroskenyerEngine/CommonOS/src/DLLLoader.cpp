@@ -9,7 +9,7 @@
 
 zsString cDLLLoader::GetExecutablePath() const {
 	WCHAR buf[MAX_PATH];
-	GetModuleFileName(NULL, buf, MAX_PATH);
+	GetModuleFileName(nullptr, buf, MAX_PATH);
 	zsString s = buf;
 	size_t idx = s.find_last_of('\\');
 	s = s.substr(0, idx + 1);
@@ -32,7 +32,7 @@ IDLLLoader::DLLFUNCTION cDLLLoader::GetDLLFunction(IDLLLoader::DLLMODULE dll, co
 
 	auto function =  GetProcAddress((HMODULE)dll, ansiChars);
 	if (!function) {
-		MessageBoxW(NULL, ( L"FAILED TO GET PROC ADDRESS: " + funcName).c_str(), L"FUCK...", MB_OK|MB_ICONERROR);
+		MessageBoxW(nullptr, ( L"FAILED TO GET PROC ADDRESS: " + funcName).c_str(), L"FUCK...", MB_OK|MB_ICONERROR);
 		exit(2);
 	}
 	return (DLLFUNCTION)function;

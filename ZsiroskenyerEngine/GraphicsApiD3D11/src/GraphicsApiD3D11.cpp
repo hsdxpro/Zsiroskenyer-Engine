@@ -573,7 +573,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const ITextu
 
 	D3D11_SUBRESOURCE_DATA subData;
 	subData.pSysMem = data;
-	subData.SysMemPitch = 4 * 8;
+	subData.SysMemPitch = desc.width * eFormatBitSize(desc.format);
 	subData.SysMemSlicePitch = 0;	
 
 	// create texture resource

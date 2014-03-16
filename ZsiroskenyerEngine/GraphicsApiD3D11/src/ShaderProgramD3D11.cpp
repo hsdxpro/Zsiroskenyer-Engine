@@ -13,11 +13,11 @@ cShaderProgramD3D11::cShaderProgramD3D11(
 		void* vsByteCode,
 		size_t vsByteCodeSize,
 		cVertexFormat vsInputFormat,
-		ID3D11VertexShader*		vs /*= NULL*/,
-		ID3D11HullShader*		hs /*= NULL*/, 
-		ID3D11DomainShader*		ds /*= NULL*/,
-		ID3D11GeometryShader*	gs /*= NULL*/,
-		ID3D11PixelShader*		ps /*= NULL*/)
+		ID3D11VertexShader*		vs /*= nullptr*/,
+		ID3D11HullShader*		hs /*= nullptr*/, 
+		ID3D11DomainShader*		ds /*= nullptr*/,
+		ID3D11GeometryShader*	gs /*= nullptr*/,
+		ID3D11PixelShader*		ps /*= nullptr*/)
 :vsByteCodeSize(vsByteCodeSize), vsInputFormat(vsInputFormat),
  vs(vs), hs(hs), ds(ds), gs(gs), ps(ps)
 {

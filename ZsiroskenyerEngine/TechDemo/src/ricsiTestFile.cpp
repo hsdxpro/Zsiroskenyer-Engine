@@ -205,7 +205,7 @@ int ricsiMain() {
 	HWND hWnd = (HWND)window->GetHandle();
 	int scw = GetSystemMetrics(SM_CXSCREEN);
 	int sch = GetSystemMetrics(SM_CYSCREEN);
-	SetWindowPos(hWnd, NULL, 0, 0, scw, sch-30, 0);
+	SetWindowPos(hWnd, nullptr, 0, 0, scw, sch-30, 0);
 	RECT rc;
 	GetClientRect(hWnd, &rc);
 	gEngine->Resize(rc.right - rc.left, rc.bottom - rc.top);

@@ -14,8 +14,8 @@
 static DllHandle hDllOpenGL43	= 0;
 static DllHandle hDllD3D11		= 0;
 
-IGraphicsApi*(*CreateGraphicsApiD3D11)(IWindow*, unsigned, unsigned) = NULL;
-IGraphicsApi*(*CreateGraphicsApiGL43)(IWindow*, unsigned, unsigned)  = NULL;
+IGraphicsApi*(*CreateGraphicsApiD3D11)(IWindow*, unsigned, unsigned) = nullptr;
+IGraphicsApi*(*CreateGraphicsApiGL43)(IWindow*, unsigned, unsigned)  = nullptr;
 
 
 IGraphicsApi* CreateGraphicsApi(IWindow* targetWindow, unsigned backBufferWidth, unsigned backBufferHeight, eGraphicsApiType type) {
@@ -31,12 +31,12 @@ IGraphicsApi* CreateGraphicsApi(IWindow* targetWindow, unsigned backBufferWidth,
 			else {
 				hDllD3D11 = LoadDynamicLibrary("GraphicsApiD3D11");
 				if (!hDllD3D11) {
-					return NULL;
+					return nullptr;
 				}
 				CreateGraphicsApiD3D11 = (IGraphicsApi*(*)(IWindow*, unsigned, unsigned))GetFunctionAddress(hDllD3D11, "CreateGraphicsApiD3D11");
 				if (!CreateGraphicsApiD3D11) {
 					assert(false);
-					return NULL;
+					return nullptr;
 				}
 				return CreateGraphicsApiD3D11(targetWindow, backBufferWidth, backBufferHeight);
 			}
@@ -46,23 +46,23 @@ IGraphicsApi* CreateGraphicsApi(IWindow* targetWindow, unsigned backBufferWidth,
 				if (CreateGraphicsApiGL43)
 					return CreateGraphicsApiGL43(targetWindow, backBufferWidth, backBufferHeight);
 				else
-					return NULL;
+					return nullptr;
 			}
 			else {
 				hDllOpenGL43 = LoadDynamicLibrary("GraphicsApiGL");
 				if (!hDllOpenGL43) {
-					return NULL;
+					return nullptr;
 				}
 				CreateGraphicsApiGL43 = (IGraphicsApi*(*)(IWindow*, unsigned, unsigned))GetFunctionAddress(hDllOpenGL43, "CreateGraphicsApiDL");
 				if (!CreateGraphicsApiGL43) {
 					assert(false);
-					return NULL;
+					return nullptr;
 				}
 				return CreateGraphicsApiGL43(targetWindow, backBufferWidth, backBufferHeight);
 			}
 			break;
 		default:
-			return NULL;
+			return nullptr;
 	}
 }
 

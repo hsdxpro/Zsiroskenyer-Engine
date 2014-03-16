@@ -10,7 +10,7 @@
 
 
 cGraphicsEntity::cGraphicsEntity()
-:isVisible(true), instanceGroup(NULL) {
+:isVisible(true), instanceGroup(nullptr) {
 }
 
 void cGraphicsEntity::SetPos(const Vec3& p) {

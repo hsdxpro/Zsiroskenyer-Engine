@@ -27,7 +27,7 @@ cWindow::cWindow(const IWindow::tDesc& winDesc)
 	}
 	
 	// Application ID for window class registration, and window creation
-	HINSTANCE appID = GetModuleHandle(NULL);
+	HINSTANCE appID = GetModuleHandle(nullptr);
 
 	// Register our new window class
 	WNDCLASSEX wC;
@@ -36,11 +36,11 @@ cWindow::cWindow(const IWindow::tDesc& winDesc)
 	wC.cbClsExtra = 0;
 	wC.cbWndExtra = 0;
 	wC.hbrBackground = (HBRUSH)GetStockObject((int)interpretedBrush);
-	wC.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wC.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-	wC.hIconSm = NULL;
+	wC.hCursor = LoadCursor(nullptr, IDC_ARROW);
+	wC.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
+	wC.hIconSm = nullptr;
 	wC.lpszClassName = _T("windowclass");
-	wC.lpszMenuName = NULL;
+	wC.lpszMenuName = nullptr;
 	wC.hInstance = appID;
 	wC.lpfnWndProc = wndProc;
 	wC.style = CS_HREDRAW | CS_VREDRAW;
@@ -79,7 +79,7 @@ void cWindow::MoveCenter() {
 bool cWindow::HandleMessage(IWindow::eMessage* msg) {
 	static MSG winMsg;
 	// Get window message from OS
-	if (PeekMessage(&winMsg, NULL, 0, 0, PM_REMOVE))
+	if (PeekMessage(&winMsg, nullptr, 0, 0, PM_REMOVE))
 	{
 		// Translate, dispatch, process message 
 		TranslateMessage(&winMsg);

@@ -42,14 +42,14 @@ public:
 	void Release() override;
 
 	// --- resources --- //
-	eGapiResult	CreateVertexBuffer(IVertexBuffer** resource, eUsage usage, cVertexFormat format, size_t size, void* data = NULL) override;
-	eGapiResult	CreateIndexBuffer(IIndexBuffer** resource, eUsage usage, size_t size, void* data = NULL) override;
+	eGapiResult	CreateVertexBuffer(IVertexBuffer** resource, eUsage usage, cVertexFormat format, size_t size, void* data = nullptr) override;
+	eGapiResult	CreateIndexBuffer(IIndexBuffer** resource, eUsage usage, size_t size, void* data = nullptr) override;
 	eGapiResult CreateTexture(ITexture2D** resource, const wchar_t* filePath) override;
-	eGapiResult CreateTexture(ITexture2D** resource, const ITexture2D::tDesc& desc, void* data = NULL) override;
+	eGapiResult CreateTexture(ITexture2D** resource, const ITexture2D::tDesc& desc, void* data = nullptr) override;
 	eGapiResult CreateShaderProgram(IShaderProgram** resource, const wchar_t* shaderPath) override;
 
-	eGapiResult WriteResource(IIndexBuffer* buffer, void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) override;
-	eGapiResult WriteResource(IVertexBuffer* buffer, void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) override;
+	eGapiResult WriteResource(IIndexBuffer* buffer, void* source, size_t size = ZS_NUMERIC_MAX(size_t), size_t offset = 0) override;
+	eGapiResult WriteResource(IVertexBuffer* buffer, void* source, size_t size = ZS_NUMERIC_MAX(size_t), size_t offset = 0) override;
 
 	eGapiResult ReadResource(IIndexBuffer* buffer, void* dest, size_t size, size_t offset = 0) override;
 	eGapiResult ReadResource(IVertexBuffer* buffer, void* dest, size_t size, size_t offset = 0) override;
@@ -70,7 +70,7 @@ public:
 
 	// --- render state --- //
 	eGapiResult SetRenderTargetDefault() override;
-	eGapiResult SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget = NULL) override;
+	eGapiResult SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget = nullptr) override;
 	eGapiResult SetBackBufferSize(unsigned width, unsigned height) override;
 
 	void SetVertexBuffer(const IVertexBuffer* vb) override;

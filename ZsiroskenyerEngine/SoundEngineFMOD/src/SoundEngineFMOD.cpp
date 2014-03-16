@@ -7,7 +7,7 @@
 #include "../../Core/src/Timer.h"
 
 cSoundEngineFMOD::cSoundEngineFMOD()
-:soundSystem(NULL), isMicConnected(false) {
+:soundSystem(nullptr), isMicConnected(false) {
 	// Create sound system
 	FMOD_RESULT result = FMOD::System_Create(&soundSystem);
 	if (result != FMOD_OK)
@@ -36,7 +36,7 @@ cSoundEngineFMOD::cSoundEngineFMOD()
 
 cSoundEngineFMOD::~cSoundEngineFMOD() {
 	soundSystem->release();
-	soundSystem = NULL;
+	soundSystem = nullptr;
 }
 
 void cSoundEngineFMOD::Release() {
@@ -72,7 +72,7 @@ bool cSoundEngineFMOD::GenWavFromMicrophone(const zsString& filePath, float stop
 	}
 
 	// Create sound that we record into
-	FMOD::Sound *sound = NULL;
+	FMOD::Sound *sound = nullptr;
 	FMOD_CREATESOUNDEXINFO exinfo; memset(&exinfo, 0, sizeof(FMOD_CREATESOUNDEXINFO));
 		exinfo.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
 		exinfo.numchannels = 1;

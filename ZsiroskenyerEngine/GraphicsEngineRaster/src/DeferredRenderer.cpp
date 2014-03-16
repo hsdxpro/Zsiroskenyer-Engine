@@ -506,7 +506,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	data.Strength = 1; // TODO HACKED
 
 	gApi->SetShaderProgram(shaderHBAO);
-	gApi->SetRenderTargets(1, &ambientOcclusionBuffer, NULL);
+	gApi->SetRenderTargets(1, &ambientOcclusionBuffer, nullptr);
 
 	// Need random texture, now using gpu garbage:D
 
@@ -526,7 +526,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	aoShaderConstants.camPos = cam->GetPos();
 
 	gApi->SetShaderProgram(shaderSSAO);
-	gApi->SetRenderTargets(1, &ambientOcclusionBuffer, NULL);
+	gApi->SetRenderTargets(1, &ambientOcclusionBuffer, nullptr);
 	gApi->SetTexture(L"normalTexture", gBuffer[1]);
 	gApi->SetTexture(L"depthTexture", depthBufferCopy);
 	gApi->SetPSConstantBuffer(&aoShaderConstants, sizeof(aoShaderConstants), 0);

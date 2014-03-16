@@ -632,11 +632,11 @@ void cStrUtil::GetFloats(const zsString& str, std::vector<float>& floats_out) {
 		strP++;
 
 	size_t offset = 0;
-	wchar_t* end = NULL;
+	wchar_t* end = nullptr;
 	do {
 		floats_out.push_back((float)wcstod(strP + offset, &end));
 		offset = end - strP;
-	} while (*end != '\0' && end != NULL);
+	} while (*end != '\0' && end != nullptr);
 }
 
 zsString cStrUtil::GetDirectory(const zsString& str) {

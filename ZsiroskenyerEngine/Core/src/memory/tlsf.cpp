@@ -198,7 +198,7 @@ void TLSF::unregister_free_block(SHeaderFree* block) {
 		*get_sublist(fl, sl) = block->nextFreeBlock;
 		block->nextFreeBlock->previousFreeBlock = nullptr;
 	}
-	// if it was the only block in this list, set bitmaps and ptr-to-first to NULL
+	// if it was the only block in this list, set bitmaps and ptr-to-first to nullptr
 	else {
 		// locate block
 		unsigned fl, sl;
@@ -208,9 +208,9 @@ void TLSF::unregister_free_block(SHeaderFree* block) {
 		set_bit(bitmap_sl, sl, 0);
 		if (*bitmap_sl==0)
 			set_bit(&bitmap_FL, fl, 0);
-		// set sublist to NULL
+		// set sublist to nullptr
 		*get_sublist(fl, sl) = nullptr;
-		// set the blocks ptr to NULL
+		// set the blocks ptr to nullptr
 		block->nextFreeBlock = block->previousFreeBlock = nullptr;
 	}
 	block->is_free(false);

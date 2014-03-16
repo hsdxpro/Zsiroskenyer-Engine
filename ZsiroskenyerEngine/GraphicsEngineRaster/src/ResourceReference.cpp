@@ -22,7 +22,7 @@ cGeometryRef::cGeometryRef(cGeometryRef&& other)
 : zs_shared_ptr(other), rm(other.rm) {
 }
 cGeometryRef::cGeometryRef()
-: zs_shared_ptr(NULL), rm(NULL) {
+: zs_shared_ptr(nullptr), rm(nullptr) {
 }
 
 cGeometryRef& cGeometryRef::operator = (const cGeometryRef& other) {
@@ -55,7 +55,7 @@ cMaterialRef::cMaterialRef(cMaterialRef&& other)
 : zs_shared_ptr(other), rm(other.rm) {
 }
 cMaterialRef::cMaterialRef()
-: zs_shared_ptr(NULL), rm(NULL) {
+: zs_shared_ptr(nullptr), rm(nullptr) {
 }
 
 cMaterialRef& cMaterialRef::operator = (const cMaterialRef& other) {
@@ -88,7 +88,7 @@ cTextureRef::cTextureRef(cTextureRef&& other)
 : zs_shared_ptr(other), rm(other.rm) {
 }
 cTextureRef::cTextureRef()
-: zs_shared_ptr(NULL), rm(NULL) {
+: zs_shared_ptr(nullptr), rm(nullptr) {
 }
 
 cTextureRef& cTextureRef::operator = (const cTextureRef& other) {

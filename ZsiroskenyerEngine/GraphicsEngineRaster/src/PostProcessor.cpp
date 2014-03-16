@@ -49,7 +49,7 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 	//-------------------------------------------------------------------------------------//
 	// -------------------- FIRST PASS : VELOCITY 2D BUFFER FILLING -----------------------//
 	//-------------------------------------------------------------------------------------//
-	gApi->SetRenderTargets(1, &outputTexVelocity2D, NULL);
+	gApi->SetRenderTargets(1, &outputTexVelocity2D, nullptr);
 	gApi->SetShaderProgram(shaderMB2DVelocity);
 
 	struct s
@@ -81,7 +81,7 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 	//-------------------------------------------------------------------------------------//
 	// -------------------SECOND PASS : USE VELOCITY BUFFER FOR BLURING--------------------//
 	//-------------------------------------------------------------------------------------//
-	gApi->SetRenderTargets(1, &outputTexColor, NULL);
+	gApi->SetRenderTargets(1, &outputTexColor, nullptr);
 	gApi->SetShaderProgram(shaderMB);
 	gApi->SetTexture(L"velocity2DTex", outputTexVelocity2D);
 	gApi->SetTexture(L"inputTexture", inputTexColor);
@@ -90,7 +90,7 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 
 // Dof
 void cGraphicsEngine::cPostProcessor::ProcessDOF(const cCamera& cam) {
-	gApi->SetRenderTargets(1, &outputTexColor, NULL);
+	gApi->SetRenderTargets(1, &outputTexColor, nullptr);
 	gApi->SetShaderProgram(shaderDOF);
 
 	struct tDofConstants
@@ -127,7 +127,7 @@ void cGraphicsEngine::cPostProcessor::ProcessDOF(const cCamera& cam) {
 
 // FXAA
 void cGraphicsEngine::cPostProcessor::ProcessFXAA() {
-	gApi->SetRenderTargets(1, &outputTexColor, NULL);
+	gApi->SetRenderTargets(1, &outputTexColor, nullptr);
 	gApi->SetShaderProgram(shaderFXAA);
 
 	Vec4 invResolution(	1.0f / outputTexColor->GetWidth(),

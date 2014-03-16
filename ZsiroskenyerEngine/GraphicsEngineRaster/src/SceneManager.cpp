@@ -27,7 +27,7 @@ cSceneManager::~cSceneManager() {
 
 //	Add/Remove scene entities
 cGraphicsEntity* cSceneManager::AddEntity(cGeometryRef geom, cMaterialRef mtl) {
-	cInstanceGroup* instGroup = NULL;
+	cInstanceGroup* instGroup = nullptr;
 	cInstanceGroup searchDummy;
 	cGraphicsEntity* entity;
 

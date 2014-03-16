@@ -4,7 +4,6 @@
 #include <cassert>
 #include "ILog.h"
 #include <memory.h>
-#define NULL 0
 
 #if (defined(_DEBUG) || defined(DEBUG))
 #define ASSERT(condition) assert(condition)
@@ -19,13 +18,13 @@
 #endif
 
 
-#define SAFE_DELETE(x) if(x != NULL) {delete x; x = NULL;}
-#define SAFE_DELETE_ARRAY(x) if(x != NULL) {delete[] x; x = NULL;}
-#define SAFE_FREE(x) if(x != NULL) { free(x); x = NULL;}
-#define SAFE_RELEASE(x) if(x != NULL) { x->Release(); x = NULL;}
+#define SAFE_DELETE(x) if(x != nullptr) {delete x; x = nullptr;}
+#define SAFE_DELETE_ARRAY(x) if(x != nullptr) {delete[] x; x = nullptr;}
+#define SAFE_FREE(x) if(x != nullptr) { free(x); x = nullptr;}
+#define SAFE_RELEASE(x) if(x != nullptr) { x->Release(); x = nullptr;}
 
-#define ZS_MAX(x) std::numeric_limits<x>::max()
-#define ZS_MIN(x) std::numeric_limits<x>::min()
+#define ZS_NUMERIC_MAX(x) std::numeric_limits<x>::max()
+#define ZS_NUMERIC_MIN(x) std::numeric_limits<x>::min()
 
 #define ZS_PI			3.141592653589793238462643383279
 #define ZS_PI2			6.28318530717958

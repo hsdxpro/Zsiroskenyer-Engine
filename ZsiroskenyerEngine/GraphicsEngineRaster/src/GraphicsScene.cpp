@@ -29,7 +29,7 @@ IGraphicsEntity* cGraphicsScene::CreateEntity(const wchar_t* geomPath, const wch
 	cMaterialRef mtl = parent.resourceManager->GetMaterial(mtlPath);
 
 	if (!geom || !mtl)
-		return NULL;
+		return nullptr;
 
 	return sceneManager.AddEntity(std::move(geom), std::move(mtl));
 }
@@ -38,7 +38,7 @@ IGraphicsEntity* cGraphicsScene::CreateEntity(IGeometryRef* customGeom, const wc
 	cMaterialRef mtl = parent.resourceManager->GetMaterial(mtlPath);
 
 	if (!geom || !mtl)
-		return NULL;
+		return nullptr;
 
 	return sceneManager.AddEntity(std::move(geom), std::move(mtl));
 }

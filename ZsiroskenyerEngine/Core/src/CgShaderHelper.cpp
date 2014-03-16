@@ -25,22 +25,22 @@ cCgShaderHelper::cCgShaderHelper(const zsString& shaderPath) {
 	assert(shaderPath.size() <= 256);
 	char ansiShaderPath[256];
 	cStrUtil::ToAnsi(shaderPath, ansiShaderPath, 256);
-	CGeffect effect = cgCreateEffectFromFile(con, ansiShaderPath, NULL);
-	if (effect == NULL) {
+	CGeffect effect = cgCreateEffectFromFile(con, ansiShaderPath, nullptr);
+	if (effect == nullptr) {
 		lastErrorMsg = cgGetLastListing(con);
 		return;
 	}
 
 	// Tech creation
 	CGtechnique tech = cgGetFirstTechnique(effect);
-	if (tech == NULL) {
+	if (tech == nullptr) {
 		lastErrorMsg = L"There is no Technique in shader: " + shaderPath;
 		return;
 	}
 
 	// Pass creation
 	CGpass pass = cgGetFirstPass(tech);
-	if (pass == NULL) {
+	if (pass == nullptr) {
 		lastErrorMsg = L"There is no pass in shader: " + shaderPath;
 		return;
 	}
@@ -56,7 +56,7 @@ cCgShaderHelper::cCgShaderHelper(const zsString& shaderPath) {
 	// Domain infos
 	for (uint8_t i = 0; i < NDOMAINS; i++) {
 		// Domain existence
-		info.domainsExist[i] = shaderPrograms[i] != NULL;
+		info.domainsExist[i] = shaderPrograms[i] != nullptr;
 
 		// if exist save entry name
 		if (info.domainsExist[i]) 
@@ -129,7 +129,7 @@ bool cCgShaderHelper::CompileCg(const zsString& cgFilePath, const zsString& shad
 	wcscpy(params, shellParams.c_str());
 
 	// Start cgc.exe and Generate .hlsl from .cg
-	BOOL appStarted = CreateProcessW(cgcExePath.c_str(), params, NULL, NULL, false, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
+	BOOL appStarted = CreateProcessW(cgcExePath.c_str(), params, nullptr, nullptr, false, 0, nullptr, nullptr, &StartupInfo, &ProcessInfo);
 	if (!appStarted) {
 		lastErrorMsg = zsString(L"cannot find cg compiler @") + cgcExePath;
 		return false;
@@ -321,7 +321,7 @@ std::unordered_map<zsString, tSamplerStateDesc> cCgShaderHelper::GetSamplerState
 
 
 const wchar_t* cCgShaderHelper::GetLastErrorMsg() {
-	return (lastErrorMsg.size() == 0 ) ? NULL : lastErrorMsg.c_str();
+	return (lastErrorMsg.size() == 0 ) ? nullptr : lastErrorMsg.c_str();
 }
 
 cVertexFormat cCgShaderHelper::GetVSInputFormat()

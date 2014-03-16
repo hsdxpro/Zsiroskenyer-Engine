@@ -15,14 +15,14 @@ cGraphicsEngine::cHDRProcessor::cHDRProcessor(cGraphicsEngine& parent) : parent(
 	avgLuminance = 0;
 	adaptedLuminance = 0;
 	sourceWidth = sourceHeight = 0;
-	blurBuffer = NULL;
-	downSampled = NULL;
-	luminanceStaging = NULL;
-	shaderBlurHoriz = shaderBlurVert = shaderCompose = shaderLumAvg = shaderLumSample = shaderOverbright = NULL;
-	source = NULL;
-	dest = NULL;
+	blurBuffer = nullptr;
+	downSampled = nullptr;
+	luminanceStaging = nullptr;
+	shaderBlurHoriz = shaderBlurVert = shaderCompose = shaderLumAvg = shaderLumSample = shaderOverbright = nullptr;
+	source = nullptr;
+	dest = nullptr;
 	for (auto& t : luminanceBuffer)
-		t = NULL;
+		t = nullptr;
 
 	// create shaders
 	try {
@@ -126,7 +126,7 @@ void cGraphicsEngine::cHDRProcessor::ReloadShaders() {
 
 //	Set HDR range float buffer
 eGraphicsResult cGraphicsEngine::cHDRProcessor::SetSource(ITexture2D* t) {
-	assert(t != NULL);
+	assert(t != nullptr);
 
 	unsigned sourceWidth = t->GetWidth();
 	unsigned sourceHeight = t->GetHeight();
@@ -199,13 +199,13 @@ void cGraphicsEngine::cHDRProcessor::Update(float elapsedSec) {
 
 	// calculate average luminance
 	gApi->SetShaderProgram(shaderLumSample);
-	gApi->SetRenderTargets(1, &luminanceBuffer[0], NULL);
+	gApi->SetRenderTargets(1, &luminanceBuffer[0], nullptr);
 	gApi->SetTexture(L"textureInput", source);
 	gApi->Draw(3);
 
 	parent.gApi->SetShaderProgram(shaderLumAvg);
 	for (int i = 1; i < 10; i++) {
-		gApi->SetRenderTargets(1, &luminanceBuffer[i], NULL);
+		gApi->SetRenderTargets(1, &luminanceBuffer[i], nullptr);
 		gApi->SetTexture(L"textureInput", luminanceBuffer[i - 1]);
 		gApi->Draw(3);
 	}

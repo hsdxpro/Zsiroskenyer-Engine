@@ -31,14 +31,14 @@ public:
 	virtual void Release() = 0;
 
 	// --- resources --- //
-	virtual eGapiResult	CreateVertexBuffer(IVertexBuffer** resource, eUsage usage, cVertexFormat format, size_t size, void* data = NULL) = 0;
-	virtual eGapiResult	CreateIndexBuffer(IIndexBuffer** resource, eUsage usage, size_t size, void* data = NULL) = 0;
-	virtual eGapiResult CreateTexture(ITexture2D** resource, const wchar_t* filePath) = 0;
-	virtual eGapiResult CreateTexture(ITexture2D** resource, const ITexture2D::tDesc& desc, void* data = NULL) = 0;
 	virtual eGapiResult CreateShaderProgram(IShaderProgram** resource, const wchar_t* shaderPath) = 0;
+	virtual eGapiResult	CreateVertexBuffer(IVertexBuffer** resource, eUsage usage, cVertexFormat format, size_t size, void* data = nullptr) = 0;
+	virtual eGapiResult	CreateIndexBuffer(IIndexBuffer** resource, eUsage usage, size_t size, void* data = nullptr) = 0;
+	virtual eGapiResult CreateTexture(ITexture2D** resource, const wchar_t* filePath) = 0;
+	virtual eGapiResult CreateTexture(ITexture2D** resource, const ITexture2D::tDesc& desc, void* data = nullptr) = 0;
 
-	virtual eGapiResult WriteResource(IIndexBuffer* buffer , void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) = 0;
-	virtual eGapiResult WriteResource(IVertexBuffer* buffer, void* source, size_t size = ZS_MAX(size_t), size_t offset = 0) = 0;
+	virtual eGapiResult WriteResource(IIndexBuffer* buffer , void* source, size_t size = ZS_NUMERIC_MAX(size_t), size_t offset = 0) = 0;
+	virtual eGapiResult WriteResource(IVertexBuffer* buffer, void* source, size_t size = ZS_NUMERIC_MAX(size_t), size_t offset = 0) = 0;
 
 	virtual eGapiResult ReadResource(IIndexBuffer* buffer, void* dest, size_t size, size_t offset = 0) = 0;
 	virtual eGapiResult ReadResource(IVertexBuffer* buffer, void* dest, size_t size, size_t offset = 0) = 0;
@@ -47,42 +47,43 @@ public:
 	virtual eGapiResult CopyResource(ITexture2D* src, ITexture2D* dst) = 0;
 
 	// --- rendering --- //
-	virtual void Clear(bool target = true, bool depth = false, bool stencil = false, const Vec4& clearColor = Vec4(0.3f, 0.3f, 0.3f, 1.0f)) = 0;
 	virtual void ClearTexture(ITexture2D* t, unsigned clearFlag = 0, const Vec4& clearColor = Vec4(), float depthVal = 1.0f, size_t stencilVal = 0) = 0;
+	virtual void Clear(bool target = true, bool depth = false, bool stencil = false, const Vec4& clearColor = Vec4(0.3f, 0.3f, 0.3f, 1.0f)) = 0;
+	
 
-	virtual void Draw(size_t nVertices, size_t idxStartVertex = 0) = 0;
-	virtual void DrawIndexed(size_t nIndices, size_t idxStartIndex = 0) = 0;
-	virtual void DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex = 0, size_t idxStartInstance = 0) = 0;
 	virtual void DrawInstancedIndexed(size_t nIndicesPerInstance, size_t nInstances, size_t idxStartIndex = 0, size_t idxStartInstance = 0) = 0;
-
+	virtual void DrawInstanced(size_t nVerticesPerInstance, size_t nInstances, size_t idxStartVertex = 0, size_t idxStartInstance = 0) = 0;
+	virtual void DrawIndexed(size_t nIndices, size_t idxStartIndex = 0) = 0;
+	virtual void Draw(size_t nVertices, size_t idxStartVertex = 0) = 0;
+	
 	virtual void Present() = 0;
+
+	// --- utility do it--- //
+	virtual eGapiResult SaveTextureToFile(ITexture2D* t, ITexture2D::eImageFormat f, const char* filePath) const = 0;
+
 
 	// --- state --- //
 	virtual eGapiResult SetRenderTargetDefault() = 0;
-	virtual eGapiResult SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget = NULL) = 0;
 	virtual eGapiResult SetBackBufferSize(unsigned width, unsigned height) = 0;
+	virtual eGapiResult SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget = nullptr) = 0;
 
-	virtual void SetVertexBuffer(const IVertexBuffer* vb) = 0;
-	virtual void SetIndexBuffer(const IIndexBuffer* ib) = 0;
-	virtual void SetInstanceData(/*whatever*/) = 0;
 	virtual eGapiResult SetVSConstantBuffer(const void* data, size_t size, size_t slotIdx) = 0;
 	virtual eGapiResult SetPSConstantBuffer(const void* data, size_t size, size_t slotIdx) = 0;
+	virtual eGapiResult SetTextureArray(const wchar_t* varName, const ITexture2D* const * t, uint8_t nTextures = 1) = 0;
 	virtual eGapiResult SetTexture(int slotIdx, const ITexture2D* t) = 0;
 	virtual eGapiResult SetTexture(const wchar_t* varName, const ITexture2D* t) = 0;
-	virtual eGapiResult SetTextureArray(const wchar_t* varName, const ITexture2D* const * t, uint8_t nTextures = 1) = 0;
-	virtual void SetShaderProgram(IShaderProgram* shProg) = 0;
 	virtual void SetPrimitiveTopology(ePrimitiveTopology t) = 0;
+	virtual void SetShaderProgram(IShaderProgram* shProg) = 0;
+	virtual void SetInstanceData(/*whatever*/) = 0;
+	virtual void SetVertexBuffer(const IVertexBuffer* vb) = 0;
+	virtual void SetIndexBuffer(const IIndexBuffer* ib) = 0;
 
-	virtual eGapiResult SetBlendState(tBlendDesc desc) = 0;
 	virtual eGapiResult SetDepthStencilState(tDepthStencilDesc desc, uint8_t stencilRef) = 0;
-
+	virtual eGapiResult SetBlendState(tBlendDesc desc) = 0;
 
 	// --- misc --- //
 	virtual eGapiResult SetWindow(IWindow *renderWindow) = 0;
-	virtual ITexture2D* GetDefaultRenderTarget() const = 0;
+
 	virtual const wchar_t* GetLastErrorMsg() const = 0;
-
-
-	// --- utility --- //
-	virtual eGapiResult SaveTextureToFile(ITexture2D* t, ITexture2D::eImageFormat f, const char* filePath) const = 0;
+	virtual ITexture2D* GetDefaultRenderTarget() const = 0;
 };

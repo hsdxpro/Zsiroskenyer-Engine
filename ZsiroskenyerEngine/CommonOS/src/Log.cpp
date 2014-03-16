@@ -6,7 +6,7 @@
 #include <windows.h>
 
 void cLog::MsgBox(const zsString& str) {
-	MessageBoxW(NULL, str.c_str(), L"Message", MB_OK | MB_ICONWARNING);
+	MessageBoxW(nullptr, str.c_str(), L"Message", MB_OK | MB_ICONWARNING);
 }
 
 void cLog::Log(const zsString& str) {

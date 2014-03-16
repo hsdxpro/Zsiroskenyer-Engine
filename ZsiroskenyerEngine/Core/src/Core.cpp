@@ -19,7 +19,7 @@ cCore::cCore(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight,
 		graphicsEngine = CreateGraphicsEngine(targetWindow, screenWidth, screenHeight, config, &graphicsEngineError);
 		if (!graphicsEngine) {
 			int choice;
-			choice = MessageBoxA(NULL, 
+			choice = MessageBoxA(nullptr, 
 				graphicsEngineError, 
 				"Failed to create graphics engine", 
 				MB_RETRYCANCEL | MB_ICONERROR);
@@ -30,7 +30,7 @@ cCore::cCore(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight,
 				case IDOK:
 				case IDCANCEL:
 				default:
-					MessageBoxA(NULL,
+					MessageBoxA(nullptr,
 						"THE PROGRAM WILL NOW FORCE-QUIT",
 						"Couldn't create Graphics Engine",
 						MB_ICONWARNING | MB_OK);

@@ -18,7 +18,7 @@ class cGeometryRef : public zs_shared_ptr<cGeometry> {
 	friend struct std::hash<cGeometryRef>;
 public:
 	cGeometryRef();
-	cGeometryRef(cResourceManager* rm, cGeometry* ptr = NULL);
+	cGeometryRef(cResourceManager* rm, cGeometry* ptr = nullptr);
 	cGeometryRef(const cGeometryRef& other);
 	cGeometryRef(cGeometryRef&& other);
 
@@ -35,7 +35,7 @@ class cMaterialRef : public zs_shared_ptr<cMaterial> {
 	friend struct std::hash<cMaterialRef>;
 public:
 	cMaterialRef();
-	cMaterialRef(cResourceManager* rm, cMaterial* ptr = NULL);
+	cMaterialRef(cResourceManager* rm, cMaterial* ptr = nullptr);
 	cMaterialRef(const cMaterialRef& other);
 	cMaterialRef(cMaterialRef&& other);
 
@@ -52,7 +52,7 @@ class cTextureRef : public zs_shared_ptr<ITexture2D> {
 	friend struct std::hash<cTextureRef>;
 public:
 	cTextureRef();
-	cTextureRef(cResourceManager* rm, ITexture2D* ptr = NULL);
+	cTextureRef(cResourceManager* rm, ITexture2D* ptr = nullptr);
 	cTextureRef(const cTextureRef& other);
 	cTextureRef(cTextureRef&& other);
 

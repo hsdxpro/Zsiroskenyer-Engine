@@ -12,7 +12,7 @@
 
 // constructor
 cMaterial::cMaterial() 
-:subMaterials(NULL), nSubMaterials(0) {
+:subMaterials(nullptr), nSubMaterials(0) {
 }
 
 cMaterial::cMaterial(size_t nSubMaterials)

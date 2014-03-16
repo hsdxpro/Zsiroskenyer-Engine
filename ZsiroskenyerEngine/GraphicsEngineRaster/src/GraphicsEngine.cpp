@@ -30,7 +30,7 @@
 // DLL pure C interface
 extern "C"
 __declspec(dllexport) IGraphicsEngine* CreateGraphicsEngineRaster(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight, tGraphicsConfig config, const char** errorMessage) {
-	cGraphicsEngine* engine = NULL;
+	cGraphicsEngine* engine = nullptr;
 	static std::string errMsg;
 	try {
 		engine = new cGraphicsEngine(targetWindow, screenWidth, screenHeight, config);
@@ -93,7 +93,7 @@ shadowRenderer(nullptr)
 			gApi = CreateGraphicsApi(targetWindow, screenWidth, screenHeight, eGraphicsApiType::GRAPHICS_API_OPENGL43);
 			break;
 		default:
-			gApi = NULL;
+			gApi = nullptr;
 	}
 	if (!gApi)
 		throw std::runtime_error("failed to create graphics api");
@@ -231,7 +231,7 @@ IGraphicsScene* cGraphicsEngine::CreateScene(tRenderState state) {
 		return newScene;
 	}
 	catch (std::exception&) {
-		return NULL;
+		return nullptr;
 	}
 }
 
