@@ -46,7 +46,7 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 }
 
 float4 PS_MAIN(VS_OUT In) : COLOR0 {
-	float focusedPointDist = distance(camPos, GetWorldPosition( In.tex0, tex2D(depthTexture, float2(0.5f, 0.5f)), invViewProj));
+	float focusedPointDist = distance(camPos, GetWorldPosition( float2(0.5f, 0.5f), tex2D(depthTexture, float2(0.5f, 0.5f)), invViewProj));
 	float focalLength = retinaLensDist * focusedPointDist / (retinaLensDist + focusedPointDist);
 	float pointDist = distance(camPos, GetWorldPosition( In.tex0, tex2D(depthTexture, In.tex0), invViewProj));
 
