@@ -1,0 +1,64 @@
+#include "common.cginc"
+
+sampler2D depthTexture = {
+	MipFilter = POINT,
+    	MinFilter = POINT,
+    	MagFilter = POINT,
+	AddressU = CLAMP,
+	AddressV = CLAMP,
+};
+
+sampler2D inputFocalPlaneTex = {
+	MipFilter = POINT,
+	MinFilter = POINT,
+	MagFilter = POINT,
+	AddressU = CLAMP,
+	AddressV = CLAMP,
+};
+
+struct {
+	float4x4 invViewProj;
+	float3	 camPos;
+} cBuffer : register(c0);		
+
+
+
+struct VS_IN {
+	float3 posL 	: POSITION;
+	float2 tex0 	: TEXCOORD0;
+};
+
+struct VS_OUT {
+	float4 posH : SV_POSITION;
+};
+
+
+VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
+	VS_OUT Out;
+	Out.posH = float4(  float2( (VertexID << 1) & 2, VertexID & 2 ) * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f), 0.0f, 1.0f );
+	return Out;
+}
+
+float PS_MAIN(VS_OUT In) : COLOR0 {
+	// We adapt slowly to that
+    float destFocalDist = distance(cBuffer.camPos, GetWorldPosition( float2(0.5f, 0.5f), tex2D(depthTexture, float2(0.5f, 0.5f)).r, cBuffer.invViewProj));
+	//return destFocalDist;
+
+	// The last result of adaption
+	float currFocalDist = tex2D(inputFocalPlaneTex, float2(0.5f, 0.5f)).r;
+
+	// So for example destination : 500, last result : 200, we need adaption...etc etc
+	if(abs(destFocalDist - currFocalDist) > 0.1f)
+		return normalize((destFocalDist - currFocalDist )) * 0.2f + currFocalDist; // So slow adaption...	
+
+	return destFocalDist;
+}
+
+technique t
+{
+	pass p
+	{
+		VertexProgram = compile vs_4_0 VS_MAIN();
+		FragmentProgram = compile ps_4_0 PS_MAIN();
+	}
+}

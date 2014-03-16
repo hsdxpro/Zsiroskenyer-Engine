@@ -1,6 +1,6 @@
 #include "common.cginc"
 
-sampler2D inputTexture : register(s0) = {
+sampler2D inputTexture = {
 	MipFilter = POINT,
     MinFilter = POINT,
     MagFilter = POINT,
@@ -8,7 +8,7 @@ sampler2D inputTexture : register(s0) = {
 	AddressV = CLAMP,
 };
  
-sampler2D depthTexture : register(s1) = {
+sampler2D depthTexture = {
 	MipFilter = POINT,
     MinFilter = POINT,
     MagFilter = POINT,
@@ -16,7 +16,7 @@ sampler2D depthTexture : register(s1) = {
 	AddressV = CLAMP,
 };
 
-sampler2D adaptedFocalPlaneTex : register(s1) = {
+sampler2D adaptedFocalPlaneTex = {
 	MipFilter = POINT,
     MinFilter = POINT,
     MagFilter = POINT,
@@ -54,8 +54,8 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 }
 
 float4 PS_MAIN(VS_OUT In) : COLOR0 {
-    float focalPlaneDist = tex2D(adaptedFocalPlaneTex, float2(0.5f, 0.5f)).r;
-	float focusedPointDist = distance(camPos, focusedPointDist);
+	// Plane as point
+	float focusedPointDist = tex2D(adaptedFocalPlaneTex, float2(0.5f, 0.5f)).r;
 	float focalLength = retinaLensDist * focusedPointDist / (retinaLensDist + focusedPointDist);
 	float pointDist = distance(camPos, GetWorldPosition( In.tex0, tex2D(depthTexture, In.tex0).r, invViewProj));
 

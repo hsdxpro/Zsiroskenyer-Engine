@@ -138,8 +138,8 @@ void cGraphicsEngine::cPostProcessor::ProcessDOF(const cCamera& cam) {
 	//-------------------------------------------------------------------------------------//
 	// --------------------------- FIRST PASS : ADAPT FOCAL PLANE -------------------------//
 	//-------------------------------------------------------------------------------------//
-	gApi->SetRenderTargets(1, &focalPlaneTexB);
 	gApi->SetShaderProgram(shaderFocalPlaneAdaption);
+	gApi->SetRenderTargets(1, &focalPlaneTexB);
 	gApi->SetTexture(L"inputFocalPlaneTex", focalPlaneTexA);	// Input focal plane
 	gApi->SetTexture(L"depthTexture", inputTexDepth);			// Input depth  (need posW)
 	gApi->Draw(3);
