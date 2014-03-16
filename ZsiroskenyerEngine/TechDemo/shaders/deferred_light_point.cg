@@ -38,7 +38,7 @@ VS_OUT VS_MAIN(VS_IN In) {
 	// view ray
 	float4 viewRay = mul(vout.posH, invViewProj);
 	viewRay *= (1.0f / viewRay.w);
-	viewRay -= camPos;
+	viewRay.xyz -= camPos;
 	vout.viewRay = viewRay.xyz * (1.0f / farPlane);
 
 	return vout;

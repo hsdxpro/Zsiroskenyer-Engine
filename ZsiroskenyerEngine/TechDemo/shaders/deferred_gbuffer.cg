@@ -119,7 +119,7 @@ struct PS_OUT {
 	float4 gb0 : COLOR0;
 	float2 gb1 : COLOR1;
 	float4 gb2 : COLOR2;
-	//float depth : DEPTH;
+	float depth : DEPTH;
 };
 PS_OUT PS_MAIN(VS_OUT In) {
 	PS_OUT Out;
@@ -136,7 +136,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 		Out.gb1 = gb.normal;
 		Out.gb2 = gb.misc;
 	}
-	//Out.depth = In.linearDepth;
+	Out.depth = In.linearDepth;
 	return Out;
 };
 

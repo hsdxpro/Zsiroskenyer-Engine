@@ -697,6 +697,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		// load shader constants
 		shaderConstants.lightColor = light.color;
 		shaderConstants.lightDir = light.direction;
+		gApi->SetVSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
 		gApi->SetPSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
 
 		// shadowmap constants

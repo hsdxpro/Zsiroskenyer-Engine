@@ -62,9 +62,9 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 	// output position (unused in pixel shader)
 	vout.posH = float4(  vout.tex0 * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f), 0.0f, 1.0f );
 	// view ray
-	float4 viewRay = mul(vout.posH, invViewProj);
-	viewRay *= (1.0f / viewRay.w);
-	viewRay -= camPos;
+	float4 viewRay = mul(float4(vout.posH.xy, 1.0f, 1.0f), invViewProj);
+	viewRay.xyz *= (1.0f / viewRay.w);;
+	viewRay.xyz -= camPos;
 	vout.viewRay = viewRay.xyz * (1.0f / farPlane);
 
 	return vout;
