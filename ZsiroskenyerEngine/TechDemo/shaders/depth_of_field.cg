@@ -20,8 +20,8 @@ sampler2D adaptedFocalPlaneTex = {
 	MipFilter = POINT,
     MinFilter = POINT,
     MagFilter = POINT,
-	AddressU = WRAP,
-	AddressV = WRAP,
+	AddressU = CLAMP,
+	AddressV = CLAMP,
 };
 
 struct {
@@ -70,7 +70,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 
 	// Interesting example : CoC * (1.0f / ~retinaRadius) * inputTextureWidth;
 	// The first product normalizes te CoC to our retina, so the result will be [0,1] then scale this by input texture width
-	float blurRadius = CoC * cBuffer.invRetinaRadiusProductInputTexWidth * 3;
+	float blurRadius = CoC * cBuffer.invRetinaRadiusProductInputTexWidth;
 
 	float4 color = tex2D(inputTexture, In.tex0);
 	float alpha = color.a;
