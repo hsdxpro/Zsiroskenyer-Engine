@@ -22,18 +22,10 @@ float3 GetWorldPosition(float2 screenCoords, float depth, float4x4 invViewProj) 
 	return posW.xyz;
 }
 
-/*
-float3 GetWorldPosition(float3 camPos, float3 lindepth, float3 vsFarFrustumRay) {
-	return linDepth * vsFarFrustumRay + camPos;
+float3 GetWorldPosition(float3 camPos, float3 viewRay, float linearDepth, float nearPlane, float farPlane) {
+	return camPos + viewRay*(nearPlane + linearDepth*(farPlane - nearPlane));
 }
-*/
 
-/*
-float3 GetWorldPosition(float2 screenCoords, float linearDepth, float nearPlane, float farPlane) {
-	
-
-}
-*/
 
 // Pack/unpack normals
 float2 PackNormal(float3 n) {

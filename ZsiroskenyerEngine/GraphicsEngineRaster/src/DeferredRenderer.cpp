@@ -466,8 +466,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	//--------------------------------------------------------------------------//
 
 	// HBAO FUCK YEAH, I really like the small and smart constant buffer :D
-	struct
-	{
+	// wow, such constant buffer, much beauty, so incomprehensible
+	struct {
 		float AOResolution[2];		float _pad0[2];
 		float InvAOResolution[2];	float _pad1[2];
 
@@ -602,6 +602,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	float lightRange : register(c12);
 	float3 lightAtten : register(c13);
 	float2 lightAngle : register(c14);
+	float nearPlane		 : register(c15);
+	float farPlane		 : register(c16);
 	*/
 	struct {
 		Matrix44 viewProj;
@@ -613,6 +615,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		float lightRange;	float _pad5[3];
 		Vec3 lightAtten;	float _pad6;
 		float lightAngleInner, lightAngleOuter;	float _pad7[2];
+		float nearPlane; float _pad8[3];
+		float farPlane; float _pad9[3];
 	} shaderConstants;
 	float f = 2.0f;
 	memset(&shaderConstants, *((int*)&f), sizeof(shaderConstants));
@@ -622,6 +626,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	shaderConstants.invViewProj = viewProj;
 	shaderConstants.invViewProj.Inverse();
 	shaderConstants.camPos = cam->GetPos();
+	shaderConstants.nearPlane = cam->GetNearPlane();
+	shaderConstants.farPlane = cam->GetFarPlane();
 	Matrix44 test = shaderConstants.invViewProj * shaderConstants.viewProj;
 
 

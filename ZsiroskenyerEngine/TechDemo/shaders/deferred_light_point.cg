@@ -16,6 +16,7 @@ struct VS_IN {
 };
 struct VS_OUT {
 	float4 posH 	: POSITION;
+	float3 viewRay	: COLOR0;
 	float2 tex0 	: TEXCOORD0;
 };
 
@@ -33,6 +34,12 @@ VS_OUT VS_MAIN(VS_IN In) {
 	
 	vout.tex0.x = vout.posH.x / vout.posH.w * 0.5f + 0.5;
 	vout.tex0.y = vout.posH.y / vout.posH.w * -0.5f + 0.5;
+
+	// view ray
+	float4 viewRay = mul(vout.posH, invViewProj);
+	viewRay *= (1.0f / viewRay.w);
+	viewRay -= camPos;
+	vout.viewRay = viewRay.xyz * (1.0f / farPlane);
 
 	return vout;
 }
@@ -58,8 +65,10 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	float3 diffuseColor;
 	float depth;
 	float glossiness, specLevel;
-	SampleGBuffer(In.tex0, diffuseColor, normal, glossiness, specLevel, worldPos, depth);
-	
+	SampleGBuffer(In.tex0, diffuseColor, normal, glossiness, specLevel);	
+	depth = tex2D(depthBuffer, In.tex0);
+	worldPos = GetWorldPosition(camPos, In.viewRay, depth, nearPlane, farPlane);
+
 	// calculate lighting terms
 	float diffuseTerm = DiffuseTerm(lightDir, normal);
 	float specTerm = SpecularTerm(lightPos - worldPos, normal, normalize(worldPos-camPos), 0.2f) * specLevel;
