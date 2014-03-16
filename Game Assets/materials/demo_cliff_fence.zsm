@@ -5,5 +5,5 @@ emissive 0 0 0 0
 glossiness 0.5
 tdiffuse ../textures/cliff.jpg
 tnormal ../textures/cliff_NORMAL.jpg
-tspecular
-tdisplace
+tspecular ../textures/cliff_DISP.jpg
+tdisplace ../textures/cliff_DISP.jpg

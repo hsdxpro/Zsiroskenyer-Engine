@@ -54,8 +54,8 @@ int cStrUtil::Find(const zsString& in, wchar_t that) {
 	wchar_t const* s = in.c_str();
 	size_t idx = 0;
 	while (s[idx] != '\0')
-	if (s[idx++] == that)
-		return idx;
+		if (s[idx++] == that)
+			return --idx;
 
 	return -1;
 }
@@ -64,8 +64,8 @@ int cStrUtil::Find(const char* in, char that, char rightBound) {
 	char const* s = in;
 	size_t idx = 0;
 	while (s[idx] != '\0' && s[idx] != rightBound)
-	if (s[idx++] == that)
-		return idx;
+		if (s[idx++] == that)
+			return --idx;
 
 	return -1;
 }
@@ -155,19 +155,20 @@ void cStrUtil::CutNumberFromEnd(char* src) {
 
 void cStrUtil::TrimBorder(std::list<zsString>& strs, const wchar_t* borderChars, size_t nChars) {
 	
-	// For each string
 	size_t leftIdx;
 	size_t rightIdx;
 	size_t i = 0;
+
+	// For each string
 	for (auto it = strs.begin(); it != strs.end(); it++) {
 		const wchar_t* str = it->c_str();
 		leftIdx = 0;
+		i = 0;
 
 		// Trimming left, while found trimmable char
 		while (i != nChars) {
 			// match trimmable chars
-			i = 0;
-			for (; i < nChars; i++)
+			for (i = 0; i < nChars; i++)
 				if (str[leftIdx] == borderChars[i])
 				{
 					leftIdx++; // Trimming occurs

@@ -191,7 +191,12 @@ cCgShaderHelper::tHLSLDesc cCgShaderHelper::GetHLSLDesc(const zsString& hlslFile
 			else {
 				// Example : _pout._color = _TMP23.Sample(_diffuseTex, _In._tex01);
 				textureName = cStrUtil::SubStrLeft(row, chPos - 1, '_');
-				samplerName = cStrUtil::SubStrRight(row, chPos + 9, ',', -1);
+
+				// Go to parenthesis '(' Noob solution, good solution is to start from chPos...
+				auto parenthesisIdx = cStrUtil::Find(row, '(');
+				assert(parenthesisIdx > 0);
+
+				samplerName = cStrUtil::SubStrRight(row, parenthesisIdx + 2, ',', -1);
 			}
 
 			auto it = textureSlots.find(textureName);
