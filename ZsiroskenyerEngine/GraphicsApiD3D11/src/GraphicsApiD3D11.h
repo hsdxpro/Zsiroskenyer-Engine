@@ -100,9 +100,34 @@ private:
 	eGapiResult CreateMostAcceptableSwapChain(size_t width, size_t height, HWND windowHandle);
 	eGapiResult CreateViewsForBB();
 	eGapiResult CreateDefaultStates();
-	HRESULT CompileShaderFromFile(const zsString& fileName, const zsString& entry, const zsString& profile, zsString* compilerMessage, ID3DBlob** ppBlobOut);
 	void ApplyConstantBuffers();
 	void ApplySamplerStates();
+
+	HRESULT CompileShaderFromFile(const zsString& fileName, const zsString& entry, const zsString& profile, zsString* compilerMessage, ID3DBlob** ppBlobOut);
+	void AutoSetInputLayout(cShaderProgramD3D11* shader, cVertexBufferD3D11* buffer);
+	ID3D11InputLayout* GetInputLayout(cShaderProgramD3D11* shader, cVertexFormat bufferFormat);
+
+	// Buffer convert
+	DXGI_FORMAT ConvertToNativeFormat(eFormat fmt);
+	unsigned ConvertToNativeBind(unsigned flags);
+	D3D11_USAGE ConvertToNativeUsage(eUsage usage);
+
+	// Blend convert
+	D3D11_BLEND_OP ConvertToNativeBlendOp(eBlendOp blendOp);
+	D3D11_BLEND ConvertToNativeBlendFactor(eBlendFactor blendFactor);
+	uint8_t ConvertToNativeBlendMask(eBlendWriteMask blendMask);
+	D3D11_BLEND_DESC ConvertToNativeBlend(tBlendDesc blend);
+
+	// Depthstencil convert
+	D3D11_COMPARISON_FUNC ConvertToNativeCompFunc(eComparisonFunc compFunc);
+	D3D11_STENCIL_OP ConvertToNativeStencilOp(eStencilOp stencilOp);
+	D3D11_DEPTH_STENCIL_DESC ConvertToNativeDepthStencil(const tDepthStencilDesc& depthStencil);
+
+	// Sampler convert
+	D3D11_SAMPLER_DESC ConvertToNativeSampler(const tSamplerStateDesc& sDesc);
+
+	// Vertex format
+	std::vector<D3D11_INPUT_ELEMENT_DESC> ConvertToNativeVertexFormat(cVertexFormat format);
 
 protected:
 	// Error handling
@@ -117,7 +142,6 @@ protected:
 	ID3D11Device *d3ddev;
 	IDXGISwapChain *d3dsc;
 
-// inner TMP
 
 	// Draw state stuff
 	cShaderProgramD3D11* activeShaderProg;
@@ -163,7 +187,4 @@ protected:
 	};
 	using InputLayoutMapT = std::unordered_map<std::pair<cVertexFormat, cVertexFormat>, ID3D11InputLayout*, ILHasher>;
 	InputLayoutMapT inputLayoutStore;
-
-	void AutoSetInputLayout(cShaderProgramD3D11* shader, cVertexBufferD3D11* buffer);
-	ID3D11InputLayout* GetInputLayout(cShaderProgramD3D11* shader, cVertexFormat bufferFormat);
 };

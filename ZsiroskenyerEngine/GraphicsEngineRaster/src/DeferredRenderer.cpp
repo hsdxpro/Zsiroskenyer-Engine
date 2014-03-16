@@ -29,6 +29,7 @@
 #include <vector>
 #include <memory>
 #include <stdlib.h>
+#include <random>
 
 ////////////////////////////////////////////////////////////////////////////////
 //	Constructor & Destructor
@@ -155,12 +156,42 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	desc.width = bufferWidth; desc.height = bufferHeight;
 
 	// Random texture for ambient occlusion
-	//desc.bind = (int)eBind::SHADER_RESOURCE;
-	//desc.width = 4;
-	//desc.height = 4;
-	//desc.format = eFormat::R16G16B16A16_SNORM;
-	//results[++idxResult] = gApi->CreateTexture(&randomTexture, desc);
+	desc.bind = (int)eBind::SHADER_RESOURCE;
+	desc.width = 4;
+	desc.height = 4;
+	desc.format = eFormat::R16G16B16A16_SNORM;
+	desc.usage = eUsage::IMMUTABLE;
 
+	std::uniform_real_distribution<float>  distribution;
+	std::mt19937 twister;
+
+	twister.seed(91210);
+	distribution = std::uniform_real_distribution<float>(0, 1);
+
+	float mersenneTwisterNumbers[1024];
+	for (uint16_t i = 0; i < 1024; i++) {
+		mersenneTwisterNumbers[i] = distribution(twister);
+	}
+
+	int randomNumberIndex = 0;
+	uint16_t *randData = new uint16_t[desc.width * desc.width * 4];
+	for (uint32_t i = 0; i < desc.width * desc.width* 4; i += 4)
+	{
+		assert(randomNumberIndex < 1024);
+		float r1 = mersenneTwisterNumbers[randomNumberIndex++];
+		float r2 = mersenneTwisterNumbers[randomNumberIndex++];
+
+		// Use random rotatation angles in [0,2P/NUM_HBAO_DIRECTIONS).
+		// This looks the same as sampling [0,2PI), but is faster.
+		float angle = 2.0f * ZS_PI * r1 / 8; // 8 IS NUM_DIRECTIONS, NEED TO MATCH WHAT IS IN THE SHADER HBAO
+		randData[i]		= (uint16_t)((1 << 15)*cos(angle));
+		randData[i + 1] = (uint16_t)((1 << 15)*sin(angle));
+		randData[i + 2] = (uint16_t)((1 << 15)*r2);
+		randData[i + 3] = 0;
+	}
+
+
+	results[++idxResult] = gApi->CreateTexture(&randomTexture, desc, randData);
 
 	// depth buffer and depth copy
 	desc.format = eFormat::R24_UNORM_X8_TYPELESS;	desc.depthFormat = eFormat::D24_UNORM_S8_UINT;	desc.bind = (int)eBind::DEPTH_STENCIL;

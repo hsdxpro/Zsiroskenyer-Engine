@@ -25,7 +25,7 @@
 extern "C"
 __declspec(dllexport)
 IGraphicsApi* CreateGraphicsApiD3D11(IWindow* targetWindow, unsigned backBufferWidth, unsigned backBufferHeight) {
-	cGraphicsApiD3D11* gApi = NULL;
+	cGraphicsApiD3D11* gApi = nullptr;
 	try {
 		gApi = new cGraphicsApiD3D11();
 		gApi->SetWindow(targetWindow);
@@ -33,42 +33,19 @@ IGraphicsApi* CreateGraphicsApiD3D11(IWindow* targetWindow, unsigned backBufferW
 		return gApi;
 	}
 	catch (std::exception&) {
-		return NULL;
+		return nullptr;
 	}
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
-// Internal helper functions
-
-// convert stuff to d3d11-native format
-DXGI_FORMAT ConvertToNativeFormat(eFormat fmt);
-unsigned ConvertToNativeBind(unsigned flags);
-D3D11_USAGE ConvertToNativeUsage(eUsage usage);
-
-D3D11_BLEND_OP ConvertToNativeBlendOp(eBlendOp blendOp);
-D3D11_BLEND ConvertToNativeBlendFactor(eBlendFactor blendFactor);
-uint8_t ConvertToNativeBlendMask(eBlendWriteMask blendMask);
-D3D11_BLEND_DESC ConvertToNativeBlend(tBlendDesc blend);
-
-D3D11_COMPARISON_FUNC ConvertToNativeCompFunc(eComparisonFunc compFunc);
-D3D11_STENCIL_OP ConvertToNativeStencilOp(eStencilOp stencilOp);
-D3D11_DEPTH_STENCIL_DESC ConvertToNativeDepthStencil(const tDepthStencilDesc& depthStencil);
-D3D11_SAMPLER_DESC ConvertToNativeSampler(const tSamplerStateDesc& sDesc);
-
-std::vector<D3D11_INPUT_ELEMENT_DESC> ConvertToNativeVertexFormat(cVertexFormat format);
-
-////////////////////////////////////////////////////////////////////////////////
-// Constructor, Destructor
-
 cGraphicsApiD3D11::cGraphicsApiD3D11()
 : 
-d3ddev(NULL),
-d3dcon(NULL),
-d3dsc(NULL),
-defaultRenderTarget(NULL),
-activeShaderProg(NULL),
-activeVertexBuffer(NULL)
+d3ddev(nullptr),
+d3dcon(nullptr),
+d3dsc(nullptr),
+defaultRenderTarget(nullptr),
+activeShaderProg(nullptr),
+activeVertexBuffer(nullptr)
 {
 	// Create d3ddevice, d3dcontext
 	auto r = CreateDevice();
@@ -77,8 +54,8 @@ activeVertexBuffer(NULL)
 	}
 
 	// Const buffer handling init
-	vsConstBuffer = psConstBuffer = NULL;
-	vsConstBufferData = psConstBufferData = NULL;
+	vsConstBuffer = psConstBuffer = nullptr;
+	vsConstBufferData = psConstBufferData = nullptr;
 	vsConstBufferSize = psConstBufferSize = 0;
 	vsConstBufferStateChanged = psConstBufferStateChanged = false;
 	
@@ -138,11 +115,11 @@ cGraphicsApiD3D11::~cGraphicsApiD3D11() {
 
 eGapiResult cGraphicsApiD3D11::CreateDevice() {
 	// create Graphic Infrastructure factory
-	IDXGIFactory* fact = NULL;
+	IDXGIFactory* fact = nullptr;
 	CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&fact);
 
 	// enumerate adapters
-	IDXGIAdapter* mainAdapter = NULL;
+	IDXGIAdapter* mainAdapter = nullptr;
 	UINT adapterIndex = 0;
 	fact->EnumAdapters(adapterIndex, &mainAdapter);
 
@@ -165,7 +142,7 @@ eGapiResult cGraphicsApiD3D11::CreateDevice() {
 		HRESULT hr = D3D11CreateDevice(mainAdapter, D3D_DRIVER_TYPE_UNKNOWN, 0, 0, featurelevels, nFeatureLevels, D3D11_SDK_VERSION, &d3ddev, &featurelevel, &d3dcon);
 
 		// Wrap mode... for gpu's not supporting hardware accelerated D3D11
-		//HRESULT hr = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_WARP , 0, flags, featurelevels, nFeatureLevels, D3D11_SDK_VERSION, &d3ddev, &featurelevel, &d3dcon); // For dx9 machines
+		//HRESULT hr = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_WARP , 0, flags, featurelevels, nFeatureLevels, D3D11_SDK_VERSION, &d3ddev, &featurelevel, &d3dcon); // For dx9 machines
 		if (!FAILED(hr))
 			break;
 		else {
@@ -186,23 +163,23 @@ eGapiResult cGraphicsApiD3D11::CreateDevice() {
 }
 
 eGapiResult cGraphicsApiD3D11::CreateMostAcceptableSwapChain(size_t width, size_t height, HWND windowHandle) {
-	if (d3dsc != NULL)
+	if (d3dsc != nullptr)
 		SAFE_RELEASE(d3dsc);
 
 	DXGI_FORMAT bbFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 	// create Graphic Infrastructure factory
-	IDXGIFactory* fact = NULL;
+	IDXGIFactory* fact = nullptr;
 	CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&fact);
 
 	// enumerate adapters
-	IDXGIAdapter* mainAdapter = NULL;
+	IDXGIAdapter* mainAdapter = nullptr;
 	UINT adapterIndex = 0;
 	fact->EnumAdapters(adapterIndex, &mainAdapter);
 
 	// enumerate outputs
-	IDXGIOutput* mainOutput = NULL;
-	DXGI_MODE_DESC* modeDesc = NULL;
+	IDXGIOutput* mainOutput = nullptr;
+	DXGI_MODE_DESC* modeDesc = nullptr;
 	UINT outputIndex = 0;
 	mainAdapter->EnumOutputs(outputIndex, &mainOutput);
 
@@ -252,7 +229,7 @@ eGapiResult cGraphicsApiD3D11::CreateMostAcceptableSwapChain(size_t width, size_
 	// Use the selected display mode to fill swap chain description
 	DXGI_SWAP_CHAIN_DESC sdesc;
 	sdesc.BufferCount = 1;
-	if (selectedVideoMode != NULL) {
+	if (selectedVideoMode != nullptr) {
 		sdesc.BufferDesc = *selectedVideoMode; // Copy DisplayMode Data
 	}
 	else {
@@ -301,8 +278,8 @@ eGapiResult cGraphicsApiD3D11::CreateViewsForBB() {
 	ID3D11ShaderResourceView* srv;
 	ID3D11DepthStencilView* dsv;
 
-	ID3D11Texture2D *backBuffer = NULL;
-	HRESULT hr = d3dsc->GetBuffer(NULL, __uuidof(ID3D11Resource), (void**)&backBuffer);
+	ID3D11Texture2D *backBuffer = nullptr;
+	HRESULT hr = d3dsc->GetBuffer(0, __uuidof(ID3D11Resource), (void**)&backBuffer);
 	if (FAILED(hr)) {
 		ASSERT_MSG(false, L"Failed to Get SwapChain buffer");
 		return eGapiResult::ERROR_UNKNOWN;
@@ -316,7 +293,7 @@ eGapiResult cGraphicsApiD3D11::CreateViewsForBB() {
 			return eGapiResult::ERROR_UNKNOWN;
 	}
 
-	hr = d3ddev->CreateShaderResourceView(backBuffer, NULL, &srv);
+	hr = d3ddev->CreateShaderResourceView(backBuffer, nullptr, &srv);
 	if (FAILED(hr)) {
 		ASSERT_MSG(false, L"Failed to create shader resource view for SwapChain's BackBuffer");
 		if (hr == E_OUTOFMEMORY)
@@ -329,7 +306,7 @@ eGapiResult cGraphicsApiD3D11::CreateViewsForBB() {
 	backBuffer->GetDesc(&bbDesc);
 
 	// create Depth texture
-	ID3D11Texture2D *depthTexture = NULL;
+	ID3D11Texture2D *depthTexture = nullptr;
 	D3D11_TEXTURE2D_DESC tD;
 	tD.ArraySize = 1;
 	tD.BindFlags = D3D11_BIND_DEPTH_STENCIL;
@@ -355,7 +332,7 @@ eGapiResult cGraphicsApiD3D11::CreateViewsForBB() {
 	}
 
 	// create DepthStencilView
-	hr = d3ddev->CreateDepthStencilView(depthTexture, NULL, &dsv);
+	hr = d3ddev->CreateDepthStencilView(depthTexture, nullptr, &dsv);
 
 	if (FAILED(hr)) {
 		ASSERT_MSG(false, L"Failed to create depth buffer VIEW for swapChain");
@@ -451,8 +428,8 @@ void cGraphicsApiD3D11::ApplySamplerStates() {
 //	Manage graphics resources
 
 // Create index and vertex buffes for indexed poly-meshes
-eGapiResult	cGraphicsApiD3D11::CreateVertexBuffer(IVertexBuffer** resource, eUsage usage, cVertexFormat format, size_t size, void* data/*= NULL*/) {
-	ID3D11Buffer* buffer = NULL;
+eGapiResult	cGraphicsApiD3D11::CreateVertexBuffer(IVertexBuffer** resource, eUsage usage, cVertexFormat format, size_t size, void* data/*= nullptr*/) {
+	ID3D11Buffer* buffer = nullptr;
 
 	D3D11_BUFFER_DESC desc;
 	desc.ByteWidth = size;
@@ -483,8 +460,8 @@ eGapiResult	cGraphicsApiD3D11::CreateVertexBuffer(IVertexBuffer** resource, eUsa
 	}
 }
 
-eGapiResult	cGraphicsApiD3D11::CreateIndexBuffer(IIndexBuffer** resource, eUsage usage, size_t size, void* data/*= NULL*/) {
-	ID3D11Buffer* buffer = NULL;
+eGapiResult	cGraphicsApiD3D11::CreateIndexBuffer(IIndexBuffer** resource, eUsage usage, size_t size, void* data/*= nullptr*/) {
+	ID3D11Buffer* buffer = nullptr;
 
 	D3D11_BUFFER_DESC desc;
 	desc.ByteWidth = size;
@@ -552,12 +529,12 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const wchar_
 }
 
 // Create texture in memory
-eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const ITexture2D::tDesc& desc, void* data /*= NULL*/) {
-	ID3D11Texture2D* tex = NULL;
+eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const ITexture2D::tDesc& desc, void* data /*= nullptr*/) {
+	ID3D11Texture2D* tex = nullptr;
 	// Outputs
-	ID3D11RenderTargetView* rtv = NULL;
-	ID3D11ShaderResourceView* srv = NULL;
-	ID3D11DepthStencilView* dsv = NULL;
+	ID3D11RenderTargetView* rtv = nullptr;
+	ID3D11ShaderResourceView* srv = nullptr;
+	ID3D11DepthStencilView* dsv = nullptr;
 
 	bool isRenderTarget = 0 != ((int)desc.bind & (int)eBind::RENDER_TARGET);
 	bool isShaderBindable = 0 != ((int)desc.bind & (int)eBind::SHADER_RESOURCE);
@@ -587,15 +564,20 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const ITextu
 	// make the format typeless if it has depth:
 	if (hasDepthStencil) {
 		switch (desc.depthFormat) {
-		case eFormat::D16_UNORM: texDesc.Format = DXGI_FORMAT_R16_TYPELESS; break;
-		case eFormat::D24_UNORM_S8_UINT: texDesc.Format = DXGI_FORMAT_R24G8_TYPELESS; break;
-		case eFormat::D32_FLOAT: texDesc.Format = DXGI_FORMAT_R32_TYPELESS; break;
+		case eFormat::D16_UNORM:			texDesc.Format = DXGI_FORMAT_R16_TYPELESS;	  break;
+		case eFormat::D24_UNORM_S8_UINT:	texDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;  break;
+		case eFormat::D32_FLOAT:			texDesc.Format = DXGI_FORMAT_R32_TYPELESS;	  break;
 		case eFormat::D32_FLOAT_S8X24_UINT: texDesc.Format = DXGI_FORMAT_R32G32_TYPELESS; break;
 		}
 	}
 
+	D3D11_SUBRESOURCE_DATA subData;
+	subData.pSysMem = data;
+	subData.SysMemPitch = 4 * 8;
+	subData.SysMemSlicePitch = 0;	
+
 	// create texture resource
-	hr = d3ddev->CreateTexture2D(&texDesc, NULL, &tex);
+	hr = d3ddev->CreateTexture2D(&texDesc, data ? &subData : nullptr, &tex);
 	if (FAILED(hr)) {
 		lastErrorMsg = L"failed to create resource";
 		if (hr == E_OUTOFMEMORY)
@@ -607,7 +589,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const ITextu
 	// view descriptors
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	D3D11_SHADER_RESOURCE_VIEW_DESC* pSrvDesc = NULL;
+	D3D11_SHADER_RESOURCE_VIEW_DESC* pSrvDesc = nullptr;
 	// create views as needed
 	if (hasDepthStencil) {
 		// fill ds view desc
@@ -637,7 +619,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const ITextu
 		}
 	}
 	if (isRenderTarget) {
-		hr = d3ddev->CreateRenderTargetView(tex, NULL, &rtv);
+		hr = d3ddev->CreateRenderTargetView(tex, nullptr, &rtv);
 		if (FAILED(hr)) {
 			SAFE_RELEASE(dsv);
 			SAFE_RELEASE(tex);
@@ -696,7 +678,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const ITextu
 		}
 		if (errorCode != eGapiResult::OK) {
 			// clear all and return failure
-			MessageBoxA(NULL, "NEM MEGY EZ A FOS", "BAZMEG", MB_OK);
+			MessageBoxA(nullptr, "NEM MEGY EZ A FOS", "BAZMEG", MB_OK);
 		}
 	}
 	
@@ -717,11 +699,11 @@ HRESULT cGraphicsApiD3D11::CompileShaderFromFile(const zsString& fileName, const
 	wcstombs(ansiEntry, entry.c_str(), 256);
 	wcstombs(ansiProfile, profile.c_str(), 256);
 
-	hr = D3DX11CompileFromFileW(fileName.c_str(), NULL, NULL, ansiEntry, ansiProfile,
-		dwShaderFlags, 0, NULL, ppBlobOut, &pErrorBlob, NULL);
+	hr = D3DX11CompileFromFileW(fileName.c_str(), nullptr, nullptr, ansiEntry, ansiProfile,
+		dwShaderFlags, 0, nullptr, ppBlobOut, &pErrorBlob, nullptr);
 	if (FAILED(hr) && pErrorBlob) {
 		char* errorStr = (char*)pErrorBlob->GetBufferPointer();
-		int size_needed = MultiByteToWideChar(CP_UTF8, 0, errorStr, strlen(errorStr), NULL, 0);
+		int size_needed = MultiByteToWideChar(CP_UTF8, 0, errorStr, strlen(errorStr), nullptr, 0);
 		zsString errorStrW(size_needed, 0);
 		MultiByteToWideChar(CP_UTF8, 0, errorStr, strlen(errorStr), &errorStrW[0], size_needed);
 
@@ -762,7 +744,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	bool compileCg	= false;
 	bool readBin	= false;
 
-	cCgShaderHelper* cgHelper = NULL;
+	cCgShaderHelper* cgHelper = nullptr;
 	uint64_t sumLastWriteTimes = 0;
 
 	// Cg exist
@@ -770,7 +752,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 		// cg helper come and help out us :), you know lot of things about the current CG file
 		cgHelper = new cCgShaderHelper(shaderPath);
-		if (cgHelper->GetLastErrorMsg() != NULL)
+		if (cgHelper->GetLastErrorMsg() != nullptr)
 		{
 			lastErrorMsg = cgHelper->GetLastErrorMsg();
 			return eGapiResult::ERROR_UNKNOWN;
@@ -1022,7 +1004,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	// Create vertex shader
 	if (byteCodes[cCgShaderHelper::VS].byteCodeSize != 0) {
 		auto byteCodeInfo = byteCodes[cCgShaderHelper::VS];
-		hr = d3ddev->CreateVertexShader(byteCodeInfo.byteCode.get(), byteCodeInfo.byteCodeSize, NULL, &vs);
+		hr = d3ddev->CreateVertexShader(byteCodeInfo.byteCode.get(), byteCodeInfo.byteCodeSize, nullptr, &vs);
 		if (FAILED(hr)) {
 			lastErrorMsg = L"Failed to create vertex shader from bytecode: " + binShaderPath;
 			return eGapiResult::ERROR_UNKNOWN;
@@ -1032,7 +1014,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	// Create hull shader
 	if (byteCodes[cCgShaderHelper::HS].byteCodeSize != 0) {
 		auto byteCodeInfo = byteCodes[cCgShaderHelper::HS];
-		hr = d3ddev->CreateHullShader(byteCodeInfo.byteCode.get(), byteCodeInfo.byteCodeSize, NULL, &hs);
+		hr = d3ddev->CreateHullShader(byteCodeInfo.byteCode.get(), byteCodeInfo.byteCodeSize, nullptr, &hs);
 		if (FAILED(hr)) {
 			lastErrorMsg = L"Failed to create hull shader from bytecode: " + binShaderPath;
 			return eGapiResult::ERROR_UNKNOWN;
@@ -1042,7 +1024,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	// Create domain shader
 	if (byteCodes[cCgShaderHelper::DS].byteCodeSize != 0) {
 		auto byteCodeInfo = byteCodes[cCgShaderHelper::DS];
-		hr = d3ddev->CreateDomainShader(byteCodeInfo.byteCode.get(), byteCodeInfo.byteCodeSize, NULL, &ds);
+		hr = d3ddev->CreateDomainShader(byteCodeInfo.byteCode.get(), byteCodeInfo.byteCodeSize, nullptr, &ds);
 		if (FAILED(hr)) {
 			lastErrorMsg = L"Failed to create domain shader from bytecode: " + binShaderPath;
 			return eGapiResult::ERROR_UNKNOWN;
@@ -1052,7 +1034,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	// Create geometry shader
 	if (byteCodes[cCgShaderHelper::GS].byteCodeSize != 0) {
 		auto byteCodeInfo = byteCodes[cCgShaderHelper::GS];
-		hr = d3ddev->CreateGeometryShader(byteCodeInfo.byteCode.get(), byteCodeInfo.byteCodeSize, NULL, &gs);
+		hr = d3ddev->CreateGeometryShader(byteCodeInfo.byteCode.get(), byteCodeInfo.byteCodeSize, nullptr, &gs);
 		if (FAILED(hr)) {
 			lastErrorMsg = L"Failed to create geometry shader from bytecode: " + binShaderPath;
 			return eGapiResult::ERROR_UNKNOWN;
@@ -1062,7 +1044,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 	// Create pixel shader
 	if (byteCodes[cCgShaderHelper::PS].byteCodeSize != 0) {
 		auto byteCodeInfo = byteCodes[cCgShaderHelper::PS];
-		hr = d3ddev->CreatePixelShader(byteCodeInfo.byteCode.get(), byteCodeInfo.byteCodeSize, NULL, &ps);
+		hr = d3ddev->CreatePixelShader(byteCodeInfo.byteCode.get(), byteCodeInfo.byteCodeSize, nullptr, &ps);
 		if (FAILED(hr)) {
 			lastErrorMsg = L"Failed to create pixel shader from bytecode: " + binShaderPath;
 			return eGapiResult::ERROR_UNKNOWN;
@@ -1078,7 +1060,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		D3D11_SAMPLER_DESC sDesc = ConvertToNativeSampler(pair.second);
 
 		// Check if that sampler exists in gapi
-		ID3D11SamplerState* state = NULL;
+		ID3D11SamplerState* state = nullptr;
 		for (size_t i = 0; i < samplerStates.size(); i++) {
 			if (memcmp(&sDesc, &samplerStates[i].desc, sizeof(D3D11_SAMPLER_DESC)) == 0) {
 				state = samplerStates[i].state;
@@ -1087,7 +1069,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 		}
 
 		// Not found, so create, add
-		if (state == NULL) {
+		if (state == nullptr) {
 			HRESULT hr = d3ddev->CreateSamplerState(&sDesc, &state);
 			if (FAILED(hr)) {
 				lastErrorMsg = L"Can't create SamplerState";
@@ -1151,7 +1133,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 
 //	Write to various resources
 eGapiResult cGraphicsApiD3D11::WriteResource(IIndexBuffer* buffer, void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
-	ASSERT(buffer != NULL);
+	ASSERT(buffer != nullptr);
 
 	if (buffer->GetSize() < size + offset)
 		return eGapiResult::ERROR_OUT_OF_RANGE;
@@ -1172,7 +1154,7 @@ eGapiResult cGraphicsApiD3D11::WriteResource(IIndexBuffer* buffer, void* source,
 }
 
 eGapiResult cGraphicsApiD3D11::WriteResource(IVertexBuffer* buffer, void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
-	ASSERT(buffer != NULL);
+	ASSERT(buffer != nullptr);
 
 	if (buffer->GetSize() < size + offset)
 		return eGapiResult::ERROR_OUT_OF_RANGE;
@@ -1194,7 +1176,7 @@ eGapiResult cGraphicsApiD3D11::WriteResource(IVertexBuffer* buffer, void* source
 
 // Read from various resources
 eGapiResult cGraphicsApiD3D11::ReadResource(IIndexBuffer* buffer, void* dest, size_t size, size_t offset /*= 0*/) {
-	ASSERT(buffer != NULL);
+	ASSERT(buffer != nullptr);
 
 	if (buffer->GetSize() < size + offset)
 		return eGapiResult::ERROR_OUT_OF_RANGE;
@@ -1216,7 +1198,7 @@ eGapiResult cGraphicsApiD3D11::ReadResource(IIndexBuffer* buffer, void* dest, si
 }
 
 eGapiResult cGraphicsApiD3D11::ReadResource(IVertexBuffer* buffer, void* dest, size_t size, size_t offset /*= 0*/) {
-	ASSERT(buffer != NULL);
+	ASSERT(buffer != nullptr);
 
 	if (buffer->GetSize() < size + offset)
 		return eGapiResult::ERROR_OUT_OF_RANGE;
@@ -1238,7 +1220,7 @@ eGapiResult cGraphicsApiD3D11::ReadResource(IVertexBuffer* buffer, void* dest, s
 }
 
 eGapiResult cGraphicsApiD3D11::ReadResource(ITexture2D* texture, void* dest, size_t size, size_t offset /*= 0*/) {
-	ASSERT(texture != NULL);
+	ASSERT(texture != nullptr);
 
 	// TODO OUT OF RANGE CHECK
 	//if (buffer->GetSize() < size + offset)
@@ -1262,7 +1244,7 @@ eGapiResult cGraphicsApiD3D11::ReadResource(ITexture2D* texture, void* dest, siz
 
 // Copy among resources
 eGapiResult cGraphicsApiD3D11::CopyResource(ITexture2D* src, ITexture2D* dst) {
-	ASSERT(src != NULL && dst != NULL);
+	ASSERT(src != nullptr && dst != nullptr);
 
 	d3dcon->CopyResource((ID3D11Resource*)((cTexture2DD3D11*)dst)->Get(), (ID3D11Resource*)((cTexture2DD3D11*)src)->Get());
 	return eGapiResult::OK;
@@ -1295,7 +1277,7 @@ void cGraphicsApiD3D11::Clear(bool target /*= true*/, bool depth /*= false*/, bo
 
 // Clear texture
 void cGraphicsApiD3D11::ClearTexture(ITexture2D* t, unsigned clearFlag /*= 0*/, const Vec4& clearColor /*= Vec4()*/, float depthVal /*= 1.0f*/, size_t stencilVal /*= 0*/) {
-	ASSERT(t != NULL);
+	ASSERT(t != nullptr);
 	
 	ID3D11DepthStencilView* dsv = ((cTexture2DD3D11*)t)->GetDSV();
 	if (dsv)
@@ -1342,7 +1324,7 @@ void cGraphicsApiD3D11::DrawInstancedIndexed(size_t nIndicesPerInstance, size_t 
 
 // Set indexed poly-mesh buffers
 void cGraphicsApiD3D11::SetVertexBuffer(const IVertexBuffer* vb) {
-	ASSERT(vb != NULL);
+	ASSERT(vb != nullptr);
 	activeVertexBuffer = (cVertexBufferD3D11*)vb;
 
 	const UINT strides = vb->GetStride();
@@ -1352,7 +1334,7 @@ void cGraphicsApiD3D11::SetVertexBuffer(const IVertexBuffer* vb) {
 	AutoSetInputLayout(activeShaderProg, activeVertexBuffer);
 }
 void cGraphicsApiD3D11::SetIndexBuffer(const IIndexBuffer* ib) {
-	ASSERT(ib != NULL);
+	ASSERT(ib != nullptr);
 
 	d3dcon->IASetIndexBuffer(((cIndexBufferD3D11*)ib)->GetBufferPointer(), DXGI_FORMAT_R32_UINT, 0);
 }
@@ -1363,10 +1345,10 @@ void cGraphicsApiD3D11::SetInstanceData() {
 
 // Set shader texture resource
 eGapiResult cGraphicsApiD3D11::SetTexture(int slotIdx, const ITexture2D* t) {
-	ASSERT(t != NULL);
+	ASSERT(t != nullptr);
 
 	const ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)t)->GetSRV();
-	if (srv != NULL) {
+	if (srv != nullptr) {
 		d3dcon->PSSetShaderResources(slotIdx, 1, (ID3D11ShaderResourceView**)&srv);
 		return eGapiResult::OK;
 	} else {
@@ -1379,12 +1361,12 @@ eGapiResult cGraphicsApiD3D11::SetTexture(const wchar_t* varName, const ITexture
 	return SetTextureArray(varName, &t);
 }
 eGapiResult cGraphicsApiD3D11::SetTextureArray(const wchar_t* varName, const ITexture2D* const * t, uint8_t nTextures/* = 1*/) {
-	ASSERT(t != NULL);
+	ASSERT(t != nullptr);
 
 	eGapiResult r;
 	for (uint8_t i = 0; i < nTextures; i++) {
 		const ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)t[i])->GetSRV();
-		if (srv != NULL) {
+		if (srv != nullptr) {
 			int startSlot = ((cShaderProgramD3D11*)activeShaderProg)->GetTextureSlotVS(varName);
 			if (startSlot < 0) {
 				startSlot = ((cShaderProgramD3D11*)activeShaderProg)->GetTextureSlotPS(varName);
@@ -1412,7 +1394,7 @@ eGapiResult cGraphicsApiD3D11::SetTextureArray(const wchar_t* varName, const ITe
 
 // Set compiled-linked shader program
 void cGraphicsApiD3D11::SetShaderProgram(IShaderProgram* shProg) {
-	ASSERT(shProg != NULL);
+	ASSERT(shProg != nullptr);
 
 	activeShaderProg = (cShaderProgramD3D11*)shProg;
 	const cShaderProgramD3D11* shProgD3D11 = (cShaderProgramD3D11*)shProg;
@@ -1464,7 +1446,7 @@ eGapiResult cGraphicsApiD3D11::SetVSConstantBuffer(const void* data, size_t size
 			desc.StructureByteStride = 0;
 			desc.Usage = D3D11_USAGE_DYNAMIC;
 			desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		HRESULT hr = d3ddev->CreateBuffer(&desc, NULL, &vsConstBuffer);
+		HRESULT hr = d3ddev->CreateBuffer(&desc, nullptr, &vsConstBuffer);
 		if (FAILED(hr)) {
 			return eGapiResult::ERROR_OUT_OF_MEMORY;
 		}
@@ -1502,7 +1484,7 @@ eGapiResult cGraphicsApiD3D11::SetPSConstantBuffer(const void* data, size_t size
 			desc.StructureByteStride = 0;
 			desc.Usage = D3D11_USAGE_DYNAMIC;
 			desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		HRESULT hr = d3ddev->CreateBuffer(&desc, NULL, &psConstBuffer);
+		HRESULT hr = d3ddev->CreateBuffer(&desc, nullptr, &psConstBuffer);
 		if (FAILED(hr)) {
 			return eGapiResult::ERROR_OUT_OF_MEMORY;
 		}
@@ -1513,9 +1495,9 @@ eGapiResult cGraphicsApiD3D11::SetPSConstantBuffer(const void* data, size_t size
 }
 
 // Set (multiple) render targets
-eGapiResult cGraphicsApiD3D11::SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget /* = NULL */) {
+eGapiResult cGraphicsApiD3D11::SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget /* = nullptr */) {
 
-	ID3D11DepthStencilView* dsv = (depthStencilTarget) ? ((cTexture2DD3D11*)depthStencilTarget)->GetDSV() : NULL;
+	ID3D11DepthStencilView* dsv = (depthStencilTarget) ? ((cTexture2DD3D11*)depthStencilTarget)->GetDSV() : nullptr;
 
 	// If there are rtv's create viewports based on it
 	memset(activeRTVs, 0, sizeof(ID3D11RenderTargetView*) * 16);
@@ -1593,7 +1575,7 @@ eGapiResult cGraphicsApiD3D11::SetRenderTargetDefault() {
 eGapiResult cGraphicsApiD3D11::SetBlendState(tBlendDesc desc) {
 	D3D11_BLEND_DESC bsDesc = ConvertToNativeBlend(desc);
 
-	ID3D11BlendState* state = NULL;
+	ID3D11BlendState* state = nullptr;
 
 	size_t i = 0;
 	for (; i < blendStates.size(); i++)
@@ -1620,7 +1602,7 @@ eGapiResult cGraphicsApiD3D11::SetBlendState(tBlendDesc desc) {
 		state = blendStates[i].state;
 	}
 
-	d3dcon->OMSetBlendState(state, NULL, 0xFFFFFFFF);
+	d3dcon->OMSetBlendState(state, nullptr, 0xFFFFFFFF);
 	return eGapiResult::OK;
 }
 
@@ -1633,7 +1615,7 @@ eGapiResult cGraphicsApiD3D11::SetDepthStencilState(tDepthStencilDesc desc, uint
 		if (memcmp(&dsDesc, &depthStencilStates[i].desc, sizeof(D3D11_DEPTH_STENCIL_DESC)) == 0)
 			break;
 
-	ID3D11DepthStencilState* state = NULL;
+	ID3D11DepthStencilState* state = nullptr;
 
 	// Not existing
 	if ( i == depthStencilStates.size()) {
@@ -1660,12 +1642,12 @@ eGapiResult cGraphicsApiD3D11::SetDepthStencilState(tDepthStencilDesc desc, uint
 
 // Set Target Window
 eGapiResult cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
-	ASSERT(renderWindow != NULL);
+	ASSERT(renderWindow != nullptr);
 
 	size_t clientWidth = renderWindow->GetClientWidth();
 	size_t clientHeight = renderWindow->GetClientHeight();
 	// Same window size : don't need new swap chain
-	if (defaultRenderTarget != NULL)
+	if (defaultRenderTarget != nullptr)
 	if (clientWidth == defaultRenderTarget->GetWidth() && clientHeight == defaultRenderTarget->GetHeight())
 		return eGapiResult::OK;
 
@@ -1786,10 +1768,9 @@ void cGraphicsApiD3D11::AutoSetInputLayout(cShaderProgramD3D11* shader, cVertexB
 
 ////////////////////////////////////////
 // Convert stuff to native format
-#include <unordered_map>
 
 // vertex decl
-std::vector<D3D11_INPUT_ELEMENT_DESC> ConvertToNativeVertexFormat(cVertexFormat format) {
+std::vector<D3D11_INPUT_ELEMENT_DESC> cGraphicsApiD3D11::ConvertToNativeVertexFormat(cVertexFormat format) {
 	auto elems = format.Decode();
 	std::vector<D3D11_INPUT_ELEMENT_DESC> ret;
 
@@ -1916,7 +1897,7 @@ std::vector<D3D11_INPUT_ELEMENT_DESC> ConvertToNativeVertexFormat(cVertexFormat 
 }
 
 // bind
-unsigned ConvertToNativeBind(unsigned flags) {
+unsigned cGraphicsApiD3D11::ConvertToNativeBind(unsigned flags) {
 	unsigned ret = 0;
 	ret |= ((flags&(unsigned)eBind::CONSTANT_BUFFER) != 0 ? D3D11_BIND_CONSTANT_BUFFER : 0);
 	ret |= ((flags&(unsigned)eBind::INDEX_BUFFER) != 0 ? D3D11_BIND_INDEX_BUFFER : 0);
@@ -1929,7 +1910,7 @@ unsigned ConvertToNativeBind(unsigned flags) {
 }
 
 // usage
-D3D11_USAGE ConvertToNativeUsage(eUsage usage) {
+D3D11_USAGE cGraphicsApiD3D11::ConvertToNativeUsage(eUsage usage) {
 	static const std::unordered_map<eUsage, D3D11_USAGE> lookupTable = {
 		{ eUsage::DEFAULT, D3D11_USAGE_DEFAULT },
 		{ eUsage::DYNAMIC, D3D11_USAGE_DYNAMIC },
@@ -1942,7 +1923,7 @@ D3D11_USAGE ConvertToNativeUsage(eUsage usage) {
 }
 
 // format
-DXGI_FORMAT ConvertToNativeFormat(eFormat fmt) {
+DXGI_FORMAT cGraphicsApiD3D11::ConvertToNativeFormat(eFormat fmt) {
 	static const std::unordered_map<eFormat, DXGI_FORMAT> lookupTable = {
 		{ eFormat::UNKNOWN, DXGI_FORMAT_UNKNOWN },
 		{ eFormat::R32G32B32A32_TYPELESS, DXGI_FORMAT_R32G32B32A32_TYPELESS },
@@ -2068,7 +2049,7 @@ DXGI_FORMAT ConvertToNativeFormat(eFormat fmt) {
 
 
 // blend to native
-D3D11_BLEND_OP ConvertToNativeBlendOp(eBlendOp blendOp) {
+D3D11_BLEND_OP cGraphicsApiD3D11::ConvertToNativeBlendOp(eBlendOp blendOp) {
 	switch (blendOp) {
 	case eBlendOp::ADD: return D3D11_BLEND_OP_ADD;
 	case eBlendOp::SUBTRACT: return D3D11_BLEND_OP_SUBTRACT;
@@ -2078,7 +2059,8 @@ D3D11_BLEND_OP ConvertToNativeBlendOp(eBlendOp blendOp) {
 	default: return D3D11_BLEND_OP_ADD;
 	}
 }
-D3D11_BLEND ConvertToNativeBlendFactor(eBlendFactor blendFactor) {
+
+D3D11_BLEND cGraphicsApiD3D11::ConvertToNativeBlendFactor(eBlendFactor blendFactor) {
 	switch (blendFactor) {
 	case eBlendFactor::ZERO:				return D3D11_BLEND_ZERO;
 	case eBlendFactor::ONE:					return D3D11_BLEND_ONE;
@@ -2100,22 +2082,24 @@ D3D11_BLEND ConvertToNativeBlendFactor(eBlendFactor blendFactor) {
 	default:								return D3D11_BLEND_ONE;
 	}
 }
-uint8_t ConvertToNativeBlendMask(uint8_t blendMask) {
+
+uint8_t cGraphicsApiD3D11::ConvertToNativeBlendMask(eBlendWriteMask blendMask) {
 	uint8_t ret = 0u;
-	if (blendMask & (uint8_t)eBlendWriteMask::ALPHA)
+	if ((uint8_t)blendMask & (uint8_t)eBlendWriteMask::ALPHA)
 		ret |= D3D11_COLOR_WRITE_ENABLE_ALPHA;
-	if (blendMask & (uint8_t)eBlendWriteMask::RED)
+	if ((uint8_t)blendMask & (uint8_t)eBlendWriteMask::RED)
 		ret |= D3D11_COLOR_WRITE_ENABLE_RED;
-	if (blendMask & (uint8_t)eBlendWriteMask::GREEN)
+	if ((uint8_t)blendMask & (uint8_t)eBlendWriteMask::GREEN)
 		ret |= D3D11_COLOR_WRITE_ENABLE_GREEN;
-	if (blendMask & (uint8_t)eBlendWriteMask::BLUE)
+	if ((uint8_t)blendMask & (uint8_t)eBlendWriteMask::BLUE)
 		ret |= D3D11_COLOR_WRITE_ENABLE_BLUE;
-	if (blendMask & (uint8_t)eBlendWriteMask::ALL)
+	if ((uint8_t)blendMask & (uint8_t)eBlendWriteMask::ALL)
 		ret |= D3D11_COLOR_WRITE_ENABLE_ALL;
 
 	return ret;
 }
-D3D11_BLEND_DESC ConvertToNativeBlend(tBlendDesc blend) {
+
+D3D11_BLEND_DESC cGraphicsApiD3D11::ConvertToNativeBlend(tBlendDesc blend) {
 	D3D11_BLEND_DESC ret;
 	ret.AlphaToCoverageEnable = (blend.alphaToCoverageEnable ? TRUE : FALSE);
 	ret.IndependentBlendEnable = (blend.independentBlendEnable ? TRUE : FALSE);
@@ -2125,7 +2109,7 @@ D3D11_BLEND_DESC ConvertToNativeBlend(tBlendDesc blend) {
 		ret.RenderTarget[i].BlendOpAlpha = ConvertToNativeBlendOp(blend[i].blendOpAlpha);
 		ret.RenderTarget[i].DestBlend = ConvertToNativeBlendFactor(blend[i].destBlend);
 		ret.RenderTarget[i].DestBlendAlpha = ConvertToNativeBlendFactor(blend[i].destBlendAlpha);
-		ret.RenderTarget[i].RenderTargetWriteMask = ConvertToNativeBlendMask(blend[i].writeMask);
+		ret.RenderTarget[i].RenderTargetWriteMask = ConvertToNativeBlendMask((eBlendWriteMask)blend[i].writeMask);
 		ret.RenderTarget[i].SrcBlend = ConvertToNativeBlendFactor(blend[i].srcBlend);
 		ret.RenderTarget[i].SrcBlendAlpha = ConvertToNativeBlendFactor(blend[i].srcBlendAlpha);
 	}
@@ -2134,7 +2118,7 @@ D3D11_BLEND_DESC ConvertToNativeBlend(tBlendDesc blend) {
 }
 
 // depth-stencil to native
-D3D11_COMPARISON_FUNC ConvertToNativeCompFunc(eComparisonFunc compFunc) {
+D3D11_COMPARISON_FUNC cGraphicsApiD3D11::ConvertToNativeCompFunc(eComparisonFunc compFunc) {
 	switch (compFunc) {
 	case eComparisonFunc::ALWAYS:		return D3D11_COMPARISON_ALWAYS;
 	case eComparisonFunc::EQUAL:		return D3D11_COMPARISON_EQUAL;
@@ -2147,7 +2131,8 @@ D3D11_COMPARISON_FUNC ConvertToNativeCompFunc(eComparisonFunc compFunc) {
 	default: return D3D11_COMPARISON_LESS_EQUAL;
 	}
 }
-D3D11_STENCIL_OP ConvertToNativeStencilOp(eStencilOp stencilOp) {
+
+D3D11_STENCIL_OP cGraphicsApiD3D11::ConvertToNativeStencilOp(eStencilOp stencilOp) {
 	switch (stencilOp) {
 	case eStencilOp::DECR:		return D3D11_STENCIL_OP_DECR;
 	case eStencilOp::DECR_SAT:	return D3D11_STENCIL_OP_DECR_SAT;
@@ -2160,7 +2145,8 @@ D3D11_STENCIL_OP ConvertToNativeStencilOp(eStencilOp stencilOp) {
 	default: return D3D11_STENCIL_OP_REPLACE;
 	}
 }
-D3D11_DEPTH_STENCIL_DESC ConvertToNativeDepthStencil(const tDepthStencilDesc& depthStencil) {
+
+D3D11_DEPTH_STENCIL_DESC cGraphicsApiD3D11::ConvertToNativeDepthStencil(const tDepthStencilDesc& depthStencil) {
 	D3D11_DEPTH_STENCIL_DESC ret;
 	ret.DepthEnable = (depthStencil.depthEnable ? TRUE : FALSE);
 	ret.DepthFunc = ConvertToNativeCompFunc(depthStencil.depthCompare);
@@ -2182,7 +2168,7 @@ D3D11_DEPTH_STENCIL_DESC ConvertToNativeDepthStencil(const tDepthStencilDesc& de
 	return ret;
 }
 
-D3D11_SAMPLER_DESC ConvertToNativeSampler(const tSamplerStateDesc& sDesc) {
+D3D11_SAMPLER_DESC cGraphicsApiD3D11::ConvertToNativeSampler(const tSamplerStateDesc& sDesc) {
 	D3D11_SAMPLER_DESC r; memset(&r, 0, sizeof(r));
 
 	switch (sDesc.addressU) {
