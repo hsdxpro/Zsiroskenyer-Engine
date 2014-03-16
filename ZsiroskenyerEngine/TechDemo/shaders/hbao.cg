@@ -356,8 +356,7 @@ float PS_MAIN(VS_OUT IN ) : COLOR0
     float3 P = FetchEyePos(IN.texUV);
 
     // (cos(alpha),sin(alpha),jitter)
-    float3 rand = tex2D(tRandom, IN.pos.xy / RANDOM_TEXTURE_WIDTH);
-	//float3 rand = tRandom.Sample(PointWrapSampler, IN.pos.xy / RANDOM_TEXTURE_WIDTH);
+    float3 rand = tex2D(tRandom, IN.pos.xy / RANDOM_TEXTURE_WIDTH).xyz;
 
     // Compute projection of disk of radius g_R into uv space
     // Multiply by 0.5 to scale from [-1,1]^2 to [0,1]^2

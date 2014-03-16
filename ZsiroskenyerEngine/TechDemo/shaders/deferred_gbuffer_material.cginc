@@ -43,11 +43,11 @@ GBUFFER PixelShader_Simple (float3 normal, float2 texCoord0) {
 
 	// specular
 	if (mtlProperties.hasGlossinessMap) {
-		float value = tex2D(glossinessMap, texCoord0);
+		float value = tex2D(glossinessMap, texCoord0).r;
 		gloss *= value;
 	}
 	if (mtlProperties.hasSpecLevelMap) {
-		float value = tex2D(specLevelMap, texCoord0);
+		float value = tex2D(specLevelMap, texCoord0).r;
 		specLvl *= value;
 	}
 

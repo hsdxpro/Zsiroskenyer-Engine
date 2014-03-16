@@ -56,7 +56,8 @@
     <None Include="..\TechDemo\shaders\deferred_light_spot.cg" />
     <None Include="..\TechDemo\shaders\depth_of_field.cg" />
     <None Include="..\TechDemo\shaders\common.cginc" />
-    <None Include="..\TechDemo\shaders\FXAA.cg" />
+    <None Include="..\TechDemo\shaders\depth_of_field_focal_plane_adaption.cg" />
+    <None Include="..\TechDemo\shaders\fxaa.cg" />
     <None Include="..\TechDemo\shaders\hbao.cg" />
     <None Include="..\TechDemo\shaders\hdr_blur_horiz.cg" />
     <None Include="..\TechDemo\shaders\hdr_blur_vert.cg" />
@@ -64,7 +65,6 @@
     <None Include="..\TechDemo\shaders\hdr_luminance_avg.cg" />
     <None Include="..\TechDemo\shaders\hdr_luminance_sample.cg" />
     <None Include="..\TechDemo\shaders\hdr_overbright_downsample.cg" />
-    <None Include="..\TechDemo\shaders\LINE_RENDERER.cg" />
     <None Include="..\TechDemo\shaders\motion_blur.cg" />
     <None Include="..\TechDemo\shaders\motion_blur_2dvelocity.cg" />
     <None Include="..\TechDemo\shaders\screen_copy.cg" />

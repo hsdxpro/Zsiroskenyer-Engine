@@ -1,7 +1,5 @@
 #include "common.cginc"
 
-
-// TODO: MOVE THESE BACK TO #INCLUDE WHEN PARSER WORKS
 // texture maps
 sampler2D diffuseMap = {
 	MipFilter = LINEAR,

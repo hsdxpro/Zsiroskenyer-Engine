@@ -56,7 +56,7 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 }
 
 float3 GetPosition(float2 texCoord) {
-	return GetWorldPosition(texCoord, tex2Dlod(depthTexture, float4(texCoord,0,0)), invViewProj);
+	return GetWorldPosition(texCoord, tex2Dlod(depthTexture, float4(texCoord,0,0)).r, invViewProj).xyz;
 }
 
 float3 GetNormal(float2 texCoord) {
@@ -139,9 +139,9 @@ return 0;
 //------------------------------------------------------------------------------
 float PS_MAIN(VS_OUT In) : COLOR0 {
 	// sample normal and depth
-	float2 packedNormal = tex2D(normalTexture, In.tex0);
-	float3 normal = UnpackNormal(packedNormal);
-	float depth = tex2D(depthTexture, In.tex0);	
+	float2 packedNormal = tex2D(normalTexture, In.tex0).xy;
+	float3 normal = UnpackNormal(packedNormal).xyz;
+	float depth = tex2D(depthTexture, In.tex0).r;	
 	
 	// ! COMPUTE AO FROM "normal" AND "depth" !
 	return ProcessAO(In.tex0);

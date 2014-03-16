@@ -34,7 +34,7 @@ void cRenderer::RenderLines(const Matrix44& viewProj, const Vec3* lines, size_t 
 
 	// Set Shader
 #pragma message("RENDERER_ERROR: IShaderManager wiped completely!")
-	IShaderProgram* sh = nullptr;// shaderManager->GetShaderByName(L"LINE_RENDERER.cg");
+	IShaderProgram* sh = nullptr;
 	gApi->SetShaderProgram(sh);
 
 	// Set Line primitives for pipeline

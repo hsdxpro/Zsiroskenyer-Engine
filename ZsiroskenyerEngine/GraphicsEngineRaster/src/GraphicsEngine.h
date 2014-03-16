@@ -244,15 +244,18 @@ private:
 		eGapiResult ReallocBuffers();
 
 		// Shaders
-		IShaderProgram* shaderMB, *shaderMB2DVelocity,	// Motion blur shaders
-								  *shaderDOF,			// Depth of field shaders
-								  *shaderFXAA;			// FXAA shaders
+		IShaderProgram * shaderMB,  *shaderMB2DVelocity,		// Motion blur shaders
+					   * shaderDOF, *shaderFocalPlaneAdaption,	// Depth of field shaders
+					   * shaderFXAA;							// FXAA shaders
 
 		// Input textures
 		ITexture2D* inputTexColor, *inputTexDepth;
 
 		// Output textures
 		ITexture2D* outputTexColor, *outputTexVelocity2D;
+
+		// Self created textures (1x1) resolution
+		ITexture2D* focalPlaneTexA, *focalPlaneTexB; // Focal plane adaption on gpu
 
 		// Motion blur vars
 		Matrix44 lastViewMat;

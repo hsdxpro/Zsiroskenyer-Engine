@@ -19,14 +19,20 @@ cGraphicsEngine::cPostProcessor::cPostProcessor(cGraphicsEngine& parent)
 	shaderMB = nullptr;
 	shaderMB2DVelocity = nullptr;
 	shaderDOF = nullptr;
+	shaderFocalPlaneAdaption = nullptr;
 	shaderFXAA = nullptr;
 
 	// Input textures
 	inputTexColor = nullptr;
 	inputTexDepth = nullptr;
 
+	// Output textures
 	outputTexColor = nullptr;
 	outputTexVelocity2D = nullptr;
+
+	// self textures
+	focalPlaneTexA = nullptr;
+	focalPlaneTexB = nullptr;
 
 	// create shaders
 	try {
@@ -34,7 +40,15 @@ cGraphicsEngine::cPostProcessor::cPostProcessor(cGraphicsEngine& parent)
 	}
 	catch (std::exception& e) {
 		Cleanup();
-		throw std::runtime_error(std::string("failed to create shaders:\n") + e.what());
+		throw std::runtime_error(std::string("cPostProcessor: Failed to create shaders:\n") + e.what());
+	}
+
+	try {
+		ReallocBuffers();
+	} 
+	catch (std::exception& e) {
+		Cleanup();
+		throw std::runtime_error(std::string("cPostProcessor: Failed to realloc buffers\n") + e.what());
 	}
 }
 
@@ -88,11 +102,11 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 	gApi->Draw(3);
 }
 
-// Dof
 void cGraphicsEngine::cPostProcessor::ProcessDOF(const cCamera& cam) {
-	gApi->SetRenderTargets(1, &outputTexColor, nullptr);
-	gApi->SetShaderProgram(shaderDOF);
 
+	// These constants shared across two DOF specific shaders...
+	// Pass1 : FocalLength adaption, only uses invViewProj, camPos
+	// Pass2 : CoC calc and blur, uses all of these shits
 	struct tDofConstants
 	{
 		Matrix44 invViewProj;
@@ -107,20 +121,42 @@ void cGraphicsEngine::cPostProcessor::ProcessDOF(const cCamera& cam) {
 	} dofConstants;
 
 	dofConstants.invRetinaRadiusProductInputTexWidth = (float)inputTexColor->GetWidth() * 26.793927f; // That magic number (27.793927) normalizes a CoC that belonging to an average sized human eye and lens into [0,1]
-	dofConstants.invViewProj		= Matrix44Inverse(cam.GetViewMatrix() *  cam.GetProjMatrix());
-	dofConstants.invTexWidth		= 1.0f / inputTexColor->GetWidth();
-	dofConstants.invTexHeight		= 1.0f / inputTexColor->GetHeight();
-	dofConstants.MinusInvTexWidth	= -dofConstants.invTexWidth;
-	dofConstants.MinusInvTexHeight	= -dofConstants.invTexHeight;
-	dofConstants.retinaLensDist		= 0.011f;
-	dofConstants.aperture			= 0.022f;
-	dofConstants.camPos				= cam.GetPos();
+	dofConstants.invViewProj = Matrix44Inverse(cam.GetViewMatrix() *  cam.GetProjMatrix());
+	dofConstants.invTexWidth = 1.0f / inputTexColor->GetWidth();
+	dofConstants.invTexHeight = 1.0f / inputTexColor->GetHeight();
+	dofConstants.MinusInvTexWidth = -dofConstants.invTexWidth;
+	dofConstants.MinusInvTexHeight = -dofConstants.invTexHeight;
+	dofConstants.retinaLensDist = 0.011f;
+	dofConstants.aperture = 0.022f;
+	dofConstants.camPos = cam.GetPos();
 
-
+	// Set it for shaders to use
 	gApi->SetPSConstantBuffer(&dofConstants, sizeof(dofConstants), 0);
 
-	gApi->SetTexture(L"inputTexture", inputTexColor);
-	gApi->SetTexture(L"depthTexture", inputTexDepth);
+
+
+	//-------------------------------------------------------------------------------------//
+	// --------------------------- FIRST PASS : ADAPT FOCAL PLANE -------------------------//
+	//-------------------------------------------------------------------------------------//
+	gApi->SetRenderTargets(1, &focalPlaneTexB);
+	gApi->SetShaderProgram(shaderFocalPlaneAdaption);
+	gApi->SetTexture(L"inputFocalPlaneTex", focalPlaneTexA);	// Input focal plane
+	gApi->SetTexture(L"depthTexture", inputTexDepth);			// Input depth  (need posW)
+	gApi->Draw(3);
+
+	// So the result now in 'A', next time we use that to render again into B, then use a....
+	std::swap(focalPlaneTexA, focalPlaneTexB);
+
+
+
+	//-------------------------------------------------------------------------------------//
+	//----------------Circle Of Confusion Calc  AND  Bluring Based On It ------------------//
+	//-------------------------------------------------------------------------------------//
+	gApi->SetRenderTargets(1, &outputTexColor, nullptr);
+	gApi->SetShaderProgram(shaderDOF);
+	gApi->SetTexture(L"adaptedFocalPlaneTex", focalPlaneTexA);	// Input focal plane
+	gApi->SetTexture(L"inputTexture", inputTexColor);			// Input color
+	gApi->SetTexture(L"depthTexture", inputTexDepth);			// Input depth (need posW)
 	gApi->Draw(3);
 }
 
@@ -176,8 +212,12 @@ void cGraphicsEngine::cPostProcessor::SetOutputFXAA(ITexture2D* color) {
 
 // INNNNERR
 void cGraphicsEngine::cPostProcessor::Cleanup() {
-	// release shaders
+	// Release shaders
 	UnloadShaders();
+
+	// Release textures
+	SAFE_RELEASE(focalPlaneTexA);
+	SAFE_RELEASE(focalPlaneTexB);
 }
 
 // load shaders
@@ -186,10 +226,11 @@ void cGraphicsEngine::cPostProcessor::LoadShaders() {
 		return SafeLoadShader(gApi, shader);
 	};
 	try {
-		shaderMB			= Create(L"shaders/motion_blur.cg");
-		shaderMB2DVelocity	= Create(L"shaders/motion_blur_2dvelocity.cg");
-		shaderDOF			= Create(L"shaders/depth_of_field.cg");
-		shaderFXAA			= Create(L"shaders/FXAA.cg");
+		shaderMB				 = Create(L"shaders/motion_blur.cg");
+		shaderMB2DVelocity		 = Create(L"shaders/motion_blur_2dvelocity.cg");
+		shaderDOF				 = Create(L"shaders/depth_of_field.cg");
+		shaderFocalPlaneAdaption = Create(L"shaders/depth_of_field_focal_plane_adaption.cg");
+		shaderFXAA				 = Create(L"shaders/fxaa.cg");
 	}
 	catch (...) {
 		UnloadShaders();
@@ -211,8 +252,40 @@ void cGraphicsEngine::cPostProcessor::ReloadShaders() {
 		(*prog)->Release();
 		*prog = tmp;
 	};
-	Reload(&shaderMB,			L"shaders/motion_blur.cg");
-	Reload(&shaderMB2DVelocity, L"shaders/motion_blur_2dvelocity.cg");
-	Reload(&shaderDOF,			L"shaders/depth_of_field.cg");
-	Reload(&shaderFXAA,			L"shaders/FXAA.cg");
+	Reload(&shaderMB,					L"shaders/motion_blur.cg");
+	Reload(&shaderMB2DVelocity,			L"shaders/motion_blur_2dvelocity.cg");
+	Reload(&shaderDOF,					L"shaders/depth_of_field.cg");
+	Reload(&shaderFocalPlaneAdaption,	L"shaders/depth_of_field_focal_plane_adaption.cg");
+	Reload(&shaderFXAA,					L"shaders/fxaa.cg");
+}
+
+eGapiResult cGraphicsEngine::cPostProcessor::ReallocBuffers() {
+	SAFE_RELEASE(focalPlaneTexA);
+	SAFE_RELEASE(focalPlaneTexB);
+
+	ITexture2D::tDesc d;
+		d.arraySize = 1;
+		d.bind = (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE;
+		d.format = eFormat::R16_FLOAT;
+		d.width = 1;
+		d.height = 1;
+		d.mipLevels = 1;
+		d.usage = eUsage::DEFAULT;
+
+	eGapiResult errCode = gApi->CreateTexture(&focalPlaneTexA, d);
+	if (errCode != eGapiResult::OK) {
+		throw std::runtime_error("cPostProcessor: Failed to realloc 1x1 focalPlane texture A");
+		return errCode;
+	}
+
+	errCode = gApi->CreateTexture(&focalPlaneTexB, d);
+	if (errCode != eGapiResult::OK) {
+		throw std::runtime_error("cPostProcessor: Failed to realloc 1x1 focalPlane texture B");
+		return errCode;
+	}
+
+	// Important to clear Textures because adaption start from dist 0
+	gApi->ClearTexture(focalPlaneTexA);
+	gApi->ClearTexture(focalPlaneTexB);
+	return eGapiResult::OK;
 }

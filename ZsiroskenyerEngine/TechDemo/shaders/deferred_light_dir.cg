@@ -90,7 +90,11 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	// determine wich cascade
 	int cascadeIdx = -1;
 	for (int i=0; i<shadowConst.nCascades; i++) {
-		float3 p =  mul(float4(worldPos, 1.0f), shadowConst.lightViewProj[i]);
+		float3 p =  worldPos.x * shadowConst.lightViewProj[i][0].xyz + (
+					worldPos.y * shadowConst.lightViewProj[i][1].xyz + (
+					worldPos.z * shadowConst.lightViewProj[i][2].xyz +
+					shadowConst.lightViewProj[i][3].xyz )).xyz;
+
 		bool isInside = ((-1.0f < p.x && p.x < 1.0f) && 
 						(-1.0f < p.y && p.y < 1.0f) &&
 						(0.0f < p.z && p.z < 1.0f));
@@ -107,7 +111,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 
 		// simple
 		//*/
-		float shadowSample = tex2DARRAY(shadowMap_Array, float3(sampleCoord, (float)cascadeIdx));
+		float shadowSample = tex2DARRAY(shadowMap_Array, float3(sampleCoord, (float)cascadeIdx)).r;
 		
 		if (shadowSample + bias < shadowPos.z)
 			discard;
