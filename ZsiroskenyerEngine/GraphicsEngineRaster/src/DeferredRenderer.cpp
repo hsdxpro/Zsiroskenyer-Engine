@@ -502,14 +502,14 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	data.UVToViewB[0] = -1.0f * (1.0f / data.FocalLen[0]);
 	data.UVToViewB[1] = 1.0f * (1.0f / data.FocalLen[1]);
 
-	data.R = 0.20f;
+	data.R = 2.0f;
 	data.R2 = data.R * data.R;
 	data.NegInvR2 = -1.0f / data.R2;
-	data.MaxRadiusPixels = 0.1f * std::min(depthBufferCopy->GetWidth(), depthBufferCopy->GetHeight());
+	data.MaxRadiusPixels = 20.0f;// 0.1f * std::min(depthBufferCopy->GetWidth(), depthBufferCopy->GetHeight());
 	data.AngleBias = 10;
 	data.TanAngleBias = tanf(data.AngleBias);
-	data.PowExponent = 10;
-	data.Strength = 2;
+	data.PowExponent = 1; // TODO IRTASD KI NINCS IS BEKOTVE
+	data.Strength = 1.0;
 
 	gApi->SetShaderProgram(shaderHBAO);
 	gApi->SetRenderTargets(1, &ambientOcclusionBuffer, nullptr);

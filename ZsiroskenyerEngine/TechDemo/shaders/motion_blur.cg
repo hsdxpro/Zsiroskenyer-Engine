@@ -14,7 +14,6 @@ sampler2D velocity2DTex = {
 	AddressV = CLAMP,
 };
 
-
 struct VS_IN {
 	float3 posL 	: POSITION;
 	float2 tex0 	: TEXCOORD;
@@ -22,6 +21,7 @@ struct VS_IN {
 
 struct VS_OUT {
 	float4 posH 	: POSITION;
+	
 	float2 tex0 	: TEXCOORD;
 };
 
