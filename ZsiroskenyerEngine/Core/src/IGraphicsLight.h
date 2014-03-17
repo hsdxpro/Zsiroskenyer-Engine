@@ -20,6 +20,13 @@ public:
 		SPOT,
 		DIRECTIONAL,
 	};
+	enum eShadowQuality {
+		DISABLED = 0,
+		LOW = 1,
+		MEDIUM = 2,
+		HIGH = 3,
+		VERY_HIGH = 4,
+	};
 
 	// set
 	virtual void SetType(eLightType type) = 0;
@@ -39,6 +46,9 @@ public:
 	virtual void SetAngleOuter(float outer) = 0;
 	virtual void SetCutoff(float cutoff) = 0;
 
+	virtual void SetShadowResolution(unsigned pixels) = 0;
+	virtual void SetShadowQuality(eShadowQuality quality) = 0;
+
 	// get
 	virtual eLightType GetType() const = 0;
 	virtual Vec3 GetColor() const = 0;
@@ -53,6 +63,9 @@ public:
 	virtual float GetAngleInner() const = 0;
 	virtual float GetAngleOuter() const = 0;
 	virtual float GetCutoff() const = 0;
+
+	virtual unsigned GetShadowResolution() const = 0;
+	virtual eShadowQuality GetShadowQuality() const = 0;
 
 	// enable/disable
 	virtual void Enable(bool val) = 0;

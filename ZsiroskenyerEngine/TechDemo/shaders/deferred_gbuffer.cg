@@ -62,9 +62,9 @@ struct VS_IN {
 struct VS_OUT {
 	float4 posH 	: SV_POSITION;
 	float3 normalW 	: TEXCOORD0;
-	float3 tangentW	: TEXCOORD1;
-	float2 tex0 	: TEXCOORD2;
-	float3x3 TBN	: TEXCOORD4;
+	float3 tangentW : TEXCOORD3;
+	float2 tex0 	: TEXCOORD1;
+	float3x3 TBN	: TEXCOORD2;
 	float linearDepth : COLOR0;
 };
 
@@ -74,12 +74,6 @@ struct VS_OUT {
 //------------------------------------------------------------------------------
 VS_OUT VS_MAIN(VS_IN In) {
 	VS_OUT Out;
-
-	/*
-	Out.normalW = In.normalL.x* world[0].xyz + ( In.normalL.y * world[1].xyz + (In.normalL.z * world[2].xyz));
-	Out.tangentW = In.tangentL.x* world[0].xyz + ( In.tangentL.y * world[1].xyz + (In.tangentL.z * world[2].xyz));
-	Out.posH = In.posL.x * wvp[0] + ( In.posL.y * wvp[1] + (In.posL.z * wvp[2] + wvp[3]));
-	*/
 
 	Out.posH = 
 		In.posL.x * transform.worldViewProj[0] + (

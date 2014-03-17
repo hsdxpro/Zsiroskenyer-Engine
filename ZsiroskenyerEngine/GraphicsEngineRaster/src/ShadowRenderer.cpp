@@ -57,22 +57,30 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 	// render lights
 	auto& lights = sceneManager.GetLights();
 	for (auto& v : lights) {
+		// get light components
 		auto& light = v->first;
 		auto& shadowMap = v->second;
-		if (!light.enabled)
+		// check shadow map parameters
+		if (!light.enabled && light.shadowQuality!=cGraphicsLight::eShadowQuality::DISABLED) {
 			continue;
-
+		}
+		if (light.shadowResolution < 256) {
+			light.shadowResolution = 256;
+		}
+		
 		switch (light.type) {
-			case cGraphicsLight::DIRECTIONAL:{
+			case cGraphicsLight::DIRECTIONAL : {
 				// set sh map type
 				shadowMap.SetType(light.type);
 				shadowMap.ClearUnneeded();
 				// get map for type
-				auto& shm = *(cShadowMapDir*)&shadowMap;
+				auto& shadowMapDir = *(cShadowMapDir*)&shadowMap;
 				// init map if not compatible with currently inited
+				auto resolution = light.shadowResolution;
+				auto nCascadeQuality = light.shadowQuality;
 				try {
-					if (!shm.IsValid(gApi, 2048, eFormat::R24_UNORM_X8_TYPELESS, eFormat::D24_UNORM_S8_UINT, 6)) {
-						shm.Init(gApi, 2048, eFormat::R24_UNORM_X8_TYPELESS, eFormat::D24_UNORM_S8_UINT, 6);
+					if (!shadowMapDir.IsValid(gApi, resolution, eFormat::R24_UNORM_X8_TYPELESS, eFormat::D24_UNORM_S8_UINT, nCascadeQuality)) {
+						shadowMapDir.Init(gApi, resolution, eFormat::R24_UNORM_X8_TYPELESS, eFormat::D24_UNORM_S8_UINT, nCascadeQuality);
 					}
 				}
 				catch (std::exception& e) {
@@ -81,7 +89,7 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 				}
 
 				// generate cascade splits
-				size_t nCascades = shm.GetNumCascades();
+				size_t nCascades = shadowMapDir.GetNumCascades();
 				std::vector<float> cascadeSplits(nCascades + 1, 0.0f);
 
 				float near = parent.camera->GetNearPlane();
@@ -98,8 +106,8 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 				// foreach cascade
 				for (size_t i = 0; i < nCascades; i++) {
 					// compute transforms
-					auto& transform = shm.GetTransforms()[i];
-					bool isGoodTransform = shm.Transform(
+					auto& transform = shadowMapDir.GetTransforms()[i];
+					bool isGoodTransform = shadowMapDir.Transform(
 							transform.projMat,
 							transform.viewMat,
 							light.direction, 
@@ -109,9 +117,8 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 						continue;
 
 					// setup render
-#pragma message("SET TEXTURE ARRAY AS RENDER TARGET!!")
 					gApi->SetShaderProgram(shaderDirectional);
-					ITexture2D* textureSlice = shm.GetTexture()->GetArraySlice(i);
+					ITexture2D* textureSlice = shadowMapDir.GetTexture()->GetArraySlice(i);
 					gApi->SetRenderTargets(0, nullptr, textureSlice);
 					gApi->ClearTexture(textureSlice);
 
