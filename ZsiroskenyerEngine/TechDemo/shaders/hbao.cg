@@ -19,12 +19,10 @@ float2 g_FocalLen : register(c2);
 
 float2 g_UVToViewA : register(c3);
 float2 g_UVToViewB : register(c4);
-
 float g_R : register(c5);
 float g_R2 : register(c6);
 float g_NegInvR2 : register(c7);
 float g_MaxRadiusPixels : register(c8);
-
 float g_AngleBias : register(c9);
 float g_TanAngleBias : register(c10);
 float g_PowExponent : register(c11);
@@ -160,7 +158,7 @@ void IntegrateDirection(inout float ao, float3 P, float2 uv, float2 deltaUV,
                          float numSteps, float tanH, float sinH)
 {
 //RICHARD
-	const int richarSteps = numSteps % 50;
+	const int richarSteps = numSteps % 20;
     for (float j = 1; j <= richarSteps; ++j)
     {
         uv += deltaUV;
@@ -293,7 +291,7 @@ float horizon_occlusion(float2 deltaUV,
 
     float sinH = tanH / sqrt(1.0f + tanH*tanH);
 
-	const int richardSteps = (int)numSteps % 50;
+	const int richardSteps = (int)numSteps % 20;
     for (float j = 1; j <= richardSteps; ++j)
     {
         uv += deltaUV;

@@ -73,6 +73,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	float blurRadius = CoC * cBuffer.invRetinaRadiusProductInputTexWidth;
 
 	float4 color = tex2D(inputTexture, In.tex0);
+	return color;
 	float alpha = color.a;
 
 	float quality = 6; 

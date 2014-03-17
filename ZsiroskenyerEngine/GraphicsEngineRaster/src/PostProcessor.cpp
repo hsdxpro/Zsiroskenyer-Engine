@@ -68,23 +68,33 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 
 	struct s
 	{
+		Matrix44 viewProj;
 		Matrix44 invViewProj;
 		Matrix44 prevViewProj;
-		Vec2	 InvframeDeltaTimeDiv2ProductInputRes; Vec2 pad0;// 1.0f / frameDeltaTime / 2 * inputTexResolution
-		Vec2	 minMaxPixelVel; Vec2 pad1;///clamp(x, -4, 4) minMax pixel velocity
+		Vec3	 camPos;
+		float	 nearPlane;
+		Vec2	 InvframeDeltaTimeDiv2DivInputRes;
+		Vec2	 minMaxPixelVel;
+		float	 farPlane;
+
 	} mbConstants;
 
 	Matrix44 viewMat = cam.GetViewMatrix();
 	Matrix44 projMat = cam.GetProjMatrix();
-	mbConstants.invViewProj = Matrix44Inverse(viewMat * projMat);
+	mbConstants.viewProj = viewMat * projMat;
+	mbConstants.invViewProj = Matrix44Inverse(mbConstants.viewProj);
 	mbConstants.prevViewProj = lastViewMat * projMat;
-	mbConstants.InvframeDeltaTimeDiv2ProductInputRes = Vec2(1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetWidth()),
-															1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetHeight()));
+	mbConstants.camPos = cam.GetPos();
+	mbConstants.nearPlane = cam.GetNearPlane();
+	mbConstants.farPlane = cam.GetFarPlane();
+	mbConstants.InvframeDeltaTimeDiv2DivInputRes = Vec2(1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetWidth()),
+														1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetHeight()));
 
 	mbConstants.minMaxPixelVel = Vec2( -4.0f / inputTexDepth->GetWidth(),
 										4.0f / inputTexDepth->GetWidth());
 
 	gApi->SetPSConstantBuffer(&mbConstants, sizeof(mbConstants), 0);
+	gApi->SetVSConstantBuffer(&mbConstants, sizeof(mbConstants), 0);
 	gApi->SetTexture(L"depthTexture", inputTexDepth);
 
 	// Current cam became last
