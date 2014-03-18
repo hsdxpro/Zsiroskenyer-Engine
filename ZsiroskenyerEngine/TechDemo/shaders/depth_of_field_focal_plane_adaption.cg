@@ -20,7 +20,7 @@ struct {
 	float4x4 invViewProj;
 	float3	 camPos;
 	float	 frameDeltaTime;
-} cBuffer : register(c0);		
+} c : register(c0);		
 
 
 
@@ -30,26 +30,38 @@ struct VS_IN {
 };
 
 struct VS_OUT {
-	float4 posH : SV_POSITION;
+	float4 posH		: POSITION;
+	float2 tex0		: TEXCOORD0;
+	float3 viewRay	: TEXCOORD1;
 };
 
 
 VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 	VS_OUT Out;
-	Out.posH = float4(  float2( (VertexID << 1) & 2, VertexID & 2 ) * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f), 0.0f, 1.0f );
+	Out.tex0 = float2( (VertexID << 1) & 2, VertexID & 2 );
+	Out.posH = float4(  Out.tex0 * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f), 0.0f, 1.0f );
+
+	float4 viewRay =	Out.posH.x * c.invViewProj[0] + (
+						Out.posH.y * c.invViewProj[1] + (
+						c.invViewProj[2] +
+						c.invViewProj[3]));
+
+	Out.viewRay = viewRay.xyz * (1.0f / viewRay.w);
+	Out.viewRay -= c.camPos;
+
 	return Out;
 }
 
 float PS_MAIN(VS_OUT In) : COLOR0 {
 	// We adapt slowly to that
-    float destFocalDist = distance(cBuffer.camPos, GetWorldPosition( float2(0.5f, 0.5f), tex2D(depthTexture, float2(0.5f, 0.5f)).r, cBuffer.invViewProj));
-
+    float destFocalDist = distance(c.camPos, GetWorldPosition(c.camPos, In.viewRay, tex2D(depthTexture, In.tex0)));
+	
 	// The last result of adaption
 	float currFocalDist = tex2D(inputFocalPlaneTex, float2(0.5f, 0.5f)).r;
 
 	// So for example destination : 500, last result : 200, we need adaption...etc etc
 	if(abs(destFocalDist - currFocalDist) > 0.001)
-		return clamp(destFocalDist - currFocalDist, -1, 1) * cBuffer.frameDeltaTime * 10.2f + currFocalDist; // So slow adaption...	
+		return clamp(destFocalDist - currFocalDist, -1, 1) * c.frameDeltaTime * 16.2f + currFocalDist; // So slow adaption...	
 
 	return destFocalDist;
 }

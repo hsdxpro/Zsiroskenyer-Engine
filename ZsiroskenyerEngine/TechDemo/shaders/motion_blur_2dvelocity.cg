@@ -14,10 +14,7 @@ struct {
  float4x4 invViewProj;
  float4x4 prevViewProj;
  float3	  camPos;
- float	  nearPlane;
  float2	  InvframeDeltaTimeDiv2DivInputRes;
- float2	  minMaxPixelVel;
- float	  farPlane;
 } c : register(c0);
 
 struct VS_IN {
@@ -27,8 +24,8 @@ struct VS_IN {
 
 struct VS_OUT {
 	float4 posH 		: SV_POSITION;
-	float3 viewRayVS	: TEXCOORD0;
-	float2 tex0 		: TEXCOORD1;
+	float2 tex0 		: TEXCOORD0;
+	float3 viewRay		: TEXCOORD1;
 };
 
 VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
@@ -36,18 +33,21 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 	Out.tex0 = float2( (VertexID << 1) & 2, VertexID & 2 );
 	Out.posH = float4(  Out.tex0 * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f), 0.0f, 1.0f );
 
-	// view ray
-	float4 viewRay = mul(float4(Out.posH.xy, 1.0f, 1.0f), c.invViewProj);
-	viewRay.xyz *= (1.0f / viewRay.w);
-	viewRay.xyz -= c.camPos;
-	Out.viewRayVS = viewRay.xyz * (1.0f / c.farPlane);
+	float4 viewRay =	Out.posH.x * c.invViewProj[0] + (
+						Out.posH.y * c.invViewProj[1] + (
+						c.invViewProj[2] +
+						c.invViewProj[3]));
+
+	Out.viewRay = viewRay.xyz * (1.0f / viewRay.w);
+	Out.viewRay -= c.camPos;
+
 	return Out;
 }
 
 float2 PS_MAIN(VS_OUT In) : COLOR0 {
 
 	// Current world pos
-	float3 posW = GetWorldPosition(c.camPos, In.viewRayVS, tex2D(depthTexture , In.tex0).r, c.nearPlane, c.farPlane);
+	float3 posW = GetWorldPosition(c.camPos, In.viewRay, tex2D(depthTexture , In.tex0).r);
 
 	// Current frame NDC
 	float4 currPosH = posW.x * c.viewProj[0] + ( posW.y * c.viewProj[1] + (posW.z * c.viewProj[2] + c.viewProj[3]));
@@ -61,9 +61,9 @@ float2 PS_MAIN(VS_OUT In) : COLOR0 {
 	prevPosH.xy /= prevPosH.z; // .z now the W component !!!!
 	
 
-	// v   =             s               /       t        / magic number :)
+	// v   =             s               /       t;     result = pixels per second
 	// Clamp the velocity, 1.0 depth make so large velocity that ruins the motion blur sampling
-	return  clamp((currPosH.xy - prevPosH.xy) * c.InvframeDeltaTimeDiv2DivInputRes, c.minMaxPixelVel.x, c.minMaxPixelVel.y);
+	return  (currPosH.xy - prevPosH.xy) * c.InvframeDeltaTimeDiv2DivInputRes;
 }
 
 technique t

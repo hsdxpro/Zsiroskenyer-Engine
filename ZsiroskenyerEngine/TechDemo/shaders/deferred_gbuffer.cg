@@ -44,8 +44,7 @@ struct {
 	float4x4 worldViewProj;
 	float4x4 worldView;
 	float4x4 world;
-	float3 camPos;
-	float near, far;
+	float	 far;
 } transform : register(c0);
 
 
@@ -75,12 +74,6 @@ struct VS_OUT {
 VS_OUT VS_MAIN(VS_IN In) {
 	VS_OUT Out;
 
-	/*
-	Out.normalW = In.normalL.x* world[0].xyz + ( In.normalL.y * world[1].xyz + (In.normalL.z * world[2].xyz));
-	Out.tangentW = In.tangentL.x* world[0].xyz + ( In.tangentL.y * world[1].xyz + (In.tangentL.z * world[2].xyz));
-	Out.posH = In.posL.x * wvp[0] + ( In.posL.y * wvp[1] + (In.posL.z * wvp[2] + wvp[3]));
-	*/
-
 	Out.posH = 
 		In.posL.x * transform.worldViewProj[0] + (
 		In.posL.y * transform.worldViewProj[1] + (
@@ -99,11 +92,13 @@ VS_OUT VS_MAIN(VS_IN In) {
 				  transform.worldView[1][2] * In.posL.y + 
 				  transform.worldView[2][2] * In.posL.z + 
 				  transform.worldView[3][2];
-	Out.linearDepth = (viewZ - transform.near)/(transform.far - transform.near);
+	
+	// Scale from [0, farPlane] to [0,1] range
+	Out.linearDepth = viewZ / transform.far;
 
 	Out.tex0 = In.tex0;
 
-	// Calculate TBN base per vertex (CHEAP) (Tangent to World space)
+	// Calculate TBN base per vertex (CHEAP) (Tangent to World space) for normal mapping, etc.
 	float3 N = normalize(Out.normalW);
 	float3 T = normalize(Out.tangentW - dot(Out.tangentW,N) * N);
 	float3 B = normalize(cross(N,T));
@@ -136,7 +131,9 @@ PS_OUT PS_MAIN(VS_OUT In) {
 		Out.gb1 = gb.normal;
 		Out.gb2 = gb.misc;
 	}
+
 	Out.depth = In.linearDepth;
+
 	return Out;
 };
 

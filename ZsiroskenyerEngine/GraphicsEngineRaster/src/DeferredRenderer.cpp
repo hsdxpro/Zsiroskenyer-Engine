@@ -168,6 +168,7 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	twister.seed(91210);
 	distribution = std::uniform_real_distribution<float>(0, 1);
 
+	
 	float mersenneTwisterNumbers[1024];
 	for (uint16_t i = 0; i < 1024; i++) {
 		mersenneTwisterNumbers[i] = distribution(twister);
@@ -423,15 +424,12 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 					Matrix44 worldViewProj;
 					Matrix44 worldView;
 					Matrix44 world;
-					Vec3 camPos;
-					float near, far;
+					float	 farPlane;
 				} shaderTransform;
 				shaderTransform.worldViewProj = worldMat * viewProjMat;
 				shaderTransform.worldView = worldMat * viewMat;
 				shaderTransform.world = worldMat;
-				shaderTransform.camPos = cam->GetPos();
-				shaderTransform.near = cam->GetNearPlane();
-				shaderTransform.far = cam->GetFarPlane();
+				shaderTransform.farPlane = cam->GetFarPlane();
 
 				gApi->SetVSConstantBuffer(&shaderTransform, sizeof(shaderTransform), 0);
 
@@ -502,10 +500,10 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	data.UVToViewB[0] = -1.0f * (1.0f / data.FocalLen[0]);
 	data.UVToViewB[1] = 1.0f * (1.0f / data.FocalLen[1]);
 
-	data.R = 2.0f;
+	data.R = 0.003; // 0.001
 	data.R2 = data.R * data.R;
 	data.NegInvR2 = -1.0f / data.R2;
-	data.MaxRadiusPixels = 20.0f;// 0.1f * std::min(depthBufferCopy->GetWidth(), depthBufferCopy->GetHeight());
+	data.MaxRadiusPixels = 30.0f;// 0.1f * std::min(depthBufferCopy->GetWidth(), depthBufferCopy->GetHeight());
 	data.AngleBias = 10;
 	data.TanAngleBias = tanf(data.AngleBias);
 	data.PowExponent = 1; // TODO IRTASD KI NINCS IS BEKOTVE

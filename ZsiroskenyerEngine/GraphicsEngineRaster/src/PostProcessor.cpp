@@ -71,12 +71,8 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 		Matrix44 viewProj;
 		Matrix44 invViewProj;
 		Matrix44 prevViewProj;
-		Vec3	 camPos;
-		float	 nearPlane;
+		Vec3	 camPos;							float _pad;
 		Vec2	 InvframeDeltaTimeDiv2DivInputRes;
-		Vec2	 minMaxPixelVel;
-		float	 farPlane;
-
 	} mbConstants;
 
 	Matrix44 viewMat = cam.GetViewMatrix();
@@ -85,14 +81,12 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 	mbConstants.invViewProj = Matrix44Inverse(mbConstants.viewProj);
 	mbConstants.prevViewProj = lastViewMat * projMat;
 	mbConstants.camPos = cam.GetPos();
-	mbConstants.nearPlane = cam.GetNearPlane();
-	mbConstants.farPlane = cam.GetFarPlane();
 	mbConstants.InvframeDeltaTimeDiv2DivInputRes = Vec2(1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetWidth()),
 														1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetHeight()));
-
-	mbConstants.minMaxPixelVel = Vec2( -4.0f / inputTexDepth->GetWidth(),
+	/*
+	mbConstants.minMaxPixelVel = Vec2( -40.0f / inputTexDepth->GetWidth(),
 										4.0f / inputTexDepth->GetWidth());
-
+	*/
 	gApi->SetPSConstantBuffer(&mbConstants, sizeof(mbConstants), 0);
 	gApi->SetVSConstantBuffer(&mbConstants, sizeof(mbConstants), 0);
 	gApi->SetTexture(L"depthTexture", inputTexDepth);
@@ -121,11 +115,11 @@ void cGraphicsEngine::cPostProcessor::ProcessDOF(float frameDeltaTime, const cCa
 	{
 		Matrix44 invViewProj;
 		Vec3	 camPos;
-		float	 frameDeltaTime; // Just pass 1 use it !!!
+		float	 frameDeltaTime; // Just pass 1 use it !!!	
 		float	 invRetinaRadiusProductInputTexWidth;
-		float	 invTexWidth;				
-		float	 invTexHeight;				
-		float	 minusInvTexWidth;			
+		float	 invTexWidth;
+		float	 invTexHeight;
+		float	 minusInvTexWidth;
 		float	 minusInvTexHeight;			
 		float	 aperture;					
 		float	 retinaLensDist;				
@@ -144,6 +138,7 @@ void cGraphicsEngine::cPostProcessor::ProcessDOF(float frameDeltaTime, const cCa
 
 	// Set it for shaders to use
 	gApi->SetPSConstantBuffer(&dofConstants, sizeof(dofConstants), 0);
+	gApi->SetVSConstantBuffer(&dofConstants, sizeof(dofConstants), 0);
 
 
 
