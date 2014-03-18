@@ -36,6 +36,9 @@ public:
 	void SetAngleOuter(float outer) override;
 	void SetCutoff(float cutoff) override;
 
+	void SetShadowResolution(unsigned pixels) override;
+	void SetShadowQuality(eShadowQuality quality) override;
+
 	// get
 	eLightType GetType() const override;
 	Vec3 GetColor() const override;
@@ -51,10 +54,12 @@ public:
 	float GetAngleOuter() const override;
 	float GetCutoff() const override;
 
+	unsigned GetShadowResolution() const override;
+	eShadowQuality GetShadowQuality() const override;
+
 	// enable/disable
 	void Enable(bool val) override;
 	bool IsEnabled() const override;
-
 private:
 	eLightType type;
 	Vec3 color;
@@ -65,5 +70,6 @@ private:
 	float cutoff; // no sharp edges [0,1)
 	bool enabled;
 
-	bool castShadows;
+	eShadowQuality shadowQuality;
+	unsigned shadowResolution;
 };

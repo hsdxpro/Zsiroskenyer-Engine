@@ -24,7 +24,9 @@ atten2(0),
 range(1),
 smallAngle(0.5),
 bigAngle(1.0),
-cutoff(0.666)
+cutoff(0.666),
+shadowResolution(2048),
+shadowQuality(VERY_HIGH)
 {
 }
 
@@ -75,6 +77,13 @@ void cGraphicsLight::SetCutoff(float cutoff) {
 	this->cutoff = cutoff;
 }
 
+void cGraphicsLight::SetShadowResolution(unsigned pixels) {
+	shadowResolution = pixels;
+}
+void cGraphicsLight::SetShadowQuality(eShadowQuality quality) {
+	shadowQuality = quality;
+}
+
 // get
 auto cGraphicsLight::GetType() const -> eLightType {
 	return type;
@@ -110,6 +119,14 @@ float cGraphicsLight::GetAngleOuter() const {
 }
 float cGraphicsLight::GetCutoff() const {
 	return cutoff;
+}
+
+unsigned cGraphicsLight::GetShadowResolution() const {
+	return shadowResolution;
+}
+
+auto cGraphicsLight::GetShadowQuality() const -> eShadowQuality {
+	return shadowQuality;
 }
 
 // enable/disable

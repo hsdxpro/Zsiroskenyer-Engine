@@ -62,12 +62,11 @@ void SampleGBuffer(in float2 texCoord, out float3 diffuse, out float3 normal, ou
 //------------------------------------------------------------------------------
 
 float Fresnel(float NdotV, float fresnelBias, float fresnelPow) {
-  float facing = (1.0 - NdotV);
-  return max(fresnelBias + (1.0 - fresnelBias) * pow(facing, fresnelPow), 0.0);
+	float facing = (1.0 - NdotV);
+	return max(fresnelBias + (1.0 - fresnelBias) * pow(facing, fresnelPow), 0.0);
 }
 
-float CookTorranceSpecular(float3 N, float3 viewDir, float3 L, float roughness, float IOR)
-{
+float CookTorranceSpecular(float3 N, float3 viewDir, float3 L, float roughness, float IOR) {
 	const float gaussConstant  = 10;
 
     // the things we need:	

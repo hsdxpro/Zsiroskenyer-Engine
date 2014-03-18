@@ -15,6 +15,7 @@ struct {
 	float4x4 lightViewProj[NUM_MAX_CASCADES];
 	int nCascades;
 	bool castShadows;
+	float baseBias;
 } shadowConst : register(c100);
 
 static const float3 DEBUG_CASCADE_COLOR[NUM_MAX_CASCADES] = {
@@ -117,11 +118,10 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 			shadowPos = p;
 		}
 	}
-	//color.rgb = DEBUG_CASCADE_COLOR[cascadeIdx]*0.5f + color.rgb*0.5f; 
-	
-	if (shadowConst.castShadows) {
+
+	if (shadowConst.castShadows && cascadeIdx >= 0) {
 		float2 sampleCoord = float2(shadowPos.x*0.5f+0.5f, -shadowPos.y*0.5f+0.5f);
-		float bias = 1e-5*exp((float)cascadeIdx);
+		float bias = shadowConst.baseBias*exp((float)cascadeIdx);
 
 		// simple
 		//*/

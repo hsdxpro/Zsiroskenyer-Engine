@@ -703,7 +703,9 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 			Matrix44 lightViewProj[12];
 			int32_t nCascades;
 			uint32_t castShadows;
+			float baseBias;
 		} shadowConst;
+		shadowConst.baseBias = 1e-5f;
 
 		// compute shadow map constants, if any
 		if (shadowMap) {
