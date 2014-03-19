@@ -469,6 +469,10 @@ void LoadLevel1() {
 	cEntity* heli = gCore->AddEntity(gScene, basePath + L"objects/heli.dae", basePath + L"objects/heli.dae", basePath + L"materials/demo_house.zsm", 0.0f);
 	heli->SetScale(Vec3(0.01, 0.01, 0.01));
 
+	cEntity* cake = gCore->AddEntity(gScene, basePath + L"objects/cake.dae", basePath + L"objects/cake.dae", basePath + L"materials/cake.zsm", 0.0f);
+	cake->SetScale(Vec3(0.5, 0.5, 0.5));
+	cake->SetPos(Vec3(5, 18, 0));
+
 	// add a bunch of crates
 	/*
 	for (float x = -25; x <= 25; x += 2.5) {
