@@ -4,9 +4,10 @@
 
 #include <cmath>
 #include <iostream>
-#include "Quat.h"
-#include "Vec3.h"
 #include "Vec4.h"
+
+class Quat;
+class Vec3;
 
 /* what a matrix has to do? 
 (-decompose: get scale, rot, and translation from a matrix)
@@ -88,12 +89,10 @@ public:
 	// Accessors
 	float& operator() (unsigned row, unsigned col);
 	const float& operator() (unsigned row, unsigned col) const;
+
+	Vec4& operator[](unsigned idx);
+	const Vec4& operator[](unsigned idx) const;
 	
-	float& operator[] (unsigned index);
-	const float& operator[] (unsigned index) const;
-
-	void SetColumn(size_t idx, const Vec4& v);
-
 	// Operators
 	Matrix44& operator *= (const Matrix44& m2);
 	Matrix44& operator += (const Matrix44& m2);

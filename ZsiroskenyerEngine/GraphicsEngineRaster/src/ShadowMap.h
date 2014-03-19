@@ -18,6 +18,7 @@
  
 #include <vector>
 #include "../../core/src/math/matrix44.h"
+#include "../../core/src/math/quat.h"
 #include "../../core/src/math/vec3.h"
 #include "../../Core/src/ResourceProperty.h"
 #include "GraphicsLight.h"

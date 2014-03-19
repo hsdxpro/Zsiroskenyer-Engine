@@ -34,7 +34,7 @@ public:
 	friend Vec3& operator*=(Vec3& v, const Quat& q);
 
 	// operators
-	Quat& operator*=(const Quat& q2);	// concat rotations
+	Quat& operator*=(const Quat& q2);	// quat miltiply
 	Quat operator*(const Quat& q2) const;
 	const Quat operator~() const;		// conjugate
 
@@ -42,7 +42,7 @@ public:
 	bool operator!=(const Quat& r) const;
 
 	// type casting to rotation matrix
-	operator Matrix44(); // -> no fucking use this! probably slower than MatrixRotationQuat()
+	operator Matrix44();
 };
 
 Quat Normalize(const Quat& q);

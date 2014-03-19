@@ -20,6 +20,7 @@
 #include "Matrix44.h"
 #include "Quat.h"
 #include "Vec3.h"
+#include "Vec4.h"
 #include <memory>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -53,18 +54,11 @@ const float& Matrix44::operator() (unsigned row, unsigned col) const {
 	return m[row][col];
 };
 
-float& Matrix44::operator[] (unsigned index) {
-	return *(((float*)this) + index);
+Vec4& Matrix44::operator[](unsigned idx) {
+	return r[idx];
 }
-
-const float& Matrix44::operator[] (unsigned index) const {
-	return *(((float*)this)+ index);
-}
-
-void Matrix44::SetColumn(size_t idx, const Vec4& v) {
-	for (size_t i = 0; i < 4; i++) {
-		this->m[i][idx] = v[i];
-	}
+const Vec4& Matrix44::operator[](unsigned idx) const {
+	return r[idx];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -314,8 +308,6 @@ Matrix44& Matrix44::ProjOrtographic(float nearPlane, float farPlane, float left,
 	Translation(-center);
 	*this *= Matrix44Scaling(Vec3(1, -1, 0.5) / dim);
 	*this *= Matrix44Translation(Vec3(0, 0, 0.5));
-	//PostScale(Vec3(1, 1, 0.5) / dim);
-	//PostTranslate(Vec3(0, 0, 0.5));
 
 	return *this;
 }
@@ -355,17 +347,11 @@ Matrix44& Matrix44::PostScale(const Vec3& s) {
 }
 
 Matrix44& Matrix44::PostTranslate(float x, float y, float z) {
-	_41 += x;
-	_42 += y;
-	_43 += z;
-	return *this;
+	return *this *= Matrix44Translation(x,y,z);
 }
 
 Matrix44& Matrix44::PostTranslate(const Vec3& t) {
-	_41 += t.x;
-	_42 += t.y;
-	_43 += t.z;
-	return *this;
+	return *this *= Matrix44Translation(t);
 }
 
 

@@ -1,4 +1,5 @@
 #include "Vec4.h"
+#include "vec3.h"
 #include "Matrix44.h"
 
 // Convert to vec3
