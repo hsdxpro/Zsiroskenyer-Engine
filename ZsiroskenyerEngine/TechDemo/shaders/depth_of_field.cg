@@ -35,7 +35,7 @@ struct {
 	float		minusInvTexHeight;
 	float		aperture;
 	float		retinaLensDist;
-} cBuffer : register(c0);
+} c : register(c0);
 
 struct VS_IN {
 	float3 posL 	: POSITION;
@@ -43,8 +43,9 @@ struct VS_IN {
 };
 
 struct VS_OUT {
-	float4 posH 	: SV_POSITION;
-	float2 tex0 	: TEXCOORD2;
+	float4 posH 	: POSITION;
+	float2 tex0 	: TEXCOORD0;
+	float3 viewRay  : TEXCOORD1;
 };
 
 
@@ -52,6 +53,15 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 	VS_OUT Out;
 	Out.tex0 = float2( (VertexID << 1) & 2, VertexID & 2 );
 	Out.posH = float4(  Out.tex0 * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f), 0.0f, 1.0f );
+
+	float4 viewRay =	Out.posH.x * c.invViewProj[0] + (
+						Out.posH.y * c.invViewProj[1] + (
+						c.invViewProj[2] +
+						c.invViewProj[3]));
+
+	Out.viewRay = viewRay.xyz * (1.0f / viewRay.w);
+	Out.viewRay -= c.camPos;
+
 	return Out;
 }
 
@@ -60,30 +70,30 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	float focusedPointDist = tex2D(adaptedFocalPlaneTex, float2(0.5f, 0.5f)).r;
 
 	// Then we calculate the belonging focal length to our eye
-	float focalLength = cBuffer.retinaLensDist * focusedPointDist / (cBuffer.retinaLensDist + focusedPointDist);
+	float focalLength = c.retinaLensDist * focusedPointDist / (c.retinaLensDist + focusedPointDist);
 
 	// Current pixel distance from camera
-	float pointDist = distance(cBuffer.camPos, GetWorldPosition( In.tex0, tex2D(depthTexture, In.tex0).r, cBuffer.invViewProj));
+	float pointDist = distance(c.camPos, GetWorldPosition(c.camPos, In.viewRay, tex2D(depthTexture, In.tex0)));
 
 	// Calculate Circle Of Confusion
-	float CoC = abs(cBuffer.aperture * focalLength * (focusedPointDist - pointDist) * (1.0f / ( pointDist * (focusedPointDist - focalLength))));
+	float CoC = abs(c.aperture * focalLength * (focusedPointDist - pointDist) * (1.0f / ( pointDist * (focusedPointDist - focalLength))));
 
 	// Interesting example : CoC * (1.0f / ~retinaRadius) * inputTextureWidth;
 	// The first product normalizes te CoC to our retina, so the result will be [0,1] then scale this by input texture width
-	float blurRadius = CoC * cBuffer.invRetinaRadiusProductInputTexWidth;
+	float blurRadius = CoC * c.invRetinaRadiusProductInputTexWidth;
 
 	float4 color = tex2D(inputTexture, In.tex0);
-	return color;
+	
 	float alpha = color.a;
 
 	float quality = 6; 
 	for( float i = 1; i < quality; ++i)
 	{
 		float blurAmount = i  / quality * blurRadius;
-		color += tex2D(inputTexture,  float2(  cBuffer.invTexWidth		,  0						 ) * blurAmount + In.tex0);
-		color += tex2D(inputTexture,  float2(  0						,  cBuffer.invTexHeight		 ) * blurAmount + In.tex0);
-		color += tex2D(inputTexture,  float2(  0						,  cBuffer.minusInvTexHeight ) * blurAmount + In.tex0);
-		color += tex2D(inputTexture,  float2(  cBuffer.minusInvTexWidth ,  0						 ) * blurAmount + In.tex0);
+		color += tex2D(inputTexture,  float2(  c.invTexWidth	  ,  0					 ) * blurAmount + In.tex0);
+		color += tex2D(inputTexture,  float2(  0				  ,  c.invTexHeight		 ) * blurAmount + In.tex0);
+		color += tex2D(inputTexture,  float2(  0				  ,  c.minusInvTexHeight ) * blurAmount + In.tex0);
+		color += tex2D(inputTexture,  float2(  c.minusInvTexWidth ,  0					 ) * blurAmount + In.tex0);
 	}
 
 	float4 finalColor = color * (1.0f / ((quality - 1) * 4 + 1));

@@ -44,8 +44,7 @@ struct {
 	float4x4 worldViewProj;
 	float4x4 worldView;
 	float4x4 world;
-	float3 camPos;
-	float near, far;
+	float	 far;
 } transform : register(c0);
 
 
@@ -62,9 +61,9 @@ struct VS_IN {
 struct VS_OUT {
 	float4 posH 	: SV_POSITION;
 	float3 normalW 	: TEXCOORD0;
-	float3 tangentW : TEXCOORD3;
-	float2 tex0 	: TEXCOORD1;
-	float3x3 TBN	: TEXCOORD2;
+	float3 tangentW	: TEXCOORD1;
+	float2 tex0 	: TEXCOORD2;
+	float3x3 TBN	: TEXCOORD4;
 	float linearDepth : COLOR0;
 };
 
@@ -93,11 +92,13 @@ VS_OUT VS_MAIN(VS_IN In) {
 				  transform.worldView[1][2] * In.posL.y + 
 				  transform.worldView[2][2] * In.posL.z + 
 				  transform.worldView[3][2];
-	Out.linearDepth = (viewZ - transform.near)/(transform.far - transform.near);
+	
+	// Scale from [0, farPlane] to [0,1] range
+	Out.linearDepth = viewZ / transform.far;
 
 	Out.tex0 = In.tex0;
 
-	// Calculate TBN base per vertex (CHEAP) (Tangent to World space)
+	// Calculate TBN base per vertex (CHEAP) (Tangent to World space) for normal mapping, etc.
 	float3 N = normalize(Out.normalW);
 	float3 T = normalize(Out.tangentW - dot(Out.tangentW,N) * N);
 	float3 B = normalize(cross(N,T));
@@ -130,7 +131,9 @@ PS_OUT PS_MAIN(VS_OUT In) {
 		Out.gb1 = gb.normal;
 		Out.gb2 = gb.misc;
 	}
+
 	Out.depth = In.linearDepth;
+
 	return Out;
 };
 

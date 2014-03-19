@@ -36,10 +36,13 @@ VS_OUT VS_MAIN(VS_IN In) {
 	vout.tex0.y = vout.posH.y / vout.posH.w * -0.5f + 0.5;
 
 	// view ray
-	float4 viewRay = mul(vout.posH, invViewProj);
-	viewRay *= (1.0f / viewRay.w);
-	viewRay.xyz -= camPos;
-	vout.viewRay = viewRay.xyz * (1.0f / farPlane);
+	float4 viewRay = vout.posH.x * invViewProj[0] + (
+					 vout.posH.y * invViewProj[1] + (
+					 invViewProj[2] +
+					 invViewProj[3]));
+
+	vout.viewRay = viewRay.xyz * (1.0f / viewRay.w);
+	vout.viewRay -= camPos;
 
 	return vout;
 }
@@ -67,7 +70,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	float glossiness, specLevel;
 	SampleGBuffer(In.tex0, diffuseColor, normal, glossiness, specLevel);	
 	depth = tex2D(depthBuffer, In.tex0);
-	worldPos = GetWorldPosition(camPos, In.viewRay, depth, nearPlane, farPlane);
+	worldPos = GetWorldPosition(camPos, In.viewRay, depth);
 
 	// calculate lighting terms
 	float diffuseTerm = DiffuseTerm(lightDir, normal);
