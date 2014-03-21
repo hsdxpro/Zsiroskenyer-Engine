@@ -6,4 +6,4 @@ glossiness 0.5
 tdiffuse ../textures/cake.tif
 tnormal
 tspecular
-tdisplace
+tdisplace 

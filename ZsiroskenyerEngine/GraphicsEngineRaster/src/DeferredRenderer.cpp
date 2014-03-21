@@ -424,14 +424,17 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 					Matrix44 worldViewProj;
 					Matrix44 worldView;
 					Matrix44 world;
+					Vec3	 camPos;
 					float	 farPlane;
 				} shaderTransform;
 				shaderTransform.worldViewProj = worldMat * viewProjMat;
 				shaderTransform.worldView = worldMat * viewMat;
 				shaderTransform.world = worldMat;
 				shaderTransform.farPlane = cam->GetFarPlane();
+				shaderTransform.camPos = cam->GetPos();
 
 				gApi->SetVSConstantBuffer(&shaderTransform, sizeof(shaderTransform), 0);
+				gApi->SetPSConstantBuffer(&shaderTransform, sizeof(shaderTransform), 0);
 
 				// draw
 				gApi->DrawIndexed(matGroup.indexCount, matGroup.indexOffset);
