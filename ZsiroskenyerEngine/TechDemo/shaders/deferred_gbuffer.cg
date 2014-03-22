@@ -26,9 +26,9 @@ sampler2D glossinessMap = {
 };
 
 sampler2D specLevelMap = {
-	MipFilter = ANISOTROPIC,
-    MinFilter = ANISOTROPIC,
-    MagFilter = ANISOTROPIC,
+	MipFilter = LINEAR,
+    MinFilter = LINEAR,
+    MagFilter = LINEAR,
 	AddressU = WRAP,
 	AddressV = WRAP,
 };
@@ -133,7 +133,7 @@ float3 ParallaxOcclusionMapping(float3 viewDirW,float3 normalW,float3 tangentW,f
 	int nMaxSamples = lerp(5, 60, saturate(dot(-viewDirTS, normalTS)) );
 
 	// xy, and z magicstepper
-	float invHeightScale = 20;
+	const float invHeightScale = 20;
 	viewDirTS.z *= invHeightScale;
 	float3 stepTS = viewDirTS / viewDirTS.z / (float)nMaxSamples; // z: [0, -1.0f / nSamples],
 
@@ -169,7 +169,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	GBUFFER gb;
 
 	//POM IT
-	In.tex0 = ParallaxOcclusionMapping(In.posW - transform.camPos, In.normalW, In.tangentW, In.tex0).xy;
+	//In.tex0 = ParallaxOcclusionMapping(In.posW - transform.camPos, In.normalW, In.tangentW, In.tex0).xy;
 
 
 	if (mtlProperties.hasNormalMap) {
