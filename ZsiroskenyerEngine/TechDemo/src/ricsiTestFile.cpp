@@ -237,21 +237,24 @@ int ricsiMain() {
 			}
 		}
 
-		// Don't hog with set caption text... Fucking slow operation
-		static float timer1 = 0.0;
-		timer1 += deltaT;
-		if (timer1 > 1.0f) {
-			gWindow->SetCaptionText(zsString(L"[Zsíroskenyér Engine 0.1 Beta]  FPS: ") + fps);
-			timer1 = 0.0f;
+		// Do things only when it has focus
+		if (gWindow->IsFocused())
+		{
+			// Don't hog with set caption text... Fucking slow operation
+			static float timer1 = 0.0;
+			timer1 += deltaT;
+			if (timer1 > 1.0f) {
+				gWindow->SetCaptionText(zsString(L"[Zsíroskenyér Engine 0.1 Beta]  FPS: ") + fps);
+				timer1 = 0.0f;
+			}
+
+			// Shader reloading
+			if (GetAsyncKeyState('R') && GetAsyncKeyState(VK_LCONTROL))
+				gEngine->ReloadShaders();
+
+			UpdateDemo(gScene->GetCamera(), deltaT);
 		}
 
-		// Shader reloading
-		if (GetAsyncKeyState('R') && GetAsyncKeyState(VK_LCONTROL))
-			gEngine->ReloadShaders();
-
-		// Update camera movement, etc only when window is in focus
-		if(gWindow->IsFocused())
-			UpdateDemo(gScene->GetCamera(), deltaT);
 
 		// Engine update
 		gCore->Update(deltaT);

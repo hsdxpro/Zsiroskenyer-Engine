@@ -2,8 +2,8 @@
 
 sampler2D depthTexture = {
 	MipFilter = POINT,
-    	MinFilter = POINT,
-    	MagFilter = POINT,
+    MinFilter = POINT,
+    MagFilter = POINT,
 	AddressU = CLAMP,
 	AddressV = CLAMP,
 };
@@ -20,6 +20,9 @@ struct {
 	float4x4 invViewProj;
 	float3	 camPos;
 	float	 frameDeltaTime;
+	float	 minFocalDist;   // The nearest focal plane (distance), that the eye can focus into
+	float	 maxFocalDist;   // The farest focal plane,(distance) that the eye can focus into
+	float	 focalAdaptSpeed; //
 } c : register(c0);		
 
 
@@ -54,16 +57,12 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 
 float PS_MAIN(VS_OUT In) : COLOR0 {
 	// We adapt slowly to that
-    float destFocalDist = distance(c.camPos, GetWorldPosition(c.camPos, In.viewRay, tex2D(depthTexture, In.tex0)));
-	
+    float destFocalDist = clamp(distance(c.camPos, GetWorldPosition(c.camPos, In.viewRay, tex2D(depthTexture, In.tex0))), c.minFocalDist, c.maxFocalDist);
+
 	// The last result of adaption
 	float currFocalDist = tex2D(inputFocalPlaneTex, float2(0.5f, 0.5f)).r;
 
-	// So for example destination : 500, last result : 200, we need adaption...etc etc
-	if(abs(destFocalDist - currFocalDist) > 0.001)
-		return clamp(destFocalDist - currFocalDist, -1, 1) * c.frameDeltaTime * 16.2f + currFocalDist; // So slow adaption...	
-
-	return destFocalDist;
+	return (destFocalDist - currFocalDist) * c.frameDeltaTime * c.focalAdaptSpeed + currFocalDist; // So slow adaption...	
 }
 
 technique t

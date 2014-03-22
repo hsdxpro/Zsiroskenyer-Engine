@@ -213,10 +213,6 @@ private:
 		~cPostProcessor();
 		cPostProcessor& operator=(const cPostProcessor&) = delete;
 
-		// Reload belonging shaders
-		void ReloadShaders();
-
-
 		// FXAA
 		void ProcessFXAA();
 
@@ -238,11 +234,13 @@ private:
 		void SetOutputFXAA(ITexture2D* color);
 
 	private:
-		void LoadShaders();
-		void UnloadShaders();
-		void Cleanup();
+		// Reload belonging shaders
+		void		ReloadShaders();
+		void		UnloadShaders();
+		void		Cleanup();
 		eGapiResult ReallocBuffers();
 
+	private:
 		// Shaders
 		IShaderProgram * shaderMB,  *shaderMB2DVelocity,		// Motion blur shaders
 					   * shaderDOF, *shaderFocalPlaneAdaption,	// Depth of field shaders

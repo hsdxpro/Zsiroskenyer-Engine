@@ -36,7 +36,7 @@ cGraphicsEngine::cPostProcessor::cPostProcessor(cGraphicsEngine& parent)
 
 	// create shaders
 	try {
-		LoadShaders();
+		ReloadShaders();
 	}
 	catch (std::exception& e) {
 		Cleanup();
@@ -83,10 +83,7 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 	mbConstants.camPos = cam.GetPos();
 	mbConstants.InvframeDeltaTimeDiv2DivInputRes = Vec2(1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetWidth()),
 														1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetHeight()));
-	/*
-	mbConstants.minMaxPixelVel = Vec2( -40.0f / inputTexDepth->GetWidth(),
-										4.0f / inputTexDepth->GetWidth());
-	*/
+	
 	gApi->SetPSConstantBuffer(&mbConstants, sizeof(mbConstants), 0);
 	gApi->SetVSConstantBuffer(&mbConstants, sizeof(mbConstants), 0);
 	gApi->SetTexture(L"depthTexture", inputTexDepth);
@@ -115,7 +112,10 @@ void cGraphicsEngine::cPostProcessor::ProcessDOF(float frameDeltaTime, const cCa
 	{
 		Matrix44 invViewProj;
 		Vec3	 camPos;
-		float	 frameDeltaTime; // Just pass 1 use it !!!	
+		float	 frameDeltaTime; // just shader :depth_of_field_focal_plane_adaption  use it
+		float	 minFocalDist;	 // just shader :depth_of_field_focal_plane_adaption  use it
+		float	 maxFocalDist;	 // just shader :depth_of_field_focal_plane_adaption  use it
+		float	 focalAdaptSpeed;// just shader :depth_of_field_focal_plane_adaption  use it
 		float	 invRetinaRadiusProductInputTexWidth;
 		float	 invTexWidth;
 		float	 invTexHeight;
@@ -123,6 +123,7 @@ void cGraphicsEngine::cPostProcessor::ProcessDOF(float frameDeltaTime, const cCa
 		float	 minusInvTexHeight;			
 		float	 aperture;					
 		float	 retinaLensDist;				
+		int		 quality;
 	} dofConstants;
 
 	dofConstants.invRetinaRadiusProductInputTexWidth = (float)inputTexColor->GetWidth() * 26.793927f; // That magic number (27.793927) normalizes a CoC that belonging to an average sized human eye and lens into [0,1]
@@ -135,6 +136,10 @@ void cGraphicsEngine::cPostProcessor::ProcessDOF(float frameDeltaTime, const cCa
 	dofConstants.retinaLensDist = 0.019f;
 	dofConstants.aperture = 0.02f;
 	dofConstants.camPos = cam.GetPos();
+	dofConstants.quality = 3;
+	dofConstants.minFocalDist = 0;
+	dofConstants.maxFocalDist = 30;
+	dofConstants.focalAdaptSpeed = 6.0f;
 
 	// Set it for shaders to use
 	gApi->SetPSConstantBuffer(&dofConstants, sizeof(dofConstants), 0);
@@ -227,28 +232,12 @@ void cGraphicsEngine::cPostProcessor::Cleanup() {
 	SAFE_RELEASE(focalPlaneTexB);
 }
 
-// load shaders
-void cGraphicsEngine::cPostProcessor::LoadShaders() {
-	auto Create = [this](const wchar_t* shader)->IShaderProgram* {
-		return SafeLoadShader(gApi, shader);
-	};
-	try {
-		shaderMB				 = Create(L"shaders/motion_blur.cg");
-		shaderMB2DVelocity		 = Create(L"shaders/motion_blur_2dvelocity.cg");
-		shaderDOF				 = Create(L"shaders/depth_of_field.cg");
-		shaderFocalPlaneAdaption = Create(L"shaders/depth_of_field_focal_plane_adaption.cg");
-		shaderFXAA				 = Create(L"shaders/fxaa.cg");
-	}
-	catch (...) {
-		UnloadShaders();
-		throw;
-	}
-}
-
 // unload shaders
 void cGraphicsEngine::cPostProcessor::UnloadShaders() {
 	SAFE_RELEASE(shaderMB);
+	SAFE_RELEASE(shaderMB2DVelocity);
 	SAFE_RELEASE(shaderDOF);
+	SAFE_RELEASE(shaderFocalPlaneAdaption);
 	SAFE_RELEASE(shaderFXAA);
 }
 
@@ -256,14 +245,20 @@ void cGraphicsEngine::cPostProcessor::UnloadShaders() {
 void cGraphicsEngine::cPostProcessor::ReloadShaders() {
 	auto Reload = [this](IShaderProgram** prog, const wchar_t* name)->void {
 		IShaderProgram* tmp = SafeLoadShader(gApi, name); // it throws on error!
-		(*prog)->Release();
+		if(*prog) (*prog)->Release();
 		*prog = tmp;
 	};
-	Reload(&shaderMB,					L"shaders/motion_blur.cg");
-	Reload(&shaderMB2DVelocity,			L"shaders/motion_blur_2dvelocity.cg");
-	Reload(&shaderDOF,					L"shaders/depth_of_field.cg");
-	Reload(&shaderFocalPlaneAdaption,	L"shaders/depth_of_field_focal_plane_adaption.cg");
-	Reload(&shaderFXAA,					L"shaders/fxaa.cg");
+	try {
+		Reload(&shaderMB,					L"shaders/motion_blur.cg");
+		Reload(&shaderMB2DVelocity,			L"shaders/motion_blur_2dvelocity.cg");
+		Reload(&shaderDOF,					L"shaders/depth_of_field.cg");
+		Reload(&shaderFocalPlaneAdaption,	L"shaders/depth_of_field_focal_plane_adaption.cg");
+		Reload(&shaderFXAA,					L"shaders/fxaa.cg");
+	}
+	catch (...) {
+		UnloadShaders();
+		throw;
+	}
 }
 
 eGapiResult cGraphicsEngine::cPostProcessor::ReallocBuffers() {
