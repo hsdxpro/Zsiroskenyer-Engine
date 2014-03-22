@@ -651,9 +651,13 @@ zsString cStrUtil::GetDirectory(const zsString& str) {
 
 	// Null terminate from right to left, while not reaching directory
 	size_t i = directory.size() - 1;
-	for (; directory[i] != '\\' && directory[i] != '/' && i >= 0; i--);
+	for (; directory[i] != '\\' && directory[i] != '/' && i > 0; i--);
 
-	directory.resize(i + 1);
+	// Found directory sign
+	if (i != 0)
+		i++;
+
+	directory.resize(i);
 
 	return directory;
 }

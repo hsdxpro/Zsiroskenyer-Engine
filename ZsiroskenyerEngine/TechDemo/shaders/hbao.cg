@@ -25,8 +25,7 @@ float g_NegInvR2 : register(c7);
 float g_MaxRadiusPixels : register(c8);
 float g_AngleBias : register(c9);
 float g_TanAngleBias : register(c10);
-float g_PowExponent : register(c11);
-float g_Strength : register(c12);
+float g_Strength : register(c11);
 
 #define M_PI 3.14159265f
 

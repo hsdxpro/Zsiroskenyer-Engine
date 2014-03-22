@@ -193,8 +193,8 @@ activeVertexBuffer(nullptr)
 		throw std::runtime_error("failed to create default states");
 	}
 
-	memset(activeViewports, 0, 16 * sizeof(D3D11_VIEWPORT));
-	memset(activeRTVs, 0, 16 * sizeof(ID3D11RenderTargetView*));
+	memset(activeViewports		, 0, 16 * sizeof(D3D11_VIEWPORT));
+	memset(activeRTVs			, 0, 16 * sizeof(ID3D11RenderTargetView*));
 }
 
 void cGraphicsApiD3D11::Release() {
@@ -1505,6 +1505,7 @@ eGapiResult cGraphicsApiD3D11::SetTextureArray(const wchar_t* varName, const ITe
 	eGapiResult r;
 	for (uint8_t i = 0; i < nTextures; i++) {
 		const ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)t[i])->GetSRV();
+		assert(srv);
 		if (srv != nullptr) {
 			int startSlot = ((cShaderProgramD3D11*)activeShaderProg)->GetTextureSlotVS(varName);
 			if (startSlot < 0) {
@@ -1654,7 +1655,7 @@ eGapiResult cGraphicsApiD3D11::SetRenderTargets(unsigned nTargets, const ITextur
 	}
 
 	// There is no rtv, but dsv, create viewports based on dsv
-	if (i == 0 && depthStencilTarget) {
+	if (!renderTargets && depthStencilTarget) {
 		activeViewports[0].Width = ((const cTexture2DD3D11*)depthStencilTarget)->GetWidth();
 		activeViewports[0].Height = ((const cTexture2DD3D11*)depthStencilTarget)->GetHeight();
 		activeViewports[0].TopLeftX = 0;
@@ -1820,13 +1821,14 @@ const wchar_t* cGraphicsApiD3D11::GetLastErrorMsg() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Utility
-eGapiResult cGraphicsApiD3D11::SaveTextureToFile(ITexture2D* t, ITexture2D::eImageFormat f, const char* filePath) const {
+eGapiResult cGraphicsApiD3D11::SaveTextureToFile(ITexture2D* t, ITexture2D::eImageFormat f, const char* filePath)  {
 	assert(t);
 
 	// The resource that we wan to save
 	ID3D11Resource* res;
 	ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)t)->GetSRV();
-	if ( ! srv)
+	assert(srv);
+	if (!srv)
 		return eGapiResult::ERROR_INVALID_ARG;
 
 	srv->GetResource(&res);
@@ -1844,9 +1846,90 @@ eGapiResult cGraphicsApiD3D11::SaveTextureToFile(ITexture2D* t, ITexture2D::eIma
 	}
 	HRESULT hr = D3DX11SaveTextureToFileA(d3dcon, res, format, filePath);
 
+	// OMG MOTHERFUCKER NAB FUNCTION "D3DX11SaveTextureToFileA" solve that...
 	if (FAILED(hr))
-		return eGapiResult::ERROR_INVALID_ARG;
+	{
+		ITexture2D* tmpTex = NULL;
+		ITexture2D::tDesc d;
+			d.arraySize = 1;
+			d.bind = (int)eBind::RENDER_TARGET | (int)eBind::SHADER_RESOURCE;
+			d.format = eFormat::R8G8B8A8_UNORM;
+			d.width = t->GetWidth();
+			d.height = t->GetHeight();
+			d.mipLevels = 1;
+			d.usage = eUsage::DEFAULT;
+		CreateTexture(&tmpTex, d);
 
+		// The screen copy cg shader
+
+		const char* tmpShaderFilePath = "zsiroskenyergraphicsapid3d11_tmpscreencopyshader.cg";
+		std::ofstream os(tmpShaderFilePath);
+
+		os << "sampler2D inputTexture = {\n";
+		os << "	MipFilter = POINT,\n";
+		os << "	MinFilter = POINT,\n";
+		os << "	MagFilter = POINT,\n";
+		os << "	AddressU = CLAMP,\n";
+		os << "	AddressV = CLAMP,\n";
+		os << "};\n";
+		os << "\n";
+		os << "struct VS_IN {\n";
+		os << "	float3 posL : POSITION;\n";
+		os << "	float2 tex0 : TEXCOORD0;\n";
+		os << "};\n";
+		os << "\n";
+		os << "struct VS_OUT {\n";
+		os << "	float4 posH : SV_POSITION;\n";
+		os << "	float2 tex0 : TEXCOORD2;\n";
+		os << "};\n";
+		os << "\n";
+		os << "\n";
+		os << "VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {\n";
+		os << "	VS_OUT Out;\n";
+		os << "	Out.tex0 = float2((VertexID << 1) & 2, VertexID & 2);\n";
+		os << "	Out.posH = float4(Out.tex0 * float2(2.0f, -2.0f) + float2(-1.0f, 1.0f), 0.0f, 1.0f);\n";
+		os << "	return Out;\n";
+		os << "}\n";
+		os << "\n";
+		os << "float4 PS_MAIN(VS_OUT In) : COLOR0{\n";
+		os << "	float4 color = tex2D(inputTexture, In.tex0);\n";
+		os << "	return color;\n";
+		os << "};\n";
+		os << "\n";
+		os << "technique t\n";
+		os << "{\n";
+		os << "	pass p\n";
+		os << "	{\n";
+		os << "	VertexProgram = compile vs_4_0 VS_MAIN();\n";
+		os << "	FragmentProgram = compile ps_4_0 PS_MAIN();\n";
+		os << "}\n";
+		os << "}";
+		os.close();
+
+
+
+		// TODO HLSL SHADERREL KELL MEGOLDANI, ami helyben van kifejtve ( de most lusta vagyok ) !!
+		IShaderProgram* shaderScreenCopy;
+		zsString shaderFilePath = zsString(tmpShaderFilePath).c_str();
+		eGapiResult errCode = CreateShaderProgram(&shaderScreenCopy, shaderFilePath.c_str());
+		assert(errCode == eGapiResult::OK);
+		cFileUtil::Delete(shaderFilePath);
+
+		ClearTexture(tmpTex);
+
+		SetRenderTargets(1, &tmpTex, nullptr);
+		SetShaderProgram(shaderScreenCopy);
+		SetTexture(L"inputTexture", t);
+		Draw(3);
+
+		errCode = SaveTextureToFile(tmpTex, f, filePath);
+		assert(errCode == eGapiResult::OK);
+
+		// Release temporary resources
+		shaderScreenCopy->Release();
+		tmpTex->Release();
+
+	}
 	return eGapiResult::OK;
 }
 

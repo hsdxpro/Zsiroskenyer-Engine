@@ -194,5 +194,11 @@
     <None Include="..\TechDemo\shaders\fxaa.cg">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\TechDemo\shaders\hbao_blur_hor.cg">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\TechDemo\shaders\hbao_blur_ver.cg">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

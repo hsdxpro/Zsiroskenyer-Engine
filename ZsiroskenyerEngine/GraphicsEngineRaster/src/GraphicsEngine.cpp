@@ -296,7 +296,7 @@ eGraphicsResult cGraphicsEngine::Update(float elapsed) {
 		
 		gApi->SetRenderTargetDefault();
 		gApi->SetShaderProgram(shaderScreenCopy);
-		gApi->SetTexture(L"texture0", currentSceneBuffer);
+		gApi->SetTexture(L"inputTexture", currentSceneBuffer);
 		gApi->Draw(3);
 	}
 

@@ -50,6 +50,8 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 	shaderSky = nullptr;
 	shaderSSAO = nullptr;
 	shaderHBAO = nullptr;
+	shaderHBAOblurHor = nullptr;
+	shaderHBAOblurVer = nullptr;
 
 	// light volumes to null
 	ibSpot = ibPoint = nullptr;
@@ -199,7 +201,7 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	desc.width = bufferWidth;
 	desc.height = bufferHeight;
 	desc.usage = eUsage::DEFAULT;
-	desc.format = eFormat::R24_UNORM_X8_TYPELESS;	desc.depthFormat = eFormat::D24_UNORM_S8_UINT;	desc.bind = (int)eBind::DEPTH_STENCIL;
+	desc.format = eFormat::R24_UNORM_X8_TYPELESS;	desc.depthFormat = eFormat::D24_UNORM_S8_UINT;	desc.bind = (int)eBind::DEPTH_STENCIL | (int)eBind::SHADER_RESOURCE;
 	results[++idxResult] = gApi->CreateTexture(&depthBuffer, desc);
 	desc.bind = (int)eBind::SHADER_RESOURCE;
 	results[++idxResult] = gApi->CreateTexture(&depthBufferCopy, desc);
@@ -259,6 +261,8 @@ void cGraphicsEngine::cDeferredRenderer::LoadShaders() {
 
 		shaderSSAO = Create(L"shaders/ssao.cg");
 		shaderHBAO = Create(L"shaders/hbao.cg");
+		shaderHBAOblurHor = Create(L"shaders/hbao_blur_hor.cg");
+		shaderHBAOblurVer = Create(L"shaders/hbao_blur_ver.cg");
 	}
 	catch (...) {
 		UnloadShaders();
@@ -278,6 +282,8 @@ void cGraphicsEngine::cDeferredRenderer::UnloadShaders() {
 
 	SAFE_RELEASE(shaderSSAO);
 	SAFE_RELEASE(shaderHBAO);
+	SAFE_RELEASE(shaderHBAOblurHor);
+	SAFE_RELEASE(shaderHBAOblurVer);
 }
 
 // reload shaders
@@ -484,7 +490,6 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 
 		float AngleBias;			float _pad9[3];
 		float TanAngleBias;			float _pad10[3];
-		float PowExponent;			float _pad11[3];
 		float Strength;				float _pad12[3];
 	} data;
 
@@ -506,10 +511,9 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	data.R = 0.003; // 0.001
 	data.R2 = data.R * data.R;
 	data.NegInvR2 = -1.0f / data.R2;
-	data.MaxRadiusPixels = 30.0f;// 0.1f * std::min(depthBufferCopy->GetWidth(), depthBufferCopy->GetHeight());
+	data.MaxRadiusPixels = 30.0f;
 	data.AngleBias = 10;
 	data.TanAngleBias = tanf(data.AngleBias);
-	data.PowExponent = 1; // TODO IRTASD KI NINCS IS BEKOTVE
 	data.Strength = 1.0;
 
 	gApi->SetShaderProgram(shaderHBAO);
@@ -519,7 +523,25 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetTexture(L"tLinearDepth", depthBufferCopy);
 	gApi->SetPSConstantBuffer(&data, sizeof(data), 0);
 	gApi->Draw(3);
-	
+
+	/*
+	// HOR BLUR YEAH !!!
+	gApi->SetShaderProgram(shaderHBAOblurHor);
+	gApi->SetRenderTargets(0, nullptr, depthBuffer);
+	gApi->SetTexture(L"inputTexture", ambientOcclusionBuffer);
+	gApi->Draw(3);
+
+	gApi->SaveTextureToFile(depthBuffer, ITexture2D::JPG, "hor.jpg");
+
+	// VER BLUR YEAH !!!
+	gApi->SetShaderProgram(shaderHBAOblurVer);
+	gApi->SetRenderTargets(1, &ambientOcclusionBuffer, nullptr);
+
+	gApi->SetTexture(L"inputTexture", depthBuffer);
+	gApi->Draw(3);
+
+	*/
+
 
 	/* SSAO
 	struct _aoShaderConstants {

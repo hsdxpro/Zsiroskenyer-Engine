@@ -59,7 +59,7 @@ public:
 	virtual void Present() = 0;
 
 	// --- utility do it--- //
-	virtual eGapiResult SaveTextureToFile(ITexture2D* t, ITexture2D::eImageFormat f, const char* filePath) const = 0;
+	virtual eGapiResult SaveTextureToFile(ITexture2D* t, ITexture2D::eImageFormat f, const char* filePath) = 0;
 
 
 	// --- state --- //

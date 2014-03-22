@@ -1,4 +1,4 @@
-sampler2D texture0 = {
+sampler2D inputTexture = {
     	MipFilter = POINT,
     	MinFilter = POINT,
     	MagFilter = POINT,
@@ -25,7 +25,7 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 }
 
 float4 PS_MAIN(VS_OUT In) : COLOR0 {
-	float4 color = tex2D(texture0, In.tex0);
+	float4 color = tex2D(inputTexture, In.tex0);
 	return color;
 };
 

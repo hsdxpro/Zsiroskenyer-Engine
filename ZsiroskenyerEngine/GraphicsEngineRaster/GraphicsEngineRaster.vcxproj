@@ -59,6 +59,8 @@
     <None Include="..\TechDemo\shaders\depth_of_field_focal_plane_adaption.cg" />
     <None Include="..\TechDemo\shaders\fxaa.cg" />
     <None Include="..\TechDemo\shaders\hbao.cg" />
+    <None Include="..\TechDemo\shaders\hbao_blur_hor.cg" />
+    <None Include="..\TechDemo\shaders\hbao_blur_ver.cg" />
     <None Include="..\TechDemo\shaders\hdr_blur_horiz.cg" />
     <None Include="..\TechDemo\shaders\hdr_blur_vert.cg" />
     <None Include="..\TechDemo\shaders\hdr_compose.cg" />

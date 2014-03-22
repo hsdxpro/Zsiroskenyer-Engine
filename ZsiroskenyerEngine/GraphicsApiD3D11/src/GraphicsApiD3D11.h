@@ -68,32 +68,35 @@ public:
 
 	void Present() override;
 
-	// --- render state --- //
+	// --- state --- //
 	eGapiResult SetRenderTargetDefault() override;
-	eGapiResult SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget = nullptr) override;
 	eGapiResult SetBackBufferSize(unsigned width, unsigned height) override;
+	eGapiResult SetRenderTargets(unsigned nTargets, const ITexture2D* const* renderTargets, ITexture2D* depthStencilTarget = nullptr) override;
 
-	void SetVertexBuffer(const IVertexBuffer* vb) override;
-	void SetIndexBuffer(const IIndexBuffer* vb) override;
-	void SetInstanceData(/*whatever*/) override;
-	eGapiResult SetTexture(int slotIdx, const ITexture2D* t) override;
-	eGapiResult SetTexture(const wchar_t* varName, const ITexture2D* t) override;
-	eGapiResult SetTextureArray(const wchar_t* varName, const ITexture2D* const * t, uint8_t nTextures = 1) override;
 	eGapiResult SetVSConstantBuffer(const void* data, size_t size, size_t slotIdx) override;
 	eGapiResult SetPSConstantBuffer(const void* data, size_t size, size_t slotIdx) override;
-	void SetShaderProgram(IShaderProgram* shProg) override;
+	eGapiResult SetTextureArray(const wchar_t* varName, const ITexture2D* const * t, uint8_t nTextures = 1) override;
+	eGapiResult SetTexture(int slotIdx, const ITexture2D* t) override;
+	eGapiResult SetTexture(const wchar_t* varName, const ITexture2D* t) override;
 	void SetPrimitiveTopology(ePrimitiveTopology t) override;
+	void SetShaderProgram(IShaderProgram* shProg) override;
+	void SetInstanceData(/*whatever*/) override;
+	void SetVertexBuffer(const IVertexBuffer* vb) override;
+	void SetIndexBuffer(const IIndexBuffer* ib) override;
+
+	eGapiResult SetDepthStencilState(tDepthStencilDesc desc, uint8_t stencilRef) override;
+	eGapiResult SetBlendState(tBlendDesc desc) override;
+
+	// --- misc --- //
 	eGapiResult SetWindow(IWindow *renderWindow) override;
 
-	eGapiResult SetBlendState(tBlendDesc desc) override;
-	eGapiResult SetDepthStencilState(tDepthStencilDesc desc, uint8_t stencilRef) override;
 
 	// --- misc --- //
 	ITexture2D* GetDefaultRenderTarget() const override;
 	const wchar_t* GetLastErrorMsg() const override;
 
 	// --- utility --- //
-	eGapiResult SaveTextureToFile(ITexture2D* t, ITexture2D::eImageFormat f, const char* filePath) const override;
+	eGapiResult SaveTextureToFile(ITexture2D* t, ITexture2D::eImageFormat f, const char* filePath) override;
 
 private:
 	eGapiResult CreateDevice();
@@ -148,7 +151,7 @@ protected:
 	cVertexBufferD3D11* activeVertexBuffer;
 
 	// Viewports and RTs
-	D3D11_VIEWPORT activeViewports[16];
+	D3D11_VIEWPORT	activeViewports[16];
 	ID3D11RenderTargetView* activeRTVs[16];
 
 	// Constant buffers handling
