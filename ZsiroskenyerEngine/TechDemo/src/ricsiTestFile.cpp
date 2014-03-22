@@ -42,7 +42,7 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #pragma warning(disable: 4244)
 #pragma warning(disable: 4305)
 
-#define CAM_MOVE_SPEED 20
+#define CAM_MOVE_SPEED 8
 
 void UpdateDemo(cCamera& cam, float tDelta);
 void LoadLevel1();
@@ -56,6 +56,8 @@ IGraphicsLight* sun;
 // scene
 IGraphicsScene* gScene;
 
+IWindow* gWindow;
+
 cCore* gCore;
 
 int ricsiMain() {
@@ -68,14 +70,14 @@ int ricsiMain() {
 		winDesc.clientWidth = 800;
 		winDesc.style = IWindow::eStyle::OVERLAPPED;
 
-	// Create window
-	IWindow* window = IWindow::Create(winDesc);
+	// Create gWindow
+	gWindow = IWindow::Create(winDesc);
 
 	// Create core
 	tGraphicsConfig gCfg;
 	gCfg.rasterEngine.gxApi = tGraphicsConfig::eGraphicsApi::D3D11; // MERT AZT AKAROK HASZNÁLNI BAZDMEG :D
 
-	gCore = new cCore(window, window->GetClientWidth(), window->GetClientHeight(), gCfg);
+	gCore = new cCore(gWindow, gWindow->GetClientWidth(), gWindow->GetClientHeight(), gCfg);
 
 	// Get Modules
 	IGraphicsEngine* gEngine = gCore->GetGraphicsEngine();
@@ -202,15 +204,15 @@ int ricsiMain() {
 
 	// Main loop
 	IWindow::eMessage msg;
-	HWND hWnd = (HWND)window->GetHandle();
+	HWND hWnd = (HWND)gWindow->GetHandle();
 	int scw = GetSystemMetrics(SM_CXSCREEN);
 	int sch = GetSystemMetrics(SM_CYSCREEN);
 	SetWindowPos(hWnd, nullptr, 0, 0, scw, sch-30, 0);
 	RECT rc;
 	GetClientRect(hWnd, &rc);
 	gEngine->Resize(rc.right - rc.left, rc.bottom - rc.top);
-	while(window->IsOpened()) {
-		while (window->HandleMessage(&msg)) {
+	while(gWindow->IsOpened()) {
+		while (gWindow->HandleMessage(&msg)) {
 			if (msg == IWindow::eMessage::SIZE_CHANGED) {
 #pragma message("Noob solution (float)GetSystemMetrics(SM_CXSCREEN), good solution is to get maximum resolution based on gpu output (monitor)")
 				gEngine->Resize((float)GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
@@ -239,7 +241,7 @@ int ricsiMain() {
 		static float timer1 = 0.0;
 		timer1 += deltaT;
 		if (timer1 > 1.0f) {
-			window->SetCaptionText(zsString(L"[Zsíroskenyér Engine 0.1 Beta]  FPS: ") + fps);
+			gWindow->SetCaptionText(zsString(L"[Zsíroskenyér Engine 0.1 Beta]  FPS: ") + fps);
 			timer1 = 0.0f;
 		}
 
@@ -247,19 +249,15 @@ int ricsiMain() {
 		if (GetAsyncKeyState('R') && GetAsyncKeyState(VK_LCONTROL))
 			gEngine->ReloadShaders();
 
-		UpdateDemo(gScene->GetCamera(), deltaT);
+		// Update camera movement, etc only when window is in focus
+		if(gWindow->IsFocused())
+			UpdateDemo(gScene->GetCamera(), deltaT);
 
 		// Engine update
 		gCore->Update(deltaT);
-
-		// Debug rendering
-		//core.DebugRender(s, (unsigned long)cCore::eDebugRenderMode::PHYSICS_TRIANGLES);
-
-		// Present SwapChain
-		gApi->Present();
 	}
 	
-	SAFE_DELETE(window);
+	SAFE_DELETE(gWindow);
 	SAFE_DELETE(gCore);
 	return 0;
 }
@@ -311,14 +309,19 @@ void UpdateDemo(cCamera& cam, float tDelta) {
 
 	// CAMERA MOVING
 	Vec3 deltaMove(0, 0, 0);
+	float speedMultiplier = 1.0f;
+
+	if (GetAsyncKeyState(VK_LSHIFT))
+		speedMultiplier = 4;
+
 	if (GetAsyncKeyState('W'))
-		deltaMove += cam.GetDirFront() * (CAM_MOVE_SPEED * tDelta);
+		deltaMove += cam.GetDirFront() * (CAM_MOVE_SPEED * tDelta * speedMultiplier);
 	if (GetAsyncKeyState('S'))
-		deltaMove += cam.GetDirBack()  * (CAM_MOVE_SPEED * tDelta);
+		deltaMove += cam.GetDirBack()  * (CAM_MOVE_SPEED * tDelta * speedMultiplier);
 	if (GetAsyncKeyState('A'))
-		deltaMove += cam.GetDirLeft()  * (CAM_MOVE_SPEED * tDelta);
+		deltaMove += cam.GetDirLeft()  * (CAM_MOVE_SPEED * tDelta * speedMultiplier);
 	if (GetAsyncKeyState('D'))
-		deltaMove += cam.GetDirRight() * (CAM_MOVE_SPEED * tDelta);
+		deltaMove += cam.GetDirRight() * (CAM_MOVE_SPEED * tDelta * speedMultiplier);
 
 	// SUN POSITION
 	static float sunAngle = 0.0f;

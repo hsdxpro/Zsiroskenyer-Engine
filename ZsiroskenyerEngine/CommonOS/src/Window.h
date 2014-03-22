@@ -19,6 +19,7 @@ public:
 	void SetCaptionText(const zsString& str) override;
 
 	bool IsOpened()		const override;
+	bool IsFocused()	const override;
 
 	float			GetClientAspectRatio()	const override;
 	size_t			GetClientHeight()		const override;

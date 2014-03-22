@@ -127,8 +127,12 @@ bool cWindow::IsOpened() const {
 	return opened;
 }
 
+bool cWindow::IsFocused() const {
+	return GetFocus() == handle;
+}
+
 zsString cWindow::GetCaptionText() const {
-	return L"asd";
+	return L"TODO CAPTION TEXT...";
 }
 
 Vec2 cWindow::GetCenter() const {

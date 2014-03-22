@@ -65,6 +65,7 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 	return Out;
 }
 
+
 float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	// The plane that we choose in focus (currently adapted across frames in depth_of_field_focal_plane_adaption shader
 	float focusedPointDist = tex2D(adaptedFocalPlaneTex, float2(0.5f, 0.5f)).r;
@@ -80,26 +81,37 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 
 	// Interesting example : CoC * (1.0f / ~retinaRadius) * inputTextureWidth;
 	// The first product normalizes te CoC to our retina, so the result will be [0,1] then scale this by input texture width
-	float blurRadius = CoC * c.invRetinaRadiusProductInputTexWidth;
+	float blurCircleDiameter = CoC * c.invRetinaRadiusProductInputTexWidth;
 
 	float4 color = tex2D(inputTexture, In.tex0);
-	
-	float alpha = color.a;
+	float alpha = color.a; // Save alpha
 
-	float quality = 6; 
-	for( float i = 1; i < quality; ++i)
+	const float2 poissonDisk[8] = {
+		float2(	 -0.0914861f / 2.0f,	-0.9040616f / 2.0f ),
+		float2(	 -0.7357999f / 2.0f,	-0.4860847f / 2.0f ),
+		float2(	  0.0052135f / 2.0f,	-0.1503162f / 2.0f ),
+		float2(	 -0.6150167f / 2.0f,	 0.2418161f / 2.0f ),
+		float2(	  0.9692842f / 2.0f,	-0.1548799f / 2.0f ),
+		float2(	  0.3041316f / 2.0f,	 0.5059290f / 2.0f ),
+		float2(	 -0.3363325f / 2.0f,	 0.9149118f / 2.0f ),
+		float2(	  0.5941941f / 2.0f,	-0.7803356f / 2.0f )
+	};
+
+	// 3 cycle * 8 poisson sample
+	const float quality = 4; // 4 means 3 circle sample..
+	for(float i = 1; i < quality; i++)
 	{
-		float blurAmount = i  / quality * blurRadius;
-		color += tex2D(inputTexture,  float2(  c.invTexWidth	  ,  0					 ) * blurAmount + In.tex0);
-		color += tex2D(inputTexture,  float2(  0				  ,  c.invTexHeight		 ) * blurAmount + In.tex0);
-		color += tex2D(inputTexture,  float2(  0				  ,  c.minusInvTexHeight ) * blurAmount + In.tex0);
-		color += tex2D(inputTexture,  float2(  c.minusInvTexWidth ,  0					 ) * blurAmount + In.tex0);
+		for(int j = 0; j < 8; j++)
+		{
+			float2 poissonOffset = poissonDisk[j] * float2(c.invTexWidth, c.invTexHeight) * ((i * blurCircleDiameter) * (1.0f / quality));
+			color += tex2D(inputTexture, In.tex0 + poissonOffset);
+		}
 	}
 
-	float4 finalColor = color * (1.0f / ((quality - 1) * 4 + 1));
-	finalColor.a = alpha;
+	color /= (quality - 1) * 8 + 1; // 3 * 8 + 1 = 25 sample
+	color.a = alpha; // Reset old alpha
 
-	return finalColor;
+	return color;
 }
 
 technique t

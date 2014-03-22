@@ -300,6 +300,7 @@ eGraphicsResult cGraphicsEngine::Update(float elapsed) {
 		gApi->Draw(3);
 	}
 
+	gApi->Present();
 	return eGraphicsResult::OK;
 }
 

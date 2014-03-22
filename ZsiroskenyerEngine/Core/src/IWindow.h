@@ -68,7 +68,8 @@ public:
 	virtual void SetCaptionText(const zsString& str) = 0;
 
 	virtual bool IsOpened()	 const = 0;
-
+	virtual bool IsFocused() const = 0;
+	
 	virtual float			GetClientAspectRatio()	const = 0;
 	virtual size_t			GetClientHeight()		const = 0;
 	virtual size_t			GetClientWidth()		const = 0;

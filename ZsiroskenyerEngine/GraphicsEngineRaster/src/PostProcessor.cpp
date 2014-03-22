@@ -133,7 +133,7 @@ void cGraphicsEngine::cPostProcessor::ProcessDOF(float frameDeltaTime, const cCa
 	dofConstants.minusInvTexHeight = -dofConstants.invTexHeight;
 	dofConstants.frameDeltaTime = frameDeltaTime;
 	dofConstants.retinaLensDist = 0.019f;
-	dofConstants.aperture = 0.009f;
+	dofConstants.aperture = 0.02f;
 	dofConstants.camPos = cam.GetPos();
 
 	// Set it for shaders to use
