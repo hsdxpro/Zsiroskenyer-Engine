@@ -1,8 +1,8 @@
 // texture input sampler
 sampler2D inputTexture = {
-    	MipFilter = LINEAR,
-    	MinFilter = LINEAR,
-    	MagFilter = LINEAR,
+    MipFilter = LINEAR,
+    MinFilter = LINEAR,
+    MagFilter = LINEAR,
 	AddressU = Clamp,
 	AddressV = Clamp,
 };
@@ -32,13 +32,12 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 
 // pixel shader
 float PS_MAIN(VS_OUT In) : COLOR0 {
-	return tex2D(inputTexture, In.tex0);
 	float4 sum = float4(0,0,0,0);
 	float s;
 	
 	float scSum = 0.0f;
-	for (float i=-0.1; i<=0.1; i+=0.008f) {
-		s = tex2D(inputTexture, float2(In.tex0.x, clamp(In.tex0.y+i, 0.0, 1.0)));
+	for (float i=-0.1; i<=0.1; i+=0.01f) {
+		s = tex2D(inputTexture, float2(In.tex0.x, clamp(In.tex0.y+i / 5, 0.0, 1.0)));
 		float x = 3.0f/0.1f * i;
 		float weight = (1.0f/(2.506628274631) * exp(-x*x * 0.5f));
 		scSum += weight;

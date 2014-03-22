@@ -40,7 +40,7 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 	compositionBuffer = nullptr;
 	depthBuffer = nullptr;
 	depthBufferCopy = nullptr;
-	ambientOcclusionBuffer = nullptr;
+	aoBuffer = nullptr;
 	randomTexture = nullptr;
 	for (auto& v : gBuffer)
 		v = nullptr;
@@ -106,7 +106,7 @@ void cGraphicsEngine::cDeferredRenderer::Cleanup() {
 	SAFE_RELEASE(compositionBuffer);
 	SAFE_RELEASE(depthBuffer);
 	SAFE_RELEASE(depthBufferCopy);
-	SAFE_RELEASE(ambientOcclusionBuffer);
+	SAFE_RELEASE(aoBuffer);
 	SAFE_RELEASE(randomTexture);
 
 	// mesh objects
@@ -131,11 +131,11 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	auto compositionBuffer_ = compositionBuffer;
 	auto depthBuffer_ = depthBuffer;
 	auto depthBufferCopy_ = depthBufferCopy;
-	auto ambientOcclusionBuffer_ = ambientOcclusionBuffer;
+	auto ambientOcclusionBuffer_ = aoBuffer;
 	auto randomTexture_ = randomTexture;
 
 	// create new buffers
-	const int nBuffers = 8;
+	const int nBuffers = 9;
 
 	eGapiResult results[nBuffers]; memset(&results, 0, sizeof(eGapiResult) * nBuffers); // Default everything is OK = 0
 	int idxResult = -1;
@@ -154,7 +154,9 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	// ambient occlusion
 	desc.width = desc.width>=256 ? desc.width / 2 : desc.width;
 	desc.height = desc.height>=256 ? desc.height / 2 : desc.height;
-	desc.format = eFormat::R8_UNORM;			results[++idxResult] = gApi->CreateTexture(&ambientOcclusionBuffer, desc);
+	desc.format = eFormat::R8_UNORM;			
+												results[++idxResult] = gApi->CreateTexture(&aoBuffer, desc);
+												results[++idxResult] = gApi->CreateTexture(&aoBlurHelperBuffer, desc);
 	desc.width = bufferWidth; desc.height = bufferHeight;
 
 	// Random texture for ambient occlusion
@@ -214,14 +216,14 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 			SAFE_RELEASE(compositionBuffer);
 			SAFE_RELEASE(depthBuffer);
 			SAFE_RELEASE(depthBufferCopy);
-			SAFE_RELEASE(ambientOcclusionBuffer);
+			SAFE_RELEASE(aoBuffer);
 			SAFE_RELEASE(randomTexture);
 
 			// rollback to previous
 			compositionBuffer = compositionBuffer_;
 			depthBuffer = depthBuffer_;
 			depthBufferCopy = depthBufferCopy_;
-			ambientOcclusionBuffer = ambientOcclusionBuffer_;
+			aoBuffer = ambientOcclusionBuffer_;
 			randomTexture = randomTexture_;
 			for (int j = 0; j < sizeof(gBuffer) / sizeof(gBuffer[0]); ++j) {
 				gBuffer[j] = gBuffer_[j];
@@ -493,8 +495,8 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		float Strength;				float _pad12[3];
 	} data;
 
-	data.AOResolution[0] = (float)ambientOcclusionBuffer->GetWidth();
-	data.AOResolution[1] = (float)ambientOcclusionBuffer->GetHeight();
+	data.AOResolution[0] = (float)aoBuffer->GetWidth();
+	data.AOResolution[1] = (float)aoBuffer->GetHeight();
 	data.InvAOResolution[0] = 1.0f / data.AOResolution[0];
 	data.InvAOResolution[1] = 1.0f / data.AOResolution[1];
 
@@ -508,40 +510,35 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	data.UVToViewB[0] = -1.0f * (1.0f / data.FocalLen[0]);
 	data.UVToViewB[1] = 1.0f * (1.0f / data.FocalLen[1]);
 
-	data.R = 0.003; // 0.001
+	data.R = 0.0015; // drop ao accum neighbour far than that
 	data.R2 = data.R * data.R;
 	data.NegInvR2 = -1.0f / data.R2;
-	data.MaxRadiusPixels = 30.0f;
+	data.MaxRadiusPixels = 50.0f;
 	data.AngleBias = 10;
 	data.TanAngleBias = tanf(data.AngleBias);
 	data.Strength = 1.0;
 
 	gApi->SetShaderProgram(shaderHBAO);
-	gApi->SetRenderTargets(1, &ambientOcclusionBuffer, nullptr);
+	gApi->SetRenderTargets(1, &aoBuffer, nullptr);
 
 	gApi->SetTexture(L"tRandom", randomTexture);
 	gApi->SetTexture(L"tLinearDepth", depthBufferCopy);
 	gApi->SetPSConstantBuffer(&data, sizeof(data), 0);
 	gApi->Draw(3);
 
-	/*
-	// HOR BLUR YEAH !!!
+
+	// HBAO HOR BLUR YEAH !!!
 	gApi->SetShaderProgram(shaderHBAOblurHor);
-	gApi->SetRenderTargets(0, nullptr, depthBuffer);
-	gApi->SetTexture(L"inputTexture", ambientOcclusionBuffer);
+	gApi->SetRenderTargets(1, &aoBlurHelperBuffer, NULL);
+	gApi->SetTexture(L"inputTexture", aoBuffer);
 	gApi->Draw(3);
 
-	gApi->SaveTextureToFile(depthBuffer, ITexture2D::JPG, "hor.jpg");
 
-	// VER BLUR YEAH !!!
+	// HBAO VER BLUR YEAH !!!
 	gApi->SetShaderProgram(shaderHBAOblurVer);
-	gApi->SetRenderTargets(1, &ambientOcclusionBuffer, nullptr);
-
-	gApi->SetTexture(L"inputTexture", depthBuffer);
+	gApi->SetRenderTargets(1, &aoBuffer, nullptr);
+	gApi->SetTexture(L"inputTexture", aoBlurHelperBuffer);
 	gApi->Draw(3);
-
-	*/
-
 
 	/* SSAO
 	struct _aoShaderConstants {
@@ -554,7 +551,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	aoShaderConstants.camPos = cam->GetPos();
 
 	gApi->SetShaderProgram(shaderSSAO);
-	gApi->SetRenderTargets(1, &ambientOcclusionBuffer, nullptr);
+	gApi->SetRenderTargets(1, &aoBuffer, nullptr);
 	gApi->SetTexture(L"normalTexture", gBuffer[1]);
 	gApi->SetTexture(L"depthTexture", depthBufferCopy);
 	gApi->SetPSConstantBuffer(&aoShaderConstants, sizeof(aoShaderConstants), 0);
@@ -766,7 +763,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetTexture(L"gBuffer1", gBuffer[1]);
 	gApi->SetTexture(L"gBuffer2", gBuffer[2]);
 	gApi->SetTexture(L"depthBuffer", depthBufferCopy);
-	gApi->SetTexture(L"ambientOcclusionTexture", ambientOcclusionBuffer);
+	gApi->SetTexture(L"ambientOcclusionTexture", aoBuffer);
 
 	// load shader constants
 	shaderConstants.lightColor = ambientLight;

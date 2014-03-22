@@ -186,7 +186,7 @@ private:
 		ITexture2D* compositionBuffer;
 		ITexture2D* depthBuffer;
 		ITexture2D* depthBufferCopy;
-		ITexture2D* ambientOcclusionBuffer, *randomTexture;
+		ITexture2D* aoBuffer, *aoBlurHelperBuffer, *randomTexture;
 
 		IGraphicsApi* gApi;
 		IShaderProgram* shaderGBuffer;

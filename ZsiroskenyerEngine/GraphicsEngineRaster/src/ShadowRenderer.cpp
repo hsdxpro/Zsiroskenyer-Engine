@@ -64,7 +64,7 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 		if (!light.enabled && light.shadowQuality!=cGraphicsLight::eShadowQuality::DISABLED) {
 			continue;
 		}
-		continue;
+		//continue;
 		if (light.shadowResolution < 256) {
 			light.shadowResolution = 256;
 		}
