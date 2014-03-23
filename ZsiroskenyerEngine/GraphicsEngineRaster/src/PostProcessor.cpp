@@ -127,8 +127,6 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 
 	mbObjConstants.InvframeDeltaTimeDiv2DivInputRes = mbConstants.InvframeDeltaTimeDiv2DivInputRes;
 	
-	int d = 0;
-
 	// Foreach: Instance group
 	for (auto& group : parent.sceneManager->GetInstanceGroups()) {
 		cGeometry& geom = *group->geom.get();
@@ -152,8 +150,8 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 			mbObjConstants.currWorldViewProj = worldMat * mbConstants.viewProj;
 			mbObjConstants.prevWorldViewProj = mbObjConstants.currWorldViewProj; // TODOOOOO
 
-			//gApi->SetVSConstantBuffer(&mbObjConstants, sizeof(mbObjConstants), 0);
-			//gApi->SetPSConstantBuffer(&mbObjConstants, sizeof(mbObjConstants), 0);
+			gApi->SetVSConstantBuffer(&mbObjConstants, sizeof(mbObjConstants), 0);
+			gApi->SetPSConstantBuffer(&mbObjConstants, sizeof(mbObjConstants), 0);
 
 			// draw
 			gApi->DrawIndexed(indexCount);
