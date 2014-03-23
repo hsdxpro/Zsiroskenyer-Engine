@@ -112,7 +112,7 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 
 
 	//-------------------------------------------------------------------------------------//
-	// ----------- FIRST PASS : FED OBJECT BASED MOTION BLUR TO VELOCITYBUFFER ------------//
+	// ----------- SECOND PASS : FED OBJECT BASED MOTION BLUR TO VELOCITYBUFFER ------------//
 	//-------------------------------------------------------------------------------------//
 
 	// We catch on the objects and NOT SKY
