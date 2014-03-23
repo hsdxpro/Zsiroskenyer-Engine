@@ -105,7 +105,7 @@ public:
 	// Configurate graphics engine
 	eGraphicsResult SetConfig(tGraphicsConfig config) override;
 
-	const char* GetLastErrorMessage() override;
+	const char*			GetLastErrorMessage() override;
 	cResourceManager*	GetResourceManager();
 	IGraphicsApi*		GetGraphicsApi() override;
 
@@ -126,7 +126,6 @@ private:
 	// rendering stuff
 	cSceneManager* sceneManager; // temporary storage for current scene state (copied from cScene)
 	cCamera* camera;
-	Matrix44* lastCameraMatrix;
 	float elapsed;
 	ITexture2D* currentSceneBuffer;
 	std::array<ITexture2D*,2> hdrTextures; // Global hdr texture to preserve hdr values across post processes

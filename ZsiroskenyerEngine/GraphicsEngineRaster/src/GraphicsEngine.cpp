@@ -312,7 +312,6 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, ITexture2D* target, flo
 	camera->SetAspectRatio(float((double)screenWidth / (double)screenHeight));
 	sceneManager = &scene.sceneManager;
 	this->elapsed = elapsed;
-	lastCameraMatrix = &scene.lastCameraMatrix;
 
 	// --- --- render shadow map --- --- //
 	shadowRenderer->RenderShadowMaps(scene.sceneManager);

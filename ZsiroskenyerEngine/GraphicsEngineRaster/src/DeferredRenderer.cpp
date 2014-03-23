@@ -346,8 +346,6 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	Matrix44 projMat = cam->GetProjMatrix();
 	Matrix44 viewMat = cam->GetViewMatrix();
 	Matrix44 viewProjMat = viewMat * projMat;
-	Matrix44 invViewProjMat = Matrix44Inverse(viewProjMat);
-	Matrix44& prevView = *parent.lastCameraMatrix;
 
 	// Foreach: Instance group
 	for (auto& group : parent.sceneManager->GetInstanceGroups()) {
@@ -534,7 +532,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		Vec3 camPos; float pad1;
 	} aoShaderConstants;
 	aoShaderConstants.projMat = projMat;
-	aoShaderConstants.invViewProj = invViewProjMat;
+	aoShaderConstants.invViewProj = Matrix44Inverse(viewProjMat);;
 	aoShaderConstants.camPos = cam->GetPos();
 
 	gApi->SetShaderProgram(shaderSSAO);
