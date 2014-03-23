@@ -64,6 +64,8 @@ cGraphicsEngine::cPostProcessor::~cPostProcessor() {
 // Motion Blur
 void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCamera& cam) {
 
+	gApi->ClearTexture(outputTexVelocity2D);
+
 	//-------------------------------------------------------------------------------------//
 	// --------- FIRST PASS : FED CAMERA BASED SKY MOTION BLUR TO VELOCITYBUFFER ----------//
 	//-------------------------------------------------------------------------------------//
@@ -121,6 +123,8 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 	// 0x01 & 0x01 == ( 0x01 && 0x01) // OBJECT : DROPPED
 	dsd.stencilReadMask = 0x01;
 	gApi->SetDepthStencilState(dsd, 0x01);
+
+	gApi->SetShaderProgram(shaderMBObject2DVelocity);
 
 	struct s2 {
 		Matrix44 currWorldViewProj;
