@@ -1274,7 +1274,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 eGapiResult cGraphicsApiD3D11::WriteResource(IIndexBuffer* buffer, void* source, size_t size /*= ZS_NUMLIMITMAX(size_t)*/, size_t offset /*= 0*/) {
 	ASSERT(buffer != nullptr);
 
-	if (buffer->GetSize() < size + offset)
+	if (buffer->GetByteSize() < size + offset)
 		return eGapiResult::ERROR_OUT_OF_RANGE;
 
 	HRESULT hr;
@@ -1317,7 +1317,7 @@ eGapiResult cGraphicsApiD3D11::WriteResource(IVertexBuffer* buffer, void* source
 eGapiResult cGraphicsApiD3D11::ReadResource(IIndexBuffer* buffer, void* dest, size_t size, size_t offset /*= 0*/) {
 	ASSERT(buffer != nullptr);
 
-	if (buffer->GetSize() < size + offset)
+	if (buffer->GetByteSize() < size + offset)
 		return eGapiResult::ERROR_OUT_OF_RANGE;
 
 	HRESULT hr = S_OK;
@@ -1712,7 +1712,7 @@ eGapiResult cGraphicsApiD3D11::SetRenderTargetDefault() {
 }
 
 // Set blend state
-eGapiResult cGraphicsApiD3D11::SetBlendState(tBlendDesc desc) {
+eGapiResult cGraphicsApiD3D11::SetBlendState(const tBlendDesc& desc) {
 	D3D11_BLEND_DESC bsDesc = ConvertToNativeBlend(desc);
 
 	ID3D11BlendState* state = nullptr;
@@ -1747,7 +1747,7 @@ eGapiResult cGraphicsApiD3D11::SetBlendState(tBlendDesc desc) {
 }
 
 // Set depth-stencil state
-eGapiResult cGraphicsApiD3D11::SetDepthStencilState(tDepthStencilDesc desc, uint8_t stencilRef) {
+eGapiResult cGraphicsApiD3D11::SetDepthStencilState(const tDepthStencilDesc& desc, uint8_t stencilRef) {
 	D3D11_DEPTH_STENCIL_DESC dsDesc = ConvertToNativeDepthStencil(desc);
 
 	size_t i = 0;
@@ -1770,8 +1770,6 @@ eGapiResult cGraphicsApiD3D11::SetDepthStencilState(tDepthStencilDesc desc, uint
 			info.desc = dsDesc;
 			info.state = state;
 		depthStencilStates.push_back(info);
-
-		//SAFE_RELEASE(state);
 	} else {
 		state = depthStencilStates[i].state;
 	}
@@ -1863,7 +1861,7 @@ eGapiResult cGraphicsApiD3D11::SaveTextureToFile(ITexture2D* t, ITexture2D::eIma
 		// The screen copy cg shader
 
 		const char* tmpShaderFilePath = "zsiroskenyergraphicsapid3d11_tmpscreencopyshader.cg";
-		std::ofstream os(tmpShaderFilePath);
+		std::ofstream os(tmpShaderFilePath, std::ios::trunc);
 
 		os << "sampler2D inputTexture = {\n";
 		os << "	MipFilter = POINT,\n";
@@ -1914,6 +1912,7 @@ eGapiResult cGraphicsApiD3D11::SaveTextureToFile(ITexture2D* t, ITexture2D::eIma
 		eGapiResult errCode = CreateShaderProgram(&shaderScreenCopy, shaderFilePath.c_str());
 		assert(errCode == eGapiResult::OK);
 		cFileUtil::Delete(shaderFilePath);
+		cFileUtil::Delete("zsiroskenyergraphicsapid3d11_tmpscreencopyshader.bin");
 
 		ClearTexture(tmpTex);
 
@@ -1923,7 +1922,11 @@ eGapiResult cGraphicsApiD3D11::SaveTextureToFile(ITexture2D* t, ITexture2D::eIma
 		Draw(3);
 
 		errCode = SaveTextureToFile(tmpTex, f, filePath);
-		assert(errCode == eGapiResult::OK);
+		if (errCode != eGapiResult::OK)
+		{
+			assert(0);
+			return eGapiResult::ERROR_FILE_NOT_FOUND;
+		}
 
 		// Release temporary resources
 		shaderScreenCopy->Release();

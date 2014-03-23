@@ -6,7 +6,7 @@
 
 class IIndexBuffer {
 public:
-	virtual size_t GetSize() const = 0;
+	virtual size_t GetByteSize() const = 0;
 	virtual eUsage GetUsage() const = 0;
 	virtual void Release() = 0;
 };

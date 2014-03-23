@@ -134,7 +134,7 @@ void cGraphicsEngine::cShadowRenderer::RenderShadowMaps(cSceneManager& sceneMana
 							Matrix44 matWorld = entity->GetWorldMatrix();
 							Matrix44 worldViewProj = matWorld * transform.viewMat * transform.projMat;
 							gApi->SetVSConstantBuffer(&worldViewProj, sizeof(worldViewProj), 0);
-							gApi->DrawIndexed(instgrp->geom->GetIndexBuffer()->GetSize() / 4);
+							gApi->DrawIndexed(instgrp->geom->GetIndexBuffer()->GetByteSize() / 4);
 						}
 					}
 

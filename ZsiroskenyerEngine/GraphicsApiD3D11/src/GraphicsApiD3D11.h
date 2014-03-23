@@ -84,8 +84,8 @@ public:
 	void SetVertexBuffer(const IVertexBuffer* vb) override;
 	void SetIndexBuffer(const IIndexBuffer* ib) override;
 
-	eGapiResult SetDepthStencilState(tDepthStencilDesc desc, uint8_t stencilRef) override;
-	eGapiResult SetBlendState(tBlendDesc desc) override;
+	eGapiResult SetDepthStencilState(const tDepthStencilDesc& desc, uint8_t stencilRef) override;
+	eGapiResult SetBlendState(const tBlendDesc& desc) override;
 
 	// --- misc --- //
 	eGapiResult SetWindow(IWindow *renderWindow) override;

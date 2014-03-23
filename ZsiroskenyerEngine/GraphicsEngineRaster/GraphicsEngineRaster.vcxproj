@@ -68,7 +68,7 @@
     <None Include="..\TechDemo\shaders\hdr_luminance_sample.cg" />
     <None Include="..\TechDemo\shaders\hdr_overbright_downsample.cg" />
     <None Include="..\TechDemo\shaders\motion_blur.cg" />
-    <None Include="..\TechDemo\shaders\motion_blur_2dvelocity.cg" />
+    <None Include="..\TechDemo\shaders\motion_blur_camera_2dvelocity.cg" />
     <None Include="..\TechDemo\shaders\screen_copy.cg" />
     <None Include="..\TechDemo\shaders\shadowmap_cmn.cginc" />
     <None Include="..\TechDemo\shaders\shadowmap_render_dir.cg" />

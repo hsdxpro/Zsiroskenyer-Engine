@@ -185,9 +185,6 @@
     <None Include="..\TechDemo\shaders\deferred_gbuffer_material.cginc">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\TechDemo\shaders\motion_blur_2dvelocity.cg">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="..\TechDemo\shaders\depth_of_field_focal_plane_adaption.cg">
       <Filter>Shaders</Filter>
     </None>
@@ -198,6 +195,9 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\TechDemo\shaders\hbao_blur_ver.cg">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\TechDemo\shaders\motion_blur_camera_2dvelocity.cg">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

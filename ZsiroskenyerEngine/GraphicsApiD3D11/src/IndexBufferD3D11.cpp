@@ -8,8 +8,8 @@
 #include "IndexBufferD3D11.h"
 
 #include <d3d11.h>
-cIndexBufferD3D11::cIndexBufferD3D11(ID3D11Buffer* buffer, size_t size, eUsage usage)
-:buffer(buffer), usage(usage), size(size) {
+cIndexBufferD3D11::cIndexBufferD3D11(ID3D11Buffer* buffer, size_t byteSize, eUsage usage)
+:buffer(buffer), usage(usage), byteSize(byteSize) {
 }
 
 cIndexBufferD3D11::~cIndexBufferD3D11() {
@@ -20,8 +20,8 @@ void cIndexBufferD3D11::Release() {
 	delete this;
 }
 
-size_t cIndexBufferD3D11::GetSize() const {
-	return size;
+size_t cIndexBufferD3D11::GetByteSize() const {
+	return byteSize;
 }
 
 eUsage cIndexBufferD3D11::GetUsage() const {

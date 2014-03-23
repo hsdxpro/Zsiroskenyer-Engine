@@ -456,19 +456,6 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	//--------------------------------------------------------------------------//
 	// --- --- --- --- --- --- --- COMPOSITION PASS --- --- --- --- --- --- --- //
 	//--------------------------------------------------------------------------//
-	
-	// Depth-stencil state
-	depthStencilState = depthStencilDefault;
-	depthStencilState.depthCompare = eComparisonFunc::ALWAYS;
-	depthStencilState.depthWriteEnable = false;
-	depthStencilState.stencilEnable = true;
-	depthStencilState.stencilOpBackFace.stencilCompare = eComparisonFunc::EQUAL;
-	depthStencilState.stencilOpBackFace.stencilFail = eStencilOp::KEEP;
-	depthStencilState.stencilOpBackFace.stencilPass = eStencilOp::KEEP;
-	depthStencilState.stencilOpBackFace.stencilPassDepthFail = eStencilOp::KEEP;
-	depthStencilState.stencilReadMask = depthStencilState.stencilWriteMask = 0x01;
-	depthStencilState.stencilOpFrontFace = depthStencilState.stencilOpBackFace;
-
 
 	//--------------------------------------------------------------------------//
 	// --- --- --- --- --AMBIENT OCCLUSION (composition pass)-- --- --- --- --- //
@@ -561,7 +548,19 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	//--------------------------------------------------------------------------//
 	// --- --- --- --- --- RENDER STATES (composition pass) --- --- --- --- --- //
 	//--------------------------------------------------------------------------//
-	
+
+	// Depth-stencil state
+	depthStencilState = depthStencilDefault;
+	depthStencilState.depthCompare = eComparisonFunc::ALWAYS;
+	depthStencilState.depthWriteEnable = false;
+	depthStencilState.stencilEnable = true;
+	depthStencilState.stencilOpBackFace.stencilCompare = eComparisonFunc::EQUAL;
+	depthStencilState.stencilOpBackFace.stencilFail = eStencilOp::KEEP;
+	depthStencilState.stencilOpBackFace.stencilPass = eStencilOp::KEEP;
+	depthStencilState.stencilOpBackFace.stencilPassDepthFail = eStencilOp::KEEP;
+	depthStencilState.stencilReadMask = depthStencilState.stencilWriteMask = 0x01;
+	depthStencilState.stencilOpFrontFace = depthStencilState.stencilOpBackFace;
+
 	// Additive blending state
 	blendState[0].blendOp = eBlendOp::ADD;
 	blendState[0].blendOpAlpha = eBlendOp::MAX;
@@ -650,8 +649,6 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	shaderConstants.farPlane = cam->GetFarPlane();
 	Matrix44 test = shaderConstants.invViewProj * shaderConstants.viewProj;
 
-
-	// --- --- RENDER EACH LIGHTGROUP --- --- // dir, spot, ambient, point
 
 	//------------------------------------------------------------------------//
 	// --- --- --- --- --- --- --- COMPUTE SKY PARAMS --- --- --- --- --- --- //
@@ -796,7 +793,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		gApi->SetPSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
 
 		// draw that bullshit
-		size_t nIndices = ibPoint->GetSize() / sizeof(unsigned);
+		size_t nIndices = ibPoint->GetByteSize() / sizeof(unsigned);
 		gApi->DrawIndexed(nIndices);
 	}
 
@@ -829,7 +826,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 		gApi->SetPSConstantBuffer(&shaderConstants, sizeof(shaderConstants), 0);
 
 		// draw that bullshit
-		size_t nIndices = ibSpot->GetSize() / sizeof(unsigned);
+		size_t nIndices = ibSpot->GetByteSize() / sizeof(unsigned);
 		gApi->DrawIndexed(nIndices);
 	}
 
@@ -855,6 +852,10 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 // Access to composition buffer for further processing like post-process & whatever
 ITexture2D* cGraphicsEngine::cDeferredRenderer::GetCompositionBuffer() {
 	return compositionBuffer;
+}
+
+ITexture2D* cGraphicsEngine::cDeferredRenderer::GetDepthStencilBuffer() {
+	return depthBuffer;
 }
 
 ITexture2D* cGraphicsEngine::cDeferredRenderer::GetDepthBuffer() {

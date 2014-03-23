@@ -78,8 +78,8 @@ public:
 	virtual void SetVertexBuffer(const IVertexBuffer* vb) = 0;
 	virtual void SetIndexBuffer(const IIndexBuffer* ib) = 0;
 
-	virtual eGapiResult SetDepthStencilState(tDepthStencilDesc desc, uint8_t stencilRef) = 0;
-	virtual eGapiResult SetBlendState(tBlendDesc desc) = 0;
+	virtual eGapiResult SetDepthStencilState(const tDepthStencilDesc& desc, uint8_t stencilRef) = 0;
+	virtual eGapiResult SetBlendState(const tBlendDesc& desc) = 0;
 
 	// --- misc --- //
 	virtual eGapiResult SetWindow(IWindow *renderWindow) = 0;

@@ -326,7 +326,7 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, ITexture2D* target, flo
 
 
 	// Motion blur
-	postProcessor->SetInputMB(deferredComposition, deferredRenderer->GetDepthBuffer());
+	postProcessor->SetInputMB(deferredComposition, deferredRenderer->GetDepthBuffer(), deferredRenderer->GetDepthStencilBuffer());
 	postProcessor->SetOutputMB(hdrTextures[0], hdrTextures[1]); // Color, velocityBuffer
 	postProcessor->ProcessMB(elapsed, scene.GetCamera());
 

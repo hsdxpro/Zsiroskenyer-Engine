@@ -13,7 +13,7 @@ struct ID3D11Buffer;
 
 class cIndexBufferD3D11 : public IIndexBuffer {
 public:
-	size_t GetSize() const override;
+	size_t GetByteSize() const override;
 	eUsage GetUsage() const override;
 	ID3D11Buffer* GetBufferPointer() const;
 
@@ -24,6 +24,6 @@ public:
 public:
 	ID3D11Buffer* const buffer;
 private:
-	size_t size;
+	size_t byteSize;
 	eUsage usage;
 };

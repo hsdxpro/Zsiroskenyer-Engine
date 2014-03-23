@@ -173,6 +173,7 @@ private:
 		eGraphicsResult Resize(unsigned width, unsigned height);
 
 		ITexture2D* GetCompositionBuffer();
+		ITexture2D* GetDepthStencilBuffer();
 		ITexture2D* GetDepthBuffer();
 		ITexture2D* GetGBuffer(uint8_t idx);
 
@@ -224,7 +225,7 @@ private:
 
 
 		// Set inputs
-		void SetInputMB(ITexture2D* color, ITexture2D* depth);
+		void SetInputMB(ITexture2D* color, ITexture2D* depth, ITexture2D* depthStencil);
 		void SetInputDOF(ITexture2D* color, ITexture2D* depth);
 		void SetInputFXAA(ITexture2D* color); // If FXAA shader defines that it takes luminance from alpha channel, then pass appropriate texture please..
 		
@@ -242,12 +243,12 @@ private:
 
 	private:
 		// Shaders
-		IShaderProgram * shaderMB,  *shaderMB2DVelocity,		// Motion blur shaders
-					   * shaderDOF, *shaderFocalPlaneAdaption,	// Depth of field shaders
-					   * shaderFXAA;							// FXAA shaders
+		IShaderProgram * shaderMB , *shaderMBCamera2DVelocity, *shaderMBObject2DVelocity		,// Motion blur shaders
+					   * shaderDOF, *shaderFocalPlaneAdaption,								// Depth of field shaders
+					   * shaderFXAA;														// FXAA shaders
 
 		// Input textures
-		ITexture2D* inputTexColor, *inputTexDepth;
+		ITexture2D* inputTexColor, *inputTexDepth, *inputTexDepthStencil;
 
 		// Output textures
 		ITexture2D* outputTexColor, *outputTexVelocity2D;
