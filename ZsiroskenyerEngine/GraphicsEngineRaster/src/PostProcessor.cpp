@@ -116,6 +116,9 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 	//-------------------------------------------------------------------------------------//
 
 	// We catch on the objects and NOT SKY
+	//(StencilRef & StencilMask) CompFunc (StencilBufferValue & StencilMask)
+	// 0x01 & 0x01 == ( 0x00 && 0x01) // SKY	: CATCHED
+	// 0x01 & 0x01 == ( 0x01 && 0x01) // OBJECT : DROPPED
 	dsd.stencilReadMask = 0x01;
 	gApi->SetDepthStencilState(dsd, 0x01);
 
