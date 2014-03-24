@@ -164,8 +164,7 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 			Matrix44 worldMat = entity->GetWorldMatrix();
 
 			mbObjConstants.currWorldViewProj = worldMat * mbConstants.viewProj;
-			mbObjConstants.prevWorldViewProj = worldMat * mbConstants.viewProj;
-			/*
+			
 			// Get Prev WorldViewProj mat ( UGLY, SO SLOW, TOO MANY COPY)
 			auto it = entityPrevWorldViewProjs.find(entity);
 			if (it == entityPrevWorldViewProjs.end()) {
@@ -173,13 +172,12 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 			}
 			else
 				mbObjConstants.prevWorldViewProj = it->second;
-			*/
+			
 			gApi->SetVSConstantBuffer(&mbObjConstants, sizeof(mbObjConstants), 0);
 			gApi->SetPSConstantBuffer(&mbObjConstants, sizeof(mbObjConstants), 0);
 
 			// draw
 			gApi->DrawIndexed(indexCount);
-			//gApi->Draw(3);
 
 			// curr worldviewproj become prev
 			entityPrevWorldViewProjs[entity] = mbObjConstants.currWorldViewProj;

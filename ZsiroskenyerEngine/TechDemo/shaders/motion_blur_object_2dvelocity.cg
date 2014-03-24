@@ -1,11 +1,16 @@
 
 //float4x4 currWorldViewProj : register(c0);
-
+/*
 struct {
  float4x4 currWorldViewProj;
  float4x4 prevWorldViewProj;
  float2	  InvframeDeltaTimeDiv2DivInputRes;
 } c : register(c0);
+*/
+
+ float4x4 currWorldViewProj : register(c0);
+ float4x4 prevWorldViewProj : register(c4);
+ float2	  InvframeDeltaTimeDiv2DivInputRes : register(c8);
 
 
 struct VS_IN {
@@ -14,7 +19,8 @@ struct VS_IN {
 
 struct VS_OUT {
 	float4 posH : SV_POSITION;
-	float4 prevPosH : TEXCOORD0;
+	float2 currPosH : TEXCOORD0;
+	float2 prevPosH : TEXCOORD1;
 };
 
 VS_OUT VS_MAIN(VS_IN In) {
@@ -22,27 +28,27 @@ VS_OUT VS_MAIN(VS_IN In) {
 
 	//Out.posH = mul(float4(In.posL, 1.0f), c.currWorldViewProj); 
 	
-	Out.posH = In.posL.x * c.currWorldViewProj[0] + (
-		       In.posL.y * c.currWorldViewProj[1] + (
-	 	       In.posL.z * c.currWorldViewProj[2] + 
-		       c.currWorldViewProj[3]));
-	//Out.posH.xyz /= Out.posH.w;//(1.0f / Out.posH.w);
+	Out.posH = In.posL.x * currWorldViewProj[0] + (
+		       In.posL.y * currWorldViewProj[1] + (
+	 	       In.posL.z * currWorldViewProj[2] + 
+		       currWorldViewProj[3]));
 
-	//Out.posH = float4(  float2( (VertexID << 1) & 2, VertexID & 2 ) * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f), 0.0f, 1.0f );
-	
-	Out.prevPosH = In.posL.x * c.currWorldViewProj[0] + (
-		       In.posL.y * c.currWorldViewProj[1] + (
-	 	       In.posL.z * c.currWorldViewProj[2] + 
-		       c.currWorldViewProj[3]));
+	Out.currPosH = Out.posH.xy / Out.posH.w;
 
+	float4 prevPosH = In.posL.x * prevWorldViewProj[0] + (
+		       In.posL.y * prevWorldViewProj[1] + (
+	 	       In.posL.z * prevWorldViewProj[2] + 
+		       prevWorldViewProj[3]));
+
+	Out.prevPosH = prevPosH.xyz / prevPosH.w;
 	return Out;
 }
 
-float2 PS_MAIN(VS_OUT In) : COLOR0 {
+float2 PS_MAIN(VS_OUT In) : COLOR0 { 
 		//Out.prevPosH.xyz /= Out.prevPosH.w;
 	// v   =             s               /       t;     result = pixels per second
 	// Clamp the velocity, 1.0 depth make so large velocity that ruins the motion blur sampling
-	return float2(0,0);//(In.posH.xy - In.prevPosH.xy / In.prevPosH.w) * c.InvframeDeltaTimeDiv2DivInputRes;
+	return (In.currPosH.xy - In.prevPosH.xy) * InvframeDeltaTimeDiv2DivInputRes;
 }
 
 technique t
