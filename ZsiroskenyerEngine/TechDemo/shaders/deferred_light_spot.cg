@@ -15,7 +15,7 @@ struct VS_IN {
 	float4 misc 	: COLOR0;
 };
 struct VS_OUT {
-	float4 posH 	: SV_POSITION;
+	float4 posH 	: POSITION;
 	float3 viewRay	: COLOR0;
 	float2 tex0 	: TEXCOORD2;
 };

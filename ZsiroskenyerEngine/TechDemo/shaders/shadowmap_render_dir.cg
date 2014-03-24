@@ -21,7 +21,7 @@ struct VS_IN {
 };
 
 struct VS_OUT {
-	float4 posH : SV_POSITION;
+	float4 posH : POSITION;
 	float3 posL : COLOR0;
 };
 

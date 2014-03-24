@@ -576,7 +576,7 @@ eGapiResult	cGraphicsApiD3D11::CreateVertexBuffer(IVertexBuffer** resource, eUsa
 	resData.SysMemPitch = 0;
 	resData.SysMemSlicePitch = 0;
 
-	HRESULT hr = d3ddev->CreateBuffer(&desc, &resData, &buffer);
+	HRESULT hr = d3ddev->CreateBuffer(&desc, data ? &resData : NULL, &buffer);
 	switch (hr) {
 	case S_OK:
 		*resource = new cVertexBufferD3D11(buffer, usage, format, desc.ByteWidth);
@@ -1466,9 +1466,9 @@ void cGraphicsApiD3D11::SetVertexBuffer(const IVertexBuffer* vb) {
 	ASSERT(vb != nullptr);
 	activeVertexBuffer = (cVertexBufferD3D11*)vb;
 
-	const UINT strides = vb->GetStride();
+	const UINT strides = activeVertexBuffer->GetStride();
 	const UINT offset = 0;
-	ID3D11Buffer* vertices = ((cVertexBufferD3D11*)vb)->GetBufferPointer();
+	ID3D11Buffer* vertices = activeVertexBuffer->GetBufferPointer();
 	d3dcon->IASetVertexBuffers(0, 1, &vertices, &strides, &offset);
 	AutoSetInputLayout(activeShaderProg, activeVertexBuffer);
 }
@@ -1537,12 +1537,11 @@ void cGraphicsApiD3D11::SetShaderProgram(IShaderProgram* shProg) {
 	ASSERT(shProg != nullptr);
 
 	activeShaderProg = (cShaderProgramD3D11*)shProg;
-	const cShaderProgramD3D11* shProgD3D11 = (cShaderProgramD3D11*)shProg;
 
 	AutoSetInputLayout(activeShaderProg, activeVertexBuffer);
 
-	d3dcon->VSSetShader(const_cast<ID3D11VertexShader*>(shProgD3D11->GetVS()), 0, 0);
-	d3dcon->PSSetShader(const_cast<ID3D11PixelShader*>(shProgD3D11->GetPS()), 0, 0);
+	d3dcon->VSSetShader(const_cast<ID3D11VertexShader*>(activeShaderProg->GetVS()), 0, 0);
+	d3dcon->PSSetShader(const_cast<ID3D11PixelShader*>(activeShaderProg->GetPS()), 0, 0);
 }
 
 // Set primitive topology

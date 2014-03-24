@@ -257,6 +257,7 @@ private:
 
 		// Motion blur vars
 		Matrix44 lastViewMat;
+		std::unordered_map<cGraphicsEntity*, Matrix44> entityPrevWorldViewProjs;
 
 		cGraphicsEngine& parent;
 		IGraphicsApi* gApi;

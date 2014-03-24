@@ -200,5 +200,8 @@
     <None Include="..\TechDemo\shaders\motion_blur_camera_2dvelocity.cg">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\TechDemo\shaders\motion_blur_object_2dvelocity.cg">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

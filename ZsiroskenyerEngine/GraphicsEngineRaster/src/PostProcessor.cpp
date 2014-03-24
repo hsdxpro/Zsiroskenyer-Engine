@@ -65,7 +65,9 @@ cGraphicsEngine::cPostProcessor::~cPostProcessor() {
 void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCamera& cam) {
 
 	gApi->ClearTexture(outputTexVelocity2D);
+	gApi->ClearTexture(outputTexColor);
 
+	
 	//-------------------------------------------------------------------------------------//
 	// --------- FIRST PASS : FED CAMERA BASED SKY MOTION BLUR TO VELOCITYBUFFER ----------//
 	//-------------------------------------------------------------------------------------//
@@ -73,12 +75,11 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 	//(StencilRef & StencilMask) CompFunc (StencilBufferValue & StencilMask)
 	// 0x00 & 0x11 == ( 0x00 && 0x11) // SKY	: CATCHED
 	// 0x00 & 0x11 == ( 0x01 && 0x11) // OBJECT : DROPPED
-	tDepthStencilDesc dsdDefault;
 	tDepthStencilDesc dsd;
 		dsd.depthEnable = false;
 		dsd.stencilEnable = true;
 		dsd.stencilOpBackFace.stencilCompare = eComparisonFunc::EQUAL;
-		dsd.stencilReadMask = ~0x00;
+		dsd.stencilReadMask = 0x01;
 		dsd.stencilOpFrontFace = dsd.stencilOpBackFace;
 	gApi->SetDepthStencilState(dsd, 0x00);
 
@@ -111,7 +112,7 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 	lastViewMat = viewMat;
 
 	gApi->Draw(3);
-
+	
 
 	//-------------------------------------------------------------------------------------//
 	// ----------- SECOND PASS : FED OBJECT BASED MOTION BLUR TO VELOCITYBUFFER ------------//
@@ -119,17 +120,25 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 
 	// We catch on the objects and NOT SKY
 	//(StencilRef & StencilMask) CompFunc (StencilBufferValue & StencilMask)
-	// 0x01 & 0x01 == ( 0x00 && 0x01) // SKY	: CATCHED
-	// 0x01 & 0x01 == ( 0x01 && 0x01) // OBJECT : DROPPED
-	dsd.stencilReadMask = 0x01;
-	gApi->SetDepthStencilState(dsd, 0x01);
+	// 0x01 & 0x01 == ( 0x00 && 0x01) // SKY	: DROPPED
+	// 0x01 & 0x01 == ( 0x01 && 0x01) // OBJECT : CATCHED
+	//dsd.stencilReadMask = 0x01;
+	tDepthStencilDesc dsd2;
+	dsd2.depthEnable = false;
+	dsd2.stencilEnable = true;
+	dsd2.stencilOpBackFace.stencilCompare = eComparisonFunc::EQUAL;
+	dsd2.stencilReadMask = 0x01;
+	dsd2.stencilOpFrontFace = dsd.stencilOpBackFace;
 
+	gApi->SetDepthStencilState(dsd2, 0x01);
+
+	gApi->SetRenderTargets(1, &outputTexVelocity2D, inputTexDepthStencil);
 	gApi->SetShaderProgram(shaderMBObject2DVelocity);
-
+	
 	struct s2 {
 		Matrix44 currWorldViewProj;
 		Matrix44 prevWorldViewProj;
-		Vec2	 InvframeDeltaTimeDiv2DivInputRes;
+		Vec2	 InvframeDeltaTimeDiv2DivInputRes; Vec2 _pad;
 	} mbObjConstants;
 
 	mbObjConstants.InvframeDeltaTimeDiv2DivInputRes = mbConstants.InvframeDeltaTimeDiv2DivInputRes;
@@ -149,25 +158,39 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 		}
 
 		// Foreach: Entity -> Draw this group
-		for (const cGraphicsEntity* entity : group->entities) {
+		for (cGraphicsEntity* entity : group->entities) {
 
 			// Entity world matrix
 			Matrix44 worldMat = entity->GetWorldMatrix();
 
 			mbObjConstants.currWorldViewProj = worldMat * mbConstants.viewProj;
-			mbObjConstants.prevWorldViewProj = mbObjConstants.currWorldViewProj; // TODOOOOO
-
+			mbObjConstants.prevWorldViewProj = worldMat * mbConstants.viewProj;
+			/*
+			// Get Prev WorldViewProj mat ( UGLY, SO SLOW, TOO MANY COPY)
+			auto it = entityPrevWorldViewProjs.find(entity);
+			if (it == entityPrevWorldViewProjs.end()) {
+				mbObjConstants.prevWorldViewProj = mbObjConstants.currWorldViewProj;
+			}
+			else
+				mbObjConstants.prevWorldViewProj = it->second;
+			*/
 			gApi->SetVSConstantBuffer(&mbObjConstants, sizeof(mbObjConstants), 0);
 			gApi->SetPSConstantBuffer(&mbObjConstants, sizeof(mbObjConstants), 0);
 
 			// draw
 			gApi->DrawIndexed(indexCount);
+			//gApi->Draw(3);
+
+			// curr worldviewproj become prev
+			entityPrevWorldViewProjs[entity] = mbObjConstants.currWorldViewProj;
 		}
 	}
 	
-
 	// Default
-	gApi->SetDepthStencilState(dsdDefault, 0x01);
+	tDepthStencilDesc dsdDefault;
+		dsdDefault.stencilEnable = false;
+		dsdDefault.depthEnable = false;
+	gApi->SetDepthStencilState(dsdDefault, 0x00);
 
 	//-------------------------------------------------------------------------------------//
 	// -------------------THIRD PASS : USE VELOCITY BUFFER FOR BLURING---------------------//

@@ -1,35 +1,41 @@
+
+//float4x4 currWorldViewProj : register(c0);
+
 struct {
  float4x4 currWorldViewProj;
  float4x4 prevWorldViewProj;
  float2	  InvframeDeltaTimeDiv2DivInputRes;
 } c : register(c0);
 
+
 struct VS_IN {
-	float3 posL 	: POSITION;
-	float2 tex0 	: TEXCOORD0;
+	float3 posL : POSITION;
 };
 
 struct VS_OUT {
-	float4 currPosH : SV_POSITION;
+	float4 posH : SV_POSITION;
 	float4 prevPosH : TEXCOORD0;
 };
 
 VS_OUT VS_MAIN(VS_IN In) {
 	VS_OUT Out;
 
-
-	Out.currPosH = In.posL.x * c.currWorldViewProj[0] + (
+	//Out.posH = mul(float4(In.posL, 1.0f), c.currWorldViewProj); 
+	
+	Out.posH = In.posL.x * c.currWorldViewProj[0] + (
 		       In.posL.y * c.currWorldViewProj[1] + (
 	 	       In.posL.z * c.currWorldViewProj[2] + 
 		       c.currWorldViewProj[3]));
+	//Out.posH.xyz /= Out.posH.w;//(1.0f / Out.posH.w);
+
+	//Out.posH = float4(  float2( (VertexID << 1) & 2, VertexID & 2 ) * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f), 0.0f, 1.0f );
 	
-	Out.prevPosH = In.posL.x * c.prevWorldViewProj[0] + (
-		       In.posL.y * c.prevWorldViewProj[1] + (
-	 	       In.posL.z * c.prevWorldViewProj[2] + 
-		       c.prevWorldViewProj[3]));
+	Out.prevPosH = In.posL.x * c.currWorldViewProj[0] + (
+		       In.posL.y * c.currWorldViewProj[1] + (
+	 	       In.posL.z * c.currWorldViewProj[2] + 
+		       c.currWorldViewProj[3]));
 
-	Out.prevPosH.xyz *= 1.0f / Out.prevPosH.w;
-
+	Out.prevPosH.xyz /= Out.prevPosH.w;
 	return Out;
 }
 
@@ -37,7 +43,7 @@ float2 PS_MAIN(VS_OUT In) : COLOR0 {
 
 	// v   =             s               /       t;     result = pixels per second
 	// Clamp the velocity, 1.0 depth make so large velocity that ruins the motion blur sampling
-	return  (In.currPosH.xy - In.prevPosH.xy) * c.InvframeDeltaTimeDiv2DivInputRes;
+	return float2(0,0);//(In.posH.xy - In.prevPosH.xy);// * c.InvframeDeltaTimeDiv2DivInputRes;
 }
 
 technique t
