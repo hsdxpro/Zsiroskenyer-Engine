@@ -35,15 +35,14 @@ VS_OUT VS_MAIN(VS_IN In) {
 	 	       In.posL.z * c.currWorldViewProj[2] + 
 		       c.currWorldViewProj[3]));
 
-	Out.prevPosH.xyz /= Out.prevPosH.w;
 	return Out;
 }
 
 float2 PS_MAIN(VS_OUT In) : COLOR0 {
-
+		//Out.prevPosH.xyz /= Out.prevPosH.w;
 	// v   =             s               /       t;     result = pixels per second
 	// Clamp the velocity, 1.0 depth make so large velocity that ruins the motion blur sampling
-	return float2(0,0);//(In.posH.xy - In.prevPosH.xy);// * c.InvframeDeltaTimeDiv2DivInputRes;
+	return float2(0,0);//(In.posH.xy - In.prevPosH.xy / In.prevPosH.w) * c.InvframeDeltaTimeDiv2DivInputRes;
 }
 
 technique t
