@@ -101,6 +101,8 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 	mbConstants.InvframeDeltaTimeDiv2DivInputRes = Vec2(1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetWidth()),
 														1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetHeight()));
 
+	mbConstants.InvframeDeltaTimeDiv2DivInputRes *= 1.5f; // MOTION BLUR BOOST
+
 	gApi->SetRenderTargets(1, &outputTexVelocity2D, inputTexDepthStencil);
 	gApi->SetShaderProgram(shaderMBCamera2DVelocity);
 	gApi->SetTexture(L"depthTexture", inputTexDepth);

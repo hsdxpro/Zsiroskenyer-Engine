@@ -49,18 +49,20 @@ float2 PS_MAIN(VS_OUT In) : COLOR0 {
 	// Current world pos
 	float3 posW = GetWorldPosition(c.camPos, In.viewRay, tex2D(depthTexture , In.tex0).r);
 
-	// Current frame NDC
-	float4 currPosH = posW.x * c.viewProj[0] + ( posW.y * c.viewProj[1] + (posW.z * c.viewProj[2] + c.viewProj[3]));
-	currPosH.xyz /= currPosH.w;
 
-	// Previous frame NDC position
-	// x,y,w  // we not need the z component
-	float3 prevPosH = float3(	dot(posW, float3(c.prevViewProj[0].x, c.prevViewProj[1].x, c.prevViewProj[2].x)) + c.prevViewProj[3].x,
-								dot(posW, float3(c.prevViewProj[0].y, c.prevViewProj[1].y, c.prevViewProj[2].y)) + c.prevViewProj[3].y,
-								dot(posW, float3(c.prevViewProj[0].w, c.prevViewProj[1].w, c.prevViewProj[2].w)) + c.prevViewProj[3].w );
-	prevPosH.xy /= prevPosH.z; // .z now the W component !!!!
+	// Current frame NDC position // x,y,w  // we not need the z component
+	float3 currPosH = float3(	 dot(posW, float3(c.viewProj[0].x, c.viewProj[1].x, c.viewProj[2].x)) + c.viewProj[3].x,
+								-dot(posW, float3(c.viewProj[0].y, c.viewProj[1].y, c.viewProj[2].y)) + c.viewProj[3].y, // y *= -1; // The calced y velocity need to be in texSpace.y * 2
+								 dot(posW, float3(c.viewProj[0].w, c.viewProj[1].w, c.viewProj[2].w)) + c.viewProj[3].w );
+	currPosH.xy *= (1.0f / currPosH.z); // .z now the W component !!!!
+
+
+	// Previous frame NDC position // x,y,w  // we not need the z component
+	float3 prevPosH = float3(	 dot(posW, float3(c.prevViewProj[0].x, c.prevViewProj[1].x, c.prevViewProj[2].x)) + c.prevViewProj[3].x,
+								-dot(posW, float3(c.prevViewProj[0].y, c.prevViewProj[1].y, c.prevViewProj[2].y)) - c.prevViewProj[3].y, // y *= -1; // The calced y velocity need to be in texSpace.y * 2
+								 dot(posW, float3(c.prevViewProj[0].w, c.prevViewProj[1].w, c.prevViewProj[2].w)) + c.prevViewProj[3].w );
+	prevPosH.xy *= (1.0f / prevPosH.z); // .z now the W component !!!!
 	
-
 	// v   =             s               /       t;     result = pixels per second
 	// Clamp the velocity, 1.0 depth make so large velocity that ruins the motion blur sampling
 	return  (currPosH.xy - prevPosH.xy) * c.InvframeDeltaTimeDiv2DivInputRes;

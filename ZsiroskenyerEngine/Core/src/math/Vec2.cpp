@@ -27,3 +27,7 @@ Vec2 Vec2::operator * (const Vec2& p) const {
 bool Vec2::operator == (const Vec2& p) const {
 	return x == p.x && y == p.y;
 }
+
+Vec2& Vec2::operator *= (float s) {
+	x *= s; y *= s; return *this;
+}

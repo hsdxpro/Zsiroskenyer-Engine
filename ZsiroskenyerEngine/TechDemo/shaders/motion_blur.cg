@@ -1,7 +1,7 @@
 sampler2D inputTexture = {
-	MipFilter = POINT,
-	MinFilter = POINT,
-	MagFilter = POINT, 
+	MipFilter = LINEAR,
+	MinFilter = LINEAR,
+	MagFilter = LINEAR, 
 	AddressU = CLAMP,
 	AddressV = CLAMP,
 };
@@ -21,7 +21,6 @@ struct VS_IN {
 
 struct VS_OUT {
 	float4 posH 	: POSITION;
-	
 	float2 tex0 	: TEXCOORD;
 };
 
