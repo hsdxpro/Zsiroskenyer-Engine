@@ -53,7 +53,7 @@ cGeometryRef cResourceManager::GetGeometry(const zsString& filePath) {
 			builder.LoadFile(filePath);
 			geom = builder.Create();
 		}
-		catch (std::exception& e) {
+		catch (...) {
 			return cGeometryRef(this, nullptr);
 		}
 

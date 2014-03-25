@@ -3,7 +3,7 @@
 struct {
  float4x4 currWorldViewProj;
  float4x4 prevWorldViewProj;
- float2	  invframeDeltaTimeDiv2DivInputRes;
+ float2	  invframeDeltaTimeDiv2DivInputRes; 
 } c : register(c0);
 
 

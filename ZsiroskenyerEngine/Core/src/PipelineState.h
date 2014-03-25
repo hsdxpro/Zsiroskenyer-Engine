@@ -168,3 +168,12 @@ struct tSamplerStateDesc {
 
 	tSamplerStateDesc() :filterMip(eFilter::POINT), filterMin(eFilter::POINT), filterMag(eFilter::POINT), addressU(eAddress::WRAP), addressV(eAddress::WRAP){};
 };
+
+enum class eClearFlag {
+	COLOR = 1,
+	DEPTH = 2,
+	STENCIL = 4,
+	COLOR_DEPTH = 3,
+	DEPTH_STENCIL = 6,
+	COLOR_DEPTH_STENCIL = 7,
+};

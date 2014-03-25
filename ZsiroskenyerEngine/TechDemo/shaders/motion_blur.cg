@@ -44,9 +44,10 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 
 	// Sample around that pixel
 	const float nSamples = 8;
-	for(float i = 1; i < nSamples; ++i)     
+	In.tex0 += velocity * (1.0f / nSamples);
+	for(float i = 1; i < nSamples; ++i, In.tex0 += i / nSamples * velocity )     
 	{
-		color += tex2D(inputTexture, i * velocity + In.tex0);
+		color += tex2D(inputTexture, In.tex0);
 	}
  
 	float4 finalColor = color * (1.0f / nSamples);

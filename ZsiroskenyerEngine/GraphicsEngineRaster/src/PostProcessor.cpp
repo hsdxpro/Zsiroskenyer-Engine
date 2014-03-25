@@ -101,7 +101,7 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 	mbConstants.InvframeDeltaTimeDiv2DivInputRes = Vec2(1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetWidth()),
 														1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetHeight()));
 
-	mbConstants.InvframeDeltaTimeDiv2DivInputRes *= 1.5f; // MOTION BLUR BOOST
+	mbConstants.InvframeDeltaTimeDiv2DivInputRes *= 3.5f; // MOTION BLUR BOOST
 
 	gApi->SetRenderTargets(1, &outputTexVelocity2D, inputTexDepthStencil);
 	gApi->SetShaderProgram(shaderMBCamera2DVelocity);
@@ -126,11 +126,14 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 	// 0x01 & 0x01 == ( 0x01 && 0x01) // OBJECT : CATCHED
 	//dsd.stencilReadMask = 0x01;
 	tDepthStencilDesc dsd2;
-	dsd2.depthEnable = false;
+	dsd2.depthEnable = true;
 	dsd2.stencilEnable = true;
+	dsd2.depthCompare = eComparisonFunc::LESS_EQUAL;
 	dsd2.stencilOpBackFace.stencilCompare = eComparisonFunc::EQUAL;
 	dsd2.stencilReadMask = 0x01;
 	dsd2.stencilOpFrontFace = dsd.stencilOpBackFace;
+
+	gApi->ClearTexture(inputTexDepthStencil, eClearFlag::DEPTH);
 
 	gApi->SetDepthStencilState(dsd2, 0x01);
 

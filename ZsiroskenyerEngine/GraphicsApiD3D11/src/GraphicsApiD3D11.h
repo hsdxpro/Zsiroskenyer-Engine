@@ -59,7 +59,7 @@ public:
 
 	// --- render --- //
 	void Clear(bool target = true, bool depth = false, bool stencil = false, const Vec4& clearColor = Vec4(0.3f, 0.3f, 0.3f, 1.0f)) override;
-	void ClearTexture(ITexture2D* t, unsigned clearFlag = 0, const Vec4& clearColor = Vec4(), float depthVal = 1.0f, size_t stencilVal = 0);
+	void ClearTexture(ITexture2D* t, eClearFlag clearFlag = eClearFlag::COLOR_DEPTH_STENCIL, const Vec4& clearColor = Vec4(), float depthVal = 1.0f, size_t stencilVal = 0);
 
 	void Draw(size_t nVertices, size_t idxStartVertex = 0) override;
 	void DrawIndexed(size_t nIndices, size_t idxStartIndex = 0) override;

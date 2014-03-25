@@ -26,9 +26,9 @@
 #define ZS_NUMERIC_MAX(x) std::numeric_limits<x>::max()
 #define ZS_NUMERIC_MIN(x) std::numeric_limits<x>::min()
 
-#define ZS_PI			3.141592653589793238462643383279
-#define ZS_PI2			6.28318530717958
-#define ZS_PIDIV2		1.57079632679489
-#define ZS_PIDIV4		0.78539816339744
+#define ZS_PI			3.14159265358979f
+#define ZS_PI2			6.28318530717958f
+#define ZS_PIDIV2		1.57079632679489f
+#define ZS_PIDIV4		0.78539816339744f
 
 void Realloc(void*& mem, size_t oldSize, size_t newSize);

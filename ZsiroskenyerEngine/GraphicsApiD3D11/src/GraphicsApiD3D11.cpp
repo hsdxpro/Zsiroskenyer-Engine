@@ -1415,15 +1415,25 @@ void cGraphicsApiD3D11::Clear(bool target /*= true*/, bool depth /*= false*/, bo
 }
 
 // Clear texture
-void cGraphicsApiD3D11::ClearTexture(ITexture2D* t, unsigned clearFlag /*= 0*/, const Vec4& clearColor /*= Vec4()*/, float depthVal /*= 1.0f*/, size_t stencilVal /*= 0*/) {
+void cGraphicsApiD3D11::ClearTexture(ITexture2D* t, eClearFlag clearFlag /*= eClearFlag::COLOR_DEPTH_STENCIL*/, const Vec4& clearColor /*= Vec4()*/, float depthVal /*= 1.0f*/, size_t stencilVal /*= 0*/) {
 	ASSERT(t != nullptr);
-	
+
 	ID3D11DepthStencilView* dsv = ((cTexture2DD3D11*)t)->GetDSV();
 	if (dsv)
-		d3dcon->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, depthVal, (UINT8)stencilVal);
+	{
+		bool clearDepth		= ((unsigned)clearFlag & (unsigned)eClearFlag::DEPTH) > 0;
+		bool clearStencil	= ((unsigned)clearFlag & (unsigned)eClearFlag::STENCIL) > 0;
+
+		if (clearDepth && clearStencil)
+			d3dcon->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, depthVal, (UINT8)stencilVal);
+		else if (clearDepth)
+			d3dcon->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH , depthVal, (UINT8)stencilVal);
+		else if (clearStencil)
+			d3dcon->ClearDepthStencilView(dsv, D3D11_CLEAR_STENCIL, depthVal, (UINT8)stencilVal);
+	}
 
 	ID3D11RenderTargetView* rtv = ((cTexture2DD3D11*)t)->GetRTV();
-	if (rtv)
+	if (rtv && ((unsigned)clearFlag & (unsigned)eClearFlag::COLOR) )
 		d3dcon->ClearRenderTargetView(rtv, (FLOAT*)&clearColor);
 }
 
