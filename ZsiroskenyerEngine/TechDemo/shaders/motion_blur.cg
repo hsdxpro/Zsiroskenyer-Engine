@@ -1,14 +1,14 @@
 sampler2D inputTexture = {
-	MipFilter = LINEAR,
-	MinFilter = LINEAR,
-	MagFilter = LINEAR, 
+	MipFilter = POINT,
+	MinFilter = POINT,
+	MagFilter = POINT, 
 	AddressU = CLAMP,
 	AddressV = CLAMP,
 };
 
 sampler2D velocity2DTex = {
 	MipFilter = POINT,
-	MinFilter = POINT,
+	MinFilter = POINT,  
 	MagFilter = POINT,
 	AddressU = CLAMP,
 	AddressV = CLAMP,
@@ -42,7 +42,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	// Save non blurred alpha
 	float alpha = color.a;
 
-	// Sample around that pixel
+	// Sample along velocity vector
 	const float nSamples = 8;
 	In.tex0 += velocity * (1.0f / nSamples);
 	for(float i = 1; i < nSamples; ++i, In.tex0 += i / nSamples * velocity )     

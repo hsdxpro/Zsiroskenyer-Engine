@@ -44,7 +44,9 @@ float2 PS_MAIN(VS_OUT In) : COLOR0 {
 	
 	// v   =             s               /       t;     result = pixels per second
 	// Clamp the velocity, 1.0 depth make so large velocity that ruins the motion blur sampling
-	return (In.currPosH.xy - In.prevPosH.xy) * c.invframeDeltaTimeDiv2DivInputRes;
+	float2 vel = (In.currPosH.xy - In.prevPosH.xy) * c.invframeDeltaTimeDiv2DivInputRes;
+	return vel;
+	//return clamp(vel, -4.0f / 768.0f, 4 / 768.0f);
 }
 
 technique t

@@ -66,7 +66,7 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 
 	gApi->ClearTexture(outputTexVelocity2D);
 	gApi->ClearTexture(outputTexColor);
-
+	
 	
 	//-------------------------------------------------------------------------------------//
 	// --------- FIRST PASS : FED CAMERA BASED SKY MOTION BLUR TO VELOCITYBUFFER ----------//

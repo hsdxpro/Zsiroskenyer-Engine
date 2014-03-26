@@ -52,7 +52,7 @@ float2 PS_MAIN(VS_OUT In) : COLOR0 {
 
 	// Current frame NDC position // x,y,w  // we not need the z component
 	float3 currPosH = float3(	 dot(posW, float3(c.viewProj[0].x, c.viewProj[1].x, c.viewProj[2].x)) + c.viewProj[3].x,
-								-dot(posW, float3(c.viewProj[0].y, c.viewProj[1].y, c.viewProj[2].y)) + c.viewProj[3].y, // y *= -1; // The calced y velocity need to be in texSpace.y * 2
+								-dot(posW, float3(c.viewProj[0].y, c.viewProj[1].y, c.viewProj[2].y)) - c.viewProj[3].y, // y *= -1; // The calced y velocity need to be in texSpace.y * 2
 								 dot(posW, float3(c.viewProj[0].w, c.viewProj[1].w, c.viewProj[2].w)) + c.viewProj[3].w );
 	currPosH.xy *= (1.0f / currPosH.z); // .z now the W component !!!!
 
