@@ -84,6 +84,7 @@ bool cWindow::HandleMessage(IWindow::eMessage* msg) {
 		// Translate, dispatch, process message 
 		TranslateMessage(&winMsg);
 		DispatchMessage(&winMsg);
+
 		*msg = ProcessMessage(winMsg);
 
 		return *msg != IWindow::eMessage::QUIT;
@@ -107,10 +108,10 @@ IWindow::eMessage cWindow::ProcessMessage(const MSG& msg) {
 		}
 		case WM_SIZE:
 				return IWindow::eMessage::SIZE_CHANGED;
-		case WM_SYSKEYDOWN:
+		//case WM_SYSKEYDOWN:
 			// ALT + ENTER = SIZE_CHANGED
-			if (LOWORD(msg.wParam) == VK_RETURN && ((msg.lParam >> 29 & 0x1) == 1))
-				return IWindow::eMessage::SIZE_CHANGED;
+			//if (LOWORD(msg.wParam) == VK_RETURN && ((msg.lParam >> 29 & 0x1) == 1))
+				//return IWindow::eMessage::SIZE_CHANGED;
 	}
 	return IWindow::eMessage(95934292); // TODO xD
 }

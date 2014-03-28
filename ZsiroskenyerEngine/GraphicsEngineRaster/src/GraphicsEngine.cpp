@@ -300,6 +300,27 @@ eGraphicsResult cGraphicsEngine::Update(float elapsed) {
 		gApi->Draw(3);
 	}
 
+	/*
+	// Draw fucking jpg to backbuffer
+	static ITexture2D* gammaTex;
+	static bool firstRun = true;
+	if (firstRun)
+	{
+		auto errCode = gApi->CreateTexture(&gammaTex, L"gamma.jpg");
+		if ( errCode != eGapiResult::OK )
+		{
+			int asd = 5;
+			asd++;
+		}
+
+		firstRun = false;
+	}
+	gApi->SetRenderTargetDefault();
+	gApi->SetShaderProgram(shaderScreenCopy);
+	gApi->SetTexture(L"inputTexture", gammaTex);
+	gApi->Draw(3);
+	*/
+
 	gApi->Present();
 	return eGraphicsResult::OK;
 }

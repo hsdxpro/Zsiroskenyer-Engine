@@ -1,7 +1,7 @@
 sampler2D inputTexture = {
-    	MipFilter = POINT,
-    	MinFilter = POINT,
-    	MagFilter = POINT,
+    MipFilter = POINT,
+    MinFilter = POINT,
+    MagFilter = POINT,
 	AddressU = CLAMP,
 	AddressV = CLAMP,
 };
@@ -12,7 +12,7 @@ struct VS_IN {
 };
 
 struct VS_OUT {
-	float4 posH 	: POSITION;
+	float4 posH 	: POSITION; 
 	float2 tex0 	: TEXCOORD0;
 };
 
@@ -25,8 +25,7 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 }
 
 float4 PS_MAIN(VS_OUT In) : COLOR0 {
-	float4 color = tex2D(inputTexture, In.tex0);
-	return color;
+	return tex2D(inputTexture, In.tex0);
 };
 
 technique t

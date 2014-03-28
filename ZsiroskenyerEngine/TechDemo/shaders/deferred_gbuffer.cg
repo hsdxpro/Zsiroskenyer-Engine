@@ -169,7 +169,7 @@ PS_OUT PS_MAIN(VS_OUT In) {
 	GBUFFER gb;
 
 	//POM IT
-	//In.tex0 = ParallaxOcclusionMapping(In.posW - transform.camPos, In.normalW, In.tangentW, In.tex0).xy;
+	In.tex0 = ParallaxOcclusionMapping(In.posW - transform.camPos, In.normalW, In.tangentW, In.tex0).xy;
 
 
 	if (mtlProperties.hasNormalMap) {
@@ -184,6 +184,8 @@ PS_OUT PS_MAIN(VS_OUT In) {
 		Out.gb1 = gb.normal;
 		Out.gb2 = gb.misc;
 	}
+
+	Out.gb0 = pow(Out.gb0, 2.2f);
 
 	Out.depth = In.linearDepth;	
 

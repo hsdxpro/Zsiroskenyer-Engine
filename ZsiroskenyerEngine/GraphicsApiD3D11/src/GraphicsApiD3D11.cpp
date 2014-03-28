@@ -372,12 +372,11 @@ eGapiResult cGraphicsApiD3D11::CreateMostAcceptableSwapChain(size_t width, size_
 	}
 	sdesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
 	sdesc.OutputWindow = windowHandle;
-	sdesc.SampleDesc.Count = 1;// config.multiSampleCount;
-	sdesc.SampleDesc.Quality = 0;// config.multiSampleQuality;
+	sdesc.SampleDesc.Count = 1;
+	sdesc.SampleDesc.Quality = 0;
 	sdesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	sdesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-	//if (!config.createDeviceFullScreen)
-		sdesc.Windowed = true;
+	sdesc.Windowed = true;
 
 	HRESULT hr = fact->CreateSwapChain(d3ddev, &sdesc, &d3dsc);
 
@@ -625,7 +624,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const wchar_
 	// Shader Resource View of texture
 	ID3D11ShaderResourceView* srv;
 	D3DX11_IMAGE_LOAD_INFO info;
-	info.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	info.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(d3ddev, filePath, &info, 0, &srv, 0);
 
@@ -1693,6 +1692,15 @@ eGapiResult cGraphicsApiD3D11::SetBackBufferSize(unsigned width, unsigned height
 	SAFE_DELETE(defaultRenderTarget);
 
 	HRESULT hr = d3dsc->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_SWAP_EFFECT_DISCARD | DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
+
+	// Set full screen state according to width height
+	IDXGIOutput* op; 
+	hr = d3dsc->GetContainingOutput(&op);
+
+	bool isFullScreen = (GetSystemMetrics(SM_CXSCREEN) == width) && (GetSystemMetrics(SM_CYSCREEN) == height);
+
+	hr = d3dsc->SetFullscreenState(isFullScreen, isFullScreen ? op : nullptr);
+
 	if (!FAILED(hr)) {
 		defaultVP.Width = width;
 		defaultVP.Height = height;
@@ -1808,7 +1816,7 @@ eGapiResult cGraphicsApiD3D11::SetWindow(IWindow *renderWindow) {
 
 	// Create default viewport for swapChain rendering
 	defaultVP.TopLeftX = 0,
-		defaultVP.TopLeftY = 0;
+	defaultVP.TopLeftY = 0;
 	defaultVP.Width = clientWidth;
 	defaultVP.Height = clientHeight;
 	defaultVP.MaxDepth = 1.0f;
