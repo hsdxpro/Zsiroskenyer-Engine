@@ -236,12 +236,12 @@ void cGraphicsEngine::cPostProcessor::ProcessDOF(float frameDeltaTime, const cCa
 	dofConstants.minusInvTexHeight = -dofConstants.invTexHeight;
 	dofConstants.frameDeltaTime = frameDeltaTime;
 	dofConstants.retinaLensDist = 0.019f;
-	dofConstants.aperture = 0.02f;
+	dofConstants.aperture = 0.100f;
 	dofConstants.camPos = cam.GetPos();
-	dofConstants.quality = 3;
+	dofConstants.quality = 8;
 	dofConstants.minFocalDist = 0;
 	dofConstants.maxFocalDist = 30;
-	dofConstants.focalAdaptSpeed = 6.0f;
+	dofConstants.focalAdaptSpeed = 4.0f;
 
 	// Set it for shaders to use
 	gApi->SetPSConstantBuffer(&dofConstants, sizeof(dofConstants), 0);

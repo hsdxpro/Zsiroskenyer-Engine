@@ -624,7 +624,8 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const wchar_
 	// Shader Resource View of texture
 	ID3D11ShaderResourceView* srv;
 	D3DX11_IMAGE_LOAD_INFO info;
-	info.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	//info.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	info.Format = DXGI_FORMAT_BC2_UNORM;
 
 	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(d3ddev, filePath, &info, 0, &srv, 0);
 

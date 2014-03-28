@@ -110,7 +110,7 @@ float DiffuseTerm(float3 lightDir, float3 normal) {
 
 // specular terv
 float SpecularTerm(float3 lightDir, float3 normal, float3 viewDir, float glossiness) {
-	return CookTorranceSpecular(normal, viewDir, lightDir, 1.0f - glossiness, 1.6f);
+	return	CookTorranceSpecular(normal, viewDir, lightDir, 1.0f - glossiness, 1.6f);
 }
 
 //------------------------------------------------------------------------------
