@@ -15,7 +15,7 @@
 #define FXAA_QUALITY__PRESET 12
 //#define FXAA_QUALITY__PRESET 39 // ULTRA SUPER BROO QUALITY
 
-
+#define GAMMA_CORRECTION_TEST
 
 
 #if (FXAA_QUALITY__PRESET == 12)
@@ -75,9 +75,14 @@ static const float  fxaaQualityEdgeThreshold = 0.166f;//  0.166 - default
     #define FxaaSat(x) saturate(x)
 
 
-// Cg defined
+#ifdef GAMMA_CORRECTION_TEST
+#define FxaaTexTop(p) pow(tex2D(inputTexture, p), 2.2f)
+#define FxaaTexOff(p, o, r) pow(tex2D(inputTexture, p, o), 2.2f)
+#else
 #define FxaaTexTop(p) tex2D(inputTexture, p)
 #define FxaaTexOff(p, o, r) tex2D(inputTexture, p, o)
+#endif
+
 #define FxaaInt2 int2
 
 /*--------------------------------------------------------------------------*/
@@ -185,7 +190,11 @@ FxaaFloat4 PS_MAIN(VS_OUT In) : COLOR0 {
         #if (FXAA_DISCARD == 1)
             FxaaDiscard;
         #else
-            return rgbyM;
+			#ifdef GAMMA_CORRECTION_TEST
+			   return pow(rgbyM, 0.45f);
+			#else
+				return rgbyM;
+			#endif
         #endif
 /*--------------------------------------------------------------------------*/
     #if (FXAA_GATHER4_ALPHA == 0)
@@ -480,11 +489,20 @@ FxaaFloat4 PS_MAIN(VS_OUT In) : COLOR0 {
     FxaaFloat pixelOffsetSubpix = max(pixelOffsetGood, subpixH);
     if(!horzSpan) posM.x += pixelOffsetSubpix * lengthSign;
     if( horzSpan) posM.y += pixelOffsetSubpix * lengthSign;
+
+#ifdef GAMMA_CORRECTION_TEST
     #if (FXAA_DISCARD == 1)
+        return pow(FxaaTexTop(posM), 0.45f);
+    #else
+        return pow(FxaaFloat4(FxaaTexTop( posM).xyz, lumaM), 0.45f);
+    #endif
+#else
+	#if (FXAA_DISCARD == 1)
         return FxaaTexTop( posM);
     #else
         return FxaaFloat4(FxaaTexTop( posM).xyz, lumaM);
     #endif
+#endif
 }
 
 
