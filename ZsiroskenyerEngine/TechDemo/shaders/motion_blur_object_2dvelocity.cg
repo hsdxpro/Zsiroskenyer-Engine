@@ -3,7 +3,9 @@
 struct {
  float4x4 currWorldViewProj;
  float4x4 prevWorldViewProj;
- float2	  invframeDeltaTimeDiv2DivInputRes; 
+ float2	  invframeDeltaTimeDiv2DivInputRes;
+ float2	  invFourPercentInputRes;
+ float2	  negInvFourPercentInputRes;
 } c : register(c0);
 
 
@@ -44,8 +46,7 @@ float2 PS_MAIN(VS_OUT In) : COLOR0 {
 	
 	// v   =             s               /       t;     result = pixels per second
 	// Clamp the velocity, 1.0 depth make so large velocity that ruins the motion blur sampling
-	float2 vel = (In.currPosH.xy - In.prevPosH.xy) * c.invframeDeltaTimeDiv2DivInputRes;
-	return vel;
+	return clamp((In.currPosH.xy - In.prevPosH.xy) * c.invframeDeltaTimeDiv2DivInputRes, c.negInvFourPercentInputRes, c.invFourPercentInputRes);
 	//return clamp(vel, -4.0f / 768.0f, 4 / 768.0f);
 }
 

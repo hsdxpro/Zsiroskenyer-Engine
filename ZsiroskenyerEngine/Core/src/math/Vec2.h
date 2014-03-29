@@ -7,6 +7,8 @@ struct Vec2 {
 	Vec2 operator / (const Vec2& p) const;
 	Vec2 operator * (const Vec2& p) const;
 
+	Vec2 operator - () const;
+
 	bool operator == (const Vec2& p) const;
 	Vec2& operator *= (float s);
 

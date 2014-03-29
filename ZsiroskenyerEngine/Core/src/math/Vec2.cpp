@@ -24,6 +24,10 @@ Vec2 Vec2::operator * (const Vec2& p) const {
 	return Vec2(x * p.x, y * p.y);
 }
 
+Vec2 Vec2::operator - () const {
+	return Vec2(-x, -y);
+}
+
 bool Vec2::operator == (const Vec2& p) const {
 	return x == p.x && y == p.y;
 }

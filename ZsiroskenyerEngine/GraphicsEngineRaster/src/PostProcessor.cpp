@@ -88,8 +88,10 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 		Matrix44 viewProj;
 		Matrix44 invViewProj;
 		Matrix44 prevViewProj;
-		Vec3	 camPos;							float _pad1;
-		Vec2	 InvframeDeltaTimeDiv2DivInputRes;	Vec2 _pad2[2];
+		Vec3	 camPos; float pad;
+		Vec2	 InvframeDeltaTimeDiv2DivInputRes;
+		Vec2	 invFourPercentInputRes;
+		Vec2	 negInvFourPercentInputRes;
 	} mbConstants;
 
 	Matrix44 viewMat = cam.GetViewMatrix();
@@ -101,7 +103,10 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 	mbConstants.InvframeDeltaTimeDiv2DivInputRes = Vec2(1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetWidth()),
 														1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetHeight()));
 
-	mbConstants.InvframeDeltaTimeDiv2DivInputRes *= 3.5f; // MOTION BLUR BOOST
+	mbConstants.invFourPercentInputRes = Vec2(4.0f / inputTexDepth->GetWidth(), 4.0f / inputTexDepth->GetHeight());
+	mbConstants.negInvFourPercentInputRes = -mbConstants.invFourPercentInputRes;
+
+	mbConstants.InvframeDeltaTimeDiv2DivInputRes *= 3.5f; // Motion blur BOOST
 
 	gApi->SetRenderTargets(1, &outputTexVelocity2D, inputTexDepthStencil);
 	gApi->SetShaderProgram(shaderMBCamera2DVelocity);
@@ -143,11 +148,15 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 	struct s2 {
 		Matrix44 currWorldViewProj;
 		Matrix44 prevWorldViewProj;
-		Vec2	 InvframeDeltaTimeDiv2DivInputRes; Vec2 _pad;
+		Vec2	 InvframeDeltaTimeDiv2DivInputRes;
+		Vec2	 invFourPercentInputRes;
+		Vec2	 negInvFourPercentInputRes;
 	} mbObjConstants;
 
 	mbObjConstants.InvframeDeltaTimeDiv2DivInputRes = mbConstants.InvframeDeltaTimeDiv2DivInputRes;
-	
+	mbObjConstants.negInvFourPercentInputRes = mbConstants.negInvFourPercentInputRes;
+	mbObjConstants.invFourPercentInputRes = mbConstants.invFourPercentInputRes;
+
 	// Foreach: Instance group
 	for (auto& group : parent.sceneManager->GetInstanceGroups()) {
 		cGeometry& geom = *group->geom.get();
