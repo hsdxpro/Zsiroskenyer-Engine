@@ -63,10 +63,6 @@ cGraphicsEngine::cPostProcessor::~cPostProcessor() {
 
 // Motion Blur
 void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCamera& cam) {
-
-	gApi->ClearTexture(outputTexVelocity2D);
-	gApi->ClearTexture(outputTexColor);
-	
 	
 	//-------------------------------------------------------------------------------------//
 	// --------- FIRST PASS : FED CAMERA BASED SKY MOTION BLUR TO VELOCITYBUFFER ----------//
@@ -100,8 +96,13 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 	mbConstants.invViewProj = Matrix44Inverse(mbConstants.viewProj);
 	mbConstants.prevViewProj = lastViewMat * projMat;
 	mbConstants.camPos = cam.GetPos();
+
+	
 	mbConstants.InvframeDeltaTimeDiv2DivInputRes = Vec2(1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetWidth()),
 														1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetHeight()));
+
+	// Shutter speed -> 15 % of frame shutter time
+	//frameDeltaTime / 8;
 
 	mbConstants.invFourPercentInputRes = Vec2(4.0f / inputTexDepth->GetWidth(), 4.0f / inputTexDepth->GetHeight());
 	mbConstants.negInvFourPercentInputRes = -mbConstants.invFourPercentInputRes;
@@ -249,7 +250,7 @@ void cGraphicsEngine::cPostProcessor::ProcessDOF(float frameDeltaTime, const cCa
 	dofConstants.camPos = cam.GetPos();
 	dofConstants.quality = 8;
 	dofConstants.minFocalDist = 0;
-	dofConstants.maxFocalDist = 30;
+	dofConstants.maxFocalDist = 3000;
 	dofConstants.focalAdaptSpeed = 4.0f;
 
 	// Set it for shaders to use
