@@ -289,8 +289,12 @@ void _cGeometryBuilder::LoadFile(const zsString& path) {
 				}
 
 				// @TODO not general algorithm, wee need to handle more UV channels
-				supTmpVec = &mesh->mTextureCoords[0][localVertIdx];
-				((baseVertex*)vertices)[localVertIdx + globalVertexIdx].tex = Vec2(supTmpVec->x, -supTmpVec->y); // UV flip y
+				auto vecPtr = mesh->mTextureCoords[0];
+				if (vecPtr)
+				{
+					supTmpVec = &vecPtr[localVertIdx];
+					((baseVertex*)vertices)[localVertIdx + globalVertexIdx].tex = Vec2(supTmpVec->x, -supTmpVec->y); // UV flip y
+				}
 			}
 		}
 		globalVertexIdx += mesh->mNumVertices;

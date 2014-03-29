@@ -41,6 +41,7 @@ struct VS_IN {
 struct VS_OUT {
 	float4 posH 	: POSITION;
 	float2 tex0 	: TEXCOORD0;
+	float3 viewRay	: TEXCOORD1;
 };
 
 
@@ -52,6 +53,15 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 	VS_OUT Out;
 	Out.tex0 = float2( (VertexID << 1) & 2, VertexID & 2 );
 	Out.posH = float4(  Out.tex0 * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f), 0.0f, 1.0f );
+
+	float4 viewRay =	Out.posH.x * invViewProj[0] + (
+						Out.posH.y * invViewProj[1] + (
+						invViewProj[2] +
+						invViewProj[3]));
+
+	Out.viewRay = viewRay.xyz * (1.0f / viewRay.w);
+	Out.viewRay -= camPos;
+
 	return Out;
 }
 
@@ -69,8 +79,8 @@ float doAmbientOcclusion(in float2 texcoord,in float2 delta_uv, in float3 pos1, 
  float3 pos2 = GetPosition(texcoord + delta_uv);
 
  //HALO eltüntetése (próbálkozás) sajna csak pár helyzetben nagyon jó
- if(distance(pos1,pos2) > 5)
- 	return 0.8f;
+ if(distance(pos1,pos2) > 0.03)
+ 	return 0.3f;
 
  float3 diff = pos2 - pos1;
  float3 dir = normalize(diff);
@@ -78,20 +88,22 @@ float doAmbientOcclusion(in float2 texcoord,in float2 delta_uv, in float3 pos1, 
  return 1.0f -  clamp(dot(dir,norm1),0.1f,1.0f);
 }
 
-float ProcessAO(float2 projtex)
+float ProcessAO(float2 projtex, float3 viewRayVS)
 {
 
-  float SSAOraylength = 5.000150f;
+  float SSAOraylength = 2.000150f;
+
   float SSAOiterations = 2;
 
   // Try depth independency, but not expected result TODO...
-  float4 vsDeltaCoord  = float4(SSAOraylength, distance(camPos, GetWorldPosition(projtex, tex2D(depthTexture, projtex).r, invViewProj)), 0, 1);
+  //float4 vsDeltaCoord  = float4(SSAOraylength, distance(camPos, GetWorldPosition(projtex, tex2D(depthTexture, projtex).r, invViewProj)), 0, 1);
+  float4 vsDeltaCoord = float4(SSAOraylength, distance(camPos, GetWorldPosition(camPos, viewRayVS, tex2D(depthTexture, projtex))), 0, 1);
 
   // Transform that to proj space, then divide, transform x,y to texture space,  now ssao will be depth independent
   float4 deltaCoord = mul(vsDeltaCoord, projMat);
 
 
-  float SMAP_DX = (deltaCoord.x + 1) /  2 / 800; // MAGICS, TODO
+  float SMAP_DX = (deltaCoord.x + 1) /  2.0f / 768.0f; // MAGICS, TODO
   float SMAP_DY = SMAP_DX;
 
 //Ambient Gyüjtés folyamat kezdete 0
@@ -144,7 +156,7 @@ float PS_MAIN(VS_OUT In) : COLOR0 {
 	float depth = tex2D(depthTexture, In.tex0).r;	
 	
 	// ! COMPUTE AO FROM "normal" AND "depth" !
-	return ProcessAO(In.tex0);
+	return ProcessAO(In.tex0, In.viewRay);
 };
 
 

@@ -451,6 +451,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// copy depth to shader resource
 	gApi->CopyResource(depthBuffer, depthBufferCopy);
 
+
 	//--------------------------------------------------------------------------//
 	// --- --- --- --- --- --- --- COMPOSITION PASS --- --- --- --- --- --- --- //
 	//--------------------------------------------------------------------------//
@@ -495,10 +496,15 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	data.UVToViewB[0] = -1.0f * (1.0f / data.FocalLen[0]);
 	data.UVToViewB[1] = 1.0f * (1.0f / data.FocalLen[1]);
 
-	data.R = 0.0015; // drop ao accum neighbour far than that
+	data.R = 0.3; // drop ao accum neighbour far than that
 	data.R2 = data.R * data.R;
 	data.NegInvR2 = -1.0f / data.R2;
-	data.MaxRadiusPixels = 50.0f;
+	data.MaxRadiusPixels = 60.0f;
+
+	//data.R = 0.0015; // drop ao accum neighbour far than that
+	//data.R2 = data.R * data.R;
+	//data.NegInvR2 = -1.0f / data.R2;
+	//data.MaxRadiusPixels = 50.0f;
 	data.AngleBias = 10;
 	data.TanAngleBias = tanf(data.AngleBias);
 	data.Strength = 1.0;
@@ -525,7 +531,9 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetTexture(L"inputTexture", aoBlurHelperBuffer);
 	gApi->Draw(3);
 
-	/* SSAO
+
+/*
+	// SSAO
 	struct _aoShaderConstants {
 		Matrix44 projMat;
 		Matrix44 invViewProj;
@@ -541,7 +549,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	gApi->SetTexture(L"depthTexture", depthBufferCopy);
 	gApi->SetPSConstantBuffer(&aoShaderConstants, sizeof(aoShaderConstants), 0);
 	gApi->Draw(3);
-	*/
+*/	
 
 	//--------------------------------------------------------------------------//
 	// --- --- --- --- --- RENDER STATES (composition pass) --- --- --- --- --- //

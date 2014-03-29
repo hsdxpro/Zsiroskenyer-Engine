@@ -237,7 +237,7 @@ void cGraphicsEngine::cPostProcessor::ProcessDOF(float frameDeltaTime, const cCa
 		int		 quality;
 	} dofConstants;
 
-	dofConstants.invRetinaRadiusProductInputTexWidth = (float)inputTexColor->GetWidth() * 26.793927f; // That magic number (27.793927) normalizes a CoC that belonging to an average sized human eye and lens into [0,1]
+	dofConstants.invRetinaRadiusProductInputTexWidth = (float)inputTexColor->GetWidth() * 26.793927f; // That magic number (27.793927) normalizes (a CoC that belonging to an average sized human eye and lens) into [0,1]
 	dofConstants.invViewProj = Matrix44Inverse(cam.GetViewMatrix() *  cam.GetProjMatrix());
 	dofConstants.invTexWidth = 1.0f / inputTexColor->GetWidth();
 	dofConstants.invTexHeight = 1.0f / inputTexColor->GetHeight();
@@ -245,7 +245,7 @@ void cGraphicsEngine::cPostProcessor::ProcessDOF(float frameDeltaTime, const cCa
 	dofConstants.minusInvTexHeight = -dofConstants.invTexHeight;
 	dofConstants.frameDeltaTime = frameDeltaTime;
 	dofConstants.retinaLensDist = 0.019f;
-	dofConstants.aperture = 0.100f;
+	dofConstants.aperture = 0.05f;
 	dofConstants.camPos = cam.GetPos();
 	dofConstants.quality = 8;
 	dofConstants.minFocalDist = 0;

@@ -23,6 +23,12 @@ float g_R : register(c5);
 float g_R2 : register(c6);
 float g_NegInvR2 : register(c7);
 float g_MaxRadiusPixels : register(c8);
+
+//static const float g_R = 0.30;
+//static const float g_R2 = g_R * g_R;
+//static const float g_NegInvR2 = -1.0f / g_R2;
+//static const float g_MaxRadiusPixels = 60;
+
 float g_AngleBias : register(c9);
 float g_TanAngleBias : register(c10);
 float g_Strength : register(c11);
