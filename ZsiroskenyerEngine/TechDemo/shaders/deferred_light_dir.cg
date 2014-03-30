@@ -91,9 +91,11 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	worldPos = GetWorldPosition(camPos, In.viewRay, depth);
 
 	// calculate lighting terms
-	float3 viewDir = normalize(worldPos - camPos);
-	float diffuseTerm = DiffuseTerm(lightDir, normal);
-	float specTerm = SpecularTerm(-lightDir, normal, viewDir, glossiness) * specLevel;
+	float3 negViewNorm = normalize(camPos - worldPos);
+	float3 halfVec = (-lightDir + negViewNorm) / 2.0f;
+	float diffuseTerm = Diffuse_OrenNayar(1 - glossiness, dot(normal, negViewNorm), -dot(normal, lightDir), dot(negViewNorm, halfVec));
+	const float IOR = 1.6f;
+	float specTerm = Specular_CookTorrance(normal, negViewNorm, -lightDir, 1 - glossiness, IOR) * specLevel;
 
 	color.rgb += lightColor*(diffuseTerm*diffuseColor + specTerm); // note: no light attenuation
 	color.a = 1.0f;

@@ -101,9 +101,6 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 	mbConstants.InvframeDeltaTimeDiv2DivInputRes = Vec2(1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetWidth()),
 														1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetHeight()));
 
-	// Shutter speed -> 15 % of frame shutter time
-	//frameDeltaTime / 8;
-
 	mbConstants.invFourPercentInputRes = Vec2(4.0f / inputTexDepth->GetWidth(), 4.0f / inputTexDepth->GetHeight());
 	mbConstants.negInvFourPercentInputRes = -mbConstants.invFourPercentInputRes;
 

@@ -501,10 +501,6 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	data.NegInvR2 = -1.0f / data.R2;
 	data.MaxRadiusPixels = 60.0f;
 
-	//data.R = 0.0015; // drop ao accum neighbour far than that
-	//data.R2 = data.R * data.R;
-	//data.NegInvR2 = -1.0f / data.R2;
-	//data.MaxRadiusPixels = 50.0f;
 	data.AngleBias = 10;
 	data.TanAngleBias = tanf(data.AngleBias);
 	data.Strength = 1.0;

@@ -66,13 +66,13 @@ float Fresnel(float NdotV, float fresnelBias, float fresnelPow) {
 	return max(fresnelBias + (1.0 - fresnelBias) * pow(facing, fresnelPow), 0.0);
 }
 
-float CookTorranceSpecular(float3 N, float3 viewDir, float3 L, float roughness, float IOR) {
+float Specular_CookTorrance(float3 N, float3 negViewDirNorm, float3 L, float roughness, float IOR) {
 	const float gaussConstant  = 10;
 
     // the things we need:	
     // normalized normal and vector to eye
     float3 Nn = N;
-    float3 Vn = -viewDir;
+    float3 Vn = negViewDirNorm;
     float Ktransmit;
     float m = roughness;
     float F = Fresnel( dot(N, Vn), 0, 1 / IOR);
@@ -98,19 +98,30 @@ float CookTorranceSpecular(float3 N, float3 viewDir, float3 L, float roughness, 
 
     //sum contributions
 	const float PISquare = 9.869604401f;
-	//return 1.0f / NdotV / PISquare;
-	//return G / PISquare;
-	return F * D * G / NdotV / PISquare;
+	return F * D * G / NdotV / NdotL / PISquare;
 }
 
-// diffuse terv
-float DiffuseTerm(float3 lightDir, float3 normal) {
-	return saturate(-dot(lightDir, normal));
+float Diffuse_Lambert(float NdotL)
+{
+	return saturate(NdotL);
 }
 
-// specular terv
-float SpecularTerm(float3 lightDir, float3 normal, float3 viewDir, float glossiness) {
-	return	CookTorranceSpecular(normal, viewDir, lightDir, 1.0f - glossiness, 1.6f);
+float Diffuse_OrenNayar(float Roughness, float NdotV, float NdotL, float VdotH ) {
+
+	// bias avoid divide by zero..
+	NdotV = saturate(NdotV) + 0.00001f;
+	NdotL = saturate(NdotL) + 0.00001f;
+
+	float m = Roughness * Roughness;
+	float m2 = m * m;
+
+	float VdotL = 2 * VdotH - 1;
+	float CosTerm = VdotL - NdotV * NdotL;
+
+	float C1 = 1 - 0.5 * m2 * (1.0f / (m2 + 0.33));
+
+	float C2 = 0.45 * m2 / (m2 + 0.09) * CosTerm * ( CosTerm >= 0 ? min( 1, NdotL * (1.0f / NdotV )) : NdotL );
+	return NdotL * C1 + C2;
 }
 
 //------------------------------------------------------------------------------
