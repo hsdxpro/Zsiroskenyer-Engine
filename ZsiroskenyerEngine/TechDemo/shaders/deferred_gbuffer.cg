@@ -130,7 +130,7 @@ float3 ParallaxOcclusionMapping(float3 viewDirW,float3 normalW,float3 tangentW,f
 	float2 dx = ddx(OriginalUW);
 	float2 dy = ddx(OriginalUW);
 
-	int nMaxSamples = lerp(5, 60, saturate(dot(-viewDirTS, normalTS)) );
+	int nMaxSamples = lerp(5, 100, saturate(dot(-viewDirTS, normalTS)) );
 
 	// xy, and z magicstepper
 	const float invHeightScale = 20;

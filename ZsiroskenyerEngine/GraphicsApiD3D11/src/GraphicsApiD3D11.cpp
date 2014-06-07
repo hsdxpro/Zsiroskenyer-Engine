@@ -638,10 +638,12 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const wchar_
 			ID3D11Texture2D* tex2D;
 			srv->GetResource((ID3D11Resource**)&tex2D);
 
-			D3D11_TEXTURE2D_DESC texDesc; tex2D->GetDesc(&texDesc);
+			D3D11_TEXTURE2D_DESC texDesc; 
+			tex2D->GetDesc(&texDesc);
+			tex2D->Release();
+
 			width = texDesc.Width;
 			height = texDesc.Height;
-			tex2D->Release();
 
 			// return
 			*resource = new cTexture2DD3D11(width, height, tex2D, srv);
