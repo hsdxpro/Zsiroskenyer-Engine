@@ -344,15 +344,19 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, ITexture2D* target, flo
 	//--- --- Deferred rendering result --- --- //
 	ITexture2D* deferredComposition = deferredRenderer->GetCompositionBuffer();
 
+	// Screen Space Local Reflection
+	postProcessor->SetInputSSLR(deferredComposition, deferredRenderer->GetDepthBuffer(), deferredRenderer->GetGBuffer(1)); // Color, depth, normal
+	postProcessor->SetOutputSSLR(hdrTextures[0]);
+	postProcessor->ProcessSSLR(scene.GetCamera());	
 
 	// Motion blur
-	postProcessor->SetInputMB(deferredComposition, deferredRenderer->GetDepthBuffer(), deferredRenderer->GetDepthStencilBuffer());
-	postProcessor->SetOutputMB(hdrTextures[0], hdrTextures[1]); // Color, velocityBuffer
+	postProcessor->SetInputMB(hdrTextures[0], deferredRenderer->GetDepthBuffer());
+	postProcessor->SetOutputMB(deferredComposition, hdrTextures[1], deferredRenderer->GetDepthStencilBuffer()); // Color, velocityBuffer, depth
 	postProcessor->ProcessMB(elapsed, scene.GetCamera());
 
 	// Depth of field
-	postProcessor->SetInputDOF(hdrTextures[0], deferredRenderer->GetDepthBuffer());
-	postProcessor->SetOutputDOF(deferredComposition);
+	postProcessor->SetInputDOF(deferredComposition, deferredRenderer->GetDepthBuffer());
+	postProcessor->SetOutputDOF(hdrTextures[0]);
 	postProcessor->ProcessDOF(elapsed, scene.GetCamera());
 
 
@@ -362,7 +366,7 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, ITexture2D* target, flo
 	// Need write luminance value to alpha channel
 	// HDR
 	if (scene.state.hdr.enabled) {
-		hdrProcessor->SetSource(deferredComposition);
+		hdrProcessor->SetSource(hdrTextures[0]);
 		hdrProcessor->SetDestination(gBuffer0);						// set destination
 		hdrProcessor->adaptedLuminance = scene.luminanceAdaptation; // copy luminance value
 		hdrProcessor->Update(elapsed);								// update hdr
@@ -371,7 +375,7 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, ITexture2D* target, flo
 	else {
 		gApi->SetRenderTargets(1, &gBuffer0);
 		gApi->SetShaderProgram(shaderScreenCopy);
-		gApi->SetTexture(0, deferredComposition);
+		gApi->SetTexture(0, hdrTextures[0]);
 		gApi->Draw(3);
 	}
 

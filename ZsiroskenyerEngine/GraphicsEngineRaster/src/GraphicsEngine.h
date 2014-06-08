@@ -213,47 +213,45 @@ private:
 		~cPostProcessor();
 		cPostProcessor& operator=(const cPostProcessor&) = delete;
 
-		// FXAA
-		void ProcessFXAA();
-
-		// Motion Blur
 		void ProcessMB(float frameDeltaTime, const cCamera& cam);
-
-		// Dof
 		void ProcessDOF(float frameDeltaTime, const cCamera& cam);
-
+		void ProcessFXAA();
+		void ProcessSSLR(const cCamera& cam);
 
 		// Set inputs
-		void SetInputMB(ITexture2D* color, ITexture2D* depth, ITexture2D* depthStencil);
+		void SetInputMB(ITexture2D* color, ITexture2D* depth);
 		void SetInputDOF(ITexture2D* color, ITexture2D* depth);
 		void SetInputFXAA(ITexture2D* color); // If FXAA shader defines that it takes luminance from alpha channel, then pass appropriate texture please..
-		
+		void SetInputSSLR(ITexture2D* color, ITexture2D* depth, ITexture2D* normal);
+
 		// Set outputs
-		void SetOutputMB(ITexture2D* color, ITexture2D* velocity2D);
+		void SetOutputMB(ITexture2D* color, ITexture2D* velocity2D, ITexture2D* depth);
 		void SetOutputDOF(ITexture2D* color);
 		void SetOutputFXAA(ITexture2D* color);
+		void SetOutputSSLR(ITexture2D* color);
 
 	private:
-		// Reload belonging shaders
-		void		ReloadShaders();
-		void		UnloadShaders();
-		void		Cleanup();
-		eGapiResult ReallocBuffers();
+		
+		void		ReloadShaders(); // Reload belonging shaders
+		void		UnloadShaders(); // Destroy shaders
+		void		Cleanup();		 // Clean up resources that class uses
+		eGapiResult ReallocBuffers();// Realloc buffers that class uses
 
 	private:
 		// Shaders
-		IShaderProgram * shaderMB , *shaderMBCamera2DVelocity, *shaderMBObject2DVelocity		,// Motion blur shaders
-					   * shaderDOF, *shaderFocalPlaneAdaption,								// Depth of field shaders
-					   * shaderFXAA;														// FXAA shaders
+		IShaderProgram *shaderMB ,	*shaderMBCamera2DVelocity, *shaderMBObject2DVelocity,	// Motion blur shaders
+					   *shaderDOF,	*shaderFocalPlaneAdaption,								// Depth of field shaders
+					   *shaderFXAA,															// FXAA shaders
+					   *shaderSSLR;															// Screen Space Local Reflection shader
 
 		// Input textures
-		ITexture2D* inputTexColor, *inputTexDepth, *inputTexDepthStencil;
+		ITexture2D* inputTexColor, *inputTexDepth, *inputTexNormal;
 
 		// Output textures
-		ITexture2D* outputTexColor, *outputTexVelocity2D;
+		ITexture2D* outputTexColor, *outputTexVelocity2D, *outputTexDepthStencil;
 
-		// Self created textures (1x1) resolution
-		ITexture2D* focalPlaneTexA, *focalPlaneTexB; // Focal plane adaption on gpu
+		// Focal plane adaption on gpu (1x1) resolution
+		ITexture2D* focalPlaneTexA, *focalPlaneTexB;
 
 		// Motion blur vars
 		Matrix44 lastViewMat;

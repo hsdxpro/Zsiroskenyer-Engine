@@ -471,7 +471,7 @@ void LoadLevel1() {
 		entity->SetRot(rot);
 	}
 	
-	cEntity* heli = gCore->AddEntity(gScene, basePath + L"objects/heli.dae", basePath + L"objects/heli.dae", basePath + L"materials/demo_house.zsm", 0.0f);
+	cEntity* heli = gCore->AddEntity(gScene, basePath + L"objects/heli.dae", basePath + L"objects/heli.dae", basePath + L"materials/heli.zsm", 0.0f);
 	heli->SetScale(Vec3(0.01, 0.01, 0.01));
 	
 	/*

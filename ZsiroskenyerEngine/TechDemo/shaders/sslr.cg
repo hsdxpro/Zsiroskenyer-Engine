@@ -1,0 +1,130 @@
+#include "common.cginc"
+
+sampler2D colorTexture : register( s0 ) = {
+	MipFilter = POINT,
+	MinFilter = POINT,
+	MagFilter = POINT,
+	AddressU = CLAMP,
+	AddressV = CLAMP,
+};
+ 
+sampler2D depthTexture : register( s1 ) = {
+	MipFilter = POINT,
+	MinFilter = POINT,
+	MagFilter = POINT,
+	AddressU = CLAMP,
+	AddressV = CLAMP,
+};
+
+sampler2D normalTexture : register( s2 ) = {
+	MipFilter = POINT,
+	MinFilter = POINT,
+	MagFilter = POINT,
+	AddressU = CLAMP,
+	AddressV = CLAMP,
+};
+
+struct {
+	float4x4	invViewProj;
+	float4x4 	viewProj;
+	float4x4 	view;
+	float3		camPos;
+} c : register(c0);
+
+struct VS_IN {
+	float3 posL 	: POSITION;
+	float2 tex0 	: TEXCOORD0;
+};
+
+struct VS_OUT {
+	float4 posH 	: POSITION;
+	float2 tex0 	: TEXCOORD0;
+	float3 viewRay  : TEXCOORD1;
+};
+
+
+VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
+	VS_OUT Out;
+	Out.tex0 = float2( (VertexID << 1) & 2, VertexID & 2 );
+	Out.posH = float4(  Out.tex0 * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f), 0.0f, 1.0f );
+
+	float4 viewRay = Out.posH.x * c.invViewProj[0] + (Out.posH.y * c.invViewProj[1] + (c.invViewProj[2] + c.invViewProj[3]));
+
+	Out.viewRay = viewRay.xyz * (1.0f / viewRay.w);
+	Out.viewRay -= c.camPos;
+
+	return Out;
+}
+
+
+float4 PS_MAIN(VS_OUT In) : COLOR0 {
+
+	// Base color for that pixel
+	float4 color = tex2D(colorTexture, In.tex0);
+	return color;
+	float depth = tex2D(depthTexture, In.tex0).r;
+
+	if( depth == 1.0f) // Leave SKY
+		return color;
+
+	// Normal need for reflection trace direction calc
+	float3 normalW = UnpackNormal(tex2D(normalTexture, In.tex0).xy);
+
+	//float meterToPixel = 5.0f;
+	float3 reflectDirW = reflect(normalize(In.viewRay), normalize(normalW));
+
+	// TODO Optimize matrix mul;
+	float3 reflectDirVS = mul(reflectDirW, (float3x3)c.view);
+	
+	// simplest point in reflection dir ( calc it's UV, to determine "uvStep" for sample tracing)
+	float2 uvStep;
+
+	// TODO optimize out matrix mul
+	float4 tmp = mul(float4(GetWorldPosition(c.camPos, In.viewRay, tex2D(depthTexture, In.tex0).r) + reflectDirW, 1.0f), c.viewProj);
+	tmp.xy /= tmp.w;
+	
+	// Great uvStep calced
+	uvStep.x = (tmp.x + 1) *  1.0f / 2 - In.tex0.x; // refUv - OrigUV
+	uvStep.y = (tmp.y - 1) * -1.0f / 2 - In.tex0.y; // refUv - OrigUV
+
+	// Color that we collect by tracing through reflection direction
+	float4 collectedReflectionColor = float4(0,0,0,0);
+	float range = 30.0f;
+	float2 prevUV = In.tex0;
+	float prevTracedDepth = depth;
+	float prevSampledDepth = depth;
+	for(float i = 1.0f; i < range; i++) {
+		float2 currUV = In.tex0 + uvStep * i;
+
+		float currTracedDepth = depth + reflectDirVS.z * i;
+
+		float currSampledDepth = tex2D(depthTexture, currUV);
+		//if( currSampledDepth == 1.0f)
+			//return color;
+
+		// Intersection somewhere ( TODO, we not interpolate now between prev and current depth )
+		if(currTracedDepth > currSampledDepth ) {
+			//float interp = (currTracedDepth - currSampledDepth) * 1.0f /(prevSampledDepth - prevTracedDepth); // Calc interpolation val
+			//interp = clamp(interp,0,1);
+			//collectedReflectionColor = tex2D(colorTexture, interp * currUV + (1 - interp) * prevUV); // Interpolate UV
+			collectedReflectionColor = tex2D(colorTexture, currUV);
+			break;
+		}
+
+		prevUV = currUV;
+		prevTracedDepth = currTracedDepth;
+		prevSampledDepth = currSampledDepth;
+	}
+
+	// Finally add reflection color to base color
+	return collectedReflectionColor;
+}
+
+technique t
+{
+	pass p
+	{
+		VertexProgram = compile vs_4_0 VS_MAIN();
+		FragmentProgram = compile ps_4_0 PS_MAIN();
+	}
+}

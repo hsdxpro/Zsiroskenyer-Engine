@@ -16,25 +16,32 @@
 cGraphicsEngine::cPostProcessor::cPostProcessor(cGraphicsEngine& parent)
 :parent(parent), gApi(parent.gApi)
 {
-	// Shaders
+	// Motion blur shaders
 	shaderMB = nullptr;
 	shaderMBCamera2DVelocity = nullptr;
 	shaderMBObject2DVelocity = nullptr;
 
-	shaderDOF = nullptr;
+	// Dof + Focal plane adaption shaders
 	shaderFocalPlaneAdaption = nullptr;
+	shaderDOF = nullptr;
+	
+	// Antialiasing shader
 	shaderFXAA = nullptr;
+
+	// Screen Space Local Reflection shader
+	shaderSSLR = nullptr;
 
 	// Input textures
 	inputTexColor = nullptr;
 	inputTexDepth = nullptr;
-	inputTexDepthStencil = nullptr;
+	inputTexNormal = nullptr;
 
 	// Output textures
 	outputTexColor = nullptr;
 	outputTexVelocity2D = nullptr;
+	outputTexDepthStencil = nullptr;
 
-	// self textures
+	// Helper textures
 	focalPlaneTexA = nullptr;
 	focalPlaneTexB = nullptr;
 
@@ -106,7 +113,7 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 
 	mbConstants.InvframeDeltaTimeDiv2DivInputRes *= 3.5f; // Motion blur BOOST
 
-	gApi->SetRenderTargets(1, &outputTexVelocity2D, inputTexDepthStencil);
+	gApi->SetRenderTargets(1, &outputTexVelocity2D, outputTexDepthStencil);
 	gApi->SetShaderProgram(shaderMBCamera2DVelocity);
 	gApi->SetTexture(L"depthTexture", inputTexDepth);
 
@@ -136,11 +143,11 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 	dsd2.stencilReadMask = 0x01;
 	dsd2.stencilOpFrontFace = dsd.stencilOpBackFace;
 
-	gApi->ClearTexture(inputTexDepthStencil, eClearFlag::DEPTH);
+	gApi->ClearTexture(outputTexDepthStencil, eClearFlag::DEPTH);
 
 	gApi->SetDepthStencilState(dsd2, 0x01);
 
-	gApi->SetRenderTargets(1, &outputTexVelocity2D, inputTexDepthStencil);
+	gApi->SetRenderTargets(1, &outputTexVelocity2D, outputTexDepthStencil);
 	gApi->SetShaderProgram(shaderMBObject2DVelocity);
 	
 	struct s2 {
@@ -297,10 +304,36 @@ void cGraphicsEngine::cPostProcessor::ProcessFXAA() {
 	gApi->Draw(3);
 }
 
+void cGraphicsEngine::cPostProcessor::ProcessSSLR(const cCamera& cam)
+{
+	gApi->SetRenderTargets(1, &outputTexColor, nullptr);
+	gApi->SetShaderProgram(shaderSSLR);
+
+	struct tDofConstants
+	{
+		Matrix44 invViewProj;
+		Matrix44 viewProj;
+		Matrix44 view;
+		Vec3	 camPos;		float _pad;
+	} sslrConstants;
+
+	sslrConstants.view = cam.GetViewMatrix();
+	sslrConstants.viewProj = sslrConstants.view *  cam.GetProjMatrix();
+	sslrConstants.invViewProj = Matrix44Inverse(sslrConstants.viewProj);
+	sslrConstants.camPos = cam.GetPos();
+
+	// Set it for shaders to use
+	gApi->SetPSConstantBuffer(&sslrConstants, sizeof(sslrConstants), 0);
+	gApi->SetTexture(0, inputTexColor);
+	gApi->SetTexture(1, inputTexDepth);
+	gApi->SetTexture(2, inputTexNormal);
+	gApi->Draw(3);
+}
+
 // Set inputs
-void cGraphicsEngine::cPostProcessor::SetInputMB(ITexture2D* color, ITexture2D* depth, ITexture2D* depthStencil) {
+void cGraphicsEngine::cPostProcessor::SetInputMB(ITexture2D* color, ITexture2D* depth) {
 	assert(color); assert(depth);
-	inputTexColor = color; inputTexDepth = depth; inputTexDepthStencil = depthStencil;
+	inputTexColor = color; inputTexDepth = depth;
 }
 
 void cGraphicsEngine::cPostProcessor::SetInputDOF(ITexture2D* color, ITexture2D* depth) {
@@ -314,10 +347,17 @@ void cGraphicsEngine::cPostProcessor::SetInputFXAA(ITexture2D* color) {
 	inputTexColor = color;
 }
 
-void cGraphicsEngine::cPostProcessor::SetOutputMB(ITexture2D* color, ITexture2D* velocity2D) {
+void cGraphicsEngine::cPostProcessor::SetInputSSLR(ITexture2D* color, ITexture2D* depth, ITexture2D* normal) {
+	inputTexColor = color;
+	inputTexDepth = depth;
+	inputTexNormal = normal;
+}
+
+void cGraphicsEngine::cPostProcessor::SetOutputMB(ITexture2D* color, ITexture2D* velocity2D, ITexture2D* depth) {
 	assert(color); assert(velocity2D);
 	outputTexColor = color;
 	outputTexVelocity2D = velocity2D;
+	outputTexDepthStencil = depth;
 }
 
 // Set outputs
@@ -327,6 +367,11 @@ void cGraphicsEngine::cPostProcessor::SetOutputDOF(ITexture2D* color) {
 }
 
 void cGraphicsEngine::cPostProcessor::SetOutputFXAA(ITexture2D* color) {
+	assert(color);
+	outputTexColor = color;
+}
+
+void cGraphicsEngine::cPostProcessor::SetOutputSSLR(ITexture2D* color) {
 	assert(color);
 	outputTexColor = color;
 }
@@ -349,6 +394,7 @@ void cGraphicsEngine::cPostProcessor::UnloadShaders() {
 	SAFE_RELEASE(shaderDOF);
 	SAFE_RELEASE(shaderFocalPlaneAdaption);
 	SAFE_RELEASE(shaderFXAA);
+	SAFE_RELEASE(shaderSSLR);
 }
 
 // reload shaders
@@ -365,6 +411,7 @@ void cGraphicsEngine::cPostProcessor::ReloadShaders() {
 		Reload(&shaderDOF,					L"shaders/depth_of_field.cg");
 		Reload(&shaderFocalPlaneAdaption,	L"shaders/depth_of_field_focal_plane_adaption.cg");
 		Reload(&shaderFXAA,					L"shaders/fxaa.cg");
+		Reload(&shaderSSLR,					L"shaders/sslr.cg");
 	}
 	catch (...) {
 		UnloadShaders();
