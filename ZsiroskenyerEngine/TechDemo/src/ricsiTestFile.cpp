@@ -47,6 +47,7 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 void UpdateDemo(cCamera& cam, float tDelta);
 void LoadLevel1();
 void LoadLevel2();
+void LoadLevelCubePlane();
 
 // a lovely light circle
 static const int sizeLightCircle = 20;
@@ -186,6 +187,7 @@ int ricsiMain() {
 
 	LoadLevel1();
 	//LoadLevel2();
+	//LoadLevelCubePlane();
 
 	// fps limiter
 	std::ifstream configFile;
@@ -509,4 +511,11 @@ void LoadLevel2() {
 	zsString basePath = L"../../Game Assets/";
 	zsString geompath = basePath + L"objects/bridge.obj";
 	gCore->AddEntity(gScene, geompath, geompath, basePath + L"materials/CODMapShipment.zsm", 0.0f);
+}
+
+void LoadLevelCubePlane()
+{
+	zsString basePath = L"../../Game Assets/";
+	gCore->AddEntity(gScene, basePath + L"objects/box.dae", basePath + L"objects/box.dae", basePath + L"materials/crate.zsm", 0.0f);
+	gCore->AddEntity(gScene, basePath + L"objects/plane.dae", basePath + L"objects/plane.dae", basePath + L"materials/plane.zsm", 0.0f);
 }

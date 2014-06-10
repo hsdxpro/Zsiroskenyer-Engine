@@ -28,6 +28,7 @@ struct {
 	float4x4	invViewProj;
 	float4x4 	viewProj;
 	float4x4 	view;
+	float4x4 	invView;
 	float3		camPos;
 } c : register(c0);
 
@@ -39,7 +40,7 @@ struct VS_IN {
 struct VS_OUT {
 	float4 posH 	: POSITION;
 	float2 tex0 	: TEXCOORD0;
-	float3 viewRay  : TEXCOORD1;
+	float3 viewRayW  : TEXCOORD1;
 };
 
 
@@ -50,8 +51,8 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 
 	float4 viewRay = Out.posH.x * c.invViewProj[0] + (Out.posH.y * c.invViewProj[1] + (c.invViewProj[2] + c.invViewProj[3]));
 
-	Out.viewRay = viewRay.xyz * (1.0f / viewRay.w);
-	Out.viewRay -= c.camPos;
+	Out.viewRayW = viewRay.xyz * (1.0f / viewRay.w);
+	Out.viewRayW -= c.camPos;
 
 	return Out;
 }
@@ -59,65 +60,56 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 
 float4 PS_MAIN(VS_OUT In) : COLOR0 {
 
-	// Base color for that pixel
-	float4 color = tex2D(colorTexture, In.tex0);
-	return color;
-	float depth = tex2D(depthTexture, In.tex0).r;
+	float4 color =  tex2D(colorTexture, In.tex0).xyzw;
+	float3 normalW = UnpackNormal(tex2D(normalTexture, In.tex0).xy).xyz;
+	
 
-	if( depth == 1.0f) // Leave SKY
+	float maxRange = 50.f;
+	float stepMultiplier = 12;
+	float3 reflectDirW = normalize(reflect(In.viewRayW, normalize(normalW)).xyz);
+
+	// Important, more fade when reflect vector facing camera
+	float reflectFactor = 0.022;
+	//float reflectViewZ = mul(reflectDirW, (float3x3)c.view).z;
+	//if(reflectViewZ < 0)
+		//reflectFactor = abs(reflectViewZ);
+
+	float depth = tex2D(depthTexture, In.tex0).r;
+	if( depth == 1.0f)
 		return color;
 
-	// Normal need for reflection trace direction calc
-	float3 normalW = UnpackNormal(tex2D(normalTexture, In.tex0).xy);
-
-	//float meterToPixel = 5.0f;
-	float3 reflectDirW = reflect(normalize(In.viewRay), normalize(normalW));
-
-	// TODO Optimize matrix mul;
-	float3 reflectDirVS = mul(reflectDirW, (float3x3)c.view);
-	
-	// simplest point in reflection dir ( calc it's UV, to determine "uvStep" for sample tracing)
-	float2 uvStep;
-
-	// TODO optimize out matrix mul
-	float4 tmp = mul(float4(GetWorldPosition(c.camPos, In.viewRay, tex2D(depthTexture, In.tex0).r) + reflectDirW, 1.0f), c.viewProj);
-	tmp.xy /= tmp.w;
-	
-	// Great uvStep calced
-	uvStep.x = (tmp.x + 1) *  1.0f / 2 - In.tex0.x; // refUv - OrigUV
-	uvStep.y = (tmp.y - 1) * -1.0f / 2 - In.tex0.y; // refUv - OrigUV
-
-	// Color that we collect by tracing through reflection direction
+	reflectDirW *= maxRange;  // max trace range : "maxRange" world unit
+	float3 posW = GetWorldPosition(c.camPos, In.viewRayW, depth).xyz;
 	float4 collectedReflectionColor = float4(0,0,0,0);
-	float range = 30.0f;
-	float2 prevUV = In.tex0;
-	float prevTracedDepth = depth;
-	float prevSampledDepth = depth;
-	for(float i = 1.0f; i < range; i++) {
-		float2 currUV = In.tex0 + uvStep * i;
+	for(float i = 1.f; i < maxRange; i++ )
+	{
+		float3 tracedPosW = posW + reflectDirW * i / maxRange * stepMultiplier;
+		float4 reflectSamplePosH = mul(float4(tracedPosW, 1.0f), c.viewProj).xyzw;
+		reflectSamplePosH.xyz /= reflectSamplePosH.w;
 
-		float currTracedDepth = depth + reflectDirVS.z * i;
+		float2 currUV;
+		currUV.x = ((reflectSamplePosH.x + 1.f) /  2.f);
+		currUV.y = ((reflectSamplePosH.y - 1.f) / -2.f);
 
-		float currSampledDepth = tex2D(depthTexture, currUV);
-		//if( currSampledDepth == 1.0f)
-			//return color;
+		if( currUV.x > 1 || currUV.x < 0 || currUV.y > 1 ||currUV.y < 0)
+			break;
 
-		// Intersection somewhere ( TODO, we not interpolate now between prev and current depth )
-		if(currTracedDepth > currSampledDepth ) {
-			//float interp = (currTracedDepth - currSampledDepth) * 1.0f /(prevSampledDepth - prevTracedDepth); // Calc interpolation val
-			//interp = clamp(interp,0,1);
-			//collectedReflectionColor = tex2D(colorTexture, interp * currUV + (1 - interp) * prevUV); // Interpolate UV
+		float currSampledDepth = tex2D(depthTexture, currUV).r;
+		float currTracedDepth = reflectSamplePosH.w / 2000.f; //  div by farPlane
+
+		if( currSampledDepth == 1.0f)
+			break;
+
+		// Ez a feltetel alapvetoen szarra se jo, TODO CSERELD LE
+		if( (currTracedDepth > currSampledDepth) && (currTracedDepth - currSampledDepth < 0.005) )
+		{
 			collectedReflectionColor = tex2D(colorTexture, currUV);
+			//reflectFactor = 1 - (abs(currUV.x * 2 -1) + abs(reflectSamplePosH.y * -2 + 1)) / 2.0f;
 			break;
 		}
-
-		prevUV = currUV;
-		prevTracedDepth = currTracedDepth;
-		prevSampledDepth = currSampledDepth;
 	}
 
-	// Finally add reflection color to base color
-	return collectedReflectionColor;
+	return color + collectedReflectionColor * reflectFactor;
 }
 
 technique t

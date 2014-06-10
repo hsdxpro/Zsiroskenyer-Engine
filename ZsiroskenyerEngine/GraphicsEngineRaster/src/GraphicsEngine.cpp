@@ -347,7 +347,7 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, ITexture2D* target, flo
 	// Screen Space Local Reflection
 	postProcessor->SetInputSSLR(deferredComposition, deferredRenderer->GetDepthBuffer(), deferredRenderer->GetGBuffer(1)); // Color, depth, normal
 	postProcessor->SetOutputSSLR(hdrTextures[0]);
-	postProcessor->ProcessSSLR(scene.GetCamera());	
+	postProcessor->ProcessSSLR(scene.GetCamera());
 
 	// Motion blur
 	postProcessor->SetInputMB(hdrTextures[0], deferredRenderer->GetDepthBuffer());
