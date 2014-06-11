@@ -315,7 +315,11 @@ void cGraphicsEngine::cPostProcessor::ProcessSSLR(const cCamera& cam)
 		Matrix44 viewProj;
 		Matrix44 view;
 		Matrix44 invView;
-		Vec3	 camPos;		float _pad;
+		Vec3	 camPos;		float _pad0;
+		Vec2	 invOutputRes;
+		float	 farPlane;
+		float	 stepLength;
+		float	 maxRange;
 	} sslrConstants;
 
 	sslrConstants.view = cam.GetViewMatrix();
@@ -323,6 +327,10 @@ void cGraphicsEngine::cPostProcessor::ProcessSSLR(const cCamera& cam)
 	sslrConstants.invViewProj = Matrix44Inverse(sslrConstants.viewProj);
 	sslrConstants.camPos = cam.GetPos();
 	sslrConstants.invView = Matrix44Inverse(sslrConstants.view);
+	sslrConstants.invOutputRes = Vec2( 1.f / outputTexColor->GetWidth(), 1.f / outputTexColor->GetHeight());
+	sslrConstants.farPlane = cam.GetFarPlane();
+	sslrConstants.stepLength = 0.25f;
+	sslrConstants.maxRange = 30.f;
 
 	// Set it for shaders to use
 	gApi->SetVSConstantBuffer(&sslrConstants, sizeof(sslrConstants), 0);
