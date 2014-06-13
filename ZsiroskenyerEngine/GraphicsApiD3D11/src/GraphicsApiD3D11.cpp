@@ -193,8 +193,8 @@ activeVertexBuffer(nullptr)
 		throw std::runtime_error("failed to create default states");
 	}
 
-	memset(activeViewports		, 0, 16 * sizeof(D3D11_VIEWPORT));
-	memset(activeRTVs			, 0, 16 * sizeof(ID3D11RenderTargetView*));
+	memset(activeViewports, 0, sizeof(D3D11_VIEWPORT) * 16);
+	memset(activeRTVs	  , 0, sizeof(ID3D11RenderTargetView*) * 16);
 }
 
 void cGraphicsApiD3D11::Release() {
@@ -921,7 +921,7 @@ eGapiResult cGraphicsApiD3D11::CreateShaderProgram(IShaderProgram** resource, co
 			readBin = true;
 
 		else { // we have no cg and binary fuck it
-			lastErrorMsg = L"Creating shader fail because missing .bin and cg file: " + shaderPath;
+			lastErrorMsg = L"Missing .cg file: " + shaderPath;
 			return eGapiResult::ERROR_UNKNOWN;
 		}
 	}

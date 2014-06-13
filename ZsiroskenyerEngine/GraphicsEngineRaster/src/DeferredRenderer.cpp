@@ -50,6 +50,7 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 	shaderSky = nullptr;
 	shaderSSAO = nullptr;
 	shaderHBAO = nullptr;
+	shaderSAO = nullptr;
 	shaderHBAOblurHor = nullptr;
 	shaderHBAOblurVer = nullptr;
 
@@ -64,7 +65,7 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 
 	// Loading shaders
 	try {
-		LoadShaders();
+		ReloadShaders();
 	}
 	catch (std::exception& e) {
 		throw std::runtime_error(std::string("failed to create shaders:\n") + e.what());
@@ -246,31 +247,6 @@ eGapiResult cGraphicsEngine::cDeferredRenderer::ReallocBuffers() {
 	return eGapiResult::OK;
 }
 
-// load shaders
-void cGraphicsEngine::cDeferredRenderer::LoadShaders() {
-	auto Create = [this](const wchar_t* shader)->IShaderProgram* {
-		return SafeLoadShader(gApi, shader);
-	};
-	try {
-		shaderGBuffer = Create(L"shaders/deferred_gbuffer.cg");
-
-		shaderAmbient = Create(L"shaders/deferred_light_ambient.cg");
-		shaderDirectional = Create(L"shaders/deferred_light_dir.cg");
-		shaderPoint = Create(L"shaders/deferred_light_point.cg");
-		shaderSpot = Create(L"shaders/deferred_light_spot.cg");
-
-		shaderSky = Create(L"shaders/sky.cg");
-
-		shaderSSAO = Create(L"shaders/ssao.cg");
-		shaderHBAO = Create(L"shaders/hbao.cg");
-		shaderHBAOblurHor = Create(L"shaders/hbao_blur_hor.cg");
-		shaderHBAOblurVer = Create(L"shaders/hbao_blur_ver.cg");
-	}
-	catch (...) {
-		UnloadShaders();
-		throw;
-	}
-}
 // unload shaders
 void cGraphicsEngine::cDeferredRenderer::UnloadShaders() {
 	SAFE_RELEASE(shaderGBuffer);
@@ -284,6 +260,7 @@ void cGraphicsEngine::cDeferredRenderer::UnloadShaders() {
 
 	SAFE_RELEASE(shaderSSAO);
 	SAFE_RELEASE(shaderHBAO);
+	SAFE_RELEASE(shaderSAO);
 	SAFE_RELEASE(shaderHBAOblurHor);
 	SAFE_RELEASE(shaderHBAOblurVer);
 }
@@ -292,20 +269,32 @@ void cGraphicsEngine::cDeferredRenderer::UnloadShaders() {
 void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {
 	auto Reload = [this](IShaderProgram** prog, const wchar_t* name)->void {
 		IShaderProgram* tmp = SafeLoadShader(gApi, name); // it throws on error!
-		(*prog)->Release();
+		if (*prog) (*prog)->Release();
 		*prog = tmp;
 	};
-	Reload(&shaderGBuffer, L"shaders/deferred_gbuffer.cg");
 
-	Reload(&shaderAmbient, L"shaders/deferred_light_ambient.cg");
-	Reload(&shaderDirectional, L"shaders/deferred_light_dir.cg");
-	Reload(&shaderPoint, L"shaders/deferred_light_point.cg");
-	Reload(&shaderSpot, L"shaders/deferred_light_spot.cg");
+	try {
+		Reload(&shaderGBuffer, L"shaders/deferred_gbuffer.cg");
 
-	Reload(&shaderSky, L"shaders/sky.cg");
+		Reload(&shaderAmbient, L"shaders/deferred_light_ambient.cg");
+		Reload(&shaderDirectional, L"shaders/deferred_light_dir.cg");
+		Reload(&shaderPoint, L"shaders/deferred_light_point.cg");
+		Reload(&shaderSpot, L"shaders/deferred_light_spot.cg");
 
-	Reload(&shaderSSAO, L"shaders/ssao.cg");
-	Reload(&shaderHBAO, L"shaders/hbao.cg");
+		Reload(&shaderSky, L"shaders/sky.cg");
+
+		Reload(&shaderSSAO, L"shaders/ssao.cg");
+
+		Reload(&shaderSAO, L"shaders/sao.cg");
+
+		Reload(&shaderHBAO, L"shaders/hbao.cg");
+		Reload(&shaderHBAOblurHor, L"shaders/hbao_blur_hor.cg");
+		Reload(&shaderHBAOblurVer, L"shaders/hbao_blur_ver.cg");
+	}
+	catch (...) {
+		UnloadShaders();
+		throw;
+	}
 }
 
 // Render the scene to composition buffer
@@ -460,76 +449,132 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// --- --- --- --- --AMBIENT OCCLUSION (composition pass)-- --- --- --- --- //
 	//--------------------------------------------------------------------------//
 
+
+
+	//--------------------------------------------------------------------------//
+	// --- --- --- --- --- --- --- --- -- SAO --- --- --- --- --- --- --- --- - //
+	//--------------------------------------------------------------------------//
+
+	struct {
+		/**  vec4(-2.0f / (width*P[0][0]),
+		-2.0f / (height*P[1][1]),
+		( 1.0f - P[0][2]) / P[0][0],
+		( 1.0f + P[1][2]) / P[1][1])
+	
+		where P is the projection matrix that maps camera space points
+		to [-1, 1] x [-1, 1].  That is, GCamera::getProjectUnit(). */
+		Vec4		projInfo;
+	
+		float		projScale;		Vec3 _pad0;	//  The height in pixels of a 1m object if viewed from 1m away
+		float		radius;			Vec3 _pad1;	//  World-space AO radius in scene units (r).  e.g., 1.0m */
+		float		radius2;		Vec3 _pad2;
+		float		bias;			Vec3 _pad3;	//  Bias to avoid AO in smooth corners, e.g., 0.01m */	
+	
+		Vec2		inputTexRes;	Vec2 _pad4;
+		float		negFarPlane;	Vec3 _pad5;
+		float		intensity;		Vec3 _pad6;	/// Darkending factor, e.g., 1.0 */
+		Matrix44	matView;
+	} tSaoConstant;
+	
+	Matrix44 proj = cam->GetProjMatrix();
+	
+	tSaoConstant.projInfo = Vec4(	-2.f / (depthBufferCopy->GetWidth() * proj[0][0]),
+									-2.f / (depthBufferCopy->GetHeight() * proj[1][1]),
+									 (1.0f - proj[0][2]) / proj[0][0],
+									 (1.0f + proj[1][2]) / proj[1][1]);
+	tSaoConstant.projScale = 7;
+	tSaoConstant.radius = 10;
+	tSaoConstant.radius2 = tSaoConstant.radius * tSaoConstant.radius;
+	tSaoConstant.bias = 0.01f;
+	tSaoConstant.inputTexRes = Vec2(depthBufferCopy->GetWidth(), depthBufferCopy->GetHeight());
+	tSaoConstant.negFarPlane = -cam->GetFarPlane();
+	tSaoConstant.intensity = 1;
+	tSaoConstant.matView = cam->GetViewMatrix();
+
+	gApi->SetShaderProgram(shaderSAO);
+	gApi->SetRenderTargets(1, &aoBuffer, nullptr);
+	
+	gApi->SetTexture(0, depthBufferCopy);
+	gApi->SetTexture(1, gBuffer[1]);
+	gApi->SetPSConstantBuffer(&tSaoConstant, sizeof(tSaoConstant), 0);
+	gApi->Draw(3);
+
+	//--------------------------------------------------------------------------//
+	// --- --- --- --- --- --- --- --- -- HBAO --- --- --- --- --- --- --- ---- //
+	//--------------------------------------------------------------------------//
+
 	// HBAO FUCK YEAH, I really like the small and smart constant buffer :D
 	// wow, such constant buffer, much beauty, so incomprehensible
-	struct {
-		float AOResolution[2];		float _pad0[2];
-		float InvAOResolution[2];	float _pad1[2];
+	//struct {
+	//	float AOResolution[2];		float _pad0[2];
+	//	float InvAOResolution[2];	float _pad1[2];
+	//
+	//	float FocalLen[2];			float _pad2[2];
+	//
+	//	float UVToViewA[2];			float _pad3[2];
+	//	float UVToViewB[2];			float _pad4[2];
+	//
+	//	float R;					float _pad5[3];
+	//	float R2;					float _pad6[3];
+	//	float NegInvR2;				float _pad7[3];
+	//	float MaxRadiusPixels;		float _pad8[3];
+	//
+	//	float AngleBias;			float _pad9[3];
+	//	float TanAngleBias;			float _pad10[3];
+	//	float Strength;				float _pad12[3];
+	//} data;
+	//
+	//data.AOResolution[0] = (float)aoBuffer->GetWidth();
+	//data.AOResolution[1] = (float)aoBuffer->GetHeight();
+	//data.InvAOResolution[0] = 1.0f / data.AOResolution[0];
+	//data.InvAOResolution[1] = 1.0f / data.AOResolution[1];
+	//
+	//// TODO
+	//const float fovYRad = cam->GetFOVRad() / cam->GetAspectRatio(); // HACKED ONE.......
+	//data.FocalLen[0] = 1.0f / tanf(fovYRad * 0.5f) * (data.AOResolution[1] / data.AOResolution[0]);
+	//data.FocalLen[1] = 1.0f / tanf(fovYRad * 0.5f);
+	//
+	//data.UVToViewA[0] = 2.0f * (1.0f / data.FocalLen[0]);
+	//data.UVToViewA[1] = -2.0f * (1.0f / data.FocalLen[1]);
+	//data.UVToViewB[0] = -1.0f * (1.0f / data.FocalLen[0]);
+	//data.UVToViewB[1] = 1.0f * (1.0f / data.FocalLen[1]);
+	//
+	//data.R = 0.3; // drop ao accum neighbour far than that
+	//data.R2 = data.R * data.R;
+	//data.NegInvR2 = -1.0f / data.R2;
+	//data.MaxRadiusPixels = 60.0f;
+	//
+	//data.AngleBias = 10;
+	//data.TanAngleBias = tanf(data.AngleBias);
+	//data.Strength = 1.0;
+	//
+	//gApi->SetShaderProgram(shaderHBAO);
+	//gApi->SetRenderTargets(1, &aoBuffer, nullptr);
+	//
+	//gApi->SetTexture(L"tRandom", randomTexture);
+	//gApi->SetTexture(L"tLinearDepth", depthBufferCopy);
+	//gApi->SetPSConstantBuffer(&data, sizeof(data), 0);
+	//gApi->Draw(3);
+	//
+	//
+	//// HBAO HOR BLUR YEAH !!!
+	//gApi->SetShaderProgram(shaderHBAOblurHor);
+	//gApi->SetRenderTargets(1, &aoBlurHelperBuffer, NULL);
+	//gApi->SetTexture(L"inputTexture", aoBuffer);
+	//gApi->Draw(3);
+	//
+	//
+	//// HBAO VER BLUR YEAH !!!
+	//gApi->SetShaderProgram(shaderHBAOblurVer);
+	//gApi->SetRenderTargets(1, &aoBuffer, nullptr);
+	//gApi->SetTexture(L"inputTexture", aoBlurHelperBuffer);
+	//gApi->Draw(3);
 
-		float FocalLen[2];			float _pad2[2];
 
-		float UVToViewA[2];			float _pad3[2];
-		float UVToViewB[2];			float _pad4[2];
-
-		float R;					float _pad5[3];
-		float R2;					float _pad6[3];
-		float NegInvR2;				float _pad7[3];
-		float MaxRadiusPixels;		float _pad8[3];
-
-		float AngleBias;			float _pad9[3];
-		float TanAngleBias;			float _pad10[3];
-		float Strength;				float _pad12[3];
-	} data;
-
-	data.AOResolution[0] = (float)aoBuffer->GetWidth();
-	data.AOResolution[1] = (float)aoBuffer->GetHeight();
-	data.InvAOResolution[0] = 1.0f / data.AOResolution[0];
-	data.InvAOResolution[1] = 1.0f / data.AOResolution[1];
-
-	// TODO
-	const float fovYRad = cam->GetFOVRad() / cam->GetAspectRatio(); // HACKED ONE.......
-	data.FocalLen[0] = 1.0f / tanf(fovYRad * 0.5f) * (data.AOResolution[1] / data.AOResolution[0]);
-	data.FocalLen[1] = 1.0f / tanf(fovYRad * 0.5f);
-
-	data.UVToViewA[0] = 2.0f * (1.0f / data.FocalLen[0]);
-	data.UVToViewA[1] = -2.0f * (1.0f / data.FocalLen[1]);
-	data.UVToViewB[0] = -1.0f * (1.0f / data.FocalLen[0]);
-	data.UVToViewB[1] = 1.0f * (1.0f / data.FocalLen[1]);
-
-	data.R = 0.3; // drop ao accum neighbour far than that
-	data.R2 = data.R * data.R;
-	data.NegInvR2 = -1.0f / data.R2;
-	data.MaxRadiusPixels = 60.0f;
-
-	data.AngleBias = 10;
-	data.TanAngleBias = tanf(data.AngleBias);
-	data.Strength = 1.0;
-
-	gApi->SetShaderProgram(shaderHBAO);
-	gApi->SetRenderTargets(1, &aoBuffer, nullptr);
-
-	gApi->SetTexture(L"tRandom", randomTexture);
-	gApi->SetTexture(L"tLinearDepth", depthBufferCopy);
-	gApi->SetPSConstantBuffer(&data, sizeof(data), 0);
-	gApi->Draw(3);
-
-
-	// HBAO HOR BLUR YEAH !!!
-	gApi->SetShaderProgram(shaderHBAOblurHor);
-	gApi->SetRenderTargets(1, &aoBlurHelperBuffer, NULL);
-	gApi->SetTexture(L"inputTexture", aoBuffer);
-	gApi->Draw(3);
-
-
-	// HBAO VER BLUR YEAH !!!
-	gApi->SetShaderProgram(shaderHBAOblurVer);
-	gApi->SetRenderTargets(1, &aoBuffer, nullptr);
-	gApi->SetTexture(L"inputTexture", aoBlurHelperBuffer);
-	gApi->Draw(3);
-
-
+	//--------------------------------------------------------------------------//
+	// --- --- --- --- --- --- --- --- -- SSAO --- --- --- --- --- --- --- ---- //
+	//--------------------------------------------------------------------------//
 /*
-	// SSAO
 	struct _aoShaderConstants {
 		Matrix44 projMat;
 		Matrix44 invViewProj;

@@ -37,7 +37,7 @@ __declspec(dllexport) IGraphicsEngine* CreateGraphicsEngineRaster(IWindow* targe
 	}
 	catch (std::exception& e) {
 		//std::cerr << "[fatal] graphics engine creation failed with message: " << e.what() << std::endl;
-		errMsg = "graphics engine creation failed with message: ";
+		errMsg = "graphics engine creation failed with message:\n";
 		errMsg += e.what();
 		if (errorMessage != nullptr) {
 			*errorMessage = errMsg.c_str();
@@ -78,7 +78,7 @@ screenHeight(screenHeight),
 deferredRenderer(nullptr),
 hdrProcessor(nullptr),
 shaderScreenCopy(nullptr),
-currentSceneBuffer(nullptr),
+curSceneBuffer(nullptr),
 shadowRenderer(nullptr)
 {
 	for (auto& t : hdrTextures)
@@ -122,7 +122,7 @@ shadowRenderer(nullptr)
 		deferredRenderer = new cDeferredRenderer(*this);
 	}
 	catch (std::exception& e) {
-		throw std::runtime_error(std::string("failed to create deferred renderer: ") + e.what());
+		throw std::runtime_error(std::string("failed to create deferred renderer:\n") + e.what());
 	}
 
 	// Create hdr post-processor
@@ -130,7 +130,7 @@ shadowRenderer(nullptr)
 		hdrProcessor = new cHDRProcessor(*this);
 	}
 	catch (std::exception& e) {
-		throw std::runtime_error(std::string("failed to create hdr post-processor: ") + e.what());
+		throw std::runtime_error(std::string("failed to create hdr post-processor:\n") + e.what());
 	}
 
 	// Create Post processor
@@ -138,7 +138,7 @@ shadowRenderer(nullptr)
 		postProcessor = new cPostProcessor(*this);
 	}
 	catch (std::exception& e) {
-		throw std::runtime_error(std::string("failed to create hdr post-processor: ") + e.what());
+		throw std::runtime_error(std::string("failed to create hdr post-processor:\n") + e.what());
 	}
 
 	// Create shadow renderer
@@ -146,19 +146,25 @@ shadowRenderer(nullptr)
 		shadowRenderer = new cShadowRenderer(*this);
 	}
 	catch (std::exception& e) {
-		throw std::runtime_error(std::string("failed to create shadow renderer: ") + e.what());
+		throw std::runtime_error(std::string("failed to create shadow renderer:\n") + e.what());
 	}
 }
 
 cGraphicsEngine::~cGraphicsEngine() {
 	UnloadShaders();
-	SAFE_DELETE(resourceManager)
 	SAFE_RELEASE(gApi);
-	SAFE_DELETE(deferredRenderer);
-	SAFE_RELEASE(currentSceneBuffer);
 
 	for (auto& t : hdrTextures)
 		SAFE_RELEASE(t);
+	SAFE_RELEASE(curSceneBuffer);
+
+	SAFE_DELETE(resourceManager);
+	
+
+	SAFE_DELETE(deferredRenderer);
+	
+	
+	
 }
 
 void cGraphicsEngine::Release() {
@@ -289,14 +295,14 @@ eGraphicsResult cGraphicsEngine::Update(float elapsed) {
 	// render remaining scenes
 	for (size_t i = 1; i < graphicsSceneOrder.size(); ++i) {
 		// render dat scene
-		RenderScene(*graphicsSceneOrder[i], currentSceneBuffer, elapsed);
+		RenderScene(*graphicsSceneOrder[i], curSceneBuffer, elapsed);
 
 		// accumulate to backbuffer
 		gApi->SetBlendState(blendScene);
 		
 		gApi->SetRenderTargetDefault();
 		gApi->SetShaderProgram(shaderScreenCopy);
-		gApi->SetTexture(L"inputTexture", currentSceneBuffer);
+		gApi->SetTexture(L"inputTexture", curSceneBuffer);
 		gApi->Draw(3);
 	}
 
@@ -407,7 +413,7 @@ void cGraphicsEngine::UnloadShaders() {
 
 void cGraphicsEngine::ReloadBuffers() {
 	// backup
-	auto oldBuff = currentSceneBuffer;
+	auto oldBuff = curSceneBuffer;
 
 	// try create new
 	ITexture2D::tDesc desc;
@@ -419,11 +425,11 @@ void cGraphicsEngine::ReloadBuffers() {
 	desc.usage = eUsage::DEFAULT;
 
 	desc.format = eFormat::R8G8B8A8_UNORM;
-	auto errCode = gApi->CreateTexture(&currentSceneBuffer, desc);
+	auto errCode = gApi->CreateTexture(&curSceneBuffer, desc);
 
 	if (errCode != eGapiResult::OK) {
 		// failed: rollback
-		currentSceneBuffer = oldBuff;
+		curSceneBuffer = oldBuff;
 		// throw
 		throw std::runtime_error("scene backbuffer");
 	}

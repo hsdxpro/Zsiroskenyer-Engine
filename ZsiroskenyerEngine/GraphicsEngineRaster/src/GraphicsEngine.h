@@ -127,7 +127,7 @@ private:
 	cSceneManager* sceneManager; // temporary storage for current scene state (copied from cScene)
 	cCamera* camera;
 	float elapsed;
-	ITexture2D* currentSceneBuffer;
+	ITexture2D* curSceneBuffer;
 	std::array<ITexture2D*,2> hdrTextures; // Global hdr texture to preserve hdr values across post processes
 
 	// state
@@ -167,7 +167,7 @@ private:
 		cDeferredRenderer& operator=(const cDeferredRenderer&) = delete;
 
 		void RenderComposition();
-		void ReloadShaders();
+		
 
 		eGraphicsResult Resize(unsigned width, unsigned height);
 
@@ -177,7 +177,7 @@ private:
 		ITexture2D* GetGBuffer(uint8_t idx);
 
 	private:
-		void LoadShaders();
+		void ReloadShaders();
 		void UnloadShaders();
 		void Cleanup();
 		eGapiResult ReallocBuffers();
@@ -191,7 +191,7 @@ private:
 		IGraphicsApi* gApi;
 		IShaderProgram* shaderGBuffer;
 		IShaderProgram *shaderDirectional, *shaderPoint, *shaderSpot, *shaderAmbient, *shaderSky;
-		IShaderProgram* shaderSSAO, *shaderHBAO, *shaderHBAOblurHor, *shaderHBAOblurVer;
+		IShaderProgram* shaderSAO, *shaderSSAO, *shaderHBAO, *shaderHBAOblurHor, *shaderHBAOblurVer;
 		cGraphicsEngine& parent;
 
 		IVertexBuffer *vbSpot, *vbPoint;
@@ -231,7 +231,6 @@ private:
 		void SetOutputSSLR(ITexture2D* color);
 
 	private:
-		
 		void		ReloadShaders(); // Reload belonging shaders
 		void		UnloadShaders(); // Destroy shaders
 		void		Cleanup();		 // Clean up resources that class uses

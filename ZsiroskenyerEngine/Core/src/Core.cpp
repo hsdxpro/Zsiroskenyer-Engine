@@ -16,7 +16,13 @@ cCore::cCore(IWindow* targetWindow, unsigned screenWidth, unsigned screenHeight,
 	bool tryCreateGEngine = true;
 	while (tryCreateGEngine) {
 		const char* graphicsEngineError;
-		graphicsEngine = CreateGraphicsEngine(targetWindow, screenWidth, screenHeight, config, &graphicsEngineError);
+
+		try{
+			graphicsEngine = CreateGraphicsEngine(targetWindow, screenWidth, screenHeight, config, &graphicsEngineError);
+		} catch (const std::exception& e) { 
+			MessageBoxA(NULL, e.what(), "Error!", MB_OK); 
+		}
+
 		if (!graphicsEngine) {
 			int choice;
 			choice = MessageBoxA(nullptr, 

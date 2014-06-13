@@ -204,5 +204,6 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\TechDemo\shaders\sslr.cg" />
+    <None Include="..\TechDemo\shaders\sao.cg" />
   </ItemGroup>
 </Project>

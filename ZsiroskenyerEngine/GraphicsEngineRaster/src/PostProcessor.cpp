@@ -319,7 +319,7 @@ void cGraphicsEngine::cPostProcessor::ProcessSSLR(const cCamera& cam)
 		Vec2	 invOutputRes;
 		float	 farPlane;
 		float	 stepLength;
-		float	 maxRange;
+		int		 maxRange;
 	} sslrConstants;
 
 	sslrConstants.view = cam.GetViewMatrix();
@@ -330,7 +330,7 @@ void cGraphicsEngine::cPostProcessor::ProcessSSLR(const cCamera& cam)
 	sslrConstants.invOutputRes = Vec2( 1.f / outputTexColor->GetWidth(), 1.f / outputTexColor->GetHeight());
 	sslrConstants.farPlane = cam.GetFarPlane();
 	sslrConstants.stepLength = 0.25f;
-	sslrConstants.maxRange = 30.f;
+	sslrConstants.maxRange = 80;
 
 	// Set it for shaders to use
 	gApi->SetVSConstantBuffer(&sslrConstants, sizeof(sslrConstants), 0);
@@ -415,6 +415,7 @@ void cGraphicsEngine::cPostProcessor::ReloadShaders() {
 		if(*prog) (*prog)->Release();
 		*prog = tmp;
 	};
+
 	try {
 		Reload(&shaderMB,					L"shaders/motion_blur.cg");
 		Reload(&shaderMBCamera2DVelocity,	L"shaders/motion_blur_camera_2dvelocity.cg");

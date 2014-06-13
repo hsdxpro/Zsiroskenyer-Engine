@@ -1,25 +1,25 @@
 #include "common.cginc"
 
 sampler2D colorTexture : register( s0 ) = {
+	MipFilter = POINT,
+	MinFilter = POINT,
+	MagFilter = POINT,
+	AddressU = CLAMP,
+	AddressV = CLAMP,
+};
+ 
+sampler2D depthTexture : register( s1 ) = {
 	MipFilter = LINEAR,
 	MinFilter = LINEAR,
 	MagFilter = LINEAR,
 	AddressU = CLAMP,
 	AddressV = CLAMP,
 };
- 
-sampler2D depthTexture : register( s1 ) = {
-	MipFilter = POINT,
-	MinFilter = POINT,
-	MagFilter = POINT,
-	AddressU = CLAMP,
-	AddressV = CLAMP,
-};
 
 sampler2D normalTexture : register( s2 ) = {
-	MipFilter = POINT,
-	MinFilter = POINT,
-	MagFilter = POINT,
+	MipFilter = LINEAR,
+	MinFilter = LINEAR,
+	MagFilter = LINEAR,
 	AddressU = CLAMP,
 	AddressV = CLAMP,
 };
@@ -33,7 +33,7 @@ struct {
 	float2		invOutputRes;
 	float		farPlane;
 	float		stepLength;
-	float		maxRange;
+	int			maxRange;
 } c : register(c0);
 
 struct VS_IN {
@@ -63,109 +63,97 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 
 
 float4 PS_MAIN(VS_OUT In) : COLOR0 {
+
+	// variance SSLR
 	/*
-	float4 color = tex2D(colorTexture, In.tex0);
-	float3 normalW = UnpackNormal(tex2D(normalTexture, In.tex0).xy);
+	float3 posW = GetWorldPosition(c.camPos, In.viewRayW, tex2D(depthTexture, In.tex0).r);
 
-	float3 reflectDirW = reflect(In.viewRayW / 2000.f, normalW);
-	float3 reflectDirVS = mul(reflectDirW, (float3x3)c.view);
-	float depth = tex2D(depthTexture, In.tex0).r;
-	if(depth == 1.0f)
-	{
-		return float4(0,0,0,0);
-	}
+	float3 reflectDirW = normalize(reflect(In.viewRayW, UnpackNormal(tex2D(normalTexture, In.tex0).xy).xyz));
+	float3 reflectDirVS = mul(float4(reflectDirW, 0.0f), c.view);
+	float reflectionFactor = 1.f;
+	if(reflectDirVS.z < 0)
+		reflectionFactor = 0.0f;
 
-	float3 posW = GetWorldPosition(c.camPos, In.viewRayW, depth).xyz;
-
-	float4 posH = mul(float4(posW + reflectDirW, 1.0f), c.viewProj);
-	posH.xyz /= posH.w;
+	float4 sampledPosH = mul(float4(posW + reflectDirW, 1.f), c.viewProj);
+	sampledPosH.xyz /= sampledPosH.w;
 
 	float2 uvStep;
-	uvStep.x = (posH.x + 1 ) *  1 / 2 - In.tex0.x;
-	uvStep.y = (posH.y - 1 ) * -1 / 2 - In.tex0.y;
-	uvStep = normalize(uvStep) * c.invOutputRes; // One Step max one pixel ! (quality)
+	uvStep.x = (sampledPosH.x + 1) /  2 - In.tex0.x;
+	uvStep.y = (sampledPosH.y - 1) / -2 - In.tex0.y;
+	uvStep = normalize(uvStep) * c.invOutputRes * 12.f / distance(posW, c.camPos); // TODOD, wrong, need input res
 
-	
-	float3 posVS = mul(float4(posW, 1.f), c.view);
-	float3 rayNormalVS = mul(reflectDirW, (float3x3)c.view);
-	if(rayNormalVS.z < 0)
-		return float4(0,0,0,0);
+	float4 reflectionColor = float4(0,0,0,0);
+	float nSamples = 100.f;//(1 - dot(normalize(reflectDirVS), float3(0,0,1))) * 80.f + 50.f; // More samples more kamera perpendicular reflection
+	static int count = (int)nSamples; // TODO, max 80 iteration, 160 sample per pixel (haha)
+	float2 bestUV;
+	float bestDot = -1;
+	int iTmp;
 
-	rayNormalVS = normalize(float3(-rayNormalVS.z, rayNormalVS.y, rayNormalVS.x)); // Normal vector in view space that point far away
-	
-	int nMaxPixels = 60;
-	float4 collectedReflectionColor = float4(0,0,0,0);
-	
-	float dx = ddx(In.tex0);
-	float dy = ddy(In.tex0);
+	float2 dx = ddx(In.tex0);
+	float2 dy = ddy(In.tex0);
 
-	float3 currSampledPosVS;
-	float2 currUV;
-	for(int i = 1; i < nMaxPixels; i++ )
+	for(int i = 1; i < count; i++)
 	{
-		currUV = In.tex0 + (float)i * uvStep;
-		if( currUV.x > 1 || currUV.x < 0 || currUV.y > 1 ||currUV.y < 0)
+		float2 currUV = In.tex0 + (float)i * uvStep;
+		
+		if(currUV.x > 1 || currUV.x < 0 || currUV.y > 1 || currUV.y < 0)
 		{
-			break;
+			i = count;
+			//reflectionFactor = 0.0f;
 		}
-
-		depth = tex2D(depthTexture, currUV, dx, dy).r;
-		if(depth == 1.0f)
+		else
 		{
-			break;
-		}
 
-		currSampledPosVS = mul(float4(GetWorldPosition(c.camPos, In.viewRayW, depth).xyz, 1.f), c.view);
-
-		// Mikor is van metszés ??!?!?!
-		//if( reflectDirVS.x < 0)
-		{
-			//if( dot(rayNormalVS.xz, normalize(currSampledPosVS.xz - posVS.xz)) > 0)
-			//{
-			//	collectedReflectionColor = tex2D(colorTexture, currUV, dx, dy);
-			//	break;
-			//}
-		}
-		//else
-		{
-			float val = dot(rayNormalVS.xz, normalize(currSampledPosVS.xz - posVS.xz));
-			if(  val < 0 )
+			float depth = tex2D(depthTexture, currUV, dx, dy).r;
+			if(depth == 1.f)
 			{
-				collectedReflectionColor = tex2D(colorTexture, currUV, dx, dy);
 				break;
 			}
-		}
 
-		
+			float3 sampledPosW = GetWorldPosition(c.camPos, In.viewRayW, depth);
+			
+			float val = dot(normalize(reflectDirW), normalize(sampledPosW - posW));
+			if( val > bestDot)
+			{
+				iTmp = i;
+				bestDot = val;
+			}
+		}
 	}
 
-	return collectedReflectionColor;
-	*/
+	if(bestDot > 0.80)
+		return tex2D(colorTexture, In.tex0) + tex2D(colorTexture, In.tex0 + (float)iTmp * uvStep) * reflectionFactor;
+	else
+		return tex2D(colorTexture, In.tex0) + reflectionColor;
+*/
 
 
-	float4 color =  tex2D(colorTexture, In.tex0).xyzw;
-	float3 normalW = UnpackNormal(tex2D(normalTexture, In.tex0).xy).xyz;
+	// ANALYTIC SSLR
 	
+	float4 color =  tex2D(colorTexture, In.tex0).xyzw;
+	return color;
 
-	//float maxRange = 30.f;
-	//float stepMultiplier = 1;
+
+	float3 normalW = UnpackNormal(tex2D(normalTexture, In.tex0).xy).xyz;
 
 	float3 reflectDirW = normalize(reflect(In.viewRayW, normalize(normalW)).xyz) * c.stepLength;
 
 	// Important, more fade when reflect vector facing camera
 	float reflectFadeFactor = 1.f;
-	float reflectViewZ = mul(reflectDirW, (float3x3)c.view).z * 1.f / c.stepLength;
+	float reflectViewZ = mul(reflectDirW, (float3x3)c.view).z / c.stepLength;
 	if(reflectViewZ < 0)
 		reflectFadeFactor = abs(reflectViewZ);
 
 	float depth = tex2D(depthTexture, In.tex0).r;
-	if( depth == 1.0f)
+	if( depth == 1.0f) // Leave sky
 		return color;
 
 	reflectDirW *= c.maxRange;  // max trace range : "maxRange" world unit
 	float3 posW = GetWorldPosition(c.camPos, In.viewRayW, depth).xyz;
 	float4 collectedReflectionColor = float4(0,0,0,0);
-	int count = (int)c.maxRange % 80; // TODO, max 80 iteration, 160 sample per pixel (haha)
+	static int count = c.maxRange % 81; // Help unrolling
+	float2 dx = ddx(In.tex0);
+	float2 dy = ddy(In.tex0);
 	for(int i = 1; i < count; i++ )
 	{
 		float3 tracedPosW = posW + reflectDirW * (float)i / (float)count;
@@ -179,23 +167,27 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 		if( currUV.x > 1 || currUV.x < 0 || currUV.y > 1 ||currUV.y < 0)
 			break;
 
-		float currSampledDepth = tex2D(depthTexture, currUV).r;
+		float currSampledDepth = tex2D(depthTexture, currUV, dx, dy).r;
 		float currTracedDepth = reflectSamplePosH.w / c.farPlane; //  div by farPlane
 
 		if( currSampledDepth == 1.0f)
+		{
+			collectedReflectionColor = float4(0,0,0,0);
 			break;
+		}
 
 		// Ez a feltetel alapvetoen szarra se jo, TODO CSERELD LE
 		if( (currTracedDepth > currSampledDepth) && (currTracedDepth - currSampledDepth < 0.0005) )
 		{
-			collectedReflectionColor = tex2D(colorTexture, currUV);
+			collectedReflectionColor = tex2D(colorTexture, currUV, dx, dy);
 			// TODO FADE OUT
 			break;
 		}
 	}
 
+	//return collectedReflectionColor;
 	return color + collectedReflectionColor * reflectFadeFactor * 0.2f; // TODO, glossiness
-
+	
 }
 
 technique t
