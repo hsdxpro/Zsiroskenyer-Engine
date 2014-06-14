@@ -76,8 +76,8 @@
     <None Include="..\TechDemo\shaders\shadowmap_render_dir.cg" />
     <None Include="..\TechDemo\shaders\sky.cg" />
     <None Include="..\TechDemo\shaders\ssao.cg" />
-    <None Include="..\TechDemo\shaders\sslr.cg" />
-    <None Include="..\TechDemo\shaders\test.cg" />
+    <None Include="..\TechDemo\shaders\ssar.cg" />
+    <None Include="..\TechDemo\shaders\ssvr.cg" />
     <None Include="..\TechDemo\shaders\tone_mapping.cginc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

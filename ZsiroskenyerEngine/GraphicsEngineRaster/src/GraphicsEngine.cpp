@@ -350,10 +350,15 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, ITexture2D* target, flo
 	//--- --- Deferred rendering result --- --- //
 	ITexture2D* deferredComposition = deferredRenderer->GetCompositionBuffer();
 
-	// Screen Space Local Reflection
-	postProcessor->SetInputSSLR(deferredComposition, deferredRenderer->GetDepthBuffer(), deferredRenderer->GetGBuffer(1)); // Color, depth, normal
-	postProcessor->SetOutputSSLR(hdrTextures[0]);
-	postProcessor->ProcessSSLR(scene.GetCamera());
+	// Screen Space Analytic Reflection
+	postProcessor->SetInputSSAR(deferredComposition, deferredRenderer->GetDepthBuffer(), deferredRenderer->GetGBuffer(1)); // Color, depth, normal
+	postProcessor->SetOutputSSAR(hdrTextures[0]);
+	postProcessor->ProcessSSAR(scene.GetCamera());
+
+	// TODO Graphics Option -> Screen Space Variance Reflection
+	//postProcessor->SetInputSSVR(deferredComposition, deferredRenderer->GetDepthBuffer(), deferredRenderer->GetGBuffer(1)); // Color, depth, normal
+	//postProcessor->SetOutputSSVR(hdrTextures[0]);
+	//postProcessor->ProcessSSVR(scene.GetCamera());
 
 	// Motion blur
 	postProcessor->SetInputMB(hdrTextures[0], deferredRenderer->GetDepthBuffer());

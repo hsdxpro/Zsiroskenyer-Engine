@@ -1,3 +1,5 @@
+// Screen Space Analytic Reflection
+
 #include "common.cginc"
 
 sampler2D colorTexture : register( s0 ) = {
@@ -63,73 +65,6 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 
 
 float4 PS_MAIN(VS_OUT In) : COLOR0 {
-
-	// variance SSLR
-	/*
-	float3 posW = GetWorldPosition(c.camPos, In.viewRayW, tex2D(depthTexture, In.tex0).r);
-
-	float3 reflectDirW = normalize(reflect(In.viewRayW, UnpackNormal(tex2D(normalTexture, In.tex0).xy).xyz));
-	float3 reflectDirVS = mul(float4(reflectDirW, 0.0f), c.view);
-	float reflectionFactor = 1.f;
-	if(reflectDirVS.z < 0)
-		reflectionFactor = 0.0f;
-
-	float4 sampledPosH = mul(float4(posW + reflectDirW, 1.f), c.viewProj);
-	sampledPosH.xyz /= sampledPosH.w;
-
-	float2 uvStep;
-	uvStep.x = (sampledPosH.x + 1) /  2 - In.tex0.x;
-	uvStep.y = (sampledPosH.y - 1) / -2 - In.tex0.y;
-	uvStep = normalize(uvStep) * c.invOutputRes * 12.f / distance(posW, c.camPos); // TODOD, wrong, need input res
-
-	float4 reflectionColor = float4(0,0,0,0);
-	float nSamples = 100.f;//(1 - dot(normalize(reflectDirVS), float3(0,0,1))) * 80.f + 50.f; // More samples more kamera perpendicular reflection
-	static int count = (int)nSamples; // TODO, max 80 iteration, 160 sample per pixel (haha)
-	float2 bestUV;
-	float bestDot = -1;
-	int iTmp;
-
-	float2 dx = ddx(In.tex0);
-	float2 dy = ddy(In.tex0);
-
-	for(int i = 1; i < count; i++)
-	{
-		float2 currUV = In.tex0 + (float)i * uvStep;
-		
-		if(currUV.x > 1 || currUV.x < 0 || currUV.y > 1 || currUV.y < 0)
-		{
-			i = count;
-			//reflectionFactor = 0.0f;
-		}
-		else
-		{
-
-			float depth = tex2D(depthTexture, currUV, dx, dy).r;
-			if(depth == 1.f)
-			{
-				break;
-			}
-
-			float3 sampledPosW = GetWorldPosition(c.camPos, In.viewRayW, depth);
-			
-			float val = dot(normalize(reflectDirW), normalize(sampledPosW - posW));
-			if( val > bestDot)
-			{
-				iTmp = i;
-				bestDot = val;
-			}
-		}
-	}
-
-	if(bestDot > 0.80)
-		return tex2D(colorTexture, In.tex0) + tex2D(colorTexture, In.tex0 + (float)iTmp * uvStep) * reflectionFactor;
-	else
-		return tex2D(colorTexture, In.tex0) + reflectionColor;
-*/
-
-
-	// ANALYTIC SSLR
-	
 	float4 color =  tex2D(colorTexture, In.tex0).xyzw;
 	return color;
 
@@ -187,7 +122,6 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 
 	//return collectedReflectionColor;
 	return color + collectedReflectionColor * reflectFadeFactor * 0.2f; // TODO, glossiness
-	
 }
 
 technique t

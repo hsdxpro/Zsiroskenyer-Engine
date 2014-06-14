@@ -203,10 +203,8 @@ float sampleAO(in int2 ssC, in float3 C, in float3 n_C, in float ssDiskRadius, i
     float f = max(radius2 - vv, 0.0); return f * f * f * max((vn - bias) / (epsilon + vv), 0.0);
 }
 
-float4 PS_MAIN(VS_OUT In) : COLOR0
+float PS_MAIN(VS_OUT In) : COLOR0
 {
-	//return float4(1,0,0,1);
-
 	float4 color = float4(0,0,0,0);
 
 	// Pixel being shaded 
@@ -215,7 +213,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0
 	// World space point being shaded
 	float3 C = getPosition(ssC);
 
-	packKey(CSZToKey(C.z), color.gb);
+	//packKey(CSZToKey(C.z), color.gb);
 
 	// Hash function used in the HPG12 AlchemyAO paper
 	float randomPatternRotationAngle = (3 * ssC.x ^ ssC.y + ssC.x * ssC.y) * 10;
@@ -223,7 +221,10 @@ float4 PS_MAIN(VS_OUT In) : COLOR0
 	// Reconstruct normals from positions. These will lead to 1-pixel black lines
 	// at depth discontinuities, however the blur will wipe those out so they are not visible
 	// in the final image.
-	float3 n_C = mul(UnpackNormal(tex2D(normalTexture, In.tex0).rg), (float3x3)matView);
+	float3 normalW = UnpackNormal(tex2D(normalTexture, In.tex0).rg);
+	float3 n_C = mul(normalW, (float3x3)matView);
+
+	return normalW.y;
 
 	// Choose the screen-space sample radius
 	// proportional to the projected area of the sphere

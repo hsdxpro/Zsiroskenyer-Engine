@@ -143,9 +143,6 @@
     <None Include="..\TechDemo\shaders\screen_copy.cg">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\TechDemo\shaders\test.cg">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="..\TechDemo\shaders\deferred_light_spot.cg">
       <Filter>Shaders</Filter>
     </None>
@@ -203,7 +200,8 @@
     <None Include="..\TechDemo\shaders\motion_blur_object_2dvelocity.cg">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\TechDemo\shaders\sslr.cg" />
     <None Include="..\TechDemo\shaders\sao.cg" />
+    <None Include="..\TechDemo\shaders\ssar.cg" />
+    <None Include="..\TechDemo\shaders\ssvr.cg" />
   </ItemGroup>
 </Project>

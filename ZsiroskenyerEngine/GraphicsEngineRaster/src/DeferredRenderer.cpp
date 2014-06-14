@@ -486,7 +486,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	tSaoConstant.radius = 10;
 	tSaoConstant.radius2 = tSaoConstant.radius * tSaoConstant.radius;
 	tSaoConstant.bias = 0.01f;
-	tSaoConstant.inputTexRes = Vec2(depthBufferCopy->GetWidth(), depthBufferCopy->GetHeight());
+	tSaoConstant.inputTexRes = Vec2((float)depthBufferCopy->GetWidth(), (float)depthBufferCopy->GetHeight());
 	tSaoConstant.negFarPlane = -cam->GetFarPlane();
 	tSaoConstant.intensity = 1;
 	tSaoConstant.matView = cam->GetViewMatrix();

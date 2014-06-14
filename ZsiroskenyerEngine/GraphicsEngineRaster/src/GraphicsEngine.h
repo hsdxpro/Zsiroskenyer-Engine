@@ -216,19 +216,22 @@ private:
 		void ProcessMB(float frameDeltaTime, const cCamera& cam);
 		void ProcessDOF(float frameDeltaTime, const cCamera& cam);
 		void ProcessFXAA();
-		void ProcessSSLR(const cCamera& cam);
+		void ProcessSSAR(const cCamera& cam);
+		void ProcessSSVR(const cCamera& cam);
 
 		// Set inputs
 		void SetInputMB(ITexture2D* color, ITexture2D* depth);
 		void SetInputDOF(ITexture2D* color, ITexture2D* depth);
 		void SetInputFXAA(ITexture2D* color); // If FXAA shader defines that it takes luminance from alpha channel, then pass appropriate texture please..
-		void SetInputSSLR(ITexture2D* color, ITexture2D* depth, ITexture2D* normal);
+		void SetInputSSAR(ITexture2D* color, ITexture2D* depth, ITexture2D* normal);
+		void SetInputSSVR(ITexture2D* color, ITexture2D* depth, ITexture2D* normal);
 
 		// Set outputs
 		void SetOutputMB(ITexture2D* color, ITexture2D* velocity2D, ITexture2D* depth);
 		void SetOutputDOF(ITexture2D* color);
 		void SetOutputFXAA(ITexture2D* color);
-		void SetOutputSSLR(ITexture2D* color);
+		void SetOutputSSAR(ITexture2D* color);
+		void SetOutputSSVR(ITexture2D* color);
 
 	private:
 		void		ReloadShaders(); // Reload belonging shaders
@@ -241,7 +244,7 @@ private:
 		IShaderProgram *shaderMB ,	*shaderMBCamera2DVelocity, *shaderMBObject2DVelocity,	// Motion blur shaders
 					   *shaderDOF,	*shaderFocalPlaneAdaption,								// Depth of field shaders
 					   *shaderFXAA,															// FXAA shaders
-					   *shaderSSLR;															// Screen Space Local Reflection shader
+					   *shaderSSAR, *shaderSSVR;											// Screen Space Reflections( Analytic and Variance)
 
 		// Input textures
 		ITexture2D* inputTexColor, *inputTexDepth, *inputTexNormal;

@@ -29,7 +29,8 @@ cGraphicsEngine::cPostProcessor::cPostProcessor(cGraphicsEngine& parent)
 	shaderFXAA = nullptr;
 
 	// Screen Space Local Reflection shader
-	shaderSSLR = nullptr;
+	shaderSSAR = nullptr;
+	shaderSSVR = nullptr;
 
 	// Input textures
 	inputTexColor = nullptr;
@@ -304,10 +305,10 @@ void cGraphicsEngine::cPostProcessor::ProcessFXAA() {
 	gApi->Draw(3);
 }
 
-void cGraphicsEngine::cPostProcessor::ProcessSSLR(const cCamera& cam)
+void cGraphicsEngine::cPostProcessor::ProcessSSAR(const cCamera& cam)
 {
 	gApi->SetRenderTargets(1, &outputTexColor, nullptr);
-	gApi->SetShaderProgram(shaderSSLR);
+	gApi->SetShaderProgram(shaderSSAR);
 
 	struct tDofConstants
 	{
@@ -341,6 +342,43 @@ void cGraphicsEngine::cPostProcessor::ProcessSSLR(const cCamera& cam)
 	gApi->Draw(3);
 }
 
+void cGraphicsEngine::cPostProcessor::ProcessSSVR(const cCamera& cam)
+{
+	gApi->SetRenderTargets(1, &outputTexColor, nullptr);
+	gApi->SetShaderProgram(shaderSSVR);
+
+	struct constants
+	{
+		Matrix44 invViewProj;
+		Matrix44 viewProj;
+		Matrix44 view;
+		Matrix44 invView;
+		Vec3	 camPos;		float _pad0;
+		Vec2	 invOutputRes;
+		float	 farPlane;
+		float	 stepLength;
+		int		 maxRange;
+	} c;
+
+	c.view = cam.GetViewMatrix();
+	c.viewProj = c.view *  cam.GetProjMatrix();
+	c.invViewProj = Matrix44Inverse(c.viewProj);
+	c.camPos = cam.GetPos();
+	c.invView = Matrix44Inverse(c.view);
+	c.invOutputRes = Vec2(1.f / outputTexColor->GetWidth(), 1.f / outputTexColor->GetHeight());
+	c.farPlane = cam.GetFarPlane();
+	c.stepLength = 0.25f;
+	c.maxRange = 80;
+
+	// Set it for shaders to use
+	gApi->SetVSConstantBuffer(&c, sizeof(c), 0);
+	gApi->SetPSConstantBuffer(&c, sizeof(c), 0);
+	gApi->SetTexture(0, inputTexColor);
+	gApi->SetTexture(1, inputTexDepth);
+	gApi->SetTexture(2, inputTexNormal);
+	gApi->Draw(3);
+}
+
 // Set inputs
 void cGraphicsEngine::cPostProcessor::SetInputMB(ITexture2D* color, ITexture2D* depth) {
 	assert(color); assert(depth);
@@ -358,7 +396,13 @@ void cGraphicsEngine::cPostProcessor::SetInputFXAA(ITexture2D* color) {
 	inputTexColor = color;
 }
 
-void cGraphicsEngine::cPostProcessor::SetInputSSLR(ITexture2D* color, ITexture2D* depth, ITexture2D* normal) {
+void cGraphicsEngine::cPostProcessor::SetInputSSAR(ITexture2D* color, ITexture2D* depth, ITexture2D* normal) {
+	inputTexColor = color;
+	inputTexDepth = depth;
+	inputTexNormal = normal;
+}
+
+void cGraphicsEngine::cPostProcessor::SetInputSSVR(ITexture2D* color, ITexture2D* depth, ITexture2D* normal) {
 	inputTexColor = color;
 	inputTexDepth = depth;
 	inputTexNormal = normal;
@@ -382,10 +426,16 @@ void cGraphicsEngine::cPostProcessor::SetOutputFXAA(ITexture2D* color) {
 	outputTexColor = color;
 }
 
-void cGraphicsEngine::cPostProcessor::SetOutputSSLR(ITexture2D* color) {
+void cGraphicsEngine::cPostProcessor::SetOutputSSAR(ITexture2D* color) {
 	assert(color);
 	outputTexColor = color;
 }
+
+void cGraphicsEngine::cPostProcessor::SetOutputSSVR(ITexture2D* color) {
+	assert(color);
+	outputTexColor = color;
+}
+
 
 // INNNNERR
 void cGraphicsEngine::cPostProcessor::Cleanup() {
@@ -405,7 +455,8 @@ void cGraphicsEngine::cPostProcessor::UnloadShaders() {
 	SAFE_RELEASE(shaderDOF);
 	SAFE_RELEASE(shaderFocalPlaneAdaption);
 	SAFE_RELEASE(shaderFXAA);
-	SAFE_RELEASE(shaderSSLR);
+	SAFE_RELEASE(shaderSSAR);
+	SAFE_RELEASE(shaderSSVR);
 }
 
 // reload shaders
@@ -423,7 +474,8 @@ void cGraphicsEngine::cPostProcessor::ReloadShaders() {
 		Reload(&shaderDOF,					L"shaders/depth_of_field.cg");
 		Reload(&shaderFocalPlaneAdaption,	L"shaders/depth_of_field_focal_plane_adaption.cg");
 		Reload(&shaderFXAA,					L"shaders/fxaa.cg");
-		Reload(&shaderSSLR,					L"shaders/sslr.cg");
+		Reload(&shaderSSAR,					L"shaders/ssar.cg");
+		Reload(&shaderSSVR,					L"shaders/ssvr.cg");
 	}
 	catch (...) {
 		UnloadShaders();
