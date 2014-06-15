@@ -54,9 +54,10 @@
     <None Include="..\TechDemo\shaders\deferred_light_dir.cg" />
     <None Include="..\TechDemo\shaders\deferred_light_point.cg" />
     <None Include="..\TechDemo\shaders\deferred_light_spot.cg" />
-    <None Include="..\TechDemo\shaders\depth_of_field.cg" />
     <None Include="..\TechDemo\shaders\common.cginc" />
-    <None Include="..\TechDemo\shaders\depth_of_field_focal_plane_adaption.cg" />
+    <None Include="..\TechDemo\shaders\dof.cg" />
+    <None Include="..\TechDemo\shaders\dof_bokeh.cg" />
+    <None Include="..\TechDemo\shaders\dof_focal_plane_adaption.cg" />
     <None Include="..\TechDemo\shaders\fxaa.cg" />
     <None Include="..\TechDemo\shaders\hbao.cg" />
     <None Include="..\TechDemo\shaders\hbao_blur_hor.cg" />
@@ -77,6 +78,7 @@
     <None Include="..\TechDemo\shaders\sky.cg" />
     <None Include="..\TechDemo\shaders\ssao.cg" />
     <None Include="..\TechDemo\shaders\ssar.cg" />
+    <None Include="..\TechDemo\shaders\ssdo.cg" />
     <None Include="..\TechDemo\shaders\ssvr.cg" />
     <None Include="..\TechDemo\shaders\tone_mapping.cginc" />
   </ItemGroup>

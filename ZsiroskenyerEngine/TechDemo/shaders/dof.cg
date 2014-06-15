@@ -27,10 +27,10 @@ sampler2D adaptedFocalPlaneTex = {
 struct {
 	float4x4	invViewProj;
 	float3		camPos;
-	float		frameDeltaTime; // just shader :depth_of_field_focal_plane_adaption  use it
-	float		minFocalDist;	// just shader :depth_of_field_focal_plane_adaption  use it
-	float		maxFocalDist;	// just shader :depth_of_field_focal_plane_adaption  use it
-	float		focalAdaptSpeed;// just shader :depth_of_field_focal_plane_adaption  use it
+	float		frameDeltaTime; // just shader :dof_focal_plane_adaption  use it
+	float		minFocalDist;	// just shader :dof_focal_plane_adaption  use it
+	float		maxFocalDist;	// just shader :dof_focal_plane_adaption  use it
+	float		focalAdaptSpeed;// just shader :dof_focal_plane_adaption  use it
 	float		invRetinaRadiusProductInputTexWidth;
 	float		invTexWidth;
 	float		invTexHeight;
@@ -71,7 +71,7 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 
 
 float4 PS_MAIN(VS_OUT In) : COLOR0 {
-	// The plane that we choose in focus (currently adapted across frames in depth_of_field_focal_plane_adaption shader
+	// The plane that we choose in focus (currently adapted across frames in dof_focal_plane_adaption shader
 	float focusedPointDist = tex2D(adaptedFocalPlaneTex, float2(0.5f, 0.5f)).r;
 
 	// Then we calculate the belonging focal length to our eye

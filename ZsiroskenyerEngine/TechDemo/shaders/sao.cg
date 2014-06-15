@@ -93,6 +93,7 @@ float3	 camPos		: register(c16);
 
 
 
+
 struct VS_IN {
 	float3 posL 	: POSITION;
 	float2 tex0 	: TEXCOORD0;

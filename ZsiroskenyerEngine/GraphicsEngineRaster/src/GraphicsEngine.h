@@ -191,7 +191,7 @@ private:
 		IGraphicsApi* gApi;
 		IShaderProgram* shaderGBuffer;
 		IShaderProgram *shaderDirectional, *shaderPoint, *shaderSpot, *shaderAmbient, *shaderSky;
-		IShaderProgram* shaderSAO, *shaderSSAO, *shaderHBAO, *shaderHBAOblurHor, *shaderHBAOblurVer;
+		IShaderProgram* shaderSSDO, *shaderSAO, *shaderSSAO, *shaderHBAO, *shaderHBAOblurHor, *shaderHBAOblurVer;
 		cGraphicsEngine& parent;
 
 		IVertexBuffer *vbSpot, *vbPoint;
@@ -242,7 +242,7 @@ private:
 	private:
 		// Shaders
 		IShaderProgram *shaderMB ,	*shaderMBCamera2DVelocity, *shaderMBObject2DVelocity,	// Motion blur shaders
-					   *shaderDOF,	*shaderFocalPlaneAdaption,								// Depth of field shaders
+						*shaderDOF, *shaderDOFBokeh, *shaderFocalPlaneAdaption,				// Depth of field shaders
 					   *shaderFXAA,															// FXAA shaders
 					   *shaderSSAR, *shaderSSVR;											// Screen Space Reflections( Analytic and Variance)
 

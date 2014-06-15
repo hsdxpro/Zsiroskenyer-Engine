@@ -24,7 +24,8 @@ cGraphicsEngine::cPostProcessor::cPostProcessor(cGraphicsEngine& parent)
 	// Dof + Focal plane adaption shaders
 	shaderFocalPlaneAdaption = nullptr;
 	shaderDOF = nullptr;
-	
+	shaderDOFBokeh = nullptr;
+
 	// Antialiasing shader
 	shaderFXAA = nullptr;
 
@@ -109,7 +110,8 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 	mbConstants.InvframeDeltaTimeDiv2DivInputRes = Vec2(1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetWidth()),
 														1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetHeight()));
 
-	mbConstants.invFourPercentInputRes = Vec2(4.0f / inputTexDepth->GetWidth(), 4.0f / inputTexDepth->GetHeight());
+	// Increase to 12 ^^
+	mbConstants.invFourPercentInputRes = Vec2(12.0f / inputTexDepth->GetWidth(), 12.0f / inputTexDepth->GetHeight());
 	mbConstants.negInvFourPercentInputRes = -mbConstants.invFourPercentInputRes;
 
 	mbConstants.InvframeDeltaTimeDiv2DivInputRes *= 3.5f; // Motion blur BOOST
@@ -229,10 +231,10 @@ void cGraphicsEngine::cPostProcessor::ProcessDOF(float frameDeltaTime, const cCa
 	{
 		Matrix44 invViewProj;
 		Vec3	 camPos;
-		float	 frameDeltaTime; // just shader :depth_of_field_focal_plane_adaption  use it
-		float	 minFocalDist;	 // just shader :depth_of_field_focal_plane_adaption  use it
-		float	 maxFocalDist;	 // just shader :depth_of_field_focal_plane_adaption  use it
-		float	 focalAdaptSpeed;// just shader :depth_of_field_focal_plane_adaption  use it
+		float	 frameDeltaTime; // just shader :dof_focal_plane_adaption  use it
+		float	 minFocalDist;	 // just shader :dof_focal_plane_adaption  use it
+		float	 maxFocalDist;	 // just shader :dof_focal_plane_adaption  use it
+		float	 focalAdaptSpeed;// just shader :dof_focal_plane_adaption  use it
 		float	 invRetinaRadiusProductInputTexWidth;
 		float	 invTexWidth;
 		float	 invTexHeight;
@@ -457,6 +459,7 @@ void cGraphicsEngine::cPostProcessor::UnloadShaders() {
 	SAFE_RELEASE(shaderFXAA);
 	SAFE_RELEASE(shaderSSAR);
 	SAFE_RELEASE(shaderSSVR);
+	SAFE_RELEASE(shaderDOFBokeh);
 }
 
 // reload shaders
@@ -471,11 +474,12 @@ void cGraphicsEngine::cPostProcessor::ReloadShaders() {
 		Reload(&shaderMB,					L"shaders/motion_blur.cg");
 		Reload(&shaderMBCamera2DVelocity,	L"shaders/motion_blur_camera_2dvelocity.cg");
 		Reload(&shaderMBObject2DVelocity,	L"shaders/motion_blur_object_2dvelocity.cg");
-		Reload(&shaderDOF,					L"shaders/depth_of_field.cg");
-		Reload(&shaderFocalPlaneAdaption,	L"shaders/depth_of_field_focal_plane_adaption.cg");
+		Reload(&shaderDOF,					L"shaders/dof.cg");
+		Reload(&shaderFocalPlaneAdaption,	L"shaders/dof_focal_plane_adaption.cg");
 		Reload(&shaderFXAA,					L"shaders/fxaa.cg");
 		Reload(&shaderSSAR,					L"shaders/ssar.cg");
 		Reload(&shaderSSVR,					L"shaders/ssvr.cg");
+		Reload(&shaderDOFBokeh,				L"shaders/dof_bokeh.cg");
 	}
 	catch (...) {
 		UnloadShaders();

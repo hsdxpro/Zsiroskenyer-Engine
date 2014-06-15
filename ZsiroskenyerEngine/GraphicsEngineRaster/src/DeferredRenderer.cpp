@@ -51,6 +51,7 @@ cGraphicsEngine::cDeferredRenderer::cDeferredRenderer(cGraphicsEngine& parent)
 	shaderSSAO = nullptr;
 	shaderHBAO = nullptr;
 	shaderSAO = nullptr;
+	shaderSSDO = nullptr;
 	shaderHBAOblurHor = nullptr;
 	shaderHBAOblurVer = nullptr;
 
@@ -263,6 +264,7 @@ void cGraphicsEngine::cDeferredRenderer::UnloadShaders() {
 	SAFE_RELEASE(shaderSSAO);
 	SAFE_RELEASE(shaderHBAO);
 	SAFE_RELEASE(shaderSAO);
+	SAFE_RELEASE(shaderSSDO);
 	SAFE_RELEASE(shaderHBAOblurHor);
 	SAFE_RELEASE(shaderHBAOblurVer);
 }
@@ -286,10 +288,10 @@ void cGraphicsEngine::cDeferredRenderer::ReloadShaders() {
 		Reload(&shaderSky, L"shaders/sky.cg");
 
 		Reload(&shaderSSAO, L"shaders/ssao.cg");
-
 		Reload(&shaderSAO, L"shaders/sao.cg");
-
 		Reload(&shaderHBAO, L"shaders/hbao.cg");
+		Reload(&shaderSSDO, L"shaders/ssdo.cg");
+
 		Reload(&shaderHBAOblurHor, L"shaders/hbao_blur_hor.cg");
 		Reload(&shaderHBAOblurVer, L"shaders/hbao_blur_ver.cg");
 	}
@@ -451,7 +453,35 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	// --- --- --- --- --AMBIENT OCCLUSION (composition pass)-- --- --- --- --- //
 	//--------------------------------------------------------------------------//
 
-
+	//--------------------------------------------------------------------------//
+	// --- --- --- --- --- --- --- --- -- SSDO --- --- --- --- --- --- --- --- - //
+	//--------------------------------------------------------------------------//
+	//struct tSSDOConstants {
+	//	Matrix44	matInvView;
+	//	float		occlusionRadius;	Vec3 _pad0;
+	//	float		occlusionMaxDist; Vec3 _pad1;
+	//	Vec2		inputTexRes;		Vec2 _pad2;
+	//	Vec3		camPos;			float _pad3;
+	//	Matrix44	matInvViewProj;
+	//} ssdoConstants;
+	//
+	//ssdoConstants.matInvView = Matrix44Inverse(viewMat);
+	//ssdoConstants.occlusionRadius = 1;
+	//ssdoConstants.occlusionMaxDist = 1;
+	//ssdoConstants.inputTexRes = Vec2(depthBuffer->GetWidth(), depthBuffer->GetHeight());
+	//ssdoConstants.camPos = cam->GetPos();
+	//ssdoConstants.matInvViewProj = Matrix44Inverse(viewProjMat);
+	//
+	//gApi->SetShaderProgram(shaderSSDO);
+	//gApi->SetRenderTargets(1, &aoBuffer, nullptr);
+	//
+	//gApi->SetTexture(0, gBuffer[0]);
+	//gApi->SetTexture(1, depthBuffer);
+	//gApi->SetTexture(2, gBuffer[1]);
+	//gApi->SetTexture(3, randomTexture);
+	//gApi->SetPSConstantBuffer(&ssdoConstants, sizeof(ssdoConstants), 0);
+	//gApi->SetVSConstantBuffer(&ssdoConstants, sizeof(ssdoConstants), 0);
+	//gApi->Draw(3);
 
 	//--------------------------------------------------------------------------//
 	// --- --- --- --- --- --- --- --- -- SAO --- --- --- --- --- --- --- --- - //
@@ -504,6 +534,7 @@ void cGraphicsEngine::cDeferredRenderer::RenderComposition() {
 	//gApi->SetTexture(0, depthBufferCopy);
 	//gApi->SetTexture(1, gBuffer[1]);
 	//gApi->SetPSConstantBuffer(&tSaoConstant, sizeof(tSaoConstant), 0);
+	//gApi->SetVSConstantBuffer(&tSaoConstant, sizeof(tSaoConstant), 0);
 	//gApi->Draw(3);
 
 

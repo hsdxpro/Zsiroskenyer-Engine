@@ -44,12 +44,11 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 
 	// Sample along velocity vector
 	const float nSamples = 8;
-	In.tex0 += velocity * (1.0f / nSamples);
-	for(float i = 1; i < nSamples; ++i, In.tex0 += i / nSamples * velocity )     
-	{
-		color += tex2D(inputTexture, In.tex0);
-	}
- 
+   for (int i = 1; i < nSamples; ++i) {
+      float2 offset = velocity * (float(i) / float(nSamples - 1) - 0.5); // Centered sampling (reducing artifacts)
+      color += tex2D(inputTexture, In.tex0 + offset);
+   }
+
 	float4 finalColor = color * (1.0f / nSamples);
 
 	// Assign non blurred alpha

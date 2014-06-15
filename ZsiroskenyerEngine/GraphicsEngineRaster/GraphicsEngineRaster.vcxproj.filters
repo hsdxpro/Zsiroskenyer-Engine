@@ -116,9 +116,6 @@
     <None Include="..\TechDemo\shaders\deferred_lightpass_cmn.cginc">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\TechDemo\shaders\depth_of_field.cg">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="..\TechDemo\shaders\hdr_blur_horiz.cg">
       <Filter>Shaders</Filter>
     </None>
@@ -182,9 +179,6 @@
     <None Include="..\TechDemo\shaders\deferred_gbuffer_material.cginc">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\TechDemo\shaders\depth_of_field_focal_plane_adaption.cg">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="..\TechDemo\shaders\fxaa.cg">
       <Filter>Shaders</Filter>
     </None>
@@ -203,5 +197,9 @@
     <None Include="..\TechDemo\shaders\sao.cg" />
     <None Include="..\TechDemo\shaders\ssar.cg" />
     <None Include="..\TechDemo\shaders\ssvr.cg" />
+    <None Include="..\TechDemo\shaders\ssdo.cg" />
+    <None Include="..\TechDemo\shaders\dof.cg" />
+    <None Include="..\TechDemo\shaders\dof_bokeh.cg" />
+    <None Include="..\TechDemo\shaders\dof_focal_plane_adaption.cg" />
   </ItemGroup>
 </Project>

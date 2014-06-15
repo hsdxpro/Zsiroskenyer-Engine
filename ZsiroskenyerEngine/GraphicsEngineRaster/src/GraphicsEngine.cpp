@@ -374,7 +374,7 @@ void cGraphicsEngine::RenderScene(cGraphicsScene& scene, ITexture2D* target, flo
 	// Lol using GBuffer0
 	ITexture2D* gBuffer0 = deferredRenderer->GetGBuffer(0);
 
-	// Need write luminance value to alpha channel
+	// Need write luminance value to alpha channel for FXAA
 	// HDR
 	if (scene.state.hdr.enabled) {
 		hdrProcessor->SetSource(hdrTextures[0]);

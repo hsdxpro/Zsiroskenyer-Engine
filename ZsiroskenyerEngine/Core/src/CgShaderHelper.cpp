@@ -354,6 +354,7 @@ const wchar_t* cCgShaderHelper::GetLastErrorMsg() {
 
 cVertexFormat cCgShaderHelper::GetVSInputFormat()
 {
+	// That assert can occur not defining technique in the file, OR ! using constant buffer like constant.camPos not declared in the file :(
 	assert(info.domainsExist[cCgShaderHelper::VS]);
 
 	// Parse input Layout... from VERTEX_SHADER
