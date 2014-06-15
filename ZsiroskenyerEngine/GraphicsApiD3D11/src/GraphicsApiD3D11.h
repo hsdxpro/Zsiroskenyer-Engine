@@ -98,6 +98,8 @@ public:
 	// --- utility --- //
 	eGapiResult SaveTextureToFile(ITexture2D* t, ITexture2D::eImageFormat f, const char* filePath) override;
 
+	eGapiResult GenerateMips(ITexture2D* t);
+
 private:
 	eGapiResult CreateDevice();
 	eGapiResult CreateMostAcceptableSwapChain(size_t width, size_t height, HWND windowHandle);

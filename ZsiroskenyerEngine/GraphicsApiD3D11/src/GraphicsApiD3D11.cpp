@@ -621,6 +621,7 @@ eGapiResult	cGraphicsApiD3D11::CreateIndexBuffer(IIndexBuffer** resource, eUsage
 
 // Create texture from file
 eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const wchar_t* filePath) {
+
 	// Shader Resource View of texture
 	ID3D11ShaderResourceView* srv;
 	D3DX11_IMAGE_LOAD_INFO info;
@@ -661,14 +662,15 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const wchar_
 // Create texture in memory
 eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const ITexture2D::tDesc& desc, void* data /*= nullptr*/) {
 	ID3D11Texture2D* tex = nullptr;
+	
 	// Outputs
 	ID3D11RenderTargetView* rtv = nullptr;
 	ID3D11ShaderResourceView* srv = nullptr;
 	ID3D11DepthStencilView* dsv = nullptr;
 
-	bool isRenderTarget = 0 != ((int)desc.bind & (int)eBind::RENDER_TARGET);
+	bool isRenderTarget	  = 0 != ((int)desc.bind & (int)eBind::RENDER_TARGET);
 	bool isShaderBindable = 0 != ((int)desc.bind & (int)eBind::SHADER_RESOURCE);
-	bool hasDepthStencil = 0 != ((int)desc.bind & (int)eBind::DEPTH_STENCIL);
+	bool hasDepthStencil  = 0 != ((int)desc.bind & (int)eBind::DEPTH_STENCIL);
 
 	D3D11_TEXTURE2D_DESC texDesc;
 	texDesc.ArraySize = desc.arraySize;
@@ -677,7 +679,7 @@ eGapiResult cGraphicsApiD3D11::CreateTexture(ITexture2D** resource, const ITextu
 	texDesc.Height = desc.height;
 	texDesc.Width = desc.width;
 	texDesc.MipLevels = desc.mipLevels;
-	texDesc.MiscFlags = 0;
+	texDesc.MiscFlags = desc.generateMips && (isShaderBindable || isRenderTarget) ? D3D11_RESOURCE_MISC_GENERATE_MIPS : 0;
 	texDesc.SampleDesc.Count = 1;
 	texDesc.SampleDesc.Quality = 0;
 	texDesc.Usage = ConvertToNativeUsage(desc.usage); // TODO ( PARAMETERIZE )
@@ -1842,7 +1844,7 @@ const wchar_t* cGraphicsApiD3D11::GetLastErrorMsg() const {
 eGapiResult cGraphicsApiD3D11::SaveTextureToFile(ITexture2D* t, ITexture2D::eImageFormat f, const char* filePath)  {
 	assert(t);
 
-	// The resource that we wan to save
+	// Extract resource from texture, that we want to save
 	ID3D11Resource* res;
 	ID3D11ShaderResourceView* srv = ((cTexture2DD3D11*)t)->GetSRV();
 	assert(srv);
@@ -1851,7 +1853,7 @@ eGapiResult cGraphicsApiD3D11::SaveTextureToFile(ITexture2D* t, ITexture2D::eIma
 
 	srv->GetResource(&res);
 
-	// The format
+	// Convert format
 	D3DX11_IMAGE_FILE_FORMAT format;
 	switch (f) {
 	case ITexture2D::eImageFormat::BMP:  format = D3DX11_IFF_BMP;  break;
@@ -1867,6 +1869,7 @@ eGapiResult cGraphicsApiD3D11::SaveTextureToFile(ITexture2D* t, ITexture2D::eIma
 	// OMG MOTHERFUCKER NAB FUNCTION "D3DX11SaveTextureToFileA" solve that...
 	if (FAILED(hr))
 	{
+		// New texture, (we write our resource into that) with hardcoded shader
 		ITexture2D* tmpTex = NULL;
 		ITexture2D::tDesc d;
 			d.arraySize = 1;
@@ -1878,8 +1881,7 @@ eGapiResult cGraphicsApiD3D11::SaveTextureToFile(ITexture2D* t, ITexture2D::eIma
 			d.usage = eUsage::DEFAULT;
 		CreateTexture(&tmpTex, d);
 
-		// The screen copy cg shader
-
+		// We use screen copy cg shader for the task
 		const char* tmpShaderFilePath = "zsiroskenyergraphicsapid3d11_tmpscreencopyshader.cg";
 		std::ofstream os(tmpShaderFilePath, std::ios::trunc);
 
@@ -1926,6 +1928,7 @@ eGapiResult cGraphicsApiD3D11::SaveTextureToFile(ITexture2D* t, ITexture2D::eIma
 
 
 
+		// Create the shader
 		// TODO HLSL SHADERREL KELL MEGOLDANI, ami helyben van kifejtve ( de most lusta vagyok ) !!
 		IShaderProgram* shaderScreenCopy;
 		zsString shaderFilePath = zsString(tmpShaderFilePath).c_str();
@@ -1934,13 +1937,16 @@ eGapiResult cGraphicsApiD3D11::SaveTextureToFile(ITexture2D* t, ITexture2D::eIma
 		cFileUtil::Delete(shaderFilePath);
 		cFileUtil::Delete("zsiroskenyergraphicsapid3d11_tmpscreencopyshader.bin");
 
+		// Clear the texture
 		ClearTexture(tmpTex);
 
+		// " Copy " resource into texture
 		SetRenderTargets(1, &tmpTex, nullptr);
 		SetShaderProgram(shaderScreenCopy);
 		SetTexture(L"inputTexture", t);
 		Draw(3);
 
+		// Now DirectX function can handle that texture format
 		errCode = SaveTextureToFile(tmpTex, f, filePath);
 		if (errCode != eGapiResult::OK)
 		{
@@ -1956,6 +1962,16 @@ eGapiResult cGraphicsApiD3D11::SaveTextureToFile(ITexture2D* t, ITexture2D::eIma
 	return eGapiResult::OK;
 }
 
+eGapiResult cGraphicsApiD3D11::GenerateMips(ITexture2D* t)
+{
+	cTexture2DD3D11* tex = (cTexture2DD3D11*)t;
+
+	ASSERT(tex->GetSRV());
+
+	// We can only generate mips, for texture that have srv, and D3D11_RESOURCE_MISC_GENERATE_MIPS misc flag defined
+	d3dcon->GenerateMips(tex->GetSRV());
+	return eGapiResult::OK;
+}
 ////////////////////////////////////////////////////////////////////////////////
 // Internal helper functions
 

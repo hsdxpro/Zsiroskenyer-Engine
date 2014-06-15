@@ -1,22 +1,5 @@
 #include "common.cginc"
 
-struct VS_IN {
-	float3 posL 	: POSITION;
-	float2 tex0 	: TEXCOORD0;
-};
-
-struct VS_OUT {
-	float4 posH 	: POSITION;
-	float2 tex0 	: TEXCOORD0;
-};
-
-VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
-	VS_OUT Out;
-	Out.tex0 = float2( (VertexID << 1) & 2, VertexID & 2 );
-	Out.posH = float4(  Out.tex0 * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f), 0.0f, 1.0f );
-	return Out;
-}
-
 /**
  \file SAO_AO.pix
  \author Morgan McGuire and Michael Mara, NVIDIA Research
@@ -48,7 +31,7 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
   */
 
 // Total number of direct samples to take at each pixel
-#define NUM_SAMPLES (11)
+#define NUM_SAMPLES (22)
 
 // If using depth mip levels, the log of the maximum pixel offset before we need to switch to a lower 
 // miplevel to maintain reasonable spatial locality in the cache
@@ -70,7 +53,7 @@ VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
 //////////////////////////////////////////////////
 
 /** Negative, "linear" values in world-space units */
-sampler2D CS_Z_buffer : register( s0 ) = {
+sampler2D depthTexture : register( s0 ) = {
     MipFilter = POINT,
     MinFilter = POINT,
     MagFilter = POINT,
@@ -94,33 +77,45 @@ sampler2D normalTexture : register( s1 ) = {
     
     where P is the projection matrix that maps camera space points 
     to [-1, 1] x [-1, 1].  That is, GCamera::getProjectUnit(). */
-float4 projInfo : register(c0);
+float4 projInfo		: register(c0);
 
-float projScale : register(c1);	//  The height in pixels of a 1m object if viewed from 1m away
-float radius : register(c2);		//  World-space AO radius in scene units (r).  e.g., 1.0m */
-float radius2 : register(c3);
-float bias : register(c4);			//  Bias to avoid AO in smooth corners, e.g., 0.01m */	
+float projScale		: register(c1);			//  The height in pixels of a 1m object if viewed from 1m away
+float radius		: register(c2);			//  World-space AO radius in scene units (r).  e.g., 1.0m */
+float radius2		: register(c3);
+float bias			: register(c4);			//  Bias to avoid AO in smooth corners, e.g., 0.01m */	
 
-float2 inputTexRes : register(c5);
-float  negFarPlane : register(c6);
-float intensity : register(c7);	/// Darkending factor, e.g., 1.0 */
-float4x4 matView : register(c8);
+float2 inputTexRes	: register(c5);
+float  negFarPlane	: register(c6);
+float intensity		: register(c7);	/// Darkending factor, e.g., 1.0 */
+float4x4 matView	: register(c8);
+float4x4 matInvViewProj	: register(c12);
+float3	 camPos		: register(c16);
 
 
 
+struct VS_IN {
+	float3 posL 	: POSITION;
+	float2 tex0 	: TEXCOORD0;
+};
 
-/////////////////////////////////////////////////////////
+struct VS_OUT {
+	float4 posH 	: POSITION; 
+	float2 tex0 	: TEXCOORD0;
+	float3 viewRayW : TEXCOORD1;
+};
 
-/** Reconstruct camera-space P.xyz from screen-space S = (x, y) in
-    pixels and camera-space z < 0.  Assumes that the upper-left pixel center
-    is at (0.5, 0.5) [but that need not be the location at which the sample tap 
-    was placed!]
+VS_OUT VS_MAIN(VS_IN In, uint VertexID : VERTEXID) {
+	VS_OUT Out;
+	Out.tex0 = float2( (VertexID << 1) & 2, VertexID & 2 );
+	Out.posH = float4(  Out.tex0 * float2( 2.0f, -2.0f ) + float2( -1.0f, 1.0f), 0.0f, 1.0f );
 
-    Costs 3 MADD.  Error is on the order of 10^3 at the far plane, partly due to z precision.
-  */
-float3 reconstructCSPosition(float2 S, float z) {
-	return float3((S.xy * projInfo.xy + projInfo.zw) * z, z);
+	float4 viewRay = Out.posH.x * matInvViewProj[0] + (Out.posH.y * matInvViewProj[1] + (matInvViewProj[2] + matInvViewProj[3]));
+
+	Out.viewRayW = viewRay.xyz * (1.0f / viewRay.w);
+	Out.viewRayW -= camPos;
+	return Out;
 }
+
 
 /** Returns a unit vector and a screen-space radius for the tap on a unit disk (the caller should scale by the actual disk radius) */
 float2 tapLocation(int sampleNumber, float spinAngle, out float ssR) {
@@ -150,21 +145,9 @@ void packKey(float key, out float2 p) {
 	p.y = key * 256.0 - temp;
 }
 
- 
-/** Read the camera-space position of the point at screen-space pixel ssP */
-float3 getPosition(int2 ssP) {
-	float3 P;
-
-	P.z = tex2Dfetch(CS_Z_buffer, int4(ssP, 0, 0)).r * negFarPlane;
-
-	// Offset to pixel center
-	P = reconstructCSPosition(float2(ssP) + float2(0.5, 0.5), P.z);
-	return P;
-}
-
 
 /** Read the camera-space position of the point at screen-space pixel ssP + unitOffset * ssR.  Assumes length(unitOffset) == 1 */
-float3 getOffsetPosition(int2 ssC, float2 unitOffset, float ssR) {
+float3 getOffsetPosition(int2 ssC, float2 unitOffset, float ssR, float3 viewRayW) {
 	// Derivation:
 	//  mipLevel = floor(log(ssR / MAX_OFFSET));
 	int mipLevel = clamp((float)((int)floor(log2(ssR)) - LOG_MAX_OFFSET), 0.f, MAX_MIP_LEVEL);
@@ -174,10 +157,11 @@ float3 getOffsetPosition(int2 ssC, float2 unitOffset, float ssR) {
 	float3 P;
 
 	// Divide coordinate by 2^mipLevel
-	P.z = tex2Dfetch(CS_Z_buffer,int4(ssP >> mipLevel, mipLevel,mipLevel)).r * negFarPlane;
+	P.z = tex2Dfetch(depthTexture, int4(ssP >> mipLevel, 0, mipLevel)).r;
 
-	// Offset to pixel center
-	P = reconstructCSPosition(float2(ssP) + float2(0.5, 0.5), P.z);
+	// World space point being shaded
+	P.xy = mul(float4(GetWorldPosition(camPos, viewRayW, P.z), 1.f), matView).xy;
+	P.z *= negFarPlane;
 
 	return P;
 }
@@ -185,14 +169,14 @@ float3 getOffsetPosition(int2 ssC, float2 unitOffset, float ssR) {
 
 /** Compute the occlusion due to sample with index \a i about the pixel at \a ssC that corresponds
     to camera-space point \a C with unit normal \a n_C, using maximum screen-space sampling radius \a ssDiskRadius */
-float sampleAO(in int2 ssC, in float3 C, in float3 n_C, in float ssDiskRadius, in int tapIndex, in float randomPatternRotationAngle) {
+float sampleAO(in int2 ssC, in float3 C, in float3 n_C, in float ssDiskRadius, in int tapIndex, in float randomPatternRotationAngle, float3 viewRayW) {
 	// Offset on the unit disk, spun for this pixel
 	float ssR;
 	float2 unitOffset = tapLocation(tapIndex, randomPatternRotationAngle, ssR);
 	ssR *= ssDiskRadius;
 
 	// The occluding point in camera space
-	float3 Q = getOffsetPosition(ssC, unitOffset, ssR);
+	float3 Q = getOffsetPosition(ssC, unitOffset, ssR, viewRayW);
 
 	float3 v = Q - C;
 
@@ -211,7 +195,8 @@ float PS_MAIN(VS_OUT In) : COLOR0
 	int2 ssC = In.tex0 * inputTexRes;
 
 	// World space point being shaded
-	float3 C = getPosition(ssC);
+	float3 C = mul(float4(GetWorldPosition(camPos, In.viewRayW, tex2D(depthTexture, float2(ssC) + float2(0.5, 0.5))), 1.f), matView);
+	C.z = -C.z;
 
 	//packKey(CSZToKey(C.z), color.gb);
 
@@ -221,10 +206,9 @@ float PS_MAIN(VS_OUT In) : COLOR0
 	// Reconstruct normals from positions. These will lead to 1-pixel black lines
 	// at depth discontinuities, however the blur will wipe those out so they are not visible
 	// in the final image.
-	float3 normalW = UnpackNormal(tex2D(normalTexture, In.tex0).rg);
+	float3 normalW = UnpackNormal(tex2D(normalTexture, In.tex0).xy).xyz;
 	float3 n_C = mul(normalW, (float3x3)matView);
-
-	return normalW.y;
+	n_C.z = -n_C.z;
 
 	// Choose the screen-space sample radius
 	// proportional to the projected area of the sphere
@@ -232,7 +216,7 @@ float PS_MAIN(VS_OUT In) : COLOR0
 
 	float sum = 0.0;
 	for (int i = 0; i < NUM_SAMPLES; ++i) {
-	     sum += sampleAO(ssC, C, n_C, ssDiskRadius, i, randomPatternRotationAngle);
+	     sum += sampleAO(ssC, C, n_C, ssDiskRadius, i, randomPatternRotationAngle, In.viewRayW);
 	}
 
         float temp = radius2 * radius;

@@ -60,7 +60,7 @@ public:
 
 	// --- utility do it--- //
 	virtual eGapiResult SaveTextureToFile(ITexture2D* t, ITexture2D::eImageFormat f, const char* filePath) = 0;
-
+	virtual eGapiResult GenerateMips(ITexture2D* t) = 0;
 
 	// --- state --- //
 	virtual eGapiResult SetRenderTargetDefault() = 0;

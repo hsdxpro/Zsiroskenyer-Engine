@@ -8,7 +8,7 @@ class ITexture2D {
 public:
 	struct tDesc {
 		tDesc(unsigned width, unsigned height, eFormat format, unsigned bind, eUsage usage, unsigned mipLevels = 1, unsigned arraySize = 1, eFormat depthFormat = eFormat::UNKNOWN)
-		: width(width), height(height), format(format), bind(bind), usage(usage), mipLevels(mipLevels), arraySize(arraySize), depthFormat(depthFormat) { }
+		: width(width), height(height), format(format), bind(bind), usage(usage), mipLevels(mipLevels), arraySize(arraySize), depthFormat(depthFormat), generateMips(false){}
 		tDesc() : tDesc(1, 1, eFormat::UNKNOWN, (int)eBind::SHADER_RESOURCE, eUsage::DEFAULT, 1, 1, eFormat::UNKNOWN) { }
 		unsigned width, height;
 		unsigned mipLevels;
@@ -17,6 +17,7 @@ public:
 		unsigned bind;
 		eUsage usage;
 		eFormat depthFormat;
+		bool generateMips : 1;
 	};
 
 	enum eImageFormat {
