@@ -110,11 +110,11 @@ void cGraphicsEngine::cPostProcessor::ProcessMB(float frameDeltaTime, const cCam
 	mbConstants.InvframeDeltaTimeDiv2DivInputRes = Vec2(1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetWidth()),
 														1.0f / (frameDeltaTime * 2.0f * inputTexDepth->GetHeight()));
 
-	// Increase to 12 ^^
-	mbConstants.invFourPercentInputRes = Vec2(12.0f / inputTexDepth->GetWidth(), 12.0f / inputTexDepth->GetHeight());
+	// Increase to 60 ^^
+	mbConstants.invFourPercentInputRes = Vec2(60.0f / inputTexDepth->GetWidth(), 60.0f / inputTexDepth->GetHeight());
 	mbConstants.negInvFourPercentInputRes = -mbConstants.invFourPercentInputRes;
 
-	mbConstants.InvframeDeltaTimeDiv2DivInputRes *= 3.5f; // Motion blur BOOST
+	mbConstants.InvframeDeltaTimeDiv2DivInputRes *= 17.5f; // Motion blur BOOST
 
 	gApi->SetRenderTargets(1, &outputTexVelocity2D, outputTexDepthStencil);
 	gApi->SetShaderProgram(shaderMBCamera2DVelocity);
@@ -253,12 +253,14 @@ void cGraphicsEngine::cPostProcessor::ProcessDOF(float frameDeltaTime, const cCa
 	dofConstants.minusInvTexHeight = -dofConstants.invTexHeight;
 	dofConstants.frameDeltaTime = frameDeltaTime;
 	dofConstants.retinaLensDist = 0.019f;
-	dofConstants.aperture = 0.05f;
+	//dofConstants.retinaLensDist = 0.44f;
+	//dofConstants.aperture = 0.40f; // Increases coc
+	dofConstants.aperture = 0.05f; // Increases coc
 	dofConstants.camPos = cam.GetPos();
 	dofConstants.quality = 8;
 	dofConstants.minFocalDist = 0;
 	dofConstants.maxFocalDist = 3000;
-	dofConstants.focalAdaptSpeed = 4.0f;
+	dofConstants.focalAdaptSpeed = 6.0f;
 
 	// Set it for shaders to use
 	gApi->SetPSConstantBuffer(&dofConstants, sizeof(dofConstants), 0);
