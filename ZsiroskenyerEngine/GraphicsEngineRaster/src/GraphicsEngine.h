@@ -136,10 +136,10 @@ private:
 
 	// sub-compnents: rendering & graphical
 	IGraphicsApi* gApi;
-	cDeferredRenderer* deferredRenderer;
-	cHDRProcessor* hdrProcessor;
-	cPostProcessor* postProcessor;
-	cShadowRenderer* shadowRenderer;
+	class cDeferredRenderer* deferredRenderer;
+	class cHDRProcessor* hdrProcessor;
+	class cPostProcessor* postProcessor;
+	class cShadowRenderer* shadowRenderer;
 
 	cResourceManager* resourceManager;
 	std::set<cGraphicsScene*> graphicsScenes;

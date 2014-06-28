@@ -73,7 +73,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 
 	float3 reflectDirW = normalize(reflect(In.viewRayW, normalize(normalW)).xyz) * c.stepLength;
 
-	// Important, more fade when reflect vector facing camera
+	// Important, more fade when reflect vector dofacing camera
 	float reflectFadeFactor = 1.f;
 	float reflectViewZ = mul(reflectDirW, (float3x3)c.view).z / c.stepLength;
 	if(reflectViewZ < 0)

@@ -60,6 +60,7 @@ struct tRenderState {
 			SSAO = 1,
 			// SSDO = 2,
 			// HBAO = 3,
+			// SAO = 4,
 		} method;
 		int quality;
 	};
@@ -105,21 +106,21 @@ public:
 class IGraphicsEngine {
 public:
 	// virtual interface stuff
-	virtual void Release() = 0;
+	virtual void				Release() = 0;
+
+	virtual eGraphicsResult		Update(float elapsed = 0.0f) = 0;
+
+	virtual IGeometryBuilder*	CreateCustomGeometry() = 0;
+	virtual IGraphicsScene*		CreateScene(tRenderState state = tRenderState()) = 0;
+
+	virtual void				DeleteScene(const IGraphicsScene* scene) = 0;
+
+	virtual eGraphicsResult		ReloadShaders() = 0;
+	virtual eGraphicsResult		Resize(unsigned width, unsigned height) = 0;
 
 	// user functions
-	virtual eGraphicsResult SetConfig(tGraphicsConfig config) = 0;
+	virtual eGraphicsResult		SetConfig(tGraphicsConfig config) = 0;
 	
-	virtual eGraphicsResult Resize(unsigned width, unsigned height) = 0;
-	virtual IGraphicsApi*	GetGraphicsApi() = 0;
-	virtual eGraphicsResult ReloadShaders() = 0;
-	virtual const char* GetLastErrorMessage() = 0;
-
-	virtual eGraphicsResult Update(float elapsed = 0.0f) = 0;
-
-	// scene management
-	virtual IGraphicsScene*	CreateScene(tRenderState state = tRenderState()) = 0;
-	virtual void			DeleteScene(const IGraphicsScene* scene) = 0;
-
-	virtual IGeometryBuilder* CreateCustomGeometry() = 0;
+	virtual const char*			GetLastErrorMessage() = 0;
+	virtual IGraphicsApi*		GetGraphicsApi() = 0;
 };

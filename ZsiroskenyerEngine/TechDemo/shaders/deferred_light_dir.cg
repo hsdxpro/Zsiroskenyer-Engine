@@ -98,7 +98,7 @@ float4 PS_MAIN(VS_OUT In) : COLOR0 {
 	// TODO i don't know why, that Specular_CookTorrance roughness parameter behave as GLOSSINESS !!
 	float specTerm = Specular_CookTorrance(normal, negViewNorm, -lightDir, glossiness, IOR) * specLevel; 
 
-	color.rgb += lightColor*((diffuseTerm - specTerm) * diffuseColor + specTerm); // note: no light attenuation
+	color.rgb += lightColor*(diffuseTerm * diffuseColor + specTerm); // note: no light attenuation
 	color.a = 1.0f;
 
 	// shadow map

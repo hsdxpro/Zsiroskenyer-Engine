@@ -235,17 +235,21 @@ void cGraphicsEngine::cPostProcessor::ProcessDOF(float frameDeltaTime, const cCa
 		float	 minFocalDist;	 // just shader :dof_focal_plane_adaption  use it
 		float	 maxFocalDist;	 // just shader :dof_focal_plane_adaption  use it
 		float	 focalAdaptSpeed;// just shader :dof_focal_plane_adaption  use it
-		float	 invRetinaRadiusProductInputTexWidth;
+		float	 nearPlane;
+		Matrix44 invView;
+		float	 retinaLensDist;
+		float	 invRetinaRadius;
+		float	 inputTexWidth;
 		float	 invTexWidth;
 		float	 invTexHeight;
 		float	 minusInvTexWidth;
-		float	 minusInvTexHeight;			
-		float	 aperture;					
-		float	 retinaLensDist;				
+		float	 minusInvTexHeight;
+		float	 aperture;
 		int		 quality;
 	} dofConstants;
 
-	dofConstants.invRetinaRadiusProductInputTexWidth = (float)inputTexColor->GetWidth() * 26.793927f; // That magic number (27.793927) normalizes (a CoC that belonging to an average sized human eye and lens) into [0,1]
+	dofConstants.invRetinaRadius = 26.793927f;// That magic number (27.793927) normalizes (a CoC that belonging to an average sized human eye and lens) into [0,1]
+	dofConstants.inputTexWidth = (float)inputTexColor->GetWidth();
 	dofConstants.invViewProj = Matrix44Inverse(cam.GetViewMatrix() *  cam.GetProjMatrix());
 	dofConstants.invTexWidth = 1.0f / inputTexColor->GetWidth();
 	dofConstants.invTexHeight = 1.0f / inputTexColor->GetHeight();
@@ -261,6 +265,8 @@ void cGraphicsEngine::cPostProcessor::ProcessDOF(float frameDeltaTime, const cCa
 	dofConstants.minFocalDist = 0;
 	dofConstants.maxFocalDist = 3000;
 	dofConstants.focalAdaptSpeed = 6.0f;
+	dofConstants.nearPlane = cam.GetNearPlane();
+	dofConstants.invView = Matrix44Inverse(cam.GetViewMatrix());
 
 	// Set it for shaders to use
 	gApi->SetPSConstantBuffer(&dofConstants, sizeof(dofConstants), 0);
