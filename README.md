@@ -1,11 +1,10 @@
+A state of the art GAME ENGINE
 
-Zsiroskenyer-Engine -> new Engine https://github.com/hsdxpro/Excessive-Team
-===================
- Multiplatform Next Generation 3D Game Engine
+Dx12 fully custom graphed pipeline + Own Editor + Gui etc
 
+Renamed to Inline Engine, found it here:
 
+https://github.com/petiaccja/Inline-Engine
 
- We are young engine developers studying at Budapest University of Technology and Economics.
- We want this production to be highly platform independent, and next generation.
- 
-
+### Contacts
+**hsdxpro@gmail.com**
